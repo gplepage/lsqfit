@@ -1,0 +1,7 @@
+These .py files are simple examples showing how to use lsqfit. Use 'make run' 
+to run all of them, comparing the output with the corresponding .out files.
+
+Some of these examples are discussed in the documentation (which is doc/html/index.html).
+
+To run under a different version of python, say python3 for example, use 
+'make PYTHON=python3 run'.

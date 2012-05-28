@@ -1,0 +1,6 @@
+These .py files contain unittests (using the standard Python library
+unittest). Use 'make tests' to run all of the tests. To run under a 
+different version of python, say python3 for example, use 
+'make PYTHON=python3 tests'.
+
+ 
