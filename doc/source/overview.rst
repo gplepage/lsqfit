@@ -3,7 +3,7 @@ Overview and Tutorial
 
 Introduction
 --------------------
-The modules defined in this package are designed to facilitate
+The modules defined in here are designed to facilitate
 least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
 :mod:`lsqfit` because it provides the fit functions. :mod:`lsqfit` makes

@@ -4,4 +4,9 @@ __pycache__/
 doc/html/
 doc/lsqfit.pdf
 *.c
+examples/*.p
+examples/*.tmp
 installed-files
+MANIFEST
+dist/
+doc/source/_build/

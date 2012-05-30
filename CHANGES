@@ -36,8 +36,10 @@ The bigger changes include:
 
 - The names gdev and GDev are everywhere replaced by gvar and GVar (for
   "gaussian variable"). A new gdev.py module is included that aliases the new
-  names to the old names, for use with old code. It is better to get rid of
-  the old names if possible.
+  names to the old names, for use with old code. gdev.py is not installed with
+  the rest of the code; it needs to be copied by hand to directories
+  containing old code. Obviously, it is better to get rid of the old names if
+  possible.
 
 - Correctly handles situations where priors are correlated with the fit data.
   Previously such correlations were ignored. This is the most significant

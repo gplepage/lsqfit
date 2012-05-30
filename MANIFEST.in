@@ -1,4 +1,4 @@
-include makefile README INSTALLATION COPYING MANIFEST.in CHANGES
+include makefile README INSTALLATION COPYING MANIFEST.in CHANGES gdev.py
 include setup.py gvar-setup.py lsqfit_util-setup.py gvar.pxd
 include doc/lsqfit.pdf
 

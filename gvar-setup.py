@@ -40,4 +40,5 @@ setup(name="gvar",
     author_email="GPL3@CORNELL.EDU",
     license='GPLv3',
     ext_modules=ext_modules, py_modules=py_modules,
-    cmdclass = {'build_ext':build_ext})
+    cmdclass = {'build_ext':build_ext}
+    )

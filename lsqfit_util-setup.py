@@ -40,4 +40,5 @@ setup(name="lsqfit_util",
     author_email="GPL3@CORNELL.EDU",
     ext_modules=ext_modules, py_modules=py_modules,
     license='GPLv3',
-    cmdclass = {'build_ext':build_ext})
+    cmdclass = {'build_ext':build_ext}
+    )

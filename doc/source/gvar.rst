@@ -52,7 +52,8 @@ variables::
     
     cov[i,j] = <x[i]*x[j]>  -  <x[i]> * <x[j]>
     
-where ``<y>`` is the expectation value or mean of random variable ``y``.
+where, in general, ``<y>`` is the expectation value or mean of random variable
+``y``.
     
     
 Creating Gaussian Variables

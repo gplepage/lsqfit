@@ -1,7 +1,7 @@
 - nonlinear_fit.format is irritating with its nline. Replace with a verbose flag? Rather keep nline (set to 100, say), but use the verbose flag to 
 indicate whether to print or not. Default for verbose should be what?
 
-- do more extensive testing of exceptions in lsqfit using unittest's easy framework (with self.assertRaises(ValueError):  stmt). Should be able to get the 93% (missing 39 statements) coverage closer to 100%.
+- do more extensive testing of exceptions in lsqfit using unittest's easy framework (with self.assertRaises(ValueError):  stmt). Should be able to get the 92% (missing 44 statements) coverage closer to 100%.
 
 - simplify the unittests. Get away from the complicated loops over many variations and simply list variations one at a time --- code easier to read and also easier to figure out which variation failed if not using loops (most important reason).
 
