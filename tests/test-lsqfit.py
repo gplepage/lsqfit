@@ -26,7 +26,7 @@ import numpy as np
 import gvar as gv
 from lsqfit import *
 
-FAST = False         # skips embayes and bootstrap tests
+FAST = True         # skips embayes and bootstrap tests
 
 nonlinear_fit.fmt_parameter='%12.3f +- %8.3f'
 nonlinear_fit.fmt_prior='(%8.2f +- %8.2f)'

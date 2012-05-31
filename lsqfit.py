@@ -696,7 +696,10 @@ class nonlinear_fit(object):
                     else:
                         names[gk_slice] = k
             else:
-                names = list(numpy.ndindex(g.shape))
+                if len(g.shape) == 1:
+                    names = range(len(g))
+                else:
+                    names = list(numpy.ndindex(g.shape))
             return names
         ##
         ## unpack information ##

@@ -21,7 +21,7 @@ about how the code would be used. A somewhat inconvenient change is the
 renaming of the gdev module to gvar (for "gaussian variable"): every instance
 of 'gdev' is now replaced by 'gvar', as is every 'GDev' by 'GVar'. The old
 names were wrong and therefore misleading. (A tiny 'gdev.py' file is included
-that aliases the new names with the old names, for use by old code.) In
+that aliases the new names with the old names, for use with old code.) In
 addition, the interfaces for many functions in lsqfit and especially gvar were
 made more uniform: for example, almost any gvar function that took an array of
 GVars as an argument can now also accept a single GVar or a dictionary whose
@@ -37,9 +37,9 @@ The bigger changes include:
 - The names gdev and GDev are everywhere replaced by gvar and GVar (for
   "gaussian variable"). A new gdev.py module is included that aliases the new
   names to the old names, for use with old code. gdev.py is not installed with
-  the rest of the code; it needs to be copied by hand to directories
-  containing old code. Obviously, it is better to get rid of the old names if
-  possible.
+  the rest of the code; if you need it (for old code) install it, for example,
+  using "python gdev-setup.py install --user". Obviously, a better solution is
+  to get rid of the old names.
 
 - Correctly handles situations where priors are correlated with the fit data.
   Previously such correlations were ignored. This is the most significant

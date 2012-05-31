@@ -62,6 +62,7 @@ variables including:
 import sys
 import collections
 import fileinput
+import re
 PY3 = True if sys.version>'3' else False    
 
 cdef inline int int_max(int a, int b): return a if a >= b else b
@@ -1714,7 +1715,7 @@ def bin_data(data,binsize=2):
     return list(accum/float(binsize))
     ##
 ##
-    
+        
 def avg_data(data,median=False,spread=False,bstrap=False):
     """ Average random data to estimate mean.
         
@@ -1923,7 +1924,9 @@ class Dataset(dict):
         [0.95, 0.93]
         
     Finally the keys read from a data file are restricted to those listed
-    in keyword ``keys`` if it is specified: for example, ::
+    in keyword ``keys`` and those that are matched (or partially matched)
+    by regular expression ``grep`` if one or the other of these is specified: 
+    for example, ::
         
         >>> a = Dataset('datafile')
         >>> print([k for k in a])
@@ -1931,7 +1934,12 @@ class Dataset(dict):
         >>> a = Dataset('datafile',keys=['v'])
         >>> print([k for k in a])
         ['v']
-        
+        >>> a = Dataset('datafile',grep='[^v]')
+        >>> print([k for k in a])
+        ['s']
+        >>> a = Dataset('datafile',keys=['v'],grep='[^v]')
+        >>> print([k for k in a])
+        []
     """
     def __init__(self,*args,**kargs):
         super(Dataset, self).__init__()
@@ -1946,12 +1954,17 @@ class Dataset(dict):
         if binsize>1: 
             acc = {}
         keys = set(kargs.get('keys',[]))
+        grep = kargs.get('grep',None)
+        if grep is not None:
+            grep = re.compile(grep)
         for line in fileinput.input(args[0]):
             f = line.split()
             if len(f)<2 or f[0][0]=='#':
                 continue
             k = f[0]
             if keys and k not in keys:
+                continue
+            if grep is not None and grep.search(k) is None:
                 continue
             if len(f)==2:
                 d = eval(f[1])
@@ -2083,6 +2096,97 @@ class Dataset(dict):
         for k in kargs:
             self.extend(k,kargs[k])
     ##           
+    def slice(self,sl):
+        """ Create new dataset with ``self[k] -> self[k][sl].``
+            
+        Parameter ``sl`` is a slice object that is applied to every
+        item in the dataset to produce a new :class:`gvar.Dataset`.
+        Setting ``sl = slice(0,None,2)``, for example, discards every
+        other sample for each quantity in the dataset. Setting 
+        ``sl = slice(100,None)`` discards the first 100 samples for 
+        each quantity.
+        """
+        ans = Dataset()
+        for k in self:
+            ans[k] = self[k][sl]
+        return ans
+    ##
+    def grep(self,rexp):
+        """ Create new dataset containing items whose keys match ``rexp``.
+            
+        Returns a new :class:`gdev.Dataset`` containing only the items 
+        ``self[k]`` whose keys ``k`` match regular expression ``rexp``
+        (a string) according to Python module :mod:`re`. Items are retained
+        even if ``rexp`` matches only part of the item's key.         
+        """
+        prog = re.compile(rexp)
+        ans = Dataset()
+        for k in self:
+            if prog.search(k) is not None:
+                ans[k] = self[k]
+        return ans
+    ##
+    def samplesize(self):
+        """ Return (smallest) number of samples for any key."""
+        return min([len(self[k]) for k in self])
+    ##
+    def extract_array(self, template):
+        """ Extract array of random data repacked according to ``template``.
+            
+        ``template`` is an array of keys in the dataset. The random samples
+        for each key are combined into a matrix whose layout is specified
+        by ``template``. ``extract_array`` returns an array of these
+        new random arrays: for example, ::
+            
+            >>> d = Dataset()
+            >>> d.append(a=1,b=10)  
+            >>> d.append(a=2,b=20)
+            >>> d.append(a=3,b=30)
+            >>> print(d)            # three random samples each for a and b
+            {'a': [1.0, 2.0, 3.0], 'b': [10.0, 20.0, 30.0]}
+            >>> print(d.extract_array(['a','b']))       # array of 2-vectors
+            [[  1.  10.]
+             [  2.  20.]
+             [  3.  30.]]
+            >>> print(d.extract_array([['b','a'],['a','b']]))   # 2x2 matrices
+            [[[ 10.   1.]
+              [  1.  10.]]
+
+             [[ 20.   2.]
+              [  2.  20.]]
+
+             [[ 30.   3.]
+              [  3.  30.]]]
+              
+        The number of samples in each result is the same as the number samples
+        for each key (here 3). The keys used in this example represent scalar
+        quantities; in general, they could be either scalars or arrays 
+        (of any shape, so long as all have the same shape).              
+        """
+        ## regularize and test the template ##
+        template = numpy.array(template, dtype=numpy.object)
+        template_shape = template.shape
+        template_flat = template.flat
+        if not template_flat:
+            return Dataset()
+        try:
+            assert all((k in self) for k in template_flat), \
+                "Some keys in template not in Dataset."
+        except TypeError:
+            raise ValueError("Poorly formed template.")
+        shape = numpy.shape(self[template_flat[0]])
+        assert all(   #)
+            (numpy.shape(self[k]) == shape) for k in template_flat[1:]), \
+            "Different shapes for different elements in template."
+        ##
+        n_sample = shape[0]
+        ans_shape = shape[:1] + template_shape + shape[1:]
+        ans = numpy.zeros(ans_shape, float)
+        ans = ans.reshape(n_sample, template.size, -1)
+        for i,k in enumerate(template_flat):
+            ans[:, i, :] = numpy.reshape(self[k], (n_sample,-1))
+        return ans.reshape(ans_shape)
+    ##
     def bootstrap_iter(self,n=None):
         """ Create iterator that returns bootstrap copies of ``self``.
             
@@ -2199,19 +2303,19 @@ def raniter(g,n=None,svdcut=None,svdnum=None,rescale=True):
     raise StopIteration
 ##
     
-def ranseed(a):
-    """ Seed random number generators with ``a``.
+def ranseed(seed):
+    """ Seed random number generators with tuple ``seed``.
         
-    Argument ``a`` is a :class:`tuple` of integers that is used to seed
+    Argument ``seed`` is a :class:`tuple` of integers that is used to seed
     the random number generators used by :mod:`numpy` and  
     :mod:`random` (and therefore by :mod:`gvar`). Reusing 
-    the same ``a`` results in the same set of random numbers.
+    the same ``seed`` results in the same set of random numbers.
         
-    :param a: A tuple of integers.
-    :type a: tuple
+    :param seed: A tuple of integers.
+    :type seed: tuple
     """
-    a = tuple(a)
-    numpy.random.seed(a)
+    seed = tuple(seed)
+    numpy.random.seed(seed)
 ##
    
 class svd(object):
