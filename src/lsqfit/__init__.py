@@ -652,12 +652,12 @@ class nonlinear_fit(object):
                         names[gk_slice] = k
             else:
                 if len(g.shape) == 1:
-                    names = range(len(g))
+                    names = list(range(len(g)))
                 else:
                     names = list(numpy.ndindex(g.shape))
             return names
         ##
-        ## unpack information ##
+        ## unpack arguments, etc ##
         if (args and kargs) or len(args)>1 or len(kargs)>1:
             raise ValueError("Too many arguments.")
         if args:

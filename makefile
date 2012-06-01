@@ -25,6 +25,9 @@ install-sys :
 uninstall :			# not sure this works --- be careful
 	cat installed-files | xargs rm -rf
 
+install-gdev :
+	$(PYTHON) gdev-setup.py install --user
+
 doc-html:
 	rm -rf doc/html; cd doc/source; make html; mv _build/html ..
 
@@ -55,6 +58,10 @@ clean:
 	rm -f gvar.c lsqfit_util.c
 	rm -f lsqfit.tz
 	rm -f -r dist
+	rm -rf src/lsqfit/*.c
+	rm -rf src/gvar/*.c
+	rm -rf src/lsqfit/*.pyc
+	rm -rf src/gvar/*.pyc
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean

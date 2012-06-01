@@ -19,10 +19,7 @@ GNU General Public License for more details.
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
-try:
-   from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-   from distutils.command.build_py import build_py
+from distutils.command.build_py import build_py
 import numpy
 
 LSQFIT_VERSION = '4.2'
@@ -68,7 +65,7 @@ setup(name='lsqfit',
     ext_modules=ext_modules,
     cmdclass={'build_ext':build_ext,'build_py':build_py},
     requires=["cython (>=0.14)","numpy (>=1.0)"],
-    url="http://pypi.python.org/pypi",
+    url="",
     long_description="""\
     The modules defined here are designed to facilitate least-squares
     fitting of noisy data by multi-dimensional, nonlinear functions of

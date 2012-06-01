@@ -446,42 +446,42 @@ cdef class GVar:
 
 
 ## GVar factory functions ##
-_GDEV_LIST = []
-    
-def switch_gvar():
-    """ Switch :func:`gvar.gvar` to new :class:`gvar.GVarFactory`.
-        
-    :returns: New :func:`gvar.gvar`.
-    """
-    global gvar
-    _GDEV_LIST.append(gvar)
-    gvar = gvar_factory()
-    return gvar
-##
-    
-def restore_gvar():
-    """ Restore previous :func:`gvar.gvar`.
-        
-    :returns: Previous :func:`gvar.gvar`.
-    """
-    global gvar
-    try:
-        gvar = _GDEV_LIST.pop()
-    except IndexError:
-        raise IndexError("no previous gvar")
-    return gvar
-##
-    
-def gvar_factory(cov=None):
-    """ Return new function for creating |GVar|\s (to replace 
-    :func:`gvar.gvar`). 
-        
-    If ``cov`` is specified, it is used as the covariance matrix
-    for new |GVar|\s created by the function returned by 
-    ``gvar_factory(cov)``.
-    """
-    return GVarFactory(cov)
-##
+# _GDEV_LIST = []
+#     
+# def switch_gvar():
+#     """ Switch :func:`gvar.gvar` to new :class:`gvar.GVarFactory`.
+#         
+#     :returns: New :func:`gvar.gvar`.
+#     """
+#     global gvar
+#     _GDEV_LIST.append(gvar)
+#     gvar = gvar_factory()
+#     return gvar
+# ##
+#     
+# def restore_gvar():
+#     """ Restore previous :func:`gvar.gvar`.
+#         
+#     :returns: Previous :func:`gvar.gvar`.
+#     """
+#     global gvar
+#     try:
+#         gvar = _GDEV_LIST.pop()
+#     except IndexError:
+#         raise RuntimeError("no previous gvar")
+#     return gvar
+# ##
+#     
+# def gvar_factory(cov=None):
+#     """ Return new function for creating |GVar|\s (to replace 
+#     :func:`gvar.gvar`). 
+#         
+#     If ``cov`` is specified, it is used as the covariance matrix
+#     for new |GVar|\s created by the function returned by 
+#     ``gvar_factory(cov)``.
+#     """
+#     return GVarFactory(cov)
+# ##
     
 _GDEVre1 = re.compile(r"([-+]?[0-9]*)[.]([0-9]+)\s*\(([.0-9]+)\)")
 _GDEVre2 = re.compile(r"([-+]?[0-9]+)\s*\(([0-9]*)\)")
@@ -687,74 +687,15 @@ class GVarFactory:
     ## 
 ##
     
-gvar = gvar_factory()   
-    
-# def rebuild(g,corr=0.0,gvar=gvar):
-#     """ Rebuild ``g`` stripping correlations with variables not in ``g``.
-#         
-#     ``g`` is either an array of |GVar|\s or a dictionary containing |GVar|\s
-#     and/or arrays of |GVar|\s. ``rebuild(g)`` creates a new collection 
-#     |GVar|\s with the same layout, means and covariance matrix as those 
-#     in ``g``, but discarding all correlations with variables not in ``g``. 
-#         
-#     If ``corr`` is nonzero, ``rebuild`` will introduce correlations 
-#     wherever there aren't any using ::
-#         
-#         cov[i,j] -> corr * sqrt(cov[i,i]*cov[j,j]) 
-#         
-#     wherever ``cov[i,j]==0.0`` initially. Positive values for ``corr`` 
-#     introduce positive correlations, negative values anti-correlations.
-#         
-#     Parameter ``gvar`` specifies a function for creating new |GVar|\s that
-#     replaces :func:`gvar.gvar` (the default).
+# gvar = GVarFactory()
 #             
-#     :param g: |GVar|\s to be rebuilt.
-#     :type g: array or dictionary
-#     :param gvar: Replacement for :func:`gvar.gvar` to use in rebuilding.
-#         Default is :func:`gvar.gvar`.
-#     :type gvar: :class:`gvar.GVarFactory` or ``None``
-#     :param corr: Size of correlations to introduce where none exist
-#         initially.
-#     :type corr: number
-#     :returns: Array or dictionary (gvar.BufferDict) of |GVar|\s  (same layout 
-#         as ``g``) where all correlations with variables other than those in 
-#         ``g`` are erased.
-#     """
-#     cdef numpy.ndarray[numpy.double_t,ndim=2] gcov
-#     cdef unsigned int i,j,ng
-#     cdef float cr
-#     if hasattr(g,'keys'):
-#         ## g is a dict ##
-#         if not isinstance(g,BufferDict):
-#             g = BufferDict(g)
-#         buf = rebuild(g.flat,corr=corr,gvar=gvar)
-#         return BufferDict(g,buf=buf)
-#         ##
+# def asgvar(x):
+#     """ Return x if it is type |GVar|; otherwise return 'gvar.gvar(x)`."""
+#     if isinstance(x,GVar):
+#         return x
 #     else:
-#         ## g is an array ##
-#         g = numpy.asarray(g)
-#         if corr!=0.0:
-#             ng = g.size
-#             gcov = evalcov(g).reshape(ng,ng)
-#             cr = corr
-#             for i in range(ng):
-#                 for j in range(i+1,ng):
-#                     if gcov[i,j]==0:
-#                         gcov[i,j] = cr*c_sqrt(gcov[i,i]*gcov[j,j])
-#                         gcov[j,i] = gcov[i,j]
-#             return gvar(mean(g),gcov.reshape(2*g.shape))
-#         else:
-#             return gvar(mean(g),evalcov(g))
-#         ##
+#         return gvar(x)
 # ##
-            
-def asgvar(x):
-    """ Return x if it is type |GVar|; otherwise return 'gvar.gvar(x)`."""
-    if isinstance(x,GVar):
-        return x
-    else:
-        return gvar(x)
-##
     
 ##   
 

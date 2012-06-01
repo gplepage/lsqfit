@@ -316,6 +316,51 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertEqual(data['s'].shape,(2,))
         self.assertEqual(data['v'].shape,(2,2))
     ##
+    def test_dataset_slice(self):
+        """ Dataset.slice """
+        data = Dataset()
+        data.extend(a=[1,2,3,4],b=[[1],[2],[3],[4]])
+        ndata = data.slice(slice(0,None,2))
+        self.assert_arraysequal(ndata['a'],[1,3])
+        self.assert_arraysequal(ndata['b'],[[1],[3]])
+    ##
+    def test_dataset_grep(self):
+        """ Dataset.grep """
+        data = Dataset()
+        data.extend(aa=[1,2,3,4],ab=[[1],[2],[3],[4]])
+        ndata = data.grep("a")
+        self.assertTrue('aa' in ndata and 'ab' in ndata)
+        self.assert_arraysequal(ndata['ab'],data['ab'])
+        self.assert_arraysequal(ndata['aa'],data['aa'])
+        ndata = data.grep("b")
+        self.assertTrue('aa' not in ndata and 'ab' in ndata)
+        self.assert_arraysequal(ndata['ab'],data['ab'])
+    ##
+    def test_dataset_samplesize(self):
+        """ Dataset.samplesize """
+        data = Dataset()
+        data.extend(aa=[1,2,3,4],ab=[[1],[2],[3]])
+        self.assertEqual(data.samplesize,3)
+    ##
+    def test_dataset_trim(self):
+        """ Dataset.trim """
+        data = Dataset()
+        data.append(a=1,b=10)
+        data.append(a=2,b=20)
+        data.append(a=3)
+        ndata = data.trim()
+        self.assertEqual(ndata.samplesize,2)
+        self.assert_arraysequal(ndata['a'],[1,2])
+        self.assert_arraysequal(ndata['b'],[10,20])
+    def test_dataset_array(self):
+        data = Dataset()
+        data.extend(a=[1,2,3], b=[10,20,30])
+        a = data.array([['a'], ['b']])
+        self.assert_arraysequal(a, [[[1],[10]],[[2],[20]],[[3],[30]]])
+        with self.assertRaises(ValueError):
+            data.append(a=4)
+            a = data.array(['a','b'])
+    ##
     def test_dataset_bootstrap_iter(self):
         """ bootstrap_iter(data_dict) """
         ## make data ##
@@ -328,7 +373,6 @@ class test_dataset(unittest.TestCase,ArrayTests):
         ##
         ## do bootstrap -- calculate means ##
         bs_mean = Dataset()
-        # print dset
         for ai in bootstrap_iter(dset,N):
             for k in ai:
                 bs_mean.append(k,np.average(ai[k],axis=0))

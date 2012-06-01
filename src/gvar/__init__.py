@@ -60,23 +60,76 @@ variables including:
 import numpy
 
 from ._gvar import *
+gvar = GVarFactory()            # order matters for this statement
+
 from ._svec_smat import *
 from ._bufferdict import BufferDict
 from ._utilities import *
 
 from . import dataset
 
+_GDEV_LIST = []
+    
+def switch_gvar(cov=None):
+    """ Switch :func:`gvar.gvar` to new :class:`gvar.GVarFactory`.
+        
+    :returns: New :func:`gvar.gvar`.
+    """
+    global gvar
+    _GDEV_LIST.append(gvar)
+    gvar = GVarFactory(cov)
+    return gvar
+##
+    
+def restore_gvar():
+    """ Restore previous :func:`gvar.gvar`.
+        
+    :returns: Previous :func:`gvar.gvar`.
+    """
+    global gvar
+    try:
+        gvar = _GDEV_LIST.pop()
+    except IndexError:
+        raise RuntimeError("no previous gvar")
+    return gvar
+##
+    
+def gvar_factory(cov=None):
+    """ Return new function for creating |GVar|\s (to replace 
+    :func:`gvar.gvar`). 
+        
+    If ``cov`` is specified, it is used as the covariance matrix
+    for new |GVar|\s created by the function returned by 
+    ``gvar_factory(cov)``.
+    """
+    return GVarFactory(cov)
+##
+            
+def asgvar(x):
+    """ Return x if it is type |GVar|; otherwise return 'gvar.gvar(x)`."""
+    if isinstance(x,GVar):
+        return x
+    else:
+        return gvar(x)
+##
+
 def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     """ Apply svd cuts to collection of |GVar|\s in ``g``. 
         
     ``g`` is an array of |GVar|\s or a dictionary containing |GVar|\s 
     and/or arrays of |GVar|\s. ``svd(g,...)`` creates a copy of ``g`` 
-    whose |GVar|\s have been modified so that their covariance matrix is
-    less singular than for the original ``g`` (the |GVar| means are unchanged).
-    This is done using an *svd* algorithm which is controlled by three 
-    parameters: ... finish later
+    whose |GVar|\s have been modified so that their covariance matrix is less
+    singular than for the original ``g`` (the |GVar| means are unchanged).
+    This is done using an *svd* algorithm which is controlled by three
+    parameters: ``svdcut``, ``svdnum`` and ``rescale`` (see :class:`gvar.SVD`
+    for details).
                 
-    When argument ``compute_inv=True``, ``svd`` 
+    When argument ``compute_inv=True``, ``svd`` computes a representation
+    for the inverse of the covariance matrix: the sum of the outer product
+    of the vectors ``svd.wgt[i]`` is the inverse of the covariance matrix
+    after *svd* cuts have been applied. ``svd.logdet`` is then the logarithm
+    of determinant of the covariance matrix, and ``svd.svdcorrection`` is
+    a vector of the *svd* corrections to ``g``.
     """
     if hasattr(g,'keys'):
         g = BufferDict(g)
@@ -91,10 +144,11 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
             svd.logdet = numpy.sum(numpy.log(covi) for covi in cov)
             svd.svdcorrection = None
             svd.val = cov
+            svd.vec = None
         ##
         return g
     s = SVD(cov, svdcut=svdcut, svdnum=svdnum, rescale=rescale,
-            compute_delta=compute_inv)
+            compute_delta=True)
     if compute_inv:
         svd.logdet = (0 if s.D is None else 
                       -2*numpy.sum(numpy.log(di) for di in s.D))

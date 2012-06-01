@@ -566,10 +566,19 @@ class Dataset(dict):
                 ans[k] = self[k]
         return ans
     ##
-    def samplesize(self):
-        """ Return (smallest) number of samples for any key."""
+    def trim(self):
+        """ Create new dataset where all entries have same sample size. """
+        ns = self.samplesize
+        ans = Dataset()
+        for k in self:
+            ans[k] = self[k][:ns]
+        return ans
+    ##
+    def _get_samplesize(self):
         return min([len(self[k]) for k in self])
     ##
+    samplesize = property(_get_samplesize,
+                          "Smallest number of samples for any key.")
     def array(self, template):
         """ Construct array of random data repacked according to ``template``.
             
@@ -615,9 +624,9 @@ class Dataset(dict):
         except TypeError:
             raise ValueError("Poorly formed template.")
         shape = numpy.shape(self[template_flat[0]])
-        assert all(   #)
-            (numpy.shape(self[k]) == shape) for k in template_flat[1:]), \
-            "Different shapes for different elements in template."
+        if not all(numpy.shape(self[k]) == shape for k in template_flat[1:]):
+            raise ValueError(           #
+                "Different shapes for different elements in template.")
         ##
         n_sample = shape[0]
         ans_shape = shape[:1] + template_shape + shape[1:]

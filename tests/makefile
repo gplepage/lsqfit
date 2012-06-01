@@ -17,6 +17,8 @@ tests:
 	- $(PYTHON) -m unittest test-gvar
 	#========================================================== bufferdict
 	- $(PYTHON) -m unittest test-bufferdict
+	#============================================================= dataset
+	- $(PYTHON) -m unittest test-dataset
 	#============================================================== lsqfit
 	- $(PYTHON) -m unittest test-lsqfit
 

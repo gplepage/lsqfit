@@ -21,3 +21,6 @@ from gvar import *
 gdev = gvar
 GDev = GVar
 GDevFactory = GVarFactory
+switch_gdev = switch_gvar
+restore_gdev = restore_gvar
+gdev_factory = gvar_factory

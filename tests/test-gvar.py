@@ -273,7 +273,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         global x,y,gvar
         # NB x.mean < 1 and x.var < 1 and y.var > 1 (assumed below)
         # and powers of 2 important
-        gvar = gvar_factory()
+        gvar = switch_gvar()
         x,y = gvar([0.125,4.],[[0.25,0.0625],[0.0625,1.]])
         # ranseed((1968,1972,1972,1978,1980))
         # random.seed(1952)
@@ -281,9 +281,10 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     ##
     def tearDown(self):
         """ cleanup after tests """
-        global x,y
+        global x,y,gvar
         x = None
         y = None
+        gvar = restore_gvar()
         # if self.label is not None:
         #     print self.label
     ##
@@ -471,6 +472,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     ##
     def test_der(self):
         """ x.der """ 
+        global x,y
         self.assert_arraysequal(x.der,[1.,0.])
         self.assert_arraysequal(y.der,[0.,1.])
         z = x*y**2
@@ -788,6 +790,21 @@ class test_gvar2(unittest.TestCase,ArrayTests):
                 m2 = np.sum(np.outer(wj,wj) for wj in s.decomp(2))
                 self.assert_arraysclose(mat,np.dot(m2,minv))
         ##
+    ##
+    def test_svd(self):
+        """ svd """
+        x = gvar(1,1)
+        dx = gvar(1,1)*1e-2
+        cut = 4e-2
+        for g in [BufferDict({0:x-dx,1:x+dx}),[x-dx,x+dx]]:
+            gm = svd(g,svdcut=cut,rescale=False,compute_inv=True)
+            xm = (gm[1]+gm[0])/2
+            dxm = (gm[1]-gm[0])/2
+            self.assert_gvclose(xm,x)
+            self.assert_gvclose(dxm,gvar(dx.mean,cut**0.5))
+            invcov = sum(np.outer(wi,wi) for wi in svd.wgt)
+            cov = evalcov(gm.flat)
+            self.assert_arraysclose(numpy.dot(cov,invcov),[[1,0],[0,1]])
     ##
     def test_valdervar(self):
         """ valder_var """

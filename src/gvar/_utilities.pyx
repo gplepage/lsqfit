@@ -532,7 +532,8 @@ class SVD(object):
         its eigenvalues. Is ``None`` if ``svdcut<0`` or 
         ``compute_delta==False``.
     """
-    def __init__(self, mat,svdcut=None,svdnum=None,compute_delta=False,rescale=False):
+    def __init__(self, mat,svdcut=None,svdnum=None,compute_delta=False,
+                 rescale=False):
         super(SVD,self).__init__()
         self.svdcut = svdcut
         self.svdnum = svdnum
