@@ -71,9 +71,9 @@ import math, pickle, time
 import gvar
 
 ## add extras and utilities to lsqfit ##
-from ._py_util import empbayes_fit, wavg, decomp_cov
-from ._pyx_util import dot as _util_dot
-from ._pyx_util import multifit, multiminex, gammaQ
+from ._extras import empbayes_fit, wavg
+from ._utilities import dot as _util_dot
+from ._utilities import multifit, multiminex, gammaQ
 from .version import version as __version__
 ##
 
@@ -278,137 +278,89 @@ class nonlinear_fit(object):
         return ans
     ##
     @staticmethod
-    def _unpack_data(data, svdcut, svdnum, prior): 
+    def _unpack_data(data, prior, svdcut, svdnum): 
         """ Unpack data and prior into ``(x,y,prior,fdata)``. 
             
-        This routine unpacks ``data`` into ``x,y,prior,fdata`` 
-        where ``x`` is whatever was in ``data`` (unprocessed), ``y`` is a
-        buffer containing the ``y``\s as |GVar|\s, and ``prior`` is the prior.
+        This routine unpacks ``data`` and ``prior`` into ``x,y,prior,fdata``
+        where ``x`` is the independent data, ``y`` is the fit data, 
+        ``prior`` is the collection of priors for the fit, and ``fdata``
+        contains the information about the data and prior needed for the 
+        fit function. Both ``y`` and ``prior`` are modified to account
+        for *svd* cuts if ``svdcut>0``.
             
-        ``fdata`` is a dictionary containing entries for the ``y``\s (key
-        ``"y"``) and the prior (key ``"prior"``), or for both combined (key
-        ``"all"``) when the two are correlated. Each entry has a vector
-        ``fdata[k].mean`` containing all the corresponding mean values, and an
-        array ``fdata[k].wgt`` of vectors whose outer products when summed
-        reproduce the corresponding inverse covariance matrix. (When the 
-        covariance matrix is diagonal, ``fdata[k].wgt`` is a vector containing
-        the square root of the diagonal elements.)
+        Allowed layouts for ``data`` are: ``x,y,ycov``, ``x,y,ysdev``, 
+        and ``x,y``. 
             
-        SVD cuts, if specified, are applied before forming the
-        ``fdata[k].wgt``\s. In such cases the output ``ydict`` and ``prior``
-        are adjusted to reflect the svd cuts.
-            
-        The logarithm of the determinant of the prior's covariance matrix
-        is also returned as ``fdata['logdet_prior']``.
-            
-        ``data`` is one of: 
-            
-        .. describe:: ``x,y``
-            
-            ``y`` is an array of |GVar|\s that is converted into a
-            flattened ``numpy.ndarray`` containing the mean values. The
-            covariance matrix ``ycov`` is determined using
-            :func:`gvar.evalcov`.
-                
-        .. describe::   ``x,y,ysdev``
-            
-            ``y`` is an array of numbers that is converted into a flattened
-            ``numpy.ndarray``. ``ysdev`` is an array of standard deviations
-            that has the same shape as the input ``y`` array. It is
-            converted into a diagonal ``numpy.ndarray`` covariance matrix
-            ``ycov``.
-            
-        .. describe:: ``x,y,ycov``
-            
-            ``y`` is an array of numbers that is converted into a flattened
-            ``numpy.ndarray``. ``ycov`` is the covariance matrix for the
-            ``y``\s and has shape equal to ``y.shape+y.shape``. It is
-            converted into a two-dimensional ``numpy.ndarray`` for internal
-            processing.
+        Output data in ``fdata`` includes: fit decompositions of ``y`` 
+        (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
+        both together (``fdata["all"]``) if they are correlated. 
+        ``fdata["svdcorrection"]`` contains a list of all *svd* corrections
+        (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
+        the logarithm of the determinant of the prior's covariance matrix.
         """
-        if len(data) not in [2, 3]:
-            raise ValueError("Data tuple wrong length: "+str(len(data)))
-        fdata = dict(svdcorrection=[])
+        ## unpack data tuple ##
         if len(data) == 3:
-            ## data=x,y,ycov => no correlations with priors ##
             x, ym, ycov = data
             ym = numpy.asarray(ym)
             ycov = numpy.asarray(ycov)
             y = gvar.gvar(ym, ycov)
-            if ym.shape == ycov.shape:
-                ycov = ycov.flatten()**2
-            elif ycov.shape == ym.shape + ym.shape:
-                ycov = ycov.reshape((y.size, y.size))
-            else:
-                raise ValueError("y,ycov shapes mismatched: %s %s"
-                                % (ym.shape, ycov.shape))
-            wgt = decomp_cov(ycov, svdcut=svdcut[0], svdnum=svdnum[0])
-            fdata['y'] = _FDATA(mean=ym.flatten(), wgt=wgt)
-            if decomp_cov.svdcorrection is not None:
-                fdata['svdcorrection'] += decomp_cov.svdcorrection.tolist()
-                y.flat += decomp_cov.svdcorrection
-            if prior is not None:
-                ## include prior ##
-                wgt = decomp_cov(gvar.evalcov(prior.flat), svdcut=svdcut[1],
-                                svdnum=svdnum[1])
-                fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat), wgt=wgt)
-                fdata['logdet_prior'] = decomp_cov.logdet
-                if decomp_cov.svdcorrection is not None:
+        elif len(data) == 2:
+            x, y = data
+            y = nonlinear_fit._unpack_gvars(y)
+        else:
+            raise ValueError("data tuple wrong length: "+str(len(data)))
+        ##
+        fdata = dict(svdcorrection=[])
+        if prior is not None:
+            ## have prior ##
+            if len(data) == 3 or gvar.orthogonal(y.flat, prior.flat):
+                ## y uncorrelated with prior ##
+                y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                              rescale=True, compute_inv=True)
+                fdata['y'] = _FDATA(mean=gvar.mean(y.flat), 
+                                    wgt=gvar.svd.wgt)
+                if gvar.svd.svdcorrection is not None:
                     fdata['svdcorrection'] += \
-                        decomp_cov.svdcorrection.tolist()
-                    prior.flat += decomp_cov.svdcorrection
+                        gvar.svd.svdcorrection.tolist()
+                prior = gvar.svd(prior, svdcut=svdcut[0], 
+                                  svdnum=svdnum[0], rescale=True,
+                                  compute_inv=True)
+                fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
+                                        wgt=gvar.svd.wgt)
+                fdata['logdet_prior'] = gvar.svd.logdet
+                if gvar.svd.svdcorrection is not None:
+                    fdata['svdcorrection'] += \
+                        gvar.svd.svdcorrection.tolist()
+                ##
+            else:
+                ## y correlated with prior ##
+                yp = gvar.svd(numpy.concatenate((y.flat, prior.flat)),
+                              svdcut=svdcut[0], svdnum=svdnum[0],
+                              rescale=True, compute_inv=True)
+                fdata['all'] = _FDATA(mean=gvar.mean(yp), 
+                                      wgt=gvar.svd.wgt)
+                if gvar.svd.svdcorrection is not None:
+                    fdata['svdcorrection'] += \
+                        gvar.svd.svdcorrection.tolist()
+                    y.flat += gvar.svd.svdcorrection[:y.size]
+                    prior.flat += gvar.svd.svdcorrection[y.size:]
+                ## log(det(cov_pr)) where cov_pr = prior part of cov ##
+                invcov = numpy.sum(numpy.outer(wi, wi) for wi in gvar.svd.wgt)
+                s = gvar.SVD(invcov[y.size:, y.size:])
+                fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) # minus!
+                                                   for vi in s.val)
+                ##
                 ##
             ##
         else:
-            x, y = data
-            y = nonlinear_fit._unpack_gvars(y)
-            if prior is not None:
-                if gvar.orthogonal(y.flat, prior.flat): 
-                    ## data=x,y and y uncorrelated with prior ##
-                    wgt = decomp_cov(gvar.evalcov(y.flat), svdcut=svdcut[0],
-                                    svdnum=svdnum[0])         
-                    fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=wgt)
-                    if decomp_cov.svdcorrection is not None:
-                        fdata['svdcorrection'] += \
-                            decomp_cov.svdcorrection.tolist()
-                        y.flat += decomp_cov.svdcorrection
-                    wgt = decomp_cov(gvar.evalcov(prior.flat),
-                                     svdcut=svdcut[1], svdnum=svdnum[1])
-                    fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
-                                            wgt=wgt)
-                    fdata['logdet_prior'] = decomp_cov.logdet
-                    if decomp_cov.svdcorrection is not None:
-                        fdata['svdcorrection'] += \
-                            decomp_cov.svdcorrection.tolist()
-                        prior.flat += decomp_cov.svdcorrection
-                    ##
-                else:
-                    ## data=x,y and y correlated with prior ##
-                    yp = numpy.concatenate((y.flat, prior.flat))
-                    wgt = decomp_cov(gvar.evalcov(yp), svdcut=svdcut[0],
-                                    svdnum=svdnum[0])
-                    fdata['all'] = _FDATA(mean=gvar.mean(yp), wgt=wgt)
-                    if decomp_cov.svdcorrection is not None:
-                        fdata['svdcorrection'] += \
-                            decomp_cov.svdcorrection.tolist()
-                        y.flat += decomp_cov.svdcorrection[:y.size]
-                        prior.flat += decomp_cov.svdcorrection[y.size:]
-                    ## log(det(cov_pr)) where cov_pr = prior part of cov ##
-                    invcov = numpy.sum(numpy.outer(wi, wi) for wi in wgt)
-                    dummy = decomp_cov(invcov[y.size:, y.size:])
-                    fdata['logdet_prior'] = -decomp_cov.logdet  # minus!
-                    ##
-                    ##
-            else:
-                ## data=x,y and no prior ##
-                wgt = decomp_cov(gvar.evalcov(y.flat), svdcut=svdcut[0],
-                                svdnum=svdnum[1])         
-                fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=wgt)
-                if decomp_cov.svdcorrection is not None:
-                    fdata['svdcorrection'] += \
-                        decomp_cov.svdcorrection.tolist()
-                    y.flat += decomp_cov.svdcorrection
-                ##
+            ## no prior ##
+            y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                         rescale=True, compute_inv=True)
+            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.wgt)
+            if gvar.svd.svdcorrection is not None:
+                fdata['svdcorrection'] += \
+                    gvar.svd.svdcorrection.tolist()
+            ##
         return x, y, prior, fdata
     ##        
     @staticmethod

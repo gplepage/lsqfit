@@ -72,7 +72,11 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     ``g`` is an array of |GVar|\s or a dictionary containing |GVar|\s 
     and/or arrays of |GVar|\s. ``svd(g,...)`` creates a copy of ``g`` 
     whose |GVar|\s have been modified so that their covariance matrix is
-    less singular (the |GVar| means are unchanged).
+    less singular than for the original ``g`` (the |GVar| means are unchanged).
+    This is done using an *svd* algorithm which is controlled by three 
+    parameters: ... finish later
+                
+    When argument ``compute_inv=True``, ``svd`` 
     """
     if hasattr(g,'keys'):
         g = BufferDict(g)
@@ -98,6 +102,7 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
         svd.svdcorrection = s.delta
         svd.logdet += numpy.sum(numpy.log(vali) for vali in s.val)
         svd.val = s.val
+        svd.vec = s.vec
     if s.delta is not None:
         g.flat += s.delta
     return g

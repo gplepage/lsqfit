@@ -11,4 +11,4 @@ MANIFEST
 dist/
 doc/source/_build/
 .coverage
-src/*/*.c
+src/lsqfit/version.py

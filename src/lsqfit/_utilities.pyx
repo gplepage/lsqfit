@@ -12,7 +12,7 @@
 
 cimport numpy
 cimport cython
-cimport gvar  
+cimport gvar
 
 import gvar
 import numpy
@@ -192,7 +192,7 @@ cdef extern from "gsl/gsl_multimin.h":
 
 ## multifit ## 
 _valder_var = None
-_p_f = None
+_p_f = None 
     
 class multifit(object):
     """ Fitter for nonlinear least-squares multidimensional fits.

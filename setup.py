@@ -48,13 +48,13 @@ ext_modules = [     #
               include_dirs=include_dirs,extra_link_args=extra_link_args),
     Extension("gvar._bufferdict",["src/gvar/_bufferdict.pyx"],libraries=libraries,
               include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("lsqfit._pyx_util",["src/lsqfit/_pyx_util.pyx"],
+    Extension("lsqfit._utilities",["src/lsqfit/_utilities.pyx"],
               libraries=libraries, include_dirs=include_dirs,
               extra_link_args=extra_link_args)
     ]
 
 # packages
-packages = ["lsqfit","gvar"]
+packages = ["gvar","lsqfit"]
 package_dir = {"lsqfit":"src/lsqfit", "gvar":"src/gvar"}
 
 setup(name='lsqfit',

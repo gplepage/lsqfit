@@ -16,7 +16,7 @@
 import numpy
 import gvar
 import lsqfit
-from ._pyx_util import multiminex, gammaQ
+from ._utilities import multiminex, gammaQ
 
 
 def empbayes_fit(z0, fitargs, **minargs): 
@@ -180,36 +180,5 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
     wavg.s = s
     wavg.svdcorrection = svdcorrection
     return ans
-##
-
-def decomp_cov(cov, svdcut=None, svdnum=None):
-    """ Decompose cov into wgt.
-        
-    Note that logdet is the log(det(cov)) after it is modified by 
-    svd cuts, if any.
-    """
-    cov_shape = numpy.shape(cov)
-    svdcorrection = None
-    if len(cov_shape)==1:
-        wgt = cov**(-0.5)
-        decomp_cov.logdet = numpy.sum(numpy.log(covi) for covi in cov)
-    elif numpy.all(cov==numpy.diag(numpy.diag(cov))):
-        cov = numpy.diag(cov)
-        wgt = cov**(-0.5)
-        decomp_cov.logdet = numpy.sum(numpy.log(covi) for covi in cov)
-    else:
-        try:
-            s = gvar.SVD(cov, svdcut=svdcut, svdnum=svdnum,
-                         compute_delta=True, rescale=True)
-            decomp_cov.logdet = -2*numpy.sum(numpy.log(di) for di in s.D)
-        except numpy.linalg.LinAlgError:
-            s = gvar.SVD(cov, svdcut=svdcut, svdnum=svdnum,
-                         compute_delta=True, rescale=False)
-            decomp_cov.logdet = 0.0
-        wgt = s.decomp(-1)[::-1]
-        svdcorrection = s.delta
-        decomp_cov.logdet += numpy.sum(numpy.log(vali) for vali in s.val)
-    decomp_cov.svdcorrection = svdcorrection
-    return wgt
 ##
 
