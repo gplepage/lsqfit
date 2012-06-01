@@ -727,12 +727,12 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(np.max(np.abs((pkmean-ansmean)/pksdev)),0.0,delta=delta)
             self.assertAlmostEqual(np.max(np.abs((pksdev-anssdev)/pksdev)),0.0,delta=delta)
     ##
-    def test_svd(self):
-        """ svd """
+    def test_SVD(self):
+        """ SVD """
         ## non-singular ##
         x,y = gvar([1,1],[1,4])
         cov = evalcov([(x+y)/2**0.5,(x-y)/2**0.5])
-        s = svd(cov)
+        s = SVD(cov)
         e = s.val
         v = s.vec
         k = s.kappa
@@ -748,28 +748,28 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         ##
         ## singular case ##
         cov = evalcov([(x+y)/2**0.5,(x-y)/2**0.5,x,y])
-        s = svd(cov)
+        s = SVD(cov)
         e,v,k = s.val,s.vec,s.kappa
         self.assert_arraysclose(e,[0,0,2.,32.],rtol=1e-6)
         self.assert_arraysclose(sum(np.outer(vi,vi)*ei for ei,vi in zip(e,v)),
                             cov,rtol=1e-6)
-        s = svd(cov,svdcut=1e-4,compute_delta=True)
+        s = SVD(cov,svdcut=1e-4,compute_delta=True)
         e,v,k,d = s.val,s.vec,s.kappa,s.delta
         self.assert_arraysclose(e,[32*1e-4,32*1e-4,2.,32.],rtol=1e-6)
         ncov = sum(np.outer(vi,vi)*ei for ei,vi in zip(e,v))-evalcov(d)
         self.assert_arraysclose(cov,ncov,rtol=1e-6)
-        s = svd(cov,svdnum=2,compute_delta=True)
+        s = SVD(cov,svdnum=2,compute_delta=True)
         e,v,k,d = s.val,s.vec,s.kappa,s.delta
         self.assert_arraysclose(e,[2.,32.],rtol=1e-6)
         self.assertTrue(d is None)
-        s = svd(cov,svdnum=3,svdcut=1e-4,compute_delta=True)
+        s = SVD(cov,svdnum=3,svdcut=1e-4,compute_delta=True)
         e,v,k,d = s.val,s.vec,s.kappa,s.delta
         self.assert_arraysclose(e,[32*1e-4,2.,32.],rtol=1e-6)
         ##
         ## s.delta s.decomp ##
         for rescale in [False,True]:
             mat = [[1.,.25],[.25,2.]]
-            s = svd(mat,rescale=rescale)
+            s = SVD(mat,rescale=rescale)
             if rescale==False:
                 self.assertTrue(s.D is None)
             else:
@@ -777,11 +777,11 @@ class test_gvar2(unittest.TestCase,ArrayTests):
                 self.assert_arraysclose(np.diag(np.dot(diag,np.dot(mat,diag))),
                                     [1.,1.])
             self.assert_arraysclose(mat,np.sum(np.outer(wj,wj) for wj in s.decomp(1)))
-            s = svd(mat,svdcut=0.9,compute_delta=True,rescale=rescale)
+            s = SVD(mat,svdcut=0.9,compute_delta=True,rescale=rescale)
             mout = np.sum(np.outer(wj,wj) for wj in s.decomp(1))
             self.assert_arraysclose(mat+evalcov(s.delta),mout)
             self.assertTrue(not np.allclose(mat,mout))
-            s = svd(mat,rescale=rescale)
+            s = SVD(mat,rescale=rescale)
             minv = np.sum(np.outer(wj,wj) for wj in s.decomp(-1))
             self.assert_arraysclose([[1.,0.],[0.,1.]],np.dot(mat,minv))
             if rescale==False:
@@ -840,274 +840,6 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose((b[1]-b[0]).sdev,1.0)
         self.assert_arraysclose((a[1]-a[0]).sdev,5.0)
     ##   
-##
-
-class test_dataset(unittest.TestCase,ArrayTests):
-    def setUp(self): pass
-    ##
-    def tearDown(self): pass
-    ##
-    def test_bin(self):
-        self.assertEqual(bin_data([1,2,3,4]),[1.5,3.5])
-        self.assert_arraysequal(bin_data([[1,2],[3,4]]),[[2.,3.]])
-        self.assert_arraysequal(bin_data([[[1,2]],[[3,4]]]),[[[2.,3.]]])
-        self.assertEqual(bin_data([1]),[])
-        self.assertEqual(bin_data([1,2,3,4,5,6,7],binsize=3),[2.,5.])
-        data = dict(s=[1,2,3,4],
-                    v=[[1,2],[3,4],[5,6,],[7,8],[9,10]])
-        bd = bin_data(data)
-        self.assertEqual(bd['s'],[1.5,3.5])
-        self.assert_arraysequal(bd['v'],[[2,3],[6,7]])
-        data = dict(s=[1,2,3,4],
-                    v=[[1,2],[3,4],[5,6,],[7,8],[9,10]])
-        bd = bin_data(data,binsize=3)
-        self.assertEqual(bd['s'],[2])
-        self.assert_arraysequal(bd['v'],[[3,4]])
-        with self.assertRaises(ValueError):
-            bd = bin_data([[1,2],[[3,4]]])
-        self.assertEqual(bin_data([]),[])
-        self.assertEqual(bin_data(dict()),Dataset())
-    ##
-    def test_mean(self):
-        self.assertTrue(avg_data([]) is None)
-        self.assertEqual(avg_data(dict()),BufferDict())
-        self.assertEqual(avg_data(dict(s=[],v=[1.,2.])),BufferDict())
-        with self.assertRaises(ValueError):
-            avg_data([1,2,"s"])
-        mean = avg_data([1])
-        self.assertEqual(mean.mean,1.)
-        self.assertEqual(mean.sdev,0.)
-        #
-        mean = avg_data([1,2])
-        self.assertAlmostEqual(mean.mean,1.5)
-        self.assertAlmostEqual(mean.var,sum((vi-1.5)**2 
-                               for vi in [1,2])/4.)
-        #
-        mean = avg_data([1,2],spread=True)
-        self.assertAlmostEqual(mean.mean,1.5)
-        self.assertAlmostEqual(mean.var,sum((vi-1.5)**2 
-                               for vi in [1,2])/2.)
-        #
-        mean = avg_data([1,2],median=True)
-        self.assertAlmostEqual(mean.mean,1.5)
-        self.assertAlmostEqual(mean.var,0.5**2/2.)
-        #
-        mean = avg_data([1,2],median=True,spread=True)
-        self.assertAlmostEqual(mean.mean,1.5)
-        self.assertAlmostEqual(mean.var,0.5**2)
-        #
-        mean = avg_data([1,2,3])
-        self.assertAlmostEqual(mean.mean,2.0)
-        self.assertAlmostEqual(mean.var,sum((vi-2.)**2 
-                               for vi in [1,2,3])/9.)
-        #
-        mean = avg_data([[1],[2],[3]])
-        self.assertAlmostEqual(mean[0].mean,2.0)
-        self.assertAlmostEqual(mean[0].var,sum((vi-2.)**2 
-                               for vi in [1,2,3])/9.)
-        #
-        mean = avg_data([1,2,3],spread=True)
-        self.assertAlmostEqual(mean.mean,2.0)
-        self.assertAlmostEqual(mean.var,sum((vi-2.)**2 
-                               for vi in [1,2,3])/3.)
-        #
-        mean = avg_data([1,2,3],median=True)
-        self.assertAlmostEqual(mean.mean,2.0)
-        self.assertAlmostEqual(mean.var,1./3.)
-        #
-        mean = avg_data([[1],[2],[3]],median=True)
-        self.assertAlmostEqual(mean[0].mean,2.0)
-        self.assertAlmostEqual(mean[0].var,1./3.)
-        #
-        mean = avg_data([1,2,3],median=True,spread=True)
-        self.assertAlmostEqual(mean.mean,2.0)
-        self.assertAlmostEqual(mean.var,1.)
-        #            
-        mean = avg_data([1,2,3,4,5,6,7,8,9],median=True)
-        self.assertAlmostEqual(mean.mean,5)
-        self.assertAlmostEqual(mean.var,3.**2/9.)
-        #            
-        mean = avg_data([1,2,3,4,5,6,7,8,9],median=True,spread=True)
-        self.assertAlmostEqual(mean.mean,5.)
-        self.assertAlmostEqual(mean.var,3.**2)
-        #            
-        mean = avg_data([1,2,3,4,5,6,7,8,9,10],median=True)
-        self.assertAlmostEqual(mean.mean,5.5)
-        self.assertAlmostEqual(mean.var,3.5**2/10.)
-        #            
-        mean = avg_data([1,2,3,4,5,6,7,8,9,10],median=True,spread=True)
-        self.assertAlmostEqual(mean.mean,5.5)
-        self.assertAlmostEqual(mean.var,3.5**2)
-        # 
-        data = dict(s=[1,2,3],v=[[1,1],[2,2],[3,3]])
-        mean = avg_data(data,median=True,spread=True)
-        self.assertAlmostEqual(mean['s'].mean,2.0)
-        self.assertAlmostEqual(mean['s'].var,1.0)
-        self.assertEqual(mean['v'].shape,(2,))
-        self.assert_gvclose(mean['v'],[gvar(2,1),gvar(2,1)])
-    ##
-    def test_dataset_append(self):
-        """ Dataset.append() """
-        data = Dataset()
-        data.append(s=1,v=[10,100])
-        self.assert_arraysequal(data['s'],[1.])
-        self.assert_arraysequal(data['v'],[[10.,100.]])
-        data.append(s=2,v=[20,200])
-        self.assert_arraysequal(data['s'],[1.,2.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-        data.append(dict(s=3,v=[30,300]))
-        self.assert_arraysequal(data['s'],[1.,2.,3.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.],[30.,300.]])
-        data.append('s',4.)
-        self.assert_arraysequal(data['s'],[1.,2.,3.,4.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.],[30.,300.]])
-        data.append('v',[40.,400.])
-        self.assert_arraysequal(data['s'],[1.,2.,3.,4.])
-        self.assert_arraysequal( #
-            data['v'],[[10.,100.],[20.,200.],[30.,300.],[40.,400.]])
-        with self.assertRaises(ValueError):
-            data.append('v',5.)
-        with self.assertRaises(ValueError):
-            data.append('s',[5.])
-        with self.assertRaises(ValueError):
-            data.append('s',"s")
-        with self.assertRaises(ValueError):
-            data.append('v',[[5.,6.]])
-        with self.assertRaises(ValueError):
-            data.append('v',[.1],'s')
-        with self.assertRaises(ValueError):
-            data.append([1.])
-        #
-        data = Dataset()
-        data.append('s',1)
-        self.assertEqual(data['s'],[1.])
-        data = Dataset()
-        data.append(dict(s=1,v=[10,100]))
-        self.assertEqual(data['s'],[1.])
-        self.assert_arraysequal(data['v'],[[10.,100.]])
-    ##
-    def test_dataset_extend(self):
-        """ Dataset.extend """
-        data = Dataset()
-        data.extend(s=[1,2],v=[[10.,100.],[20.,200.]])
-        self.assert_arraysequal(data['s'],[1.,2.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-        data.extend(s=[])
-        self.assert_arraysequal(data['s'],[1.,2.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-        data.extend(s=[3],v=[[30,300]])
-        self.assert_arraysequal(data['s'],[1.,2.,3.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.],[30.,300.]])
-        data.extend('s',[4.])
-        self.assert_arraysequal(data['s'],[1.,2.,3.,4.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.],[30.,300.]])
-        data.extend('v',[[40,400.]])
-        self.assert_arraysequal(data['s'],[1.,2.,3.,4.])
-        self.assert_arraysequal( #
-            data['v'],[[10.,100.],[20.,200.],[30.,300.],[40.,400.]])
-        with self.assertRaises(TypeError):
-            data.extend('s',5.)
-        with self.assertRaises(ValueError):
-            data.extend('v',[5.,6.])
-        with self.assertRaises(ValueError):
-            data.extend('s',"s")
-        with self.assertRaises(ValueError):
-            data.extend('v',[[[5.,6.]]])
-        #
-        with self.assertRaises(ValueError):
-            data.extend('v',[[5,6],[[5.,6.]]])
-        with self.assertRaises(ValueError):
-            data.extend('v',[.1],'s')
-        with self.assertRaises(ValueError):
-            data.extend([1.])
-        #
-        data = Dataset()
-        data.extend(dict(s=[1,2],v=[[10.,100.],[20.,200.]]))
-        self.assert_arraysequal(data['s'],[1.,2.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-        data.extend(dict(s=[3],v=[[30,300]]))
-        self.assert_arraysequal(data['s'],[1.,2.,3.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.],[30.,300.]])
-        data = Dataset()
-        data.extend('s',[1,2])
-        data.extend('v',[[10.,100.],[20.,200.]])
-        self.assert_arraysequal(data['s'],[1.,2.])
-        self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-    ##
-    def test_dataset_init(self):
-        """ Dataset() """
-        fin = ['test-gvar.input1','test-gvar.input2']
-        with open(fin[0],"w") as f:
-            f.write("""
-                # first
-                s 1
-                v 10 100
-                #second
-                s 2
-                v 20 200
-                s 3
-                v 30 300
-                """)  # """
-        with open(fin[1],"w") as f:
-            f.write("""
-                a [[1,10]]
-                a [[2,20]]
-                a [[3,30]]
-                """)  # """
-        data = Dataset(fin[0])
-        self.assertEqual(data['s'],[1,2,3])
-        self.assert_arraysequal(data['v'],[[10,100],[20,200],[30,300]])
-        data = Dataset(fin)
-        self.assertEqual(data['s'],[1,2,3])
-        self.assert_arraysequal(data['v'],[[10,100],[20,200],[30,300]])
-        self.assert_arraysequal(data['a'],[[[1,10]],[[2,20]],[[3,30]]])
-        data = Dataset(fin[0],binsize=2)
-        self.assertEqual(data['s'],[1.5])
-        self.assert_arraysequal(data['v'],[[15,150]])
-        data = Dataset(fin,keys=['s'])
-        self.assertTrue('v' not in data)
-        self.assertTrue('a' not in data)
-        self.assertTrue('s' in data)
-        self.assertEqual(data['s'],[1,2,3])
-        with self.assertRaises(TypeError):
-            data = Dataset("xxx.input1","xxx.input2")
-        os.remove(fin[0])
-        os.remove(fin[1])
-    ##  
-    def test_dataset_toarray(self):
-        data = Dataset()
-        data.extend(s=[1,2],v=[[1,2],[2,3]])
-        data = data.toarray()
-        self.assert_arraysequal(data['s'],[1,2])
-        self.assert_arraysequal(data['v'],[[1,2],[2,3]])
-        self.assertEqual(data['s'].shape,(2,))
-        self.assertEqual(data['v'].shape,(2,2))
-    ##
-    def test_dataset_bootstrap_iter(self):
-        """ Dataset.bootstrap_iter """
-        ## make data ##
-        N = 100
-        a0 = dict(n=gvar(1,1),a=[gvar(2,2),gvar(100,100)])
-        dset = Dataset()
-        for ai in raniter(a0,30):
-            dset.append(ai)
-        a = avg_data(dset)
-        ##
-        ## do bootstrap -- calculate means ##
-        bs_mean = Dataset()
-        for ai in dset.bootstrap_iter(N):
-            for k in ai:
-                bs_mean.append(k,np.average(ai[k],axis=0))
-        a_bs = avg_data(bs_mean,bstrap=True)
-        ##
-        ## 6 sigma tests ##
-        an_mean = a['n'].mean
-        an_sdev = a['n'].sdev
-        self.assertGreater(6*an_sdev/N**0.5,abs(an_mean-a_bs['n'].mean))
-        self.assertGreater(6*an_sdev/N**0.5,abs(an_sdev-a_bs['n'].sdev))
-        ##
-    ##
-
 ##  
           
 if __name__ == '__main__':

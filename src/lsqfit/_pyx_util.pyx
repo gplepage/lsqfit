@@ -12,7 +12,7 @@
 
 cimport numpy
 cimport cython
-cimport gvar
+cimport gvar  
 
 import gvar
 import numpy
@@ -535,7 +535,6 @@ def dot(numpy.ndarray[numpy.double_t,ndim=2] w not None,x):
     return ans
 ##
 ##    
-    
     
     
     

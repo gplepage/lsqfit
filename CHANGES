@@ -48,6 +48,10 @@ The bigger changes include:
 
 - Removed minor bug in lsqfit.wavg (used to ignore svdcut<0).
 
+- Rearranged gvar and lsqfit into packages instead of simple modules. This
+  makes maintenance easier. It also reduces the number of names added to the
+  module space.
+
 - Relocated BufferDict into gvar. BufferDicts can still be constructed from
   dictionaries but no longer directly from arrays. This makes for a cleaner
   data type. BufferDicts are used internally in several of gvar's functions as
@@ -101,11 +105,11 @@ The bigger changes include:
 - Created new options for gvar.gvar arguments: eg, gvar.gvar(["0(1)",(2,1)])
   returns array [gvar(0,1),gvar(2,1)]. 
 
-- Added new tools to gvar.py for handling random samples from distributions.
-  These include functions avg_data(data) and bin_data(data,binsize), as
-  well as class Dataset for collecting random samples (in a dictionary). These
-  additions are meant to supplant the old dataset.py module (which did a
-  lot more, most of which never got used).
+- Added new tools in gvar.dataset for handling random samples from
+  distributions. These include functions avg_data(data) and
+  bin_data(data,binsize), as well as class Dataset for collecting random
+  samples (in a dictionary). These additions are meant to supplant the old
+  dataset.py module (which did a lot more, most of which never got used).
 
 - Internal changes to how the data and covariance matrices are inverted could
   lead to small differences in results, due to roundoff error.

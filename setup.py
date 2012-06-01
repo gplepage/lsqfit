@@ -24,27 +24,50 @@ try:
 except ImportError:
    from distutils.command.build_py import build_py
 import numpy
-import lsqfit__version__
 
-ext_modules = [ 
-    Extension("gvar",["gvar.pyx"],libraries=["gsl","gslcblas"],
-                include_dirs=[numpy.get_include()]), #,extra_link_args=['-framework','vecLib']),
-    Extension("lsqfit_util",["lsqfit_util.pyx"],libraries=["gsl","gslcblas"],
-                include_dirs=[numpy.get_include()]) #,extra_link_args=['-framework','vecLib']),
+LSQFIT_VERSION = '4.2'
+
+# create lsqfit/version.py so lsqfit knows its version number 
+with open("src/lsqfit/version.py","w") as version_file:
+    version_file.write(  #
+        "# File created by lsqfit setup.py\nversion = '%s'\n" 
+        % LSQFIT_VERSION)
+
+# extension modules 
+libraries = ["gsl","gslcblas"]
+include_dirs = [numpy.get_include()]
+extra_link_args = []   # ['-framework','vecLib'] # for Mac OSX
+ext_modules = [     #
+    Extension("gvar._gvar",["src/gvar/_gvar.pyx"],libraries=libraries,
+              include_dirs=include_dirs,extra_link_args=extra_link_args),
+    Extension("gvar._svec_smat",["src/gvar/_svec_smat.pyx"],libraries=libraries,
+              include_dirs=include_dirs,extra_link_args=extra_link_args),
+    Extension("gvar._utilities",["src/gvar/_utilities.pyx"],libraries=libraries,
+              include_dirs=include_dirs,extra_link_args=extra_link_args),
+    Extension("gvar.dataset",["src/gvar/dataset.pyx"],libraries=libraries,
+              include_dirs=include_dirs,extra_link_args=extra_link_args),
+    Extension("gvar._bufferdict",["src/gvar/_bufferdict.pyx"],libraries=libraries,
+              include_dirs=include_dirs,extra_link_args=extra_link_args),
+    Extension("lsqfit._pyx_util",["src/lsqfit/_pyx_util.pyx"],
+              libraries=libraries, include_dirs=include_dirs,
+              extra_link_args=extra_link_args)
     ]
 
-py_modules = [] # ["xxx"]
+# packages
+packages = ["lsqfit","gvar"]
+package_dir = {"lsqfit":"src/lsqfit", "gvar":"src/gvar"}
 
 setup(name='lsqfit',
-    version=lsqfit__version__.__version__,
+    version=LSQFIT_VERSION,
     description='Utilities for nonlinear least-squares fits.',
     author='G. Peter Lepage',
     author_email='g.p.lepage@cornell.edu',
     license='GPLv3',
-    py_modules = ['lsqfit','lsqfit__version__'],
-    ext_modules = ext_modules,
-    cmdclass = {'build_ext':build_ext,'build_py':build_py},
-    requires = ["cython (>=0.14)","numpy (>=1.0)","gsl (>=1.8)"],
+    packages=packages,
+    package_dir=package_dir,
+    ext_modules=ext_modules,
+    cmdclass={'build_ext':build_ext,'build_py':build_py},
+    requires=["cython (>=0.14)","numpy (>=1.0)"],
     url="http://pypi.python.org/pypi",
     long_description="""\
     The modules defined here are designed to facilitate least-squares

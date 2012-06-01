@@ -1,4 +1,4 @@
-# Copyright (c) 2011 G. Peter Lepage.
+# Copyright (c) 2012 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,9 +38,3 @@ cdef class smat:
     cpdef svec dot(self,svec)
     cpdef double expval(self,svec)
     cpdef numpy.ndarray[numpy.double_t,ndim=2] toarray(self)
-
-cdef class GVar:
-    cdef double v   
-    cdef svec d      
-    cdef readonly smat cov  
-    cpdef GVar clone(self)

@@ -1,7 +1,21 @@
-- nonlinear_fit.format is irritating with its nline. Replace with a verbose flag? Rather keep nline (set to 100, say), but use the verbose flag to 
+Things we want to think about:
+- create a new gvar function svd(array/dict of GVars and/or arrays of GVars)
+  that applies svd cuts to the GVars in the array/dict. It would give the
+  collection a conditioned covariance without losing the relationships between
+  the collection and other GVars --- as is done in lsqfit. This way svd cuts
+  could be applied separately from lsqfit to collections like y data or
+  priors. When would we use this? Could lsqfit be reexpressed in terms of this
+  (probably not since it wants the wgts, although svd could save the wgts in
+  case they were needed.) Need to deal with name conflict. Maybe current svd
+  is svd_mat and this svd is simply svd. Might want to implement this in a
+  python module (not cython).
+
+
+Not Clear we want to do them:
+- nonlinear_fit.format is irritating with its maxline. Replace with a verbose flag? Rather keep maxline (set to 100, say), but use the verbose flag to 
 indicate whether to print or not. Default for verbose should be what?
 
-- do more extensive testing of exceptions in lsqfit using unittest's easy framework (with self.assertRaises(ValueError):  stmt). Should be able to get the 92% (missing 44 statements) coverage closer to 100%.
+- do more extensive testing of exceptions in lsqfit using unittest's easy framework (with self.assertRaises(ValueError):  stmt). Should be able to get the 92% (missing 39 statements) coverage closer to 100%.
 
 - simplify the unittests. Get away from the complicated loops over many variations and simply list variations one at a time --- code easier to read and also easier to figure out which variation failed if not using loops (most important reason).
 

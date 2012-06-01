@@ -26,7 +26,7 @@ import numpy as np
 import gvar as gv
 from lsqfit import *
 
-FAST = True         # skips embayes and bootstrap tests
+FAST = False         # skips embayes and bootstrap tests
 
 nonlinear_fit.fmt_parameter='%12.3f +- %8.3f'
 nonlinear_fit.fmt_prior='(%8.2f +- %8.2f)'
@@ -322,7 +322,7 @@ class test_lsqfit(unittest.TestCase):
             def evfcn(p):
                 return {0:np.average(p**2)} # [p[k]**2 for k in p])
             ##
-            bs_ans = gv.Dataset()
+            bs_ans = gv.dataset.Dataset()
             nbs = 1000/5
             fit_iter = fit.bootstrap_iter(n=None if use_dlist else nbs,
                         datalist=(((None,yb) for yb in gv.bootstrap_iter(y,nbs))
@@ -330,7 +330,7 @@ class test_lsqfit(unittest.TestCase):
             for bfit in fit_iter:
                 if bfit.error is None:
                     bs_ans.append(evfcn(bfit.pmean))
-            bs_ans = gv.avg_data(bs_ans,median=True,spread=True)[0]
+            bs_ans = gv.dataset.avg_data(bs_ans,median=True,spread=True)[0]
             target_ans = wavg([avg(y),avg(p**2)]) if p is not None else avg(y)
             fit_ans = avg(fit.p**2)
             rtol = 10.*fit_ans.sdev/nbs**0.5  # 10 sigma
