@@ -1,26 +1,27 @@
 """ Introduction 
 ------------
-This module contains tools for nonlinear least-squares curve fitting of data.
-In general a fit has four inputs:
+This package contains tools for nonlinear least-squares curve fitting of 
+data. In general a fit has four inputs:
         
     1) The dependent data ``y`` that is to be fit --- typically ``y`` 
        is a Python dictionary in an :mod:`lsqfit` analysis. Its values
        ``y[k]`` are either |GVar|\s or arrays (any shape or dimension) of
-       |GVar|\s that specify the values of the dependent variables and their
-       errors.
+       |GVar|\s that specify the values of the dependent variables 
+       and their errors.
        
-    2) A collection ``x`` of independent data --- ``x`` can have any structure 
-       or it can be ``None``.
+    2) A collection ``x`` of independent data --- ``x`` can have any 
+       structure or it can be ``None``.
        
-    3) A fit function ``f(x,p)`` whose parameters ``p`` are adjusted by the fit 
-       until ``f(x,p)`` equals ``y`` to within ``y``\s errors --- parameters
-       ``p`` are usually specified by a dictionary whose values ``p[k]`` are
-       individual parameters or (:mod:`numpy`) arrays of parameters.
+    3) A fit function ``f(x,p)`` whose parameters ``p`` are adjusted by 
+       the fit until ``f(x,p)`` equals ``y`` to within ``y``\s errors 
+       --- parameters `p`` are usually specified by a dictionary whose 
+       values ``p[k]`` are individual parameters or (:mod:`numpy`) 
+       arrays of parameters.
        
-    4) Initial estimates or *priors* for each parameter in ``p`` --- priors are
-       usually specified using a dictionary ``prior`` whose values
-       ``prior[k]`` are |GVar|\s or arrays of |GVar|\s that give initial
-       estimates (values and errors) for parameters ``p[k]``.
+    4) Initial estimates or *priors* for each parameter in ``p`` 
+       --- priors are usually specified using a dictionary ``prior`` 
+       whose values ``prior[k]`` are |GVar|\s or arrays of |GVar|\s that 
+       give initial estimates (values and errors) for parameters ``p[k]``.
        
 A typical code sequence has the structure::
         
@@ -37,15 +38,17 @@ The parameters ``p[k]`` are varied until the ``chi**2`` for the fit is
 minimized.
     
 The best-fit values for the parameters are recovered after fitting 
-using, for example, ``p=fit.p``. Then the ``p[k]`` are |GVar|\s or arrays 
-of |GVar|\s that give best-fit estimates and fit uncertainties in those 
-estimates. The ``print(fit)`` statement prints a summary of the fit results.
+using, for example, ``p=fit.p``. Then the ``p[k]`` are |GVar|\s or 
+arrays of |GVar|\s that give best-fit estimates and fit uncertainties 
+in those estimates. The ``print(fit)`` statement prints a summary of 
+the fit results.
     
-The dependent variable ``y`` above could be an array instead of a dictionary, 
-which is less flexible in general but possibly more convenient in simpler fits.
-Then the approximate ``y`` returned by fit function ``f(x,p)`` must be an
-array with the same shape as the dependent variable. The prior ``prior`` 
-could also be represented by an array instead of a dictionary.
+The dependent variable ``y`` above could be an array instead of a 
+dictionary, which is less flexible in general but possibly more 
+convenient in simpler fits. Then the approximate ``y`` returned by fit
+function ``f(x,p)`` must be an array with the same shape as the dependent
+variable. The prior ``prior`` could also be represented by an array 
+instead of a dictionary.
     
 The :mod:`lsqfit` tutorial contains extended explanations and examples.
 """
@@ -180,11 +183,11 @@ class nonlinear_fit(object):
         cpu_time = time.clock()
         ##
         ## unpack prior,data,fcn,p0 to reconfigure for multifit ## 
-        prior = self._unpack_gvars(self.prior)
+        prior = _unpack_gvars(self.prior)
         if (debug and prior is not None and
             not all(isinstance(pri,gvar.GVar) for pri in prior.flat)):
             raise TypeError("Priors must be GVars.")
-        x, y, prior, fdata = self._unpack_data(
+        x, y, prior, fdata = _unpack_data( #
             data=self.data, prior=prior, svdcut=self.svdcut, 
             svdnum=self.svdnum)  
         self.x = x 
@@ -198,13 +201,12 @@ class nonlinear_fit(object):
             self.descr = " (no prior)"
         else:
             self.descr = ""
-        self.p0 = self._unpack_p0(p0=self.p0, p0file=self.p0file,
-                                  prior=self.prior)
+        self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
-        fcn = self._unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y)
+        fcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y)
         ##
         ## create fit function chiv for multifit ## 
-        self._chiv = nonlinear_fit._build_chiv(x=x, fdata=fdata, fcn=fcn)
+        self._chiv = _build_chiv(x=x, fdata=fdata, fcn=fcn)
         self._chivw = self._chiv.chivw
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
@@ -226,13 +228,13 @@ class nonlinear_fit(object):
                 v = self._chiv(p)
                 vw = self._chivw(p)
                 if nf != len(v) or nchivw != len(vw):
-                    raise RuntimeError(
+                    raise RuntimeError( #
                     "Internal error, len(chiv) or len(chivw): (%s,%s) (%s,%s)"
                     %(len(v), nf, len(vw), nchivw))
         ##
         ## do the fit and save results ## 
         fit = multifit(p0, nf, self._chiv, **self.fitterargs)
-        self.pmean = self._reformat(self.p0, fit.x.flat)
+        self.pmean = _reformat(self.p0, fit.x.flat)
         self.error = fit.error
         self.cov = fit.cov
         self.chi2 = numpy.sum(fit.f**2)
@@ -240,8 +242,8 @@ class nonlinear_fit(object):
         self.nit = fit.nit
         self._p = None          # lazy evaluation
         self._palt = None       # lazy evaluation
-        self.psdev = self._reformat(self.p0, [covii**0.5 
-                                    for covii in self.cov.diagonal()])
+        self.psdev = _reformat(self.p0, [covii**0.5 
+                               for covii in self.cov.diagonal()])
         ## compute logGBF ## 
         if 'logdet_prior' not in fdata: 
             self.logGBF = None
@@ -262,309 +264,6 @@ class nonlinear_fit(object):
     def __str__(self): 
         return self.format()
     ##
-    @staticmethod
-    def _reformat(p, buf):
-        """ Transfer format of ``p`` to data in 1-d array ``buf``. """
-        assert numpy.ndim(buf)==1,"Buffer ``buf`` must be 1-d."
-        if hasattr(p,'keys'):
-            ans = gvar.BufferDict(p)
-            assert ans.size == len(buf), \
-                "p,buf size mismatch: %d,%d"%(ans.size,len(buf))
-            ans = BufferDict(ans, buf=buf)
-        else:
-            assert numpy.size(p) == len(buf), \
-                "p,buf size mismatch: %d,%d"%(numpy.size(p), len(buf))
-            ans = numpy.array(buf).reshape(numpy.shape(p))
-        return ans
-    ##
-    @staticmethod
-    def _unpack_data(data, prior, svdcut, svdnum): 
-        """ Unpack data and prior into ``(x,y,prior,fdata)``. 
-            
-        This routine unpacks ``data`` and ``prior`` into ``x,y,prior,fdata``
-        where ``x`` is the independent data, ``y`` is the fit data, 
-        ``prior`` is the collection of priors for the fit, and ``fdata``
-        contains the information about the data and prior needed for the 
-        fit function. Both ``y`` and ``prior`` are modified to account
-        for *svd* cuts if ``svdcut>0``.
-            
-        Allowed layouts for ``data`` are: ``x,y,ycov``, ``x,y,ysdev``, 
-        and ``x,y``. In the last case, ``y`` can be either an array of 
-        |GVar|\s or a dictionary whose values are |GVar|\s or arrays of
-        |GVar|\s.
-            
-        Output data in ``fdata`` includes: fit decompositions of ``y`` 
-        (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
-        both together (``fdata["all"]``) if they are correlated. 
-        ``fdata["svdcorrection"]`` contains a list of all *svd* corrections
-        (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
-        the logarithm of the determinant of the prior's covariance matrix.
-        """
-        ## unpack data tuple ##
-        if len(data) == 3:
-            x, ym, ycov = data
-            ym = numpy.asarray(ym)
-            ycov = numpy.asarray(ycov)
-            y = gvar.gvar(ym, ycov)
-        elif len(data) == 2:
-            x, y = data
-            y = nonlinear_fit._unpack_gvars(y)
-        else:
-            raise ValueError("data tuple wrong length: "+str(len(data)))
-        ##
-        fdata = dict(svdcorrection=[])
-        if prior is not None:
-            ## have prior ##
-            if len(data) == 3 or gvar.orthogonal(y.flat, prior.flat):
-                ## y uncorrelated with prior ##
-                y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
-                             rescale=True, compute_inv=True)
-                fdata['y'] = _FDATA(mean=gvar.mean(y.flat), 
-                                    wgt=gvar.svd.inv_wgt)
-                if gvar.svd.correction is not None:
-                    fdata['svdcorrection'] += \
-                        gvar.svd.correction.tolist()
-                prior = gvar.svd(prior, svdcut=svdcut[0], 
-                                  svdnum=svdnum[0], rescale=True,
-                                  compute_inv=True)
-                fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
-                                        wgt=gvar.svd.inv_wgt)
-                fdata['logdet_prior'] = gvar.svd.logdet
-                if gvar.svd.correction is not None:
-                    fdata['svdcorrection'] += \
-                        gvar.svd.correction.tolist()
-                ##
-            else:
-                ## y correlated with prior ##
-                yp = gvar.svd(numpy.concatenate((y.flat, prior.flat)),
-                              svdcut=svdcut[0], svdnum=svdnum[0],
-                              rescale=True, compute_inv=True)
-                fdata['all'] = _FDATA(mean=gvar.mean(yp), 
-                                      wgt=gvar.svd.inv_wgt)
-                if gvar.svd.correction is not None:
-                    fdata['svdcorrection'] += \
-                        gvar.svd.correction.tolist()
-                    y.flat += gvar.svd.correction[:y.size]
-                    prior.flat += gvar.svd.correction[y.size:]
-                ## log(det(cov_pr)) where cov_pr = prior part of cov ##
-                invcov = numpy.sum(numpy.outer(wi, wi) 
-                                   for wi in gvar.svd.inv_wgt)
-                s = gvar.SVD(invcov[y.size:, y.size:])
-                fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) # minus!
-                                                   for vi in s.val)
-                ##
-                ##
-            ##
-        else:
-            ## no prior ##
-            y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
-                         rescale=True, compute_inv=True)
-            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.inv_wgt)
-            if gvar.svd.correction is not None:
-                fdata['svdcorrection'] += \
-                    gvar.svd.correction.tolist()
-            ##
-        return x, y, prior, fdata
-    ##        
-    @staticmethod
-    def _unpack_gvars(g):
-        """ Unpack collection of GVars to BufferDict or numpy array. """
-        if g is not None:
-            g = gvar.gvar(g)
-            if not hasattr(g, 'flat'):
-                g = numpy.asarray(g)
-        return g
-    ##  
-    @staticmethod
-    def _unpack_p0(p0, p0file, prior):
-        """ Create proper p0. """
-        if p0file is not None:
-            ## p0 is a filename; read in values ##
-            try:
-                with open(p0file, "rb") as f:
-                    p0 = pickle.load(f)
-            except (IOError, EOFError):
-                if prior is None:
-                    raise IOError("Can't read parameters from "+p0)
-                else:
-                    p0 = None
-            ##
-        if p0 is not None:
-            ## repackage as BufferDict or numpy array ##
-            if hasattr(p0, 'keys'):
-                p0 = gvar.BufferDict(p0)
-            else:
-                p0 = numpy.array(p0)
-            ##
-        if prior is not None:
-            ## build new p0 from p0, plus the prior as needed ##
-            pp = nonlinear_fit._reformat(prior, buf=[x.mean if x.mean != 0.0 
-                            else x.mean+0.1*x.sdev for x in prior.flat])
-            if p0 is None:
-                p0 = pp
-            else:
-                if pp.shape is not None:
-                    ## pp and p0 are arrays ##
-                    pp_shape = pp.shape
-                    p0_shape = p0.shape
-                    if len(pp_shape)!=len(p0_shape):
-                        raise ValueError(
-                            "p0 and prior shapes incompatible: %s,%s"
-                            % (str(p0_shape), str(pp_shape)))
-                    idx = []
-                    for npp, np0 in zip(pp_shape, p0_shape):
-                        idx.append(slice(0, min(npp, np0)))
-                    idx = tuple(idx)    # overlapping slices in each dir
-                    pp[idx] = p0[idx]
-                    p0 = pp
-                    ##
-                else:
-                    ## pp and p0 are dicts ##
-                    if set(pp.keys()) != set(p0.keys()):
-                        ## mismatch in keys between prior and p0 ## 
-                        raise ValueError("Key mismatch between prior and p0: "
-                                         + ' '.join(str(k) for k in 
-                                         set(prior.keys()) ^ set(p0.keys())))
-                        ##   
-                    ## adjust p0[k] to be compatible with shape of prior[k] ## 
-                    for k in pp:
-                        pp_shape = numpy.shape(pp[k])
-                        p0_shape = numpy.shape(p0[k])
-                        if len(pp_shape)!=len(p0_shape):
-                            raise ValueError("p0 and prior incompatible: "
-                                             +str(k))
-                        if pp_shape == p0_shape:
-                            pp[k] = p0[k]
-                        else:
-                            ## find overlap between p0 and pp ##
-                            pp_shape = pp[k].shape
-                            p0_shape = p0[k].shape
-                            if len(pp_shape)!=len(p0_shape):
-                                raise ValueError(
-                                    "p0 and prior incompatible: "+str(k))
-                            idx = []
-                            for npp, np0 in zip(pp_shape, p0_shape):
-                                idx.append(slice(0, min(npp, np0)))
-                            idx = tuple(idx)    # overlapping slices in each dir
-                            ##
-                            pp[k][idx] = p0[k][idx]
-                    p0 = pp
-                    ##
-                    ##
-            ##
-        if p0 is None:
-            raise ValueError("No starting values for parameters")
-        return p0
-    ##
-    @staticmethod
-    def _unpack_fcn(fcn, p0, y):
-        """ reconfigure fitting fcn so inputs,outputs = flat arrays """
-        if y.shape is not None:
-            if p0.shape is not None:
-                def nfcn(x, p, fcn=fcn, pshape=p0.shape):
-                    po = p.reshape(pshape)
-                    ans = fcn(x, po)
-                    if hasattr(ans, 'flat'):
-                        return ans.flat
-                    else:
-                        return numpy.array(ans).flat
-                ##
-            else:
-                po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
-                def nfcn(x, p, fcn=fcn, po=po):
-                    po.flat = p
-                    ans = fcn(x, po)
-                    if hasattr(ans, 'flat'):
-                        return ans.flat
-                    else:
-                        return numpy.array(ans).flat
-                ##
-        else:
-            yo = BufferDict(y, buf=y.size*[None])
-            if p0.shape is not None:
-                def nfcn(x, p, fcn=fcn, pshape=p0.shape, yo=yo):
-                    po = p.reshape(pshape)
-                    fxp = fcn(x, po)
-                    for k in yo:
-                        yo[k] = fxp[k]
-                    return yo.flat
-                ##
-            else:
-                po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
-                def nfcn(x, p, fcn=fcn, po=po, yo=yo):
-                    po.flat = p
-                    fxp = fcn(x, po)
-                    for k in yo:
-                        yo[k] = fxp[k]
-                    return yo.flat
-                ##
-        return nfcn
-    ##
-    @staticmethod
-    def _build_chiv(x, fdata, fcn):
-        """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
-        if 'all' in fdata:
-            ## y and prior correlated ##
-            def chiv(p, x=x, fcn=fcn, fd=fdata['all']):
-                delta = numpy.concatenate((fcn(x, p), p))-fd.mean
-                return (_util_dot(fd.wgt, delta) if fd.wgt.ndim==2 
-                        else fd.wgt*delta)
-            ##
-            def chivw(p, x=x, fcn=fcn, fd=fdata['all']):
-                delta = numpy.concatenate((fcn(x, p), p))-fd.mean
-                if fd.wgt.ndim == 2:
-                    wgt2 = numpy.sum(numpy.outer(wj, wj) 
-                                    for wj in reversed(fd.wgt))
-                    return _util_dot(wgt2, delta)
-                else:
-                    return fd.wgt*fd.wgt*delta
-            ##
-            chiv.nf = len(fdata['all'].wgt)
-            ##
-        elif 'prior' in fdata:
-            ## y and prior uncorrelated ##
-            def chiv(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
-                ans = []
-                for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
-                            (p-pfd.mean, pfd.wgt)]:
-                    ans.append(_util_dot(w, d) if w.ndim==2 else w*d)
-                return numpy.concatenate(tuple(ans))
-            ##
-            def chivw(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
-                ans = []
-                for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
-                            (p-pfd.mean, pfd.wgt)]:
-                    if w.ndim == 2:
-                        w2 = numpy.sum(numpy.outer(wj, wj) 
-                                       for wj in reversed(w))
-                        ans.append(_util_dot(w2, d))
-                    else:
-                        ans.append(w*w*d)
-                return numpy.concatenate(tuple(ans))
-            ##
-            chiv.nf = len(fdata['y'].wgt)+len(fdata['prior'].wgt)
-            ##
-        else:
-            ## no prior ##
-            def chiv(p, fcn=fcn, fd=fdata['y']):
-                ydelta = fcn(x, p)-fd.mean
-                return (_util_dot(fd.wgt, ydelta) if fd.wgt.ndim==2 
-                        else fd.wgt*ydelta)
-            ##
-            def chivw(p, fcn=fcn, fd=fdata['y']):
-                ydelta = fcn(x, p)-fd.mean
-                if fd.wgt.ndim == 2:
-                    wgt2 = numpy.sum(numpy.outer(wj, wj) 
-                            for wj in reversed(fd.wgt))
-                    return _util_dot(wgt2, ydelta)
-                else:
-                    return fd.wgt*fd.wgt*ydelta
-            ##
-            chiv.nf = len(fdata['y'].wgt)
-            ##
-        chiv.chivw = chivw
-        return chiv
-    ##
     def check_roundoff(self, rtol=0.25, atol=1e-6):
         """ Check for roundoff errors in fit.p.
             
@@ -581,7 +280,7 @@ class nonlinear_fit(object):
     def _getpalt(self):
         """ Alternate version of ``fit.p``; no correlation with inputs  """
         if self._palt is None:
-            self._palt = nonlinear_fit._reformat(self.p0,
+            self._palt = _reformat(self.p0,
                                         gvar.gvar(self.pmean.flat, self.cov))
         return self._palt
     ##
@@ -605,7 +304,7 @@ class nonlinear_fit(object):
         for a in range(D.shape[0]): # der[a] = sum_i D[a,i]*buf[i].der
             p.append(gvar.gvar(pmean[a], gvar.wsum_der(D[a], buf), 
                      buf[0].cov))
-        self._p = nonlinear_fit._reformat(self.p0, p)
+        self._p = _reformat(self.p0, p)
         return self._p
         ##
     ##
@@ -722,8 +421,6 @@ class nonlinear_fit(object):
             return table
         ##
         ## create table comparing fit results to data ## 
-        # data = self.data
-        # x,y,ycov,ydict = self._unpack_data(data)
         x = self.x
         ydict = self.y
         y = gvar.mean(ydict.flat)
@@ -824,8 +521,8 @@ class nonlinear_fit(object):
             else:
                 g = BufferDict(y=y.flat, prior=prior.flat)
                 for gb in gvar.bootstrap_iter(g, n):
-                    yb = nonlinear_fit._reformat(y, buf=gb['y'])
-                    priorb = nonlinear_fit._reformat(prior, buf=gb['prior'])
+                    yb = _reformat(y, buf=gb['y'])
+                    priorb = _reformat(prior, buf=gb['prior'])
                     fit = nonlinear_fit(data=(x,yb), prior=priorb,
                                         p0=self.pmean, **fargs)
                     yield fit
@@ -844,6 +541,312 @@ class nonlinear_fit(object):
     ##
 ##
 
+## components of nonlinear_fit ##
+def _reformat(p, buf):
+    """ Transfer format of ``p`` to data in 1-d array ``buf``. """
+    if numpy.ndim(buf) != 1:
+        raise ValueError("Buffer ``buf`` must be 1-d.")
+    if hasattr(p,'keys'):
+        ans = gvar.BufferDict(p)
+        if ans.size != len(buf):
+            raise ValueError("p,buf size mismatch: %d,%d"%(ans.size,len(buf)))
+        ans = BufferDict(ans, buf=buf)
+    else:
+        if numpy.size(p) != len(buf):
+            raise ValueError(   #
+                "p,buf size mismatch: %d,%d"%(numpy.size(p), len(buf)))
+        ans = numpy.array(buf).reshape(numpy.shape(p))
+    return ans
+##
+    
+def _unpack_data(data, prior, svdcut, svdnum): 
+    """ Unpack data and prior into ``(x,y,prior,fdata)``. 
+        
+    This routine unpacks ``data`` and ``prior`` into ``x,y,prior,fdata``
+    where ``x`` is the independent data, ``y`` is the fit data, 
+    ``prior`` is the collection of priors for the fit, and ``fdata``
+    contains the information about the data and prior needed for the 
+    fit function. Both ``y`` and ``prior`` are modified to account
+    for *svd* cuts if ``svdcut>0``.
+        
+    Allowed layouts for ``data`` are: ``x,y,ycov``, ``x,y,ysdev``, 
+    and ``x,y``. In the last case, ``y`` can be either an array of 
+    |GVar|\s or a dictionary whose values are |GVar|\s or arrays of
+    |GVar|\s.
+        
+    Output data in ``fdata`` includes: fit decompositions of ``y`` 
+    (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
+    both together (``fdata["all"]``) if they are correlated. 
+    ``fdata["svdcorrection"]`` contains a list of all *svd* corrections
+    (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
+    the logarithm of the determinant of the prior's covariance matrix.
+    """
+    ## unpack data tuple ##
+    if len(data) == 3:
+        x, ym, ycov = data
+        ym = numpy.asarray(ym)
+        ycov = numpy.asarray(ycov)
+        y = gvar.gvar(ym, ycov)
+    elif len(data) == 2:
+        x, y = data
+        y = _unpack_gvars(y)
+    else:
+        raise ValueError("data tuple wrong length: "+str(len(data)))
+    ##
+    fdata = dict(svdcorrection=[])
+    if prior is not None:
+        ## have prior ##
+        if len(data) == 3 or gvar.orthogonal(y.flat, prior.flat):
+            ## y uncorrelated with prior ##
+            y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                         rescale=True, compute_inv=True)
+            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), 
+                                wgt=gvar.svd.inv_wgt)
+            if gvar.svd.correction is not None:
+                fdata['svdcorrection'] += \
+                    gvar.svd.correction.tolist()
+            prior = gvar.svd(prior, svdcut=svdcut[0], 
+                              svdnum=svdnum[0], rescale=True,
+                              compute_inv=True)
+            fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
+                                    wgt=gvar.svd.inv_wgt)
+            fdata['logdet_prior'] = gvar.svd.logdet
+            if gvar.svd.correction is not None:
+                fdata['svdcorrection'] += \
+                    gvar.svd.correction.tolist()
+            ##
+        else:
+            ## y correlated with prior ##
+            yp = gvar.svd(numpy.concatenate((y.flat, prior.flat)),
+                          svdcut=svdcut[0], svdnum=svdnum[0],
+                          rescale=True, compute_inv=True)
+            fdata['all'] = _FDATA(mean=gvar.mean(yp), 
+                                  wgt=gvar.svd.inv_wgt)
+            if gvar.svd.correction is not None:
+                fdata['svdcorrection'] += \
+                    gvar.svd.correction.tolist()
+                y.flat += gvar.svd.correction[:y.size]
+                prior.flat += gvar.svd.correction[y.size:]
+            ## log(det(cov_pr)) where cov_pr = prior part of cov ##
+            invcov = numpy.sum(numpy.outer(wi, wi) 
+                               for wi in gvar.svd.inv_wgt)
+            s = gvar.SVD(invcov[y.size:, y.size:])
+            fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) # minus!
+                                               for vi in s.val)
+            ##
+            ##
+        ##
+    else:
+        ## no prior ##
+        y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                     rescale=True, compute_inv=True)
+        fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.inv_wgt)
+        if gvar.svd.correction is not None:
+            fdata['svdcorrection'] += \
+                gvar.svd.correction.tolist()
+        ##
+    return x, y, prior, fdata
+##        
+    
+def _unpack_gvars(g):
+    """ Unpack collection of GVars to BufferDict or numpy array. """
+    if g is not None:
+        g = gvar.gvar(g)
+        if not hasattr(g, 'flat'):
+            g = numpy.asarray(g)
+    return g
+##  
+    
+def _unpack_p0(p0, p0file, prior):
+    """ Create proper p0. """
+    if p0file is not None:
+        ## p0 is a filename; read in values ##
+        try:
+            with open(p0file, "rb") as f:
+                p0 = pickle.load(f)
+        except (IOError, EOFError):
+            if prior is None:
+                raise IOError("Can't read parameters from "+p0)
+            else:
+                p0 = None
+        ##
+    if p0 is not None:
+        ## repackage as BufferDict or numpy array ##
+        if hasattr(p0, 'keys'):
+            p0 = gvar.BufferDict(p0)
+        else:
+            p0 = numpy.array(p0)
+        ##
+    if prior is not None:
+        ## build new p0 from p0, plus the prior as needed ##
+        pp = _reformat(prior, buf=[x.mean if x.mean != 0.0 
+                        else x.mean+0.1*x.sdev for x in prior.flat])
+        if p0 is None:
+            p0 = pp
+        else:
+            if pp.shape is not None:
+                ## pp and p0 are arrays ##
+                pp_shape = pp.shape
+                p0_shape = p0.shape
+                if len(pp_shape)!=len(p0_shape):
+                    raise ValueError(
+                        "p0 and prior shapes incompatible: %s,%s"
+                        % (str(p0_shape), str(pp_shape)))
+                idx = []
+                for npp, np0 in zip(pp_shape, p0_shape):
+                    idx.append(slice(0, min(npp, np0)))
+                idx = tuple(idx)    # overlapping slices in each dir
+                pp[idx] = p0[idx]
+                p0 = pp
+                ##
+            else:
+                ## pp and p0 are dicts ##
+                if set(pp.keys()) != set(p0.keys()):
+                    ## mismatch in keys between prior and p0 ## 
+                    raise ValueError("Key mismatch between prior and p0: "
+                                     + ' '.join(str(k) for k in 
+                                     set(prior.keys()) ^ set(p0.keys())))
+                    ##   
+                ## adjust p0[k] to be compatible with shape of prior[k] ## 
+                for k in pp:
+                    pp_shape = numpy.shape(pp[k])
+                    p0_shape = numpy.shape(p0[k])
+                    if len(pp_shape)!=len(p0_shape):
+                        raise ValueError("p0 and prior incompatible: "
+                                         +str(k))
+                    if pp_shape == p0_shape:
+                        pp[k] = p0[k]
+                    else:
+                        ## find overlap between p0 and pp ##
+                        pp_shape = pp[k].shape
+                        p0_shape = p0[k].shape
+                        if len(pp_shape)!=len(p0_shape):
+                            raise ValueError(
+                                "p0 and prior incompatible: "+str(k))
+                        idx = []
+                        for npp, np0 in zip(pp_shape, p0_shape):
+                            idx.append(slice(0, min(npp, np0)))
+                        idx = tuple(idx)    # overlapping slices in each dir
+                        ##
+                        pp[k][idx] = p0[k][idx]
+                p0 = pp
+                ##
+                ##
+        ##
+    if p0 is None:
+        raise ValueError("No starting values for parameters")
+    return p0
+##
+    
+def _unpack_fcn(fcn, p0, y):
+    """ reconfigure fitting fcn so inputs,outputs = flat arrays """
+    if y.shape is not None:
+        if p0.shape is not None:
+            def nfcn(x, p, fcn=fcn, pshape=p0.shape):
+                po = p.reshape(pshape)
+                ans = fcn(x, po)
+                if hasattr(ans, 'flat'):
+                    return ans.flat
+                else:
+                    return numpy.array(ans).flat
+            ##
+        else:
+            po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
+            def nfcn(x, p, fcn=fcn, po=po):
+                po.flat = p
+                ans = fcn(x, po)
+                if hasattr(ans, 'flat'):
+                    return ans.flat
+                else:
+                    return numpy.array(ans).flat
+            ##
+    else:
+        yo = BufferDict(y, buf=y.size*[None])
+        if p0.shape is not None:
+            def nfcn(x, p, fcn=fcn, pshape=p0.shape, yo=yo):
+                po = p.reshape(pshape)
+                fxp = fcn(x, po)
+                for k in yo:
+                    yo[k] = fxp[k]
+                return yo.flat
+            ##
+        else:
+            po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
+            def nfcn(x, p, fcn=fcn, po=po, yo=yo):
+                po.flat = p
+                fxp = fcn(x, po)
+                for k in yo:
+                    yo[k] = fxp[k]
+                return yo.flat
+            ##
+    return nfcn
+##
+    
+def _build_chiv(x, fdata, fcn):
+    """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
+    if 'all' in fdata:
+        ## y and prior correlated ##
+        def chiv(p, x=x, fcn=fcn, fd=fdata['all']):
+            delta = numpy.concatenate((fcn(x, p), p))-fd.mean
+            return (_util_dot(fd.wgt, delta) if fd.wgt.ndim==2 
+                    else fd.wgt*delta)
+        ##
+        def chivw(p, x=x, fcn=fcn, fd=fdata['all']):
+            delta = numpy.concatenate((fcn(x, p), p))-fd.mean
+            if fd.wgt.ndim == 2:
+                wgt2 = numpy.sum(numpy.outer(wj, wj) 
+                                for wj in reversed(fd.wgt))
+                return _util_dot(wgt2, delta)
+            else:
+                return fd.wgt*fd.wgt*delta
+        ##
+        chiv.nf = len(fdata['all'].wgt)
+        ##
+    elif 'prior' in fdata:
+        ## y and prior uncorrelated ##
+        def chiv(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
+            ans = []
+            for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
+                        (p-pfd.mean, pfd.wgt)]:
+                ans.append(_util_dot(w, d) if w.ndim==2 else w*d)
+            return numpy.concatenate(tuple(ans))
+        ##
+        def chivw(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
+            ans = []
+            for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
+                        (p-pfd.mean, pfd.wgt)]:
+                if w.ndim == 2:
+                    w2 = numpy.sum(numpy.outer(wj, wj) 
+                                   for wj in reversed(w))
+                    ans.append(_util_dot(w2, d))
+                else:
+                    ans.append(w*w*d)
+            return numpy.concatenate(tuple(ans))
+        ##
+        chiv.nf = len(fdata['y'].wgt)+len(fdata['prior'].wgt)
+        ##
+    else:
+        ## no prior ##
+        def chiv(p, fcn=fcn, fd=fdata['y']):
+            ydelta = fcn(x, p)-fd.mean
+            return (_util_dot(fd.wgt, ydelta) if fd.wgt.ndim==2 
+                    else fd.wgt*ydelta)
+        ##
+        def chivw(p, fcn=fcn, fd=fdata['y']):
+            ydelta = fcn(x, p)-fd.mean
+            if fd.wgt.ndim == 2:
+                wgt2 = numpy.sum(numpy.outer(wj, wj) 
+                        for wj in reversed(fd.wgt))
+                return _util_dot(wgt2, ydelta)
+            else:
+                return fd.wgt*fd.wgt*ydelta
+        ##
+        chiv.nf = len(fdata['y'].wgt)
+        ##
+    chiv.chivw = chivw
+    return chiv
+##
+##
 
 ## legacy definitions (obsolete) ##
 BufferDict = gvar.BufferDict
