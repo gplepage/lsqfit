@@ -1,12 +1,19 @@
 lsqfit
 ------
-This directory contains all of the pieces that go into the general
-least-squares fitting package called lsqfit. 
+These packages facilitate least-squares fitting of noisy data by
+multi-dimensional, nonlinear functions of arbitrarily many parameters. The
+central package is :mod:`lsqfit` which provides the fitting capability.
+:mod:`lsqfit` makes heavy use of package :mod:`gvar`, which provides tools for
+the analysis of error propagation, and also for the creation of complicated
+multi-dimensional gaussian distributions. :mod:`lsqfit` supports Bayesian
+priors for the fit parameters, with arbitrarily complicated multidimensional
+gaussian distributions. An tutorial on fitting is included in the
+documentation; documentation is in the doc/ subdirectory (see
+doc/html/index.html for the html version or doc/lsqfit.pdf for a pdf version).
 
-Documentation on how to use the various modules defined here can be found
-in the doc/ subdirectory (see doc/html/index.html for the html version or
-doc/lsqfit.pdf for a pdf version (the html is better)). There are two major
-modules (gvar.so and lsqfit.py) and one utility module (lsqfit_util.so).
+These packages use the Gnu Scientific Library (GSL) to do the fitting, numpy
+for efficient array arithmetic, and cython to compile efficient code that
+interfaces between Python and the C-based GSL.
 
 Information on how to install the various components is in the INSTALLATION
 file.

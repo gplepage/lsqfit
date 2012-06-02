@@ -3,7 +3,7 @@ build in place: python setup.py build_ext --inplace
 install in ddd: python setup.py install --install-lib ddd
 
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011,2012 G. Peter Lepage.
+Copyright (c) 2011-12 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ with open("src/lsqfit/version.py","w") as version_file:
 # extension modules 
 libraries = ["gsl","gslcblas"]
 include_dirs = [numpy.get_include()]
-extra_link_args = []   # ['-framework','vecLib'] # for Mac OSX
+extra_link_args = [] # ['-framework','vecLib'] # for Mac OSX
 ext_modules = [     #
     Extension("gvar._gvar",["src/gvar/_gvar.pyx"],libraries=libraries,
               include_dirs=include_dirs,extra_link_args=extra_link_args),
@@ -67,17 +67,17 @@ setup(name='lsqfit',
     requires=["cython (>=0.14)","numpy (>=1.0)"],
     url="",
     long_description="""\
-    The modules defined here are designed to facilitate least-squares
-    fitting of noisy data by multi-dimensional, nonlinear functions of
-    arbitrarily many parameters. The central module is :mod:`lsqfit` because
-    it provides the fit functions. :mod:`lsqfit` makes heavy use of auxiliary
-    module :mod:`gvar`, which provides tools that facilitate the analysis of
-    error propagation, and also the creation of complicated multi-dimensional
-    gaussian distributions. :mod:`lsqfit` supports Bayesian priors for the fit
-    parameters, with arbitrarily complicated multidimensional gaussian
-    distributions. An tutorial on fitting is included in the documentation.
-    
-    These modules use the Gnu Scientific Library (GSL) to do the fitting,
+    These packages facilitate least-squares fitting of noisy data by
+    multi-dimensional, nonlinear functions of arbitrarily many parameters. The
+    central package is :mod:`lsqfit` which provides the fitting capability.
+    :mod:`lsqfit` makes heavy use of package :mod:`gvar`, which provides tools
+    for the analysis of error propagation, and also for the creation of
+    complicated multi-dimensional gaussian distributions. :mod:`lsqfit`
+    supports Bayesian priors for the fit parameters, with arbitrarily
+    complicated multidimensional gaussian distributions. A tutorial on fitting
+    is included in the documentation.
+
+    These packages use the Gnu Scientific Library (GSL) to do the fitting,
     numpy for efficient array arithmetic, and cython to compile efficient
     interface code.
     """

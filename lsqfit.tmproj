@@ -3,52 +3,32 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>lsqfit.py</string>
+	<string>lsqfit.todo</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>lsqfit.todo</string>
 			<key>lastUsed</key>
-			<date>2012-05-29T01:07:11Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>lsqfit.py</string>
-			<key>lastUsed</key>
-			<date>2012-05-29T20:01:16Z</date>
+			<date>2012-06-01T22:42:14Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
 		<dict>
-			<key>filename</key>
-			<string>lsqfit__version__.py</string>
-			<key>lastUsed</key>
-			<date>2012-05-29T19:59:58Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>gvar.pyx</string>
-			<key>lastUsed</key>
-			<date>2012-05-29T01:07:05Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>gvar.pxd</string>
-			<key>lastUsed</key>
-			<date>2012-05-29T19:59:59Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>lsqfit_util.pyx</string>
-			<key>lastUsed</key>
-			<date>2012-05-29T20:01:16Z</date>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>src</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>src</string>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>gdev.py</string>
 			<key>lastUsed</key>
-			<date>2012-05-29T20:00:01Z</date>
+			<date>2012-06-01T22:42:14Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -197,12 +177,6 @@
 					<string>gvar-setup.py</string>
 					<key>lastUsed</key>
 					<date>2012-05-29T00:32:14Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>lsqfit_util-setup.py</string>
-					<key>lastUsed</key>
-					<date>2012-05-29T00:32:04Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -766,9 +740,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>64</integer>
+				<integer>27</integer>
 				<key>line</key>
-				<integer>3</integer>
+				<integer>25</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -789,119 +763,19 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>gvar.pxd</key>
+		<key>lsqfit.todo</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>17</integer>
+				<integer>20</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-		</dict>
-		<key>gvar.pyx</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>42</integer>
-				<key>line</key>
-				<integer>45</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>lsqfit.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>5</integer>
-				<key>line</key>
-				<integer>257</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>lsqfit.todo</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>170</integer>
-				<key>line</key>
-				<integer>3</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>lsqfit__version__.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>23</integer>
-				<key>line</key>
-				<integer>8</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>lsqfit_util-setup.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>4</integer>
-				<key>line</key>
-				<integer>43</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>lsqfit_util.pyx</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>526</integer>
-			</dict>
-			<key>columnSelection</key>
-			<false/>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>32</integer>
-				<key>line</key>
-				<integer>526</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>526</integer>
-			</dict>
 		</dict>
 		<key>makefile</key>
 		<dict>
@@ -1066,7 +940,6 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>lsqfit.py</string>
 		<string>lsqfit.todo</string>
 		<string>doc/source/lsqfit.rst</string>
 		<string>tests/test-lsqfit.py</string>
@@ -1079,9 +952,7 @@
 		<string>setup.py</string>
 		<string>gvar-setup.py</string>
 		<string>tests/test-gvar.py</string>
-		<string>lsqfit_util-setup.py</string>
 		<string>tests/test-bufferdict.py</string>
-		<string>lsqfit_util.pyx</string>
 		<string>nose-uncovered.py</string>
 		<string>gdev.py</string>
 		<string>doc/source/index.rst</string>
@@ -1100,14 +971,11 @@
 		<string>examples/y-vs-x.py</string>
 		<string>doc/source/eg1.py</string>
 		<string>doc/source/eg2.py</string>
-		<string>lsqfit__version__.py</string>
-		<string>gvar.pyx</string>
 		<string>doc/source/conf.py</string>
-		<string>gvar.pxd</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{31, 67}, {549, 784}}</string>
+	<string>{{34, 69}, {549, 784}}</string>
 </dict>
 </plist>

@@ -15,7 +15,7 @@ Version 4.2 -- 2012-05-20
 =========================
 This version involves significant internal change relative to the last
 version, much of which will be invisible to most users. Significant pieces of
-lsqfit.py and gvar.pyx were refactored for simplicity, with replacements for a
+lsqfit and gvar were refactored for simplicity, with replacements for a
 number of awkward constructions that reflected earlier but now obsolete ideas
 about how the code would be used. A somewhat inconvenient change is the
 renaming of the gdev module to gvar (for "gaussian variable"): every instance
@@ -106,10 +106,10 @@ The bigger changes include:
   returns array [gvar(0,1),gvar(2,1)]. 
 
 - Added new tools in gvar.dataset for handling random samples from
-  distributions. These include functions avg_data(data) and
-  bin_data(data,binsize), as well as class Dataset for collecting random
+  distributions. These include functions avg_data(data), bootstrap_iter(data),
+  and bin_data(data,binsize), as well as class Dataset for collecting random
   samples (in a dictionary). These additions are meant to supplant the old
-  dataset.py module (which did a lot more, most of which never got used).
+  dataset.py module.
 
 - Internal changes to how the data and covariance matrices are inverted could
   lead to small differences in results, due to roundoff error.
@@ -117,7 +117,7 @@ The bigger changes include:
 - nonlinear_fit.check_roundoff() now issues a warning, rather than an error,
   if large roundoff errors are suspected.
 
-- nonlinear_fit.kappa no longer exists. It can be obtained using gvar.svd.
+- nonlinear_fit.kappa no longer exists. It can be obtained using gvar.SVD.
 
 - Documentation streamlined. The Overview and Tutorial section was simplified
   a little, and has a new section on Troubleshooting.

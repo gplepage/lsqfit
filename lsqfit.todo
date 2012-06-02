@@ -1,14 +1,4 @@
 Things we want to think about:
-- create a new gvar function svd(array/dict of GVars and/or arrays of GVars)
-  that applies svd cuts to the GVars in the array/dict. It would give the
-  collection a conditioned covariance without losing the relationships between
-  the collection and other GVars --- as is done in lsqfit. This way svd cuts
-  could be applied separately from lsqfit to collections like y data or
-  priors. When would we use this? Could lsqfit be reexpressed in terms of this
-  (probably not since it wants the wgts, although svd could save the wgts in
-  case they were needed.) Need to deal with name conflict. Maybe current svd
-  is svd_mat and this svd is simply svd. Might want to implement this in a
-  python module (not cython).
 
 
 Not Clear we want to do them:
