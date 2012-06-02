@@ -802,14 +802,16 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             dxm = (gm[1]-gm[0])/2
             self.assert_gvclose(xm,x)
             self.assert_gvclose(dxm,gvar(dx.mean,cut**0.5))
-            invcov = sum(np.outer(wi,wi) for wi in svd.wgt)
+            invcov = sum(np.outer(wi,wi) for wi in svd.inv_wgt)
             cov = evalcov(gm.flat)
             self.assert_arraysclose(numpy.dot(cov,invcov),[[1,0],[0,1]])
+            self.assertAlmostEqual(svd.eigen_range,dx.var)
+            self.assertAlmostEqual(numpy.exp(svd.logdet)/dxm.var*xm.var,4.0)
     ##
-    def test_valdervar(self):
+    def test_valder(self):
         """ valder_var """
         alist = [[1.,2.,3.]]
-        a = valder_var([[1.,2.,3.]])
+        a = valder([[1.,2.,3.]])
         alist = np.array(alist)
         self.assertEqual(np.shape(a),np.shape(alist))
         na = len(alist.flat)

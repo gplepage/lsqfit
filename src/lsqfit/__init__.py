@@ -289,7 +289,9 @@ class nonlinear_fit(object):
         for *svd* cuts if ``svdcut>0``.
             
         Allowed layouts for ``data`` are: ``x,y,ycov``, ``x,y,ysdev``, 
-        and ``x,y``. 
+        and ``x,y``. In the last case, ``y`` can be either an array of 
+        |GVar|\s or a dictionary whose values are |GVar|\s or arrays of
+        |GVar|\s.
             
         Output data in ``fdata`` includes: fit decompositions of ``y`` 
         (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
@@ -316,21 +318,21 @@ class nonlinear_fit(object):
             if len(data) == 3 or gvar.orthogonal(y.flat, prior.flat):
                 ## y uncorrelated with prior ##
                 y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
-                              rescale=True, compute_inv=True)
+                             rescale=True, compute_inv=True)
                 fdata['y'] = _FDATA(mean=gvar.mean(y.flat), 
-                                    wgt=gvar.svd.wgt)
-                if gvar.svd.svdcorrection is not None:
+                                    wgt=gvar.svd.inv_wgt)
+                if gvar.svd.correction is not None:
                     fdata['svdcorrection'] += \
-                        gvar.svd.svdcorrection.tolist()
+                        gvar.svd.correction.tolist()
                 prior = gvar.svd(prior, svdcut=svdcut[0], 
                                   svdnum=svdnum[0], rescale=True,
                                   compute_inv=True)
                 fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
-                                        wgt=gvar.svd.wgt)
+                                        wgt=gvar.svd.inv_wgt)
                 fdata['logdet_prior'] = gvar.svd.logdet
-                if gvar.svd.svdcorrection is not None:
+                if gvar.svd.correction is not None:
                     fdata['svdcorrection'] += \
-                        gvar.svd.svdcorrection.tolist()
+                        gvar.svd.correction.tolist()
                 ##
             else:
                 ## y correlated with prior ##
@@ -338,14 +340,15 @@ class nonlinear_fit(object):
                               svdcut=svdcut[0], svdnum=svdnum[0],
                               rescale=True, compute_inv=True)
                 fdata['all'] = _FDATA(mean=gvar.mean(yp), 
-                                      wgt=gvar.svd.wgt)
-                if gvar.svd.svdcorrection is not None:
+                                      wgt=gvar.svd.inv_wgt)
+                if gvar.svd.correction is not None:
                     fdata['svdcorrection'] += \
-                        gvar.svd.svdcorrection.tolist()
-                    y.flat += gvar.svd.svdcorrection[:y.size]
-                    prior.flat += gvar.svd.svdcorrection[y.size:]
+                        gvar.svd.correction.tolist()
+                    y.flat += gvar.svd.correction[:y.size]
+                    prior.flat += gvar.svd.correction[y.size:]
                 ## log(det(cov_pr)) where cov_pr = prior part of cov ##
-                invcov = numpy.sum(numpy.outer(wi, wi) for wi in gvar.svd.wgt)
+                invcov = numpy.sum(numpy.outer(wi, wi) 
+                                   for wi in gvar.svd.inv_wgt)
                 s = gvar.SVD(invcov[y.size:, y.size:])
                 fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) # minus!
                                                    for vi in s.val)
@@ -356,10 +359,10 @@ class nonlinear_fit(object):
             ## no prior ##
             y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
                          rescale=True, compute_inv=True)
-            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.wgt)
-            if gvar.svd.svdcorrection is not None:
+            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.inv_wgt)
+            if gvar.svd.correction is not None:
                 fdata['svdcorrection'] += \
-                    gvar.svd.svdcorrection.tolist()
+                    gvar.svd.correction.tolist()
             ##
         return x, y, prior, fdata
     ##        
@@ -593,7 +596,7 @@ class nonlinear_fit(object):
         buf = (self.y.flat if self.prior is None else
                 numpy.concatenate((self.y.flat,self.prior.flat)))
         D = numpy.zeros((self.cov.shape[0], len(buf)), float)
-        for i, chivw_i in enumerate(self._chivw(gvar.valder_var(pmean))):
+        for i, chivw_i in enumerate(self._chivw(gvar.valder(pmean))):
             for a in range(D.shape[0]):
                 D[a, i] = chivw_i.dotder(self.cov[a])
         ##

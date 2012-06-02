@@ -29,19 +29,22 @@ variables including:
     
     - ``fmt_errorbudget(g)`` --- create error-budget table for printing
     
-    - ``bin_data(data)`` --- bin random sample data
-    
-    - ``avg_data(data)`` --- estimate means of random sample data
-    
-    - class ``Dataset`` --- class for collecting random sample data
-    
     - class ``BufferDict`` --- ordered dictionary with data buffer
     
     - ``raniter(g,N)`` --- iterator for random numbers
     
     - ``bootstrap_iter(g,N)`` --- bootstrap iterator
     
-    - ``svd(mat)`` --- SVD analysis (esp. for covariance matrices)
+    - ``svd(g)`` --- SVD modification of covariance matrix
+    
+    - ``dataset.bin_data(data)`` --- bin random sample data
+    
+    - ``dataset.avg_data(data)`` --- estimate means of random sample data
+    
+    - ``dataset.bootstrap_iter(data,N)`` --- bootstrap random sample data
+    
+    - class ``dataset.Dataset`` --- class for collecting random sample data
+    
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
@@ -100,7 +103,8 @@ def gvar_factory(cov=None):
         
     If ``cov`` is specified, it is used as the covariance matrix
     for new |GVar|\s created by the function returned by 
-    ``gvar_factory(cov)``.
+    ``gvar_factory(cov)``. Otherwise a new covariance matrix is created
+    internally.
     """
     return GVarFactory(cov)
 ##
@@ -117,19 +121,63 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     """ Apply svd cuts to collection of |GVar|\s in ``g``. 
         
     ``g`` is an array of |GVar|\s or a dictionary containing |GVar|\s 
-    and/or arrays of |GVar|\s. ``svd(g,...)`` creates a copy of ``g`` 
+    and/or arrays of |GVar|\s. ``svd(g,...)`` returns a copy of ``g`` 
     whose |GVar|\s have been modified so that their covariance matrix is less
     singular than for the original ``g`` (the |GVar| means are unchanged).
     This is done using an *svd* algorithm which is controlled by three
     parameters: ``svdcut``, ``svdnum`` and ``rescale`` (see :class:`gvar.SVD`
-    for details).
-                
-    When argument ``compute_inv=True``, ``svd`` computes a representation
-    for the inverse of the covariance matrix: the sum of the outer product
-    of the vectors ``svd.wgt[i]`` is the inverse of the covariance matrix
-    after *svd* cuts have been applied. ``svd.logdet`` is then the logarithm
-    of determinant of the covariance matrix, and ``svd.svdcorrection`` is
-    a vector of the *svd* corrections to ``g``.
+    for more details). *svd* cuts are not applied when the covariance matrix
+    is diagonal (that is, when there are no correlations between different
+    elements of ``g``).
+        
+    The input parameters are :
+        
+    :param g: An array of |GVar|\s or a dicitionary whose values are 
+        |GVar|\s and/or arrays of |GVar|\s.
+    :param svdcut: If positive, replace eigenvalues of the covariance matrix 
+        with ``svdcut*(max eigenvalue)``; if negative, discard eigenmodes with
+        eigenvalues smaller than ``svdcut`` times the maximum eigenvalue. 
+        Default is ``None``.
+    :type svdcut: ``None`` or number ``(|svdcut|<=1)``.
+    :param svdnum: If positive, keep only the modes with the largest 
+        ``svdnum`` eigenvalues; ignore if set to ``None``. Default is
+        ``None``.
+    :type svdnum: ``None`` or int
+    :param rescale: Rescale the input matrix to make its diagonal elements 
+        equal to 1.0 before applying *svd* cuts.
+    :param compute_inv: Compute representation of inverse of covariance matrix
+        if ``True``; the result is stored in ``svd.inv_wgt`` (see below).
+        Default value is ``False``.
+        
+    Data from the *svd* analysis of ``g``'s covariance matrix is stored in
+    ``svd`` itself:
+            
+        - ``svd.val``: eigenvalues of the covariance matrix after *svd* cuts
+          (and after rescaling if ``rescale=True``); the eigenvalues are
+          ordered, with the smallest first;
+        
+        - ``svd.vec``: eigenvectors of the covariance matrix after *svd* cuts
+          (and after rescaling if ``rescale=True``), where ``svd.vec[i]`` is
+          the vector corresponding to ``svd.val[i]``;
+          
+        - ``svd.eigen_range``: ratio of the smallest to largest eigenvalue
+          before *svd* cuts are applied (but after rescaling if
+          ``rescale=True``);
+        
+        - ``svd.D``: diagonal of matrix used to rescale the covariance matrix
+          before applying *svd* cuts (cuts are applied to ``D cov D``) if
+          ``rescale=True``; ``svd.D`` is ``None`` if ``rescale=False``;
+          
+        - ``svd.logdet``: logarithm of the determinant of the covariance 
+          matrix after *svd* cuts are applied;
+          
+        - ``svd.correction``: vector of the *svd* corrections to ``g.flat``;
+        
+        - ``svd.inv_wgt``: the sum of the outer product of vectors 
+          ``inv_wgt[i]`` with themselves equals the inverse of the covariance
+          matrix after *svd* cuts. Only computed if ``compute_inv=True``. 
+          The order of the vectors is reversed relative to ``svd.val`` and 
+          ``svd.vec``
     """
     if hasattr(g,'keys'):
         g = BufferDict(g)
@@ -137,26 +185,30 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
         g = numpy.array(g)
     cov = evalcov(g.flat)
     if numpy.all(cov == numpy.diag(numpy.diag(cov))):
-        ## covariance matrix diagonal => don't change ##
+        ## covariance matrix diagonal => don't change it ##
+        cov = numpy.diag(cov)
         if compute_inv:
-            cov = numpy.diag(cov)
-            svd.wgt = cov**(-0.5)
-            svd.logdet = numpy.sum(numpy.log(covi) for covi in cov)
-            svd.svdcorrection = None
-            svd.val = cov
-            svd.vec = None
+            svd.inv_wgt = cov**(-0.5)
+        svd.logdet = numpy.sum(numpy.log(covi) for covi in cov)
+        svd.correction = None
+        svd.val = sorted(cov)
+        svd.vec = numpy.eye(len(cov))
+        svd.eigen_range = min(cov)/max(cov)
+        svd.D = None
         ##
         return g
     s = SVD(cov, svdcut=svdcut, svdnum=svdnum, rescale=rescale,
             compute_delta=True)
+    svd.logdet = (0 if s.D is None else 
+                  -2*numpy.sum(numpy.log(di) for di in s.D))
+    svd.logdet += numpy.sum(numpy.log(vali) for vali in s.val)
+    svd.correction = s.delta
+    svd.val = s.val
+    svd.vec = s.vec
+    svd.eigen_range = s.kappa
+    svd.D = s.D
     if compute_inv:
-        svd.logdet = (0 if s.D is None else 
-                      -2*numpy.sum(numpy.log(di) for di in s.D))
-        svd.wgt = s.decomp(-1)[::-1]    # reverse order for roundoff
-        svd.svdcorrection = s.delta
-        svd.logdet += numpy.sum(numpy.log(vali) for vali in s.val)
-        svd.val = s.val
-        svd.vec = s.vec
+        svd.inv_wgt = s.decomp(-1)[::-1]    # reverse order for roundoff
     if s.delta is not None:
         g.flat += s.delta
     return g

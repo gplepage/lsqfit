@@ -1,4 +1,4 @@
-from gvar import BufferDict,gvar,sdev,mean
+import gvar as _gvar
 import numpy
 import fileinput
 import re
@@ -25,7 +25,7 @@ def _vec_median(v, spread=False):
         sdev = max(v[im+di]-median,median-v[im-di])
     if not spread:
         sdev = sdev/nv**0.5
-    return gvar(median,sdev)
+    return _gvar.gvar(median,sdev)
 ##
     
 def bin_data(data, binsize=2):
@@ -140,13 +140,13 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     if hasattr(data,'keys'):
         ## data is a dictionary ##
         if not data:
-            return BufferDict()
+            return _gvar.BufferDict()
         newdata = []                    # data repacked as a list of arrays
         i = 0                           # i = measurement number
         lastm = None                    # BufferDict for last measurement
         while i>=0:
             ## iterate over each measurement, building newdata array ##
-            m = BufferDict()
+            m = _gvar.BufferDict()
             for k in data:
                 try:
                     m[k] = data[k][i]
@@ -159,10 +159,10 @@ def avg_data(data, median=False, spread=False, bstrap=False):
                 i += 1
             ##
         if lastm is None:
-            return BufferDict()
+            return _gvar.BufferDict()
         else:
-            return BufferDict(lastm,
-                        buf=avg_data(newdata,median=median,spread=spread))
+            return _gvar.BufferDict(
+                lastm, buf=avg_data(newdata, median=median, spread=spread))
         ##
     ## data is list ## 
     if len(data) == 0:
@@ -187,11 +187,11 @@ def avg_data(data, median=False, spread=False, bstrap=False):
             cov = numpy.cov(data.reshape(data.shape[0],ans.size),
                             rowvar=False,bias=True)
             if ans.size==1:                 # rescale std devs
-                D = sdev(ans)/cov**0.5
+                D = _gvar.sdev(ans)/cov**0.5
             else:
-                D = sdev(ans).reshape(ans.size)/numpy.diag(cov)**0.5 
+                D = _gvar.sdev(ans).reshape(ans.size)/numpy.diag(cov)**0.5 
             cov = ((cov*D).transpose()*D).transpose()
-            return gvar(mean(ans),cov.reshape(ans.shape+ans.shape))
+            return _gvar.gvar(_gvar.mean(ans),cov.reshape(ans.shape+ans.shape))
         ##
     else:
         ## use mean and standard deviation ##
@@ -204,7 +204,7 @@ def avg_data(data, median=False, spread=False, bstrap=False):
             cov = numpy.zeros(means.shape+means.shape,float)
         if cov.shape==() and means.shape==():
             cov = cov**0.5
-        return gvar(means,cov.reshape(means.shape+means.shape))
+        return _gvar.gvar(means,cov.reshape(means.shape+means.shape))
         ##
     ##
 ##

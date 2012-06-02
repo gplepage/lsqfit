@@ -191,7 +191,7 @@ cdef extern from "gsl/gsl_multimin.h":
 ##
 
 ## multifit ## 
-_valder_var = None
+_valder = None
 _p_f = None 
     
 class multifit(object):
@@ -257,7 +257,7 @@ class multifit(object):
     def __init__(self,numpy.ndarray[numpy.double_t,ndim=1] x0,int n,object f, #):
             double reltol=0.0001,double abstol=0.0,unsigned int maxit=1000,
             object alg='lmsder',object analyzer=None):
-        global _valder_var,_p_f
+        global _valder,_p_f
         cdef gsl_multifit_fdfsolver_type *T
         cdef gsl_multifit_fdfsolver *s
         cdef int status,rval
@@ -292,7 +292,7 @@ class multifit(object):
         gf.params = NULL
         old_p_f = _p_f
         _p_f = f
-        _valder_var = gvar.valder_var(p*[0.0])  # workspace
+        _valder = gvar.valder(p*[0.0])  # workspace
         s = gsl_multifit_fdfsolver_alloc(T,n,p)
         x0v = array2vector(x0)
         gsl_multifit_fdfsolver_set(s,&gf,x0v)
@@ -346,9 +346,10 @@ cdef int _c_df(gsl_vector* vx,void* params,gsl_matrix* mJ) except 34:
     global _p_f                                     # python fcn
     cdef gvar.GVar fi
     cdef gvar.svec fi_d
-    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder_var+vector2array(vx))
+    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder+vector2array(vx))
     gsl_matrix_set_zero(mJ)
-    assert len(f[0].cov) == mJ.size2,'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
+    assert len(f[0].cov) == mJ.size2, \
+        'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
     for i in range(mJ.size1):
         fi = f[i]
         fi_d = fi.d
@@ -360,9 +361,10 @@ cdef int _c_fdf(gsl_vector* vx,void* params,gsl_vector* vf,gsl_matrix* mJ) excep
     global _p_f                                     # python fcn
     cdef gvar.GVar fi
     cdef gvar.svec f_i_d
-    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder_var+vector2array(vx))
+    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder+vector2array(vx))
     gsl_matrix_set_zero(mJ)
-    assert len(f[0].cov) == mJ.size2,'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
+    assert len(f[0].cov) == mJ.size2, \
+        'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
     for i in range(mJ.size1):
         fi = f[i]
         fi_d = fi.d

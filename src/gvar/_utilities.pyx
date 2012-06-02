@@ -1,4 +1,4 @@
-import gvar as gv
+import gvar as _gv
 from ._gvar import GVar
 from ._gvar cimport GVar
 
@@ -26,7 +26,7 @@ cdef extern from "math.h":
     double c_atan "atan" (double x)
 
 ## utility functions ##
-def rebuild(g,corr=0.0,gvar=gv.gvar):
+def rebuild(g,corr=0.0,gvar=_gv.gvar):
     """ Rebuild ``g`` stripping correlations with variables not in ``g``.
         
     ``g`` is either an array of |GVar|\s or a dictionary containing |GVar|\s
@@ -351,7 +351,7 @@ def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
 ##
 ##
 
-## bootstrap_iter, raniter, ranseed, svd, valder_var ##
+## bootstrap_iter, raniter, ranseed, svd, valder ##
 def bootstrap_iter(g,n=None,svdcut=None,svdnum=None,rescale=True):
     """ Return iterator for bootstrap copies of ``g``. 
         
@@ -577,9 +577,9 @@ class SVD(object):
                 if val[i]<valmin:
                     if compute_delta:
                         if dely is None:
-                            dely = vec[i]*gv.gvar(0.0,(valmin-val[i])**0.5)
+                            dely = vec[i]*_gv.gvar(0.0,(valmin-val[i])**0.5)
                         else:
-                            dely += vec[i]*gv.gvar(0.0,(valmin-val[i])**0.5)
+                            dely += vec[i]*_gv.gvar(0.0,(valmin-val[i])**0.5)
                     val[i] = valmin
                 else:
                     break
@@ -629,25 +629,33 @@ class SVD(object):
         return w
     ##
 ##        
-def valder_var(vv): 
-    """ Convert array ``vv`` of numbers into an array of |GVar|\s.
+def valder(v): 
+    """ Convert array ``v`` of numbers into an array of |GVar|\s.
         
-    The |GVar|\s created by ``valder_var(vv)`` have means equal to the
-    values ``vv[i]`` and standard deviations of zero. If ``vv`` is
-    one-dimensional, for example, ``valder_var(vv)`` is functionally more
-    or less the same as::
+    The |GVar|\s created by ``valder(v)`` have means equal to the
+    values ``v[i]`` and standard deviations of zero. If ``v`` is
+    one-dimensional, for example, ``valder(v)`` is functionally 
+    equivalent to::
         
-        numpy.array([gvar.gvar(vvi,0.0) for vvi in vv])
+        newgvar = gvar.gvar_factory()
+        numpy.array([newgvar(vi,0.0) for vi in v])
         
-    In general, the shape of the array returned by ``valder_var`` is the
+    The use of ``newgvar`` to create the |GVar|\s means that these variables
+    are incompatible with those created by ``gvar.gvar``. It also means that
+    the vector of derivatives ``x.der`` for any |GVar| ``x`` formed from
+    elements of ``vd = valder(v)`` correspond to derivatives with respect to
+    ``vd``: that is, ``x.der[i]`` is the derivative of ``x`` with respect to
+    ``vd.flat[i]``.
+        
+    In general, the shape of the array returned by ``valder`` is the
     same as that of ``vv``.
     """
     try:
-        vv = numpy.asarray(vv,float)
+        v = numpy.asarray(v,float)
     except ValueError:
-        raise ValueError("Values aren't numbers.")
-    gd = gv.GVarFactory(smat())
-    return gd(vv,vv*0.0)
+        raise ValueError("Bad input.")
+    gv_gvar = _gv.gvar_factory()
+    return gv_gvar(v,numpy.zeros(v.shape,float))
 ##
 ##
 

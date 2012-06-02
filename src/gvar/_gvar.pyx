@@ -446,42 +446,6 @@ cdef class GVar:
 
 
 ## GVar factory functions ##
-# _GDEV_LIST = []
-#     
-# def switch_gvar():
-#     """ Switch :func:`gvar.gvar` to new :class:`gvar.GVarFactory`.
-#         
-#     :returns: New :func:`gvar.gvar`.
-#     """
-#     global gvar
-#     _GDEV_LIST.append(gvar)
-#     gvar = gvar_factory()
-#     return gvar
-# ##
-#     
-# def restore_gvar():
-#     """ Restore previous :func:`gvar.gvar`.
-#         
-#     :returns: Previous :func:`gvar.gvar`.
-#     """
-#     global gvar
-#     try:
-#         gvar = _GDEV_LIST.pop()
-#     except IndexError:
-#         raise RuntimeError("no previous gvar")
-#     return gvar
-# ##
-#     
-# def gvar_factory(cov=None):
-#     """ Return new function for creating |GVar|\s (to replace 
-#     :func:`gvar.gvar`). 
-#         
-#     If ``cov`` is specified, it is used as the covariance matrix
-#     for new |GVar|\s created by the function returned by 
-#     ``gvar_factory(cov)``.
-#     """
-#     return GVarFactory(cov)
-# ##
     
 _GDEVre1 = re.compile(r"([-+]?[0-9]*)[.]([0-9]+)\s*\(([.0-9]+)\)")
 _GDEVre2 = re.compile(r"([-+]?[0-9]+)\s*\(([0-9]*)\)")
@@ -686,17 +650,7 @@ class GVarFactory:
             raise ValueError("Wrong number of arguments: "+str(len(args)))
     ## 
 ##
-    
-# gvar = GVarFactory()
-#             
-# def asgvar(x):
-#     """ Return x if it is type |GVar|; otherwise return 'gvar.gvar(x)`."""
-#     if isinstance(x,GVar):
-#         return x
-#     else:
-#         return gvar(x)
-# ##
-    
+        
 ##   
 
  
