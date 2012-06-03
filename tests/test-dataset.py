@@ -101,7 +101,8 @@ class test_dataset(unittest.TestCase,ArrayTests):
         """ avg_data """
         self.assertTrue(avg_data([]) is None)
         self.assertEqual(avg_data(dict()),BufferDict())
-        self.assertEqual(avg_data(dict(s=[],v=[1.,2.])),BufferDict())
+        with self.assertRaises(ValueError):
+            avg_data(dict(s=[],v=[1.,2.]))
         with self.assertRaises(ValueError):
             avg_data([1,2,"s"])
         mean = avg_data([1])
