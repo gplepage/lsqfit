@@ -142,27 +142,18 @@ def avg_data(data, median=False, spread=False, bstrap=False):
         if not data:
             return _gvar.BufferDict()
         newdata = []                    # data repacked as a list of arrays
-        i = 0                           # i = measurement number
-        lastm = None                    # BufferDict for last measurement
-        while i>=0:
-            ## iterate over each measurement, building newdata array ##
-            m = _gvar.BufferDict()
-            for k in data:
-                try:
-                    m[k] = data[k][i]
-                except IndexError:
-                    i = -1              # stops the while loop
-                    break
-            else:
-                lastm = m
-                newdata.append(m.buf)
-                i += 1
-            ##
-        if lastm is None:
-            return _gvar.BufferDict()
-        else:
-            return _gvar.BufferDict(
-                lastm, buf=avg_data(newdata, median=median, spread=spread))
+        samplesize = min([len(data[k]) for k in data])
+        if samplesize<=0:
+            raise ValueError(   #
+                "Largest consistent sample size is zero --- no data.")
+        bd = _gvar.BufferDict()
+        for k in data:
+            data_k = numpy.asarray(data[k][:samplesize])
+            bd[k] = data_k[0]
+            newdata.append(data_k.reshape(samplesize,-1))
+        newdata = numpy.concatenate(tuple(newdata),axis=1)
+        return _gvar.BufferDict(        #
+            bd, avg_data(newdata, median=median, spread=spread))
         ##
     ## data is list ## 
     if len(data) == 0:

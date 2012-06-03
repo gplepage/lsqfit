@@ -18,9 +18,14 @@ Alias gvar to the old name, gdev. For use with legacy codes only.
 # GNU General Public License for more details.
 
 from gvar import *
+import gvar as _gvar
 gdev = gvar
 GDev = GVar
 GDevFactory = GVarFactory
 switch_gdev = switch_gvar
 restore_gdev = restore_gvar
 gdev_factory = gvar_factory
+
+def rebuild(g, corr=0.0, gdev=gdev):
+    return _gvar.rebuild(g,corr=corr,gvar=gdev)
+##
