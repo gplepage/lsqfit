@@ -1,12 +1,38 @@
 Things we want to think about:
+- test_unpack_data is a little bit out of date. Needs to be rewritten.
 
+- add test_unusual_cases to test for example where y = a single gvar (not
+  an array) and ditto for p. It is good that the code accepts such extreme
+  limits of what it usually gets (I think it is?). Also try case where y
+  has two elements and there is no x, trying to trick it into misreading y
+  as (x,y).
+
+- check documentation more carefully in light of huge rearrangements.
 
 Not Clear we want to do them:
-- nonlinear_fit.format is irritating with its maxline. Replace with a verbose flag? Rather keep maxline (set to 100, say), but use the verbose flag to 
-indicate whether to print or not. Default for verbose should be what?
+- nonlinear_fit.format is irritating with its maxline. Replace with a
+  verbose flag? Rather keep maxline (set to 100, say), but use the verbose
+  flag to indicate whether to print or not. Default for verbose should be
+  what?
 
-- do more extensive testing of exceptions in lsqfit using unittest's easy framework (with self.assertRaises(ValueError):  stmt). Should be able to get the 92% (missing 39 statements) coverage closer to 100%.
+- do more extensive testing of exceptions in lsqfit using unittest's easy
+  framework (with self.assertRaises(ValueError): stmt). Should be able to
+  get the 92% (missing 39 statements) coverage closer to 100%.
 
-- simplify the unittests. Get away from the complicated loops over many variations and simply list variations one at a time --- code easier to read and also easier to figure out which variation failed if not using loops (most important reason).
+- simplify the unittests. Get away from the complicated loops over many
+  variations and simply list variations one at a time --- code easier to
+  read and also easier to figure out which variation failed if not using
+  loops (most important reason).
 
-- Build a more efficient mode for pickling BufferDicts containing GDevs. Current approach reconstructs the GDevs from their means and from their covariance matrix. Using the covariance matrix is suboptimal if there are many GDevs derived from just a few (in which case the covariance matrix can be expressed in a way that is very sparse). Ideally you would find a way to store the sparse matrix, in terms of the underlying variables, and then store the derivatives for each GDev relative to the underlying variables. As I write this it isn't clear that this is indeed more efficient because in many cases we want to pickle a small number of variables that depend upon a much larger number of underlying variables --- in which case we are better off leaving things the way they are. ????? 
+- Build a more efficient mode for pickling BufferDicts containing GDevs.
+  Current approach reconstructs the GDevs from their means and from their
+  covariance matrix. Using the covariance matrix is suboptimal if there are
+  many GDevs derived from just a few (in which case the covariance matrix
+  can be expressed in a way that is very sparse). Ideally you would find a
+  way to store the sparse matrix, in terms of the underlying variables, and
+  then store the derivatives for each GDev relative to the underlying
+  variables. As I write this it isn't clear that this is indeed more
+  efficient because in many cases we want to pickle a small number of
+  variables that depend upon a much larger number of underlying variables
+  --- in which case we are better off leaving things the way they are.
+  ?????

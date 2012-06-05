@@ -1,4 +1,4 @@
-import gvar as _gv
+import gvar as _gvar
 from ._gvar import GVar
 from ._gvar cimport GVar
 
@@ -26,13 +26,14 @@ cdef extern from "math.h":
     double c_atan "atan" (double x)
 
 ## utility functions ##
-def rebuild(g,corr=0.0,gvar=_gv.gvar):
+def rebuild(g,corr=0.0,gvar=_gvar.gvar):
     """ Rebuild ``g`` stripping correlations with variables not in ``g``.
         
-    ``g`` is either an array of |GVar|\s or a dictionary containing |GVar|\s
-    and/or arrays of |GVar|\s. ``rebuild(g)`` creates a new collection 
-    |GVar|\s with the same layout, means and covariance matrix as those 
-    in ``g``, but discarding all correlations with variables not in ``g``. 
+    ``g`` is either an array of |GVar|\s or a dictionary containing
+    |GVar|\s and/or arrays of |GVar|\s. ``rebuild(g)`` creates a new
+    collection |GVar|\s with the same layout, means and covariance matrix
+    as those in ``g``, but discarding all correlations with variables not
+    in ``g``.
         
     If ``corr`` is nonzero, ``rebuild`` will introduce correlations 
     wherever there aren't any using ::
@@ -53,9 +54,9 @@ def rebuild(g,corr=0.0,gvar=_gv.gvar):
     :param corr: Size of correlations to introduce where none exist
         initially.
     :type corr: number
-    :returns: Array or dictionary (gvar.BufferDict) of |GVar|\s  (same layout 
-        as ``g``) where all correlations with variables other than those in 
-        ``g`` are erased.
+    :returns: Array or dictionary (gvar.BufferDict) of |GVar|\s  (same 
+        layout as ``g``) where all correlations with variables other than
+        those in ``g`` are erased.
     """
     cdef numpy.ndarray[numpy.double_t,ndim=2] gcov
     cdef unsigned int i,j,ng
@@ -148,7 +149,7 @@ def var(g):
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 ##
 def orthogonal(g1,g2):
-    """ Return ``True`` if ``g1`` and ``g2`` involve unrelated |GVar|\s
+    """ Return ``True`` if ``g1`` and ``g2`` involve unrelated |GVar|\s.
         
     ``g1`` and ``g2`` can be |GVar|\s, arrays of |GVar|\s, or dictionaries
     containing |GVar|\s or arrays of |GVar|\s.
@@ -457,10 +458,10 @@ def ranseed(seed):
 class SVD(object):
     """ SVD decomposition of a pos. sym. matrix. 
         
-    :class:`SVD` is a function-class that computes the eigenvalues and 
-    eigenvectors of a positive symmetric matrix ``mat``. Eigenvalues that are
-    small (or negative, because of roundoff) can be eliminated or modified 
-    using *svd* cuts. Typical usage is::
+    :class:`SVD` is a function-class that computes the eigenvalues and
+    eigenvectors of a positive symmetric matrix ``mat``. Eigenvalues that
+    are small (or negative, because of roundoff) can be eliminated or
+    modified using *svd* cuts. Typical usage is::
             
         >>> mat = [[1.,.25],[.25,2.]]
         >>> s = SVD(mat)
@@ -516,8 +517,8 @@ class SVD(object):
     ..  attribute:: D
         
         The diagonal matrix used to precondition the input matrix if
-        ``rescale==True``. The matrix diagonalized is ``D M D`` where ``M`` is
-        the input matrix. ``D`` is stored as a one-dimensional vector of
+        ``rescale==True``. The matrix diagonalized is ``D M D`` where ``M``
+        is the input matrix. ``D`` is stored as a one-dimensional vector of
         diagonal elements. ``D`` is ``None`` if ``rescale==False``.
         
     ..  attribute:: kappa 
@@ -577,9 +578,9 @@ class SVD(object):
                 if val[i]<valmin:
                     if compute_delta:
                         if dely is None:
-                            dely = vec[i]*_gv.gvar(0.0,(valmin-val[i])**0.5)
+                            dely = vec[i]*_gvar.gvar(0.0,(valmin-val[i])**0.5)
                         else:
-                            dely += vec[i]*_gv.gvar(0.0,(valmin-val[i])**0.5)
+                            dely += vec[i]*_gvar.gvar(0.0,(valmin-val[i])**0.5)
                     val[i] = valmin
                 else:
                     break
@@ -601,11 +602,11 @@ class SVD(object):
         ##
     ##
     def decomp(self,n=1):
-        """ Compute vector decomposition of input matrix raised to power ``n``.
+        """ Vector decomposition of input matrix raised to power ``n``.
             
-        Computes vectors ``w[j]`` such that
+        Computes vectors ``w[i]`` such that
             
-            mat**n = sum_j numpy.outer(w[j],w[j])
+            mat**n = sum_i numpy.outer(w[i],w[i])
                 
         where ``mat`` is the original input matrix to :class:`svd`. This 
         decomposition cannot be computed if the input matrix was rescaled
@@ -621,7 +622,8 @@ class SVD(object):
                 w[j] *= valj**(n/2.)
         else:
             if n!=1 and n!=-1:
-                raise ValueError("Can't compute decomposition for rescaled matrix.")
+                raise ValueError(           #
+                    "Can't compute decomposition for rescaled matrix.")
             w = numpy.array(self.vec)
             Dfac = self.D**(-n)
             for j,valj in enumerate(self.val):
@@ -640,12 +642,12 @@ def valder(v):
         newgvar = gvar.gvar_factory()
         numpy.array([newgvar(vi,0.0) for vi in v])
         
-    The use of ``newgvar`` to create the |GVar|\s means that these variables
-    are incompatible with those created by ``gvar.gvar``. It also means that
-    the vector of derivatives ``x.der`` for any |GVar| ``x`` formed from
-    elements of ``vd = valder(v)`` correspond to derivatives with respect to
-    ``vd``: that is, ``x.der[i]`` is the derivative of ``x`` with respect to
-    ``vd.flat[i]``.
+    The use of ``newgvar`` to create the |GVar|\s means that these
+    variables are incompatible with those created by ``gvar.gvar``. It also
+    means that the vector of derivatives ``x.der`` for any |GVar| ``x``
+    formed from elements of ``vd = valder(v)`` correspond to derivatives
+    with respect to ``vd``: that is, ``x.der[i]`` is the derivative of
+    ``x`` with respect to ``vd.flat[i]``.
         
     In general, the shape of the array returned by ``valder`` is the
     same as that of ``vv``.
@@ -654,7 +656,7 @@ def valder(v):
         v = numpy.asarray(v,float)
     except ValueError:
         raise ValueError("Bad input.")
-    gv_gvar = _gv.gvar_factory()
+    gv_gvar = _gvar.gvar_factory()
     return gv_gvar(v,numpy.zeros(v.shape,float))
 ##
 ##

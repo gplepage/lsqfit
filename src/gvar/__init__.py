@@ -1,8 +1,8 @@
 """ Correlated gaussian random variables.
     
-Objects of type :class:`gvar.GVar` represent gaussian random variables, which 
-are specified by a mean and standard deviation. They are created using
-:func:`gvar.gvar`: for example, ::
+Objects of type :class:`gvar.GVar` represent gaussian random variables,
+which are specified by a mean and standard deviation. They are created
+using :func:`gvar.gvar`: for example, ::
     
     >>> x = gvar.gvar(0,3)          # 0 +- 3
     >>> y = gvar.gvar(2,4)          # 2 +- 4

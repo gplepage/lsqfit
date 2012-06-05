@@ -71,7 +71,7 @@ import warnings
 import numpy
 import math, pickle, time
 
-import gvar
+import gvar as _gvar
 
 ## add extras and utilities to lsqfit ##
 from ._extras import empbayes_fit, wavg
@@ -91,69 +91,73 @@ class nonlinear_fit(object):
     for example, ::
         
         fit = nonlinear_fit(data=(x,y),fcn=f,prior=prior)   # do fit
-        print(fit)                                          # print fit results
+        print(fit)                               # print fit results
          
     The best-fit values for the parameters are in ``fit.p``, while the
     ``chi**2``, the number of degrees of freedom, the logarithm of Gaussian
-    Bayes Factor, the number of iterations, and the cpu time for the
-    fit are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
-    ``fit.time``, respectively. Results for individual parameters in ``fit.p``
-    are of type |GVar|, and therefore carry information about errors and
-    correlations with other parameters.
+    Bayes Factor, the number of iterations, and the cpu time for the fit
+    are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
+    ``fit.time``, respectively. Results for individual parameters in
+    ``fit.p`` are of type |GVar|, and therefore carry information about
+    errors and correlations with other parameters.
         
     :param data: Fit data consisting of ``(x,y)`` where ``x`` is the 
         independent data that is passed to the fit function, and ``y`` is a
-        dictionary whose values are |GVar|\s or arrays of |GVar|\s specifying
-        the means and covariance matrix for the dependent data (*i.e.*, the
-        data being fit). ``y`` could instead be an array of |GVar|\s, rather
-        than a dictionary. Another format for ``data`` is the 3-tuples
-        ``(x,ymean,ycov)`` (or ``(x,ymean,ysdev)``) where ``ymean`` is an
-        array containing the mean ``y`` values, and ``ycov`` is the
-        corresponding covariance matrix (or ``ysdev`` the corresponding array
-        of standard deviations, if there are no correlations). In this second
-        case, ``ycov.shape`` must equal ``ymean.shape+ymean.shape``.
+        dictionary whose values are |GVar|\s or arrays of |GVar|\s
+        specifying the means and covariance matrix for the dependent data
+        (*i.e.*, the data being fit). ``y`` could instead be an array of
+        |GVar|\s, rather than a dictionary. Another format for ``data`` is
+        the 3-tuples ``(x,ymean,ycov)`` (or ``(x,ymean,ysdev)``) where
+        ``ymean`` is an array containing the mean ``y`` values, and
+        ``ycov`` is the corresponding covariance matrix (or ``ysdev`` the
+        corresponding array of standard deviations, if there are no
+        correlations). In this second case, ``ycov.shape`` must equal
+        ``ymean.shape+ymean.shape``.
     :type data: 2-tuple or 3-tuple
     :param fcn: Fit function ``fcn(x,p)`` of the independent data ``x`` and
-        the parameters ``p``. The function should return approximations to the
-        ``y`` data in the same format used for ``y`` in ``data=(x,y)``
-        (*i.e.*, a dictionary or array). Fit parameters are stored in ``p``,
-        which is either a dictionary, where ``p[k]`` is a single parameter or 
-        an array of parameters (any shape), or an array of parameters.
+        the parameters ``p``. The function should return approximations to
+        the ``y`` data in the same format used for ``y`` in ``data=(x,y)``
+        (*i.e.*, a dictionary or array). Fit parameters are stored in
+        ``p``, which is either a dictionary, where ``p[k]`` is a single
+        parameter or an array of parameters (any shape), or an array of
+        parameters.
     :type fcn: function
-    :param prior: A dictionary (or array) containing *a priori* estimates for 
-        all parameters ``p`` used by fit function ``fcn(x,p)``. Fit parameters
-        ``p`` are stored in a dictionary (or array) with the same keys and
-        structure (or shape) as ``prior``. The default value is ``None``;
-        ``prior`` must be defined if ``p0`` is ``None``.
+    :param prior: A dictionary (or array) containing *a priori* estimates 
+        for all parameters ``p`` used by fit function ``fcn(x,p)``. Fit
+        parameters ``p`` are stored in a dictionary (or array) with the
+        same keys and structure (or shape) as ``prior``. The default value
+        is ``None``; ``prior`` must be defined if ``p0`` is ``None``.
     :type prior: dictionary, array, or ``None``
     :param p0: Starting values for fit parameters in fit. p0 should be a
-        dictionary with the same keys and structure as ``prior`` (or an array
-        of the same shape if ``prior`` is an array). If ``p0`` is a string, it
-        is taken as a file name and :class:`lsqfit.nonlinear_fit` attempts 
-        to read starting values from that file; best-fit parameter values are
-        written out to the same file after the fit (for priming future fits).
-        If ``p0`` is ``None`` or the attempt to read the file fails, starting
-        values are extracted from the prior. The default value is ``None``;
-        ``p0`` must be defined if ``prior`` is ``None``.
+        dictionary with the same keys and structure as ``prior`` (or an
+        array of the same shape if ``prior`` is an array). If ``p0`` is a
+        string, it is taken as a file name and
+        :class:`lsqfit.nonlinear_fit` attempts to read starting values from
+        that file; best-fit parameter values are written out to the same
+        file after the fit (for priming future fits). If ``p0`` is ``None``
+        or the attempt to read the file fails, starting values are
+        extracted from the prior. The default value is ``None``; ``p0``
+        must be defined if ``prior`` is ``None``.
     :type p0: dictionary, array, string or ``None``
     :param svdcut: If positive, eigenvalues of the (rescaled) ``y`` 
-        covariance matrix that are smaller than ``svdcut`` times the maximum
-        eigenvalue are replaced by ``svdcut`` times the maximum eigenvalue. If
-        negative, eigenmodes with eigenvalues smaller than ``|svdcut|`` times
-        the largest eigenvalue are discarded. If zero or ``None``, the
-        covariance matrix is left unchanged. If ``svdcut`` is a 2-tuple, the
-        first entry is ``svdcut`` for the ``y`` covariance matrix and the
-        second entry is ``svdcut`` for the prior's covariance matrix.
+        covariance matrix that are smaller than ``svdcut`` times the
+        maximum eigenvalue are replaced by ``svdcut`` times the maximum
+        eigenvalue. If negative, eigenmodes with eigenvalues smaller than
+        ``|svdcut|`` times the largest eigenvalue are discarded. If zero or
+        ``None``, the covariance matrix is left unchanged. If ``svdcut`` is
+        a 2-tuple, the first entry is ``svdcut`` for the ``y`` covariance
+        matrix and the second entry is ``svdcut`` for the prior's
+        covariance matrix.
     :type svdcut: ``None`` or ``float`` or 2-tuple
     :param svdnum: If positive, at most ``svdnum`` eigenmodes of the 
         (rescaled) ``y`` covariance matrix are retained; the modes with the
         smallest eigenvalues are discarded. ``svdnum`` is ignored if set to
         ``None``. If ``svdnum`` is a 2-tuple, the first entry is ``svdnum``
-        for the ``y`` covariance matrix and the second entry is ``svdnum`` for
-        the prior's covariance matrix.
+        for the ``y`` covariance matrix and the second entry is ``svdnum``
+        for the prior's covariance matrix.
     :type svdnum: ``None`` or ``int`` or 2-tuple
-    :param debug: Set to ``True`` for extra debugging of the fit function and
-        a check for roundoff errors. (Default is ``False``.)
+    :param debug: Set to ``True`` for extra debugging of the fit function
+        and a check for roundoff errors. (Default is ``False``.)
     :type debug: boolean
     :param fitterargs: Dictionary of arguments passed on to 
         :class:`lsqfit.multifit`, which does the fitting.
@@ -185,7 +189,7 @@ class nonlinear_fit(object):
         ## unpack prior,data,fcn,p0 to reconfigure for multifit ## 
         prior = _unpack_gvars(self.prior)
         if (debug and prior is not None and
-            not all(isinstance(pri,gvar.GVar) for pri in prior.flat)):
+            not all(isinstance(pri,_gvar.GVar) for pri in prior.flat)):
             raise TypeError("Priors must be GVars.")
         x, y, prior, fdata = _unpack_data( #
             data=self.data, prior=prior, svdcut=self.svdcut, 
@@ -203,10 +207,10 @@ class nonlinear_fit(object):
             self.descr = ""
         self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
-        fcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y)
+        flatfcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y, x=self.x)
         ##
         ## create fit function chiv for multifit ## 
-        self._chiv = _build_chiv(x=x, fdata=fdata, fcn=fcn)
+        self._chiv = _build_chiv(fdata=fdata, fcn=flatfcn)
         self._chivw = self._chiv.chivw
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
@@ -214,23 +218,26 @@ class nonlinear_fit(object):
         ## trial run if debugging ##
         if self.debug:
             if self.prior is None:
-                p0gvar = numpy.array([p0i*gvar.gvar(1, 1) 
+                p0gvar = numpy.array([p0i*_gvar.gvar(1, 1) 
                                 for p0i in p0.flat])
                 nchivw = self.y.size
             else:
                 p0gvar = self.prior.flatten() + p0
                 nchivw = self.y.size + self.prior.size
             for p in [p0, p0gvar]:
-                f = fcn(x, p)
+                f = flatfcn(p)
                 if len(f)!=self.y.size:
                     raise ValueError("fcn(x,p) differs in size from y: %s,%s"
-                                        % (len(f), y.size))
+                                     % (len(f), y.size))
                 v = self._chiv(p)
-                vw = self._chivw(p)
-                if nf != len(v) or nchivw != len(vw):
+                if nf != len(v):
                     raise RuntimeError( #
-                    "Internal error, len(chiv) or len(chivw): (%s,%s) (%s,%s)"
-                    %(len(v), nf, len(vw), nchivw))
+                        "Internal error -- len(chiv): (%s,%s)" % (len(v), nf))
+                vw = self._chivw(p)
+                if nchivw != len(vw):
+                    raise RuntimeError( #
+                        "Internal error -- len(chivw): (%s,%s)"
+                        %(len(vw), nchivw))
         ##
         ## do the fit and save results ## 
         fit = multifit(p0, nf, self._chiv, **self.fitterargs)
@@ -272,8 +279,8 @@ class nonlinear_fit(object):
         ``atol``. Generates an ``AssertionError`` if they do not (in which
         case an *svd* cut might be advisable).
         """
-        psdev = gvar.sdev(self.p.flat)
-        paltsdev = gvar.sdev(self.palt.flat)
+        psdev = _gvar.sdev(self.p.flat)
+        paltsdev = _gvar.sdev(self.palt.flat)
         if not numpy.allclose(psdev, paltsdev, rtol=rtol, atol=atol):
             warnings.warn("Possible roundoff errors in fit.p; try svd cut.")
     ##
@@ -281,7 +288,7 @@ class nonlinear_fit(object):
         """ Alternate version of ``fit.p``; no correlation with inputs  """
         if self._palt is None:
             self._palt = _reformat(self.p0,
-                                        gvar.gvar(self.pmean.flat, self.cov))
+                                   _gvar.gvar(self.pmean.flat, self.cov))
         return self._palt
     ##
     palt = property(_getpalt, doc="""Best-fit parameters using ``self.cov``.
@@ -295,23 +302,23 @@ class nonlinear_fit(object):
         buf = (self.y.flat if self.prior is None else
                 numpy.concatenate((self.y.flat,self.prior.flat)))
         D = numpy.zeros((self.cov.shape[0], len(buf)), float)
-        for i, chivw_i in enumerate(self._chivw(gvar.valder(pmean))):
+        for i, chivw_i in enumerate(self._chivw(_gvar.valder(pmean))):
             for a in range(D.shape[0]):
                 D[a, i] = chivw_i.dotder(self.cov[a])
         ##
         ## p[a].mean=pmean[a]; p[a].der[j] = sum_i D[a,i]*buf[i].der[j] ##
         p = []
         for a in range(D.shape[0]): # der[a] = sum_i D[a,i]*buf[i].der
-            p.append(gvar.gvar(pmean[a], gvar.wsum_der(D[a], buf), 
+            p.append(_gvar.gvar(pmean[a], _gvar.wsum_der(D[a], buf), 
                      buf[0].cov))
         self._p = _reformat(self.p0, p)
         return self._p
         ##
     ##
     p = property(_getp, doc="Best-fit parameters with correlations.")
-    fmt_partialsdev = gvar.fmt_errorbudget  # this is for legacy code
-    fmt_errorbudget = gvar.fmt_errorbudget
-    fmt_values = gvar.fmt_values
+    fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
+    fmt_errorbudget = _gvar.fmt_errorbudget
+    fmt_values = _gvar.fmt_values
     def format(self, *args, **kargs): 
         """ Formats fit output details into a string for printing.
             
@@ -331,7 +338,7 @@ class nonlinear_fit(object):
             
             * ``nonlinear_fit.fmt_table_line`` - line in data vs fit  
             
-            * ``nonlinear_fit.alt_fmt_table_line`` - alt line in data vs fit  
+            * ``nonlinear_fit.alt_fmt_table_line`` - alt line in data vs fit
             
             
         :param maxline: Maximum number of data points for which fit 
@@ -387,8 +394,8 @@ class nonlinear_fit(object):
             prior_p0 = self.p0.flat
             prior_dp = len(prior_p0)*[float('inf')]
         else:
-            prior_p0 = gvar.mean(prior.flat)
-            prior_dp = gvar.sdev(prior.flat)
+            prior_p0 = _gvar.mean(prior.flat)
+            prior_dp = _gvar.sdev(prior.flat)
         pnames = bufnames(self.p0)
         try:
             Q = '%.2g' % self.Q
@@ -423,10 +430,10 @@ class nonlinear_fit(object):
         ## create table comparing fit results to data ## 
         x = self.x
         ydict = self.y
-        y = gvar.mean(ydict.flat)
-        dy = gvar.sdev(ydict.flat)
+        y = _gvar.mean(ydict.flat)
+        dy = _gvar.sdev(ydict.flat)
         # dy = ycov**0.5 if len(ycov.shape)==1 else ycov.diagonal()**0.5
-        f = fitfcn(x, self.pmean)
+        f = fitfcn(self.pmean) if x is False else fitfcn(x, self.pmean)
         if ydict.shape is None:
             ## convert f from dict to flat numpy array using yo ##
             yo = BufferDict(ydict, buf=ydict.size*[None])
@@ -472,20 +479,21 @@ class nonlinear_fit(object):
     def bootstrap_iter(self, n=None, datalist=None):
         """ Iterator that returns bootstrap copies of a fit.
             
-        A bootstrap analysis involves three steps: 1) make a large number of
-        "bootstrap copies" of the original input data that differ from each
-        other by random amounts characteristic of the underlying randomness in
-        the original data; 2) repeat the entire fit analysis for each
-        bootstrap copy of the data, extracting fit results from each; and 3)
-        use the variation of the fit results from bootstrap copy to bootstrap
-        copy to determine an approximate probability distribution (possibly
-        non-gaussian) for the each result.
+        A bootstrap analysis involves three steps: 1) make a large number
+        of "bootstrap copies" of the original input data that differ from
+        each other by random amounts characteristic of the underlying
+        randomness in the original data; 2) repeat the entire fit analysis
+        for each bootstrap copy of the data, extracting fit results from
+        each; and 3) use the variation of the fit results from bootstrap
+        copy to bootstrap copy to determine an approximate probability
+        distribution (possibly non-gaussian) for the each result.
             
-        Bootstrap copies of the data for step 2 are provided in ``datalist``.
-        If ``datalist`` is ``None``, they are generated instead from the 
-        means and covariance matrix of the fit data (assuming gaussian 
-        statistics). The maximum number of bootstrap copies considered is 
-        specified by ``n`` (``None`` implies no limit).
+        Bootstrap copies of the data for step 2 are provided in
+        ``datalist``. If ``datalist`` is ``None``, they are generated
+        instead from the means and covariance matrix of the fit data
+        (assuming gaussian statistics). The maximum number of bootstrap
+        copies considered is specified by ``n`` (``None`` implies no
+        limit).
             
         Typical usage is::
             
@@ -497,12 +505,13 @@ class nonlinear_fit(object):
             
                         
         :param n: Maximum number of iterations if ``n`` is not ``None``;
-                otherwise there is no maximum.
+            otherwise there is no maximum.
         :type n: integer         
         :param datalist: Collection of bootstrap ``data`` sets for fitter.
-        :type datalist: sequence or iterator
-        :returns: Iterator that returns an |nonlinear_fit| object containing 
-                results from the fit to the next data set in ``datalist``
+        :type datalist: sequence or iterator or ``None``
+        :returns: Iterator that returns an |nonlinear_fit| object 
+            containing results from the fit to the next data set in
+            ``datalist``
         """
         fargs = {}
         fargs.update(self.fitterargs)
@@ -514,13 +523,13 @@ class nonlinear_fit(object):
             if n is None:
                 raise ValueError("datalist,n can't both be None.")
             if prior is None:
-                for yb in gvar.bootstrap_iter(y, n):
+                for yb in _gvar.bootstrap_iter(y, n):
                     fit = nonlinear_fit(data=(x, yb), prior=None, 
                                         p0=self.pmean, **fargs)
                     yield fit
             else:
                 g = BufferDict(y=y.flat, prior=prior.flat)
-                for gb in gvar.bootstrap_iter(g, n):
+                for gb in _gvar.bootstrap_iter(g, n):
                     yb = _reformat(y, buf=gb['y'])
                     priorb = _reformat(prior, buf=gb['prior'])
                     fit = nonlinear_fit(data=(x,yb), prior=priorb,
@@ -533,7 +542,7 @@ class nonlinear_fit(object):
                                         **fargs)
                     yield fit
             else:
-                piter = gvar.bootstrap_iter(prior)
+                piter = _gvar.bootstrap_iter(prior)
                 for datab in datalist:
                     fit = nonlinear_fit(data=datab, prior=next(piter),
                                         p0=self.pmean, **fargs)
@@ -547,7 +556,7 @@ def _reformat(p, buf):
     if numpy.ndim(buf) != 1:
         raise ValueError("Buffer ``buf`` must be 1-d.")
     if hasattr(p,'keys'):
-        ans = gvar.BufferDict(p)
+        ans = _gvar.BufferDict(p)
         if ans.size != len(buf):
             raise ValueError("p,buf size mismatch: %d,%d"%(ans.size,len(buf)))
         ans = BufferDict(ans, buf=buf)
@@ -570,9 +579,11 @@ def _unpack_data(data, prior, svdcut, svdnum):
     for *svd* cuts if ``svdcut>0``.
         
     Allowed layouts for ``data`` are: ``x,y,ycov``, ``x,y,ysdev``, 
-    and ``x,y``. In the last case, ``y`` can be either an array of 
+    ``x,y``, and ``y``. In the last two case, ``y`` can be either an array of 
     |GVar|\s or a dictionary whose values are |GVar|\s or arrays of
-    |GVar|\s.
+    |GVar|\s. In the last case it is assumed that the fit function is a 
+    function of only the parameters: ``fcn(p)`` --- no ``x``. (This is
+    also assumed if ``x = False``.)
         
     Output data in ``fdata`` includes: fit decompositions of ``y`` 
     (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
@@ -582,11 +593,16 @@ def _unpack_data(data, prior, svdcut, svdnum):
     the logarithm of the determinant of the prior's covariance matrix.
     """
     ## unpack data tuple ##
-    if len(data) == 3:
+    data_is_3tuple = False
+    if not isinstance(data,tuple):
+        x = False                   # no x in fit fcn
+        y = _unpack_gvars(data)
+    elif len(data) == 3:
         x, ym, ycov = data
         ym = numpy.asarray(ym)
         ycov = numpy.asarray(ycov)
-        y = gvar.gvar(ym, ycov)
+        y = _gvar.gvar(ym, ycov)
+        data_is_3tuple = True
     elif len(data) == 2:
         x, y = data
         y = _unpack_gvars(y)
@@ -596,41 +612,41 @@ def _unpack_data(data, prior, svdcut, svdnum):
     fdata = dict(svdcorrection=[])
     if prior is not None:
         ## have prior ##
-        if len(data) == 3 or gvar.orthogonal(y.flat, prior.flat):
+        if data_is_3tuple or _gvar.orthogonal(y.flat, prior.flat):
             ## y uncorrelated with prior ##
-            y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
-                         rescale=True, compute_inv=True)
-            fdata['y'] = _FDATA(mean=gvar.mean(y.flat), 
-                                wgt=gvar.svd.inv_wgt)
-            if gvar.svd.correction is not None:
+            y = _gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                          rescale=True, compute_inv=True)
+            fdata['y'] = _FDATA(mean=_gvar.mean(y.flat), 
+                                wgt=_gvar.svd.inv_wgt)
+            if _gvar.svd.correction is not None:
                 fdata['svdcorrection'] += \
-                    gvar.svd.correction.tolist()
-            prior = gvar.svd(prior, svdcut=svdcut[0], 
+                    _gvar.svd.correction.tolist()
+            prior = _gvar.svd(prior, svdcut=svdcut[0], 
                               svdnum=svdnum[0], rescale=True,
                               compute_inv=True)
-            fdata['prior'] = _FDATA(mean=gvar.mean(prior.flat),
-                                    wgt=gvar.svd.inv_wgt)
-            fdata['logdet_prior'] = gvar.svd.logdet
-            if gvar.svd.correction is not None:
+            fdata['prior'] = _FDATA(mean=_gvar.mean(prior.flat),
+                                    wgt=_gvar.svd.inv_wgt)
+            fdata['logdet_prior'] = _gvar.svd.logdet
+            if _gvar.svd.correction is not None:
                 fdata['svdcorrection'] += \
-                    gvar.svd.correction.tolist()
+                    _gvar.svd.correction.tolist()
             ##
         else:
             ## y correlated with prior ##
-            yp = gvar.svd(numpy.concatenate((y.flat, prior.flat)),
-                          svdcut=svdcut[0], svdnum=svdnum[0],
+            yp = _gvar.svd(numpy.concatenate((y.flat, prior.flat)),
+                           svdcut=svdcut[0], svdnum=svdnum[0],
                           rescale=True, compute_inv=True)
-            fdata['all'] = _FDATA(mean=gvar.mean(yp), 
-                                  wgt=gvar.svd.inv_wgt)
-            if gvar.svd.correction is not None:
+            fdata['all'] = _FDATA(mean=_gvar.mean(yp), 
+                                  wgt=_gvar.svd.inv_wgt)
+            if _gvar.svd.correction is not None:
                 fdata['svdcorrection'] += \
-                    gvar.svd.correction.tolist()
-                y.flat += gvar.svd.correction[:y.size]
-                prior.flat += gvar.svd.correction[y.size:]
+                    _gvar.svd.correction.tolist()
+                y.flat += _gvar.svd.correction[:y.size]
+                prior.flat += _gvar.svd.correction[y.size:]
             ## log(det(cov_pr)) where cov_pr = prior part of cov ##
             invcov = numpy.sum(numpy.outer(wi, wi) 
-                               for wi in gvar.svd.inv_wgt)
-            s = gvar.SVD(invcov[y.size:, y.size:])
+                               for wi in _gvar.svd.inv_wgt)
+            s = _gvar.SVD(invcov[y.size:, y.size:])
             fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) # minus!
                                                for vi in s.val)
             ##
@@ -638,12 +654,12 @@ def _unpack_data(data, prior, svdcut, svdnum):
         ##
     else:
         ## no prior ##
-        y = gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
-                     rescale=True, compute_inv=True)
-        fdata['y'] = _FDATA(mean=gvar.mean(y.flat), wgt=gvar.svd.inv_wgt)
-        if gvar.svd.correction is not None:
+        y = _gvar.svd(y, svdcut=svdcut[0], svdnum=svdnum[0],
+                      rescale=True, compute_inv=True)
+        fdata['y'] = _FDATA(mean=_gvar.mean(y.flat), wgt=_gvar.svd.inv_wgt)
+        if _gvar.svd.correction is not None:
             fdata['svdcorrection'] += \
-                gvar.svd.correction.tolist()
+                _gvar.svd.correction.tolist()
         ##
     return x, y, prior, fdata
 ##        
@@ -651,7 +667,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
 def _unpack_gvars(g):
     """ Unpack collection of GVars to BufferDict or numpy array. """
     if g is not None:
-        g = gvar.gvar(g)
+        g = _gvar.gvar(g)
         if not hasattr(g, 'flat'):
             g = numpy.asarray(g)
     return g
@@ -673,7 +689,7 @@ def _unpack_p0(p0, p0file, prior):
     if p0 is not None:
         ## repackage as BufferDict or numpy array ##
         if hasattr(p0, 'keys'):
-            p0 = gvar.BufferDict(p0)
+            p0 = _gvar.BufferDict(p0)
         else:
             p0 = numpy.array(p0)
         ##
@@ -738,13 +754,13 @@ def _unpack_p0(p0, p0file, prior):
     return p0
 ##
     
-def _unpack_fcn(fcn, p0, y):
-    """ reconfigure fitting fcn so inputs,outputs = flat arrays """
+def _unpack_fcn(fcn, p0, y, x):
+    """ reconfigure fitting fcn so inputs,outputs = flat arrays; hide x """
     if y.shape is not None:
         if p0.shape is not None:
-            def nfcn(x, p, fcn=fcn, pshape=p0.shape):
+            def nfcn(p, x=x, fcn=fcn, pshape=p0.shape):
                 po = p.reshape(pshape)
-                ans = fcn(x, po)
+                ans = fcn(po) if x is False else fcn(x, po)
                 if hasattr(ans, 'flat'):
                     return ans.flat
                 else:
@@ -752,9 +768,9 @@ def _unpack_fcn(fcn, p0, y):
             ##
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
-            def nfcn(x, p, fcn=fcn, po=po):
+            def nfcn(p, x=x, fcn=fcn, po=po):
                 po.flat = p
-                ans = fcn(x, po)
+                ans = fcn(po) if x is False else fcn(x, po)
                 if hasattr(ans, 'flat'):
                     return ans.flat
                 else:
@@ -763,18 +779,18 @@ def _unpack_fcn(fcn, p0, y):
     else:
         yo = BufferDict(y, buf=y.size*[None])
         if p0.shape is not None:
-            def nfcn(x, p, fcn=fcn, pshape=p0.shape, yo=yo):
+            def nfcn(p, x=x, fcn=fcn, pshape=p0.shape, yo=yo):
                 po = p.reshape(pshape)
-                fxp = fcn(x, po)
+                fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
                 return yo.flat
             ##
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
-            def nfcn(x, p, fcn=fcn, po=po, yo=yo):
+            def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
                 po.flat = p
-                fxp = fcn(x, po)
+                fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
                 return yo.flat
@@ -782,17 +798,17 @@ def _unpack_fcn(fcn, p0, y):
     return nfcn
 ##
     
-def _build_chiv(x, fdata, fcn):
+def _build_chiv(fdata, fcn):
     """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
     if 'all' in fdata:
         ## y and prior correlated ##
-        def chiv(p, x=x, fcn=fcn, fd=fdata['all']):
-            delta = numpy.concatenate((fcn(x, p), p))-fd.mean
+        def chiv(p, fcn=fcn, fd=fdata['all']):
+            delta = numpy.concatenate((fcn(p), p))-fd.mean
             return (_util_dot(fd.wgt, delta) if fd.wgt.ndim==2 
                     else fd.wgt*delta)
         ##
-        def chivw(p, x=x, fcn=fcn, fd=fdata['all']):
-            delta = numpy.concatenate((fcn(x, p), p))-fd.mean
+        def chivw(p, fcn=fcn, fd=fdata['all']):
+            delta = numpy.concatenate((fcn(p), p))-fd.mean
             if fd.wgt.ndim == 2:
                 wgt2 = numpy.sum(numpy.outer(wj, wj) 
                                 for wj in reversed(fd.wgt))
@@ -804,16 +820,16 @@ def _build_chiv(x, fdata, fcn):
         ##
     elif 'prior' in fdata:
         ## y and prior uncorrelated ##
-        def chiv(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
+        def chiv(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
             ans = []
-            for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
+            for d, w in [(fcn(p)-yfd.mean, yfd.wgt),
                         (p-pfd.mean, pfd.wgt)]:
                 ans.append(_util_dot(w, d) if w.ndim==2 else w*d)
             return numpy.concatenate(tuple(ans))
         ##
-        def chivw(p, x=x, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
+        def chivw(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
             ans = []
-            for d, w in [(fcn(x, p)-yfd.mean, yfd.wgt),
+            for d, w in [(fcn(p)-yfd.mean, yfd.wgt),
                         (p-pfd.mean, pfd.wgt)]:
                 if w.ndim == 2:
                     w2 = numpy.sum(numpy.outer(wj, wj) 
@@ -828,12 +844,12 @@ def _build_chiv(x, fdata, fcn):
     else:
         ## no prior ##
         def chiv(p, fcn=fcn, fd=fdata['y']):
-            ydelta = fcn(x, p)-fd.mean
+            ydelta = fcn(p)-fd.mean
             return (_util_dot(fd.wgt, ydelta) if fd.wgt.ndim==2 
                     else fd.wgt*ydelta)
         ##
         def chivw(p, fcn=fcn, fd=fdata['y']):
-            ydelta = fcn(x, p)-fd.mean
+            ydelta = fcn(p)-fd.mean
             if fd.wgt.ndim == 2:
                 wgt2 = numpy.sum(numpy.outer(wj, wj) 
                         for wj in reversed(fd.wgt))
@@ -849,9 +865,9 @@ def _build_chiv(x, fdata, fcn):
 ##
 
 ## legacy definitions (obsolete) ##
-BufferDict = gvar.BufferDict
-CGPrior = gvar.BufferDict           
-GPrior = gvar.BufferDict   
+BufferDict = _gvar.BufferDict
+CGPrior = _gvar.BufferDict           
+GPrior = _gvar.BufferDict   
 LSQFit = nonlinear_fit
 ##
 

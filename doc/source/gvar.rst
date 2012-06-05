@@ -338,130 +338,6 @@ Such fake data sets are useful for analyzing non-gaussian behavior, for
 example, in nonlinear fits.
     
     
-Analyzing Random Samples
-------------------------
-:mod:`gvar` contains a several tools for collecting and analyzing random 
-samples from arbitrary distributions. The random samples are represented 
-by lists of numbers or arrays, where each number/array is a new sample from
-the underlying distribution. For example, six samples from a one-dimensional
-gaussian distribution (``1+-1``) might look like ::
-    
-    >>> random_numbers = [1.739, 2.682, 2.493, -0.460, 0.603, 0.800]
-    
-while six samples from a two-dimensional distribution (``[1+-1,2+-1]``)
-might be ::
-    
-    >>> random_arrays = [[ 0.494, 2.734], [ 0.172, 1.400], [ 1.571, 1.304], 
-    ...                  [ 1.532, 1.510], [ 0.669, 0.873], [ 1.242, 2.188]]
-    
-Samples from more complicated multidimensional distributions are represented
-by dictionaries whose values are lists of numbers or arrays.
-    
-With large samples, we typically want to estimate the mean value of the 
-underlying distribution. This is done using :func:`gvar.avg_data`:
-for example, ::
-    
-    >>> print(gvar.avg_data(random_numbers))
-    1.3095 +- 0.452117
-    
-indicates that ``1.31(45)`` is our best guess, based only upon the samples in
-``random_numbers``, for the mean of the distribution from which those samples
-were drawn. Similarly ::
-    
-    >>> print(gvar.avg_data(random_arrays))
-    [0.946667 +- 0.217418 1.66817 +- 0.251002]  
-      
-indicates that the means for the two-dimensional distribution behind
-``random_arrays`` are ``[0.95(22), 1.67(25)]``. :func:`avg_data` can also
-be applied to a dictionary whose values are lists of numbers/arrays: for
-example, ::
-    
-    >>> data = dict(n=random_numbers,a=random_arrays)
-    >>> print(gvar.avg_data(data))
-    {'a': array([0.946667 +- 0.217418, 1.66817 +- 0.251002], dtype=object), 
-     'n': 1.3095 +- 0.452117}
-    
-Class :class:`gvar.Dataset` can be used to assemble dictionaries containing
-random samples. For example, imagine that the random samples above were
-originally written into a file, as they were generated::
-    
-    # file: datafile
-    n 1.739
-    a [ 0.494, 2.734]
-    n 2.682
-    a [ 0.172, 1.400]
-    n 2.493
-    a [ 1.571, 1.304]
-    n -0.460
-    a [ 1.532, 1.510]
-    n 0.603
-    a [ 0.669, 0.873]
-    n 0.800
-    a [ 1.242, 2.188]
-    
-Here each line is a different random sample, either from the one-dimensional
-distribution (labeled ``n``) or from the two-dimensional distribution (labeled
-``a``). Assuming the file is called ``datafile``, this data can be read into
-a dictionary, essentially identical to the ``data`` dictionary above, using::
-    
-    >>> data = gvar.Dataset("datafile")
-    >>> print(data['a'])
-    [array([ 0.494, 2.734]), array([ 0.172, 1.400]), array([ 1.571, 1.304]) ... ]
-    >>> print(avg_data(data['n']))
-    1.3095 +- 0.452117
-    
-The brackets and commas can be omitted in the input file for one-dimensional
-arrays: for example, ``datafile`` (above) could equivalently be written ::
-    
-    # file: datafile
-    n 1.739
-    a 0.494 2.734
-    n 2.682
-    a 0.172 1.400
-    ...
-   
-Other data formats may also be easy to use. For example, a data file written 
-using ``yaml`` would look like ::
-    
-    # file: datafile
-    ---
-    n: 1.739
-    a: [ 0.494, 2.734]
-    ---
-    n: 2.682
-    a: [ 0.172, 1.400]
-    .
-    .
-    .
-    
-and could be read into a :class:`gvar.Dataset` using::
-    
-    import yaml
-    
-    data = gvar.Dataset()
-    with open("datafile","r") as dfile:
-        for d in yaml.load_all(dfile.read()):   # iterate over yaml records  
-            data.append(d)                      # d is a dictionary
-    
-Finally note that data can be binned, into bins of size ``binsize``, using
-:func:`gvar.bin_data`. For example, ``gvar.bin_data(data,binsize=3)`` replaces
-every three samples in ``data`` by the average of those samples. This creates
-a dataset that is ``1/3`` the size of the original but has the same mean.
-Binning is useful for making large datasets more manageable, and also for
-removing sample-to-sample correlations. Over-binning, however, erases
-statistical information.
-    
-Class :class:`gvar.Dataset` can also be used to build a dataset sample by
-sample in code: for example, ::
-    
-    >>> a = Dataset()
-    >>> a.append(n=1.739,a=[ 0.494, 2.734])
-    >>> a.append(n=2.682,a=[ 0.172, 1.400])
-    ...
-    
-creates the same dataset as above.
-    
-    
 Limitations
 -----------
 The most fundamental limitation of this module is that the calculus of
@@ -609,27 +485,18 @@ replace :func:`gvar.gvar`):
 |GVar|\s created by different functions cannot be combined in arithmetic
 expressions (the error message "Incompatible GVars." results). 
 
-Two functions are used to analyze sets of random samples from gaussian 
-distributions:
-
-.. autofunction:: gvar.avg_data(data,median=False,spread=False,bstrap=False)
-
-.. autofunction:: gvar.bin_data(data,binsize=2)
-
-
 The following function can be used to rebuild collections of |GVar|\s, 
 ignoring all correlations with other variables. It can also be used to 
 introduce correlations between uncorrelated variables.
 
 .. autofunction:: gvar.rebuild(g,gvar=gvar,corr=0.0)
 
-Finally there is a utility function-class for implementing an *svd* analysis
-of a covariance or other symmetric, positive matrix:
+Finally there is a utility function and a class for implementing an *svd*
+analysis of a covariance or other symmetric, positive matrix:
 
-.. autoclass:: gvar.svd(mat,svdcut=None,svdnum=None,compute_delta=False,rescale=False)
+.. autofunction:: gvar.svd(g,svdcut=None,svdnum=None,compute_delta=False,rescale=False)
    
-   .. automethod:: decomp(n=1) 
-
+   
 Classes
 -------
 The fundamental class for representing gaussian variables is:
@@ -697,20 +564,11 @@ supports Python pickling:
    
    .. automethod:: add(k,v=None)
    
-:class:`gvar.Dataset` is used to assemble random samples from multidimensional
-distributions:
+SVD analysis is handled by the following class:
 
-.. autoclass:: gvar.Dataset
+.. autoclass:: gvar.SVD(mat,svdcut=None,svdnum=None,compute_delta=False,rescale=False)
 
-   The main methods are:
-   
-   .. automethod:: append(*args,**kargs)
-   
-   .. automethod:: extend(*args,**kargs)
-   
-   .. automethod:: bootstrap_iter(n=None)
-   
-   .. automethod:: toarray()
+   .. automethod:: decomp(n)
 
    
 Requirements

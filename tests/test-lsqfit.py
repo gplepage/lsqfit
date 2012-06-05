@@ -585,7 +585,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         ydict['s'] = gv.gvar(10.,1.)
         ydict['v'] = [[gv.gvar(20.,2.),gv.gvar(30.,3)]]
         yarray = np.array([1.,2.,3.])
-        prdict = GPrior(dict(p=10*[gv.gvar("1(1)")]))
+        prdict = BufferDict(dict(p=10*[gv.gvar("1(1)")]))
         prarray = np.array(10*[gv.gvar("1(1)")])
         self.assertEqual(prdict.size,prarray.size)
         self.assert_gvclose(prdict.flat,prarray.flat)
@@ -604,15 +604,33 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def fcn_aa(x,p):
             return p[:3]
         ##
+        def fcn_nox_dd(p):
+            ans = dict(s=sum(p['p']),v=[p['p'][:2]])
+            return ans
+        ##
+        def fcn_nox_da(p):
+            return p['p'][:3]
+        ##
+        def fcn_nox_ad(p):
+            ans = dict(s=sum(p),v=[p[:2]])
+            return ans
+        ##
+        def fcn_nox_aa(p):
+            return p[:3]
+        ##
         ## do all combinations of prior and y ##
-        for y,pr,fcn,yout in [
-        (ydict,prdict,fcn_dd,[sum(p0)]+p0[:2]),
-        (ydict,prarray,fcn_ad,[sum(p0)]+p0[:2]),
-        (yarray,prdict,fcn_da,p0[:3]),
-        (yarray,prarray,fcn_aa,p0[:3])
+        for x,y,pr,fcn,yout in [
+        (None,ydict,prdict,fcn_dd,[sum(p0)]+p0[:2]),
+        (None,ydict,prarray,fcn_ad,[sum(p0)]+p0[:2]),
+        (None,yarray,prdict,fcn_da,p0[:3]),
+        (None,yarray,prarray,fcn_aa,p0[:3]),
+        (False,ydict,prdict,fcn_nox_dd,[sum(p0)]+p0[:2]),
+        (False,ydict,prarray,fcn_nox_ad,[sum(p0)]+p0[:2]),
+        (False,yarray,prdict,fcn_nox_da,p0[:3]),
+        (False,yarray,prarray,fcn_nox_aa,p0[:3])
         ]:
-            fcn = lsqfit._unpack_fcn(fcn=fcn,p0=pr,y=y)
-            fout = fcn(None,np.array(p0))
+            flatfcn = lsqfit._unpack_fcn(fcn=fcn,p0=pr,y=y,x=x)
+            fout = flatfcn(np.array(p0))
             self.assert_arraysequal(np.shape(fout),np.shape(yout))
             self.assert_arraysequal(fout,yout)
         ##

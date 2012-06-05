@@ -180,6 +180,26 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertEqual(mean['v'].shape,(2,))
         self.assert_gvclose(mean['v'],[gvar(2,1),gvar(2,1)])
     ##
+    def test_autocorr(self):
+        """ dataset.autocorr """
+        N = 10000
+        eps = 10./float(N)**0.5
+        x = gvar(2,0.1)
+        a = np.array([x() for i in range(N)])
+        a = (a[:-2]+a[1:-1]+a[2:])/3.
+        ac_ex = np.array([1.,0.667,0.333,0,0])
+        ac_a = autocorr(a,5)
+        self.assertLess(numpy.std(ac_a-ac_ex)*2,eps)
+        b = np.array([[x(),x()] for i in range(N)])
+        b = (b[:-2]+b[1:-1]+b[2:])/3.
+        ac_ex = np.array(zip(ac_ex,ac_ex))
+        ac_b = autocorr(b,5)
+        self.assertLess(numpy.std(ac_b-ac_ex),eps)
+        c = dict(a=a,b=b)
+        ac_c = autocorr(c,5)
+        self.assert_arraysequal(ac_c['a'],ac_a)
+        self.assert_arraysequal(ac_c['b'],ac_b)
+    ##
     def test_dataset_append(self):
         """ Dataset.append() """
         data = Dataset()
@@ -353,14 +373,15 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertEqual(ndata.samplesize,2)
         self.assert_arraysequal(ndata['a'],[1,2])
         self.assert_arraysequal(ndata['b'],[10,20])
-    def test_dataset_array(self):
+    ##
+    def test_dataset_arrayzip(self):
         data = Dataset()
         data.extend(a=[1,2,3], b=[10,20,30])
-        a = data.array([['a'], ['b']])
+        a = data.arrayzip([['a'], ['b']])
         self.assert_arraysequal(a, [[[1],[10]],[[2],[20]],[[3],[30]]])
         with self.assertRaises(ValueError):
             data.append(a=4)
-            a = data.array(['a','b'])
+            a = data.arrayzip(['a','b'])
     ##
     def test_dataset_bootstrap_iter(self):
         """ bootstrap_iter(data_dict) """

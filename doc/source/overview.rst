@@ -385,7 +385,7 @@ we wrote our code to try fitting with each of ``nexp=3,4,5..19`` terms.
 (The pieces of the code involving ``p0`` are optional; they make the
 more complicated fits go about 30 times faster since the output from one
 fit is used as the starting point for the next fit --- see the discussion
-of the ``p0`` parameter for function :func:`lsqfit.nonlinear_fit`.) Running
+of the ``p0`` parameter for :class:`lsqfit.nonlinear_fit`.) Running
 this code produces the following output, which is reproduced here in some
 detail in order to illustrate a variety of features::
 
@@ -719,7 +719,7 @@ by ``make_data()``::
    
 Note that ``x`` has been replaced in the fit data by the Python null
 variable ``None``. This underscores the fact that
-:func:`lsqfit.nonlinear_fit` is completely uninterested in the independent
+:class:`lsqfit.nonlinear_fit` is completely uninterested in the independent
 variable ``x`` in the fit data. It makes no use of it beyond passing it
 through to the fit function. This means that the independent variable ``x``
 in the fit data can be replaced by any collection of data, using any data
@@ -921,7 +921,7 @@ adding the following code to the end of ``main()`` subroutine::
    print()
 
 Function ``fitargs`` generates a dictionary containing the arguments for
-:func:`lsqfit.nonlinear_fit`. These are identical to what we have been using
+:class:`lsqfit.nonlinear_fit`. These are identical to what we have been using
 except that the width of the priors in ``prior['a']`` is adjusted according
 to parameter ``z``. Function :func:`lsqfit.empbayes_fit` does fits for 
 different values of ``z`` and selects the ``z`` that maximizes ``fit.logGBF``.
@@ -1315,7 +1315,7 @@ used in the fit. The two should agree, but they will not agree if the
 covariance matrix for the input ``y`` data is too ill-conditioned.
 
 The inverse of the ``y`` covariance matrix is used in the ``chi**2``
-function that is minimized by :func:`lsqfit.nonlinear_fit`. Given the
+function that is minimized by :class:`lsqfit.nonlinear_fit`. Given the
 finite precision of computer hardware, it is impossible to compute this
 inverse accurately if the matrix is singular or almost singular, and in
 such situations the reliability of the fit results is in question. The
@@ -1474,30 +1474,31 @@ gaussian, using medians instead of means might be more robust.
 
 Troubleshooting
 ---------------
-:func:`lsqfit.nonlinear_fit` sometimes gives unintelligible error messages 
+:class:`lsqfit.nonlinear_fit` sometimes gives unintelligible error messages 
 such as::
 
    Traceback (most recent call last):
-     File "<stdin>", line 1, in <module>
-     File "/Users/XXX/Library/Python/2.7/lib/python/site-packages/lsqfit.py", line 345, in __init__
-       fit = lsqfit_util.multifit(p0,nf,self._chiv,**self.fitterargs)
-     File "lsqfit_util.pyx", line 303, in lsqfit_util.multifit.__init__ (lsqfit_util.c:2441)
+     File "<stdin>", line 10, in <module>
+       fit = nonlinear_fit(data=(None,y),prior=prior,fcn=f)
+     File "/Users/gpl/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
+       fit = multifit(p0, nf, self._chiv, **self.fitterargs)
+     File "_utilities.pyx", line 303, in lsqfit._utilities.multifit.__init__ (src/lsqfit/_utilities.c:2668)
    RuntimeError: Python error in fit function: 33
 
 Such messages come from inside the *gsl* routines that are actually doing
 the fits and are usually due to an error in one of the inputs to the fit 
 (that is, the fit data, the prior, or the fit function). Setting ``debug=True``
-in the argument list of :func:`lsqfit.nonlinear_fit` might result in more 
+in the argument list of :class:`lsqfit.nonlinear_fit` might result in more 
 intelligible error messages. This option also causes the fitter to check 
 for significant roundoff errors in the matrix inversions of the covariance
 matrices.
 
-Occasionally :func:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
+Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
 ``chi**2``. One fix is to include *svd* cuts in the fit by setting, for
-example, ``svdcut=(1e-14,1e-14)`` in the call to :func:`lsqfit.nonlinear_fit`.
+example, ``svdcut=(1e-14,1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
 These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.
 
