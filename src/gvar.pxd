@@ -13,5 +13,5 @@
 
 # mirrors the includes in gvar module itself
 
-from gvar._gvar cimport *
+from gvar._gvarcore cimport *
 from gvar._svec_smat cimport *

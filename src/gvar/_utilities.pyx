@@ -1,6 +1,6 @@
 import gvar as _gvar
-from ._gvar import GVar
-from ._gvar cimport GVar
+from ._gvarcore import GVar
+from ._gvarcore cimport GVar
 
 import numpy
 cimport numpy

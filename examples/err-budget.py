@@ -21,6 +21,9 @@ from __future__ import print_function   # makes this work for python2 and 3
 DO_EMPBAYES = False
 DO_ERRORBUDGET = True
 DO_PLOT = False
+DO_SVD = False
+
+SVDCUT = 1e-10 if DO_SVD else None
 
 import lsqfit
 import numpy as np
@@ -63,12 +66,12 @@ def main():
     for nexp in range(3,8):
         print('************************************* nexp =',nexp)
         prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
-        print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-        print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
+        print('E1/E0 =',(E[1]/E[0]).fmt(3),'  E2/E0 =',(E[2]/E[0]).fmt(3))
+        print('a1/a0 =',(a[1]/a[0]).fmt(3),'  a2/a0 =',(a[2]/a[0]).fmt(3))
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
@@ -76,7 +79,8 @@ def main():
     if DO_ERRORBUDGET:
         outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
-        inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}
+        inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y,
+                    'svd':fit.svdcorrection}
         print(fit.fmt_values(outputs))
         print(fit.fmt_errorbudget(outputs,inputs))
         
@@ -91,9 +95,9 @@ def main():
         print(fit)                  # print the optimized fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
-        print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-        print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
-        print("prior['a'] =",fit.prior['a'][0])
+        print('E1/E0 =',(E[1]/E[0]).fmt(3),'  E2/E0 =',(E[2]/E[0]).fmt(3))
+        print('a1/a0 =',(a[1]/a[0]).fmt(3),'  a2/a0 =',(a[2]/a[0]).fmt(3))
+        print("prior['a'] =",fit.prior['a'][0].fmt(3))
         print()
     
     if DO_PLOT:

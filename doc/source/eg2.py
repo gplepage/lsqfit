@@ -19,10 +19,10 @@ import gvar as gd
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
 
-def f(x,p):                         # function used to fit x,y data
+def f(p):                           # function used to fit x,y data
     a = p['a']                      # array of a[i]s
     E = p['E']                      # array of E[i]s
-    x = p['x']
+    x = p['x']                      # x is now a fit parameter
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
 def make_data():                    # make x,y fit data
@@ -41,7 +41,6 @@ def make_prior(nexp,x):             # make priors for fit parameters
     prior['a'] = [gd.gvar(0.5,0.5) for i in range(nexp)]
     prior['E'] = [gd.gvar(i+1,0.5) for i in range(nexp)]
     prior['x'] = x                  # x now an array of parameters
-                                    # replace x by None in fit data
     return prior
 
 def main():
@@ -51,8 +50,8 @@ def main():
     for nexp in range(3,8):
         print '************************************* nexp =',nexp
         prior = make_prior(nexp,x)
-        fit = lsqfit.nonlinear_fit(data=(None,y),fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
-        # fit.check_roundoff()
+        fit = lsqfit.nonlinear_fit(data=y,fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
+        fit.check_roundoff()
         print fit                   # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']

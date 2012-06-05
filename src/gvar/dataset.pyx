@@ -88,7 +88,7 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     estimates the means of the distributions from which the random
     numbers/arrays are drawn, together with the uncertainties in those
     estimates. The results are returned as a |GVar| or an array of
-    |GVar|\s, or a dictionary of |GVar|\s or arrays of |GVar|\s::
+    |GVar|\s, or a dictionary of |GVar|\s and/or arrays of |GVar|\s::
         
         >>> print(avg_data(random_numbers))
         1.31 +- 0.203169

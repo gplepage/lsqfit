@@ -35,7 +35,7 @@ libraries = ["gsl","gslcblas"]
 include_dirs = [numpy.get_include()]
 extra_link_args = [] # ['-framework','vecLib'] # for Mac OSX
 ext_modules = [     #
-    Extension("gvar._gvar",["src/gvar/_gvar.pyx"],libraries=libraries,
+    Extension("gvar._gvarcore",["src/gvar/_gvarcore.pyx"],libraries=libraries,
               include_dirs=include_dirs,extra_link_args=extra_link_args),
     Extension("gvar._svec_smat",["src/gvar/_svec_smat.pyx"],libraries=libraries,
               include_dirs=include_dirs,extra_link_args=extra_link_args),

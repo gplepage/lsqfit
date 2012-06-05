@@ -1,13 +1,6 @@
 Things we want to think about:
-- test_unpack_data is a little bit out of date. Needs to be rewritten.
-
-- add test_unusual_cases to test for example where y = a single gvar (not
-  an array) and ditto for p. It is good that the code accepts such extreme
-  limits of what it usually gets (I think it is?). Also try case where y
-  has two elements and there is no x, trying to trick it into misreading y
-  as (x,y).
-
 - check documentation more carefully in light of huge rearrangements.
+
 
 Not Clear we want to do them:
 - nonlinear_fit.format is irritating with its maxline. Replace with a

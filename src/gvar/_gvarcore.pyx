@@ -355,6 +355,8 @@ cdef class GVar:
         ## create a mask = 1 if args[i].der component!=0; 0 otherwise ## 
         dmask = numpy.zeros(dstop-dstart,int)
         for a in args:
+            if a is None:
+                continue
             if hasattr(a,'keys'):
                 if not hasattr(a,'flat'):
                     a = BufferDict(a)

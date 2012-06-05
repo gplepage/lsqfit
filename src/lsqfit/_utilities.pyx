@@ -22,7 +22,7 @@ cdef extern from "gsl/gsl_sf.h":
     struct gsl_sf_result_struct:
         double val
         double err
-    int gsl_sf_gamma_inc_Q_e (double a, double x,gsl_sf_result_struct* res)
+    int gsl_sf_gamma_inc_Q_e (double a, double x, gsl_sf_result_struct* res)
     
 cdef extern from "gsl/gsl_errno.h":
     void* gsl_set_error_handler_off()
@@ -36,7 +36,7 @@ cdef extern from "gsl/gsl_sf.h":
     struct gsl_sf_result_struct:
         double val
         double err
-    int gsl_sf_gamma_inc_Q_e (double a, double x,gsl_sf_result_struct* res)
+    int gsl_sf_gamma_inc_Q_e (double a, double x, gsl_sf_result_struct* res)
     
 cdef extern from "gsl/gsl_matrix_double.h":
     ctypedef struct gsl_matrix:
@@ -46,14 +46,14 @@ cdef extern from "gsl/gsl_matrix_double.h":
         double * data
         void * block
         int owner
-    gsl_matrix *gsl_matrix_alloc (int n1,int n2)
+    gsl_matrix *gsl_matrix_alloc (int n1, int n2)
     void gsl_matrix_set_zero (gsl_matrix * m)
     void gsl_matrix_free (gsl_matrix * m)
     
-cdef inline double gsl_matrix_get(gsl_matrix *m,int i,int j):
+cdef inline double gsl_matrix_get(gsl_matrix *m, int i, int j):
     return m.data[i*m.tda+j]
     
-cdef inline void gsl_matrix_set(gsl_matrix *m,int i,int j,double x):
+cdef inline void gsl_matrix_set(gsl_matrix *m, int i, int j, double x):
     m.data[i*m.tda+j] = x
     
 # cdef gsl_matrix* array2matrix(numpy.ndarray[numpy.double_t,ndim=2] a):
@@ -67,14 +67,14 @@ cdef inline void gsl_matrix_set(gsl_matrix *m,int i,int j,double x):
 #             gsl_matrix_set(m,i1,i2,a[i1,i2])
 #     return m
     
-cdef numpy.ndarray[numpy.double_t,ndim=2] matrix2array(gsl_matrix* m):
+cdef numpy.ndarray[numpy.double_t, ndim=2] matrix2array(gsl_matrix* m):
     """ copies contents of m into numeric array """
-    cdef unsigned int i1,i2
-    cdef numpy.ndarray[numpy.double_t,ndim=2] ans 
-    ans = numpy.zeros((m.size1,m.size2),numpy.double)
+    cdef unsigned int i1, i2
+    cdef numpy.ndarray[numpy.double_t, ndim=2] ans 
+    ans = numpy.zeros((m.size1, m.size2), numpy.double)
     for i1 in range(m.size1): 
         for i2 in range(m.size2):
-            ans[i1,i2] = gsl_matrix_get(m,i1,i2)
+            ans[i1, i2] = gsl_matrix_get(m, i1, i2)
     return ans
     
 cdef extern from "gsl/gsl_vector.h":
@@ -87,34 +87,34 @@ cdef extern from "gsl/gsl_vector.h":
     gsl_vector* gsl_vector_alloc(int N)
     void gsl_vector_free(gsl_vector *v)
     
-cdef inline void gsl_vector_set(gsl_vector *v,int i,double x):
+cdef inline void gsl_vector_set(gsl_vector *v, int i, double x):
     v.data[i*v.stride] = x
     
-cdef inline double gsl_vector_get(gsl_vector *v,int i):
+cdef inline double gsl_vector_get(gsl_vector *v, int i):
     return v.data[i*v.stride]
     
-cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t,ndim=1] a):
+cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t, ndim=1] a):
     cdef unsigned int i
     cdef unsigned int n = a.shape[0]
     cdef gsl_vector* v = gsl_vector_alloc(n)
     for i from 0<=i<n:   # in range(n):
-        gsl_vector_set(v,i,a[i])
+        gsl_vector_set(v, i, a[i])
     return v
     
-cdef numpy.ndarray[numpy.double_t,ndim=1] vector2array(gsl_vector* v):
+cdef numpy.ndarray[numpy.double_t, ndim=1] vector2array(gsl_vector* v):
     """ copies contents of v into numeric array """
     cdef unsigned int i
-    cdef numpy.ndarray[numpy.double_t,ndim=1] ans 
-    ans = numpy.zeros(v.size,numpy.double)
+    cdef numpy.ndarray[numpy.double_t, ndim=1] ans 
+    ans = numpy.zeros(v.size, numpy.double)
     for i in range(v.size):
-        ans[i] = gsl_vector_get(v,i)
+        ans[i] = gsl_vector_get(v, i)
     return ans
     
 cdef extern from "gsl/gsl_multifit_nlin.h":
     ctypedef struct gsl_multifit_function_fdf:
-        int (* f) (gsl_vector * x,void *params,gsl_vector *f) except 33
-        int (* df) (gsl_vector *x,void *params,gsl_matrix *df) except 34
-        int (* fdf) (gsl_vector *x,void *params,gsl_vector *f,gsl_matrix *df) except 35
+        int (* f) (gsl_vector * x, void *params, gsl_vector *f) except 33
+        int (* df) (gsl_vector *x, void *params, gsl_matrix *df) except 34
+        int (* fdf) (gsl_vector *x, void *params, gsl_vector *f, gsl_matrix *df) except 35
         int n  # number of functions
         int p  # number of independent variables
         void * params
@@ -128,7 +128,7 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
     ctypedef struct gsl_multifit_fdfsolver_type:
         int dummy
     gsl_multifit_fdfsolver* gsl_multifit_fdfsolver_alloc( #)
-                        gsl_multifit_fdfsolver_type * T,int n,int p)
+                        gsl_multifit_fdfsolver_type * T, int n, int p)
                         
     int gsl_multifit_fdfsolver_set(gsl_multifit_fdfsolver *s, 
                                     gsl_multifit_function_fdf *fdf,
@@ -136,7 +136,7 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
     int gsl_multifit_fdfsolver_iterate(gsl_multifit_fdfsolver *s)
         
     void gsl_multifit_fdfsolver_free(gsl_multifit_fdfsolver *s)
-    int gsl_multifit_test_delta(gsl_vector * dx,gsl_vector * x, 
+    int gsl_multifit_test_delta(gsl_vector * dx, gsl_vector * x, 
                                 double epsabs, double epsrel)
     int gsl_multifit_test_gradient (gsl_vector * g, double epsabs)
     int gsl_multifit_covar (gsl_matrix * J, double epsrel, gsl_matrix * covar)
@@ -146,7 +146,7 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
     
 cdef extern from "gsl/gsl_multimin.h":
     ctypedef struct gsl_multimin_function:
-        double (*f) (gsl_vector* x,void* p) except 33
+        double (*f) (gsl_vector* x, void* p) except 33
         int n
         void * params
         
@@ -157,7 +157,7 @@ cdef extern from "gsl/gsl_multimin.h":
         int (*set) (void *state, gsl_multimin_function * f,
                     gsl_vector * x, double * size, 
                     gsl_vector * step_size)
-        int (*iterate) (void *state,gsl_multimin_function * f, 
+        int (*iterate) (void *state, gsl_multimin_function * f, 
                         gsl_vector * x, double * size, double* fval)
         void (*free) (void *state)
         
@@ -173,7 +173,7 @@ cdef extern from "gsl/gsl_multimin.h":
         double xize
         void *state
         
-    gsl_multimin_fminimizer * gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_type *T,int n)
+    gsl_multimin_fminimizer * gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_type *T, int n)
     
     int gsl_multimin_fminimizer_set (gsl_multimin_fminimizer * s,
                      gsl_multimin_function * f,
@@ -187,7 +187,7 @@ cdef extern from "gsl/gsl_multimin.h":
     gsl_vector * gsl_multimin_fminimizer_x (gsl_multimin_fminimizer * s)        
     double gsl_multimin_fminimizer_size (gsl_multimin_fminimizer * s)       
     double gsl_multimin_fminimizer_minimum (gsl_multimin_fminimizer * s)
-    int gsl_multimin_test_size(double size ,double epsabs)
+    int gsl_multimin_test_size(double size , double epsabs)
 ##
 
 ## multifit ## 
@@ -218,7 +218,7 @@ class multifit(object):
             currently available: ``"lmsder"``, the scaled *LMDER* algorithm
             (default); and ``"lmder"``, the unscaled *LMDER* algorithm. 
     :type alg: string
-    :param analyzer: Optional function of ``x,[...f_i(x)...],[[..df_ij(x)..]]`` 
+    :param analyzer: Optional function of ``x, [...f_i(x)...], [[..df_ij(x)..]]`` 
             which is called after each iteration. This can be used to inspect
             intermediate steps in the minimization, if needed.
     :type analyzer: function
@@ -254,17 +254,18 @@ class multifit(object):
     :class:`multifit` is a wrapper for the ``multifit`` *GSL* routine.   
     """
     
-    def __init__(self,numpy.ndarray[numpy.double_t,ndim=1] x0,int n,object f, #):
-            double reltol=0.0001,double abstol=0.0,unsigned int maxit=1000,
-            object alg='lmsder',object analyzer=None):
-        global _valder,_p_f
+    def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, int n,  #):
+                 object f, double reltol=0.0001, double abstol=0.0, 
+                 unsigned int maxit=1000, object alg='lmsder', 
+                 object analyzer=None):
+        global _valder, _p_f
         cdef gsl_multifit_fdfsolver_type *T
         cdef gsl_multifit_fdfsolver *s
-        cdef int status,rval
-        cdef unsigned int i,it,p
+        cdef int status, rval
+        cdef unsigned int i, it, p
         cdef gsl_matrix *covar
         cdef gsl_vector* x0v
-        # cdef numpy.ndarray[numpy.double_t,ndim=1] ans
+        # cdef numpy.ndarray[numpy.double_t, ndim=1] ans
         super(multifit, self).__init__()
         ## hold onto inputs ##
         self.reltol = reltol
@@ -275,7 +276,7 @@ class multifit(object):
         self.n = n
         ##
         p = len(x0)
-        covar = gsl_matrix_alloc(p,p)
+        covar = gsl_matrix_alloc(p, p)
         if alg=="lmsder" or alg is None:
             T = gsl_multifit_fdfsolver_lmsder
         elif alg=="lmder":
@@ -293,10 +294,10 @@ class multifit(object):
         old_p_f = _p_f
         _p_f = f
         _valder = gvar.valder(p*[0.0])  # workspace
-        s = gsl_multifit_fdfsolver_alloc(T,n,p)
+        s = gsl_multifit_fdfsolver_alloc(T, n, p)
         x0v = array2vector(x0)
-        gsl_multifit_fdfsolver_set(s,&gf,x0v)
-        for it in range(1,maxit+1):
+        gsl_multifit_fdfsolver_set(s, &gf, x0v)
+        for it in range(1, maxit+1):
             status = gsl_multifit_fdfsolver_iterate(s)
             if status:
                 if status>=33:
@@ -304,12 +305,12 @@ class multifit(object):
                 self.error = str(gsl_strerror(status))
                 break
             if analyzer is not None:
-                analyzer(vector2array(s.x),vector2array(s.f),
+                analyzer(vector2array(s.x), vector2array(s.f),
                         matrix2array(s.J))
-            rval = gsl_multifit_test_delta(s.dx,s.x,abstol,reltol)
+            rval = gsl_multifit_test_delta(s.dx, s.x, abstol, reltol)
             if rval!=GSL_CONTINUE:
                 break
-        gsl_multifit_covar(s.J,0.0,covar)
+        gsl_multifit_covar(s.J, 0.0, covar)
         self.cov = matrix2array(covar)
         self.x = vector2array(s.x)
         self.f = vector2array(s.f)
@@ -323,7 +324,7 @@ class multifit(object):
         gsl_vector_free(x0v)
         _p_f = old_p_f
     ##
-    def __getitem__(self,i):
+    def __getitem__(self, i):
         return self.p[i]
     ##
     def __str__(self):
@@ -332,45 +333,46 @@ class multifit(object):
 ##
     
 ## wrappers for multifit's python function ## 
-cdef int _c_f(gsl_vector* vx,void* params,gsl_vector* vf) except 33:
+cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) except 33:
     global _p_f
     cdef numpy.ndarray f = _p_f(vector2array(vx))
     # cdef numpy.ndarray[numpy.double_t,ndim=1] f = _p_f(vector2array(vx))
     cdef unsigned int i
     cdef unsigned int n = vf.size
     for i in range(n):
-        gsl_vector_set(vf,i,f[i])
+        gsl_vector_set(vf, i, f[i])
     return GSL_SUCCESS
     
-cdef int _c_df(gsl_vector* vx,void* params,gsl_matrix* mJ) except 34:
+cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) except 34:
     global _p_f                                     # python fcn
     cdef gvar.GVar fi
     cdef gvar.svec fi_d
-    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder+vector2array(vx))
+    cdef numpy.ndarray[object, ndim=1] f = _p_f(_valder+vector2array(vx))
     gsl_matrix_set_zero(mJ)
     assert len(f[0].cov) == mJ.size2, \
-        'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
+        'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
     for i in range(mJ.size1):
         fi = f[i]
         fi_d = fi.d
         for j in range(fi_d.size):
-            gsl_matrix_set(mJ,i,fi_d.v[j].i,fi_d.v[j].v)
+            gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
     return GSL_SUCCESS    
     
-cdef int _c_fdf(gsl_vector* vx,void* params,gsl_vector* vf,gsl_matrix* mJ) except 35:
+cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, 
+                gsl_matrix* mJ) except 35:
     global _p_f                                     # python fcn
     cdef gvar.GVar fi
     cdef gvar.svec f_i_d
-    cdef numpy.ndarray[object,ndim=1] f = _p_f(_valder+vector2array(vx))
+    cdef numpy.ndarray[object, ndim=1] f = _p_f(_valder+vector2array(vx))
     gsl_matrix_set_zero(mJ)
     assert len(f[0].cov) == mJ.size2, \
-        'covariance matrix mismatch: '+str((len(f[0].cov),mJ.size2))
+        'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
     for i in range(mJ.size1):
         fi = f[i]
         fi_d = fi.d
-        gsl_vector_set(vf,i,fi.v)
+        gsl_vector_set(vf, i, fi.v)
         for j in range(fi_d.size):
-            gsl_matrix_set(mJ,i,fi_d.v[j].i,fi_d.v[j].v)
+            gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
     return GSL_SUCCESS
 ##
 ##
@@ -400,7 +402,7 @@ class multiminex(object):
             ``"nmsimplex"`` (default); and ``"nmsimplex2rand"``, a version
             of ``"nmsimplex2"`` with random shifts in the start position.
     :type alg: string
-    :param analyzer: Optional function of ``x,f(x),it``, where ``it`` is
+    :param analyzer: Optional function of ``x, f(x), it``, where ``it`` is
             the iteration number, which is called after each iteration.
             This can be used to inspect intermediate steps in the
             minimization, if needed.
@@ -429,18 +431,18 @@ class multiminex(object):
     
     :class:`multiminex` is a wrapper for the ``multimin`` *GSL* routine.    
     """
-    def __init__(self,numpy.ndarray[numpy.double_t,ndim=1] x0,object f, #):
-        double tol=1e-4,int maxit=1000,step=1.0,alg="nmsimplex2",
-        analyzer=None):
+    def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, object f, #):
+                 double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
+                 analyzer=None):
         global _p_fs
         cdef gsl_vector* vx0 = array2vector(x0)
         cdef int dim = vx0.size
         cdef gsl_vector* ss = array2vector(numpy.array(dim*[step]))
         cdef gsl_multimin_function fcn
-        cdef int i,status,rval
+        cdef int i, status, rval
         cdef unsigned int it
         cdef gsl_multimin_fminimizer* s
-        cdef numpy.ndarray[numpy.double_t,ndim=1] x
+        cdef numpy.ndarray[numpy.double_t, ndim=1] x
         cdef double fx
         
         super(multiminex, self).__init__()
@@ -457,14 +459,14 @@ class multiminex(object):
         fcn.n = dim
         fcn.params = NULL
         if alg=="nmsimplex":
-            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex,dim)
+            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex, dim)
         elif alg=="nmsimplex2rand":
-            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex2rand,dim)
+            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex2rand, dim)
         else:
-            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex2,dim)
-        gsl_multimin_fminimizer_set(s,&fcn,vx0,ss)
+            s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex2, dim)
+        gsl_multimin_fminimizer_set(s, &fcn, vx0, ss)
         
-        for it in range(1,maxit+1):
+        for it in range(1, maxit+1):
             status = gsl_multimin_fminimizer_iterate(s)
             if status:
                 if status==33:
@@ -474,8 +476,8 @@ class multiminex(object):
             if analyzer is not None:
                 x = vector2array(gsl_multimin_fminimizer_x(s))
                 fx = gsl_multimin_fminimizer_minimum(s)
-                analyzer(x,fx,it)
-            rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s),tol)
+                analyzer(x, fx, it)
+            rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s), tol)
             if rval!=GSL_CONTINUE:
                 break
         self.x = vector2array(gsl_multimin_fminimizer_x(s))
@@ -489,7 +491,7 @@ class multiminex(object):
         gsl_multimin_fminimizer_free(s)
         _p_fs = old_p_fs
     ##
-    def __getitem__(self,i):
+    def __getitem__(self, i):
         return self.x[i]
     ##
     def __str__(self):
@@ -498,23 +500,23 @@ class multiminex(object):
 ##
     
 ## wrapper for multiminex's python function ##
-cdef double _c_fs(gsl_vector* vx,void* p) except 33:
+cdef double _c_fs(gsl_vector* vx, void* p) except 33:
     global _p_fs
     return _p_fs(vector2array(vx))
 ##
 ##
 
 ## miscellaneous functions ##
-def gammaQ(double a,double x):
+def gammaQ(double a, double x):
     """ Q(a,x) = 1-P(a,x) """
     cdef gsl_sf_result_struct res
     cdef int status
-    status = gsl_sf_gamma_inc_Q_e(a,x,&res)
-    assert status==GSL_SUCCESS,status
+    status = gsl_sf_gamma_inc_Q_e(a, x, &res)
+    assert status==GSL_SUCCESS, status
     return res.val
 ##
    
-def dot(numpy.ndarray[numpy.double_t,ndim=2] w not None,x):
+def dot(numpy.ndarray[numpy.double_t, ndim=2] w not None, x):
     """ Compute dot product of matrix ``w`` with vector ``x``. 
         
     This is a substitute for ``numpy.dot`` that is highly optimized for the
@@ -523,17 +525,17 @@ def dot(numpy.ndarray[numpy.double_t,ndim=2] w not None,x):
     to ``numpy.dot``.
     """
     cdef gvar.GVar g
-    cdef gvar.GVar gans,gx
-    cdef unsigned int i,nx
-    cdef numpy.ndarray[object,ndim=1] ans
-    if not isinstance(x[0],gvar.GVar):
-        return numpy.dot(w,x)
+    cdef gvar.GVar gans, gx
+    cdef unsigned int i, nx
+    cdef numpy.ndarray[object, ndim=1] ans
+    if not isinstance(x[0], gvar.GVar):
+        return numpy.dot(w, x)
     nx = len(x)
     nans = w.shape[0]
-    assert nx==w.shape[1],str(nx)+'!='+str(w.shape[1])
-    ans = numpy.zeros(nans,object)
+    assert nx==w.shape[1], str(nx)+'!='+str(w.shape[1])
+    ans = numpy.zeros(nans, object)
     for i in range(nans):
-        ans[i] = gvar.wsum_gvar(w[i],x)
+        ans[i] = gvar.wsum_gvar(w[i], x)
     return ans
 ##
 ##    

@@ -18,44 +18,44 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    import lsqfit
    
    y = {                      # data for the dependent variable
-      "data1" : gv.gvar([1.376,2.010],[[ 0.0047,0.01],[ 0.01,0.056]]),
-      "data2" : gv.gvar([1.329,1.582],[[ 0.0047,0.0067],[0.0067,0.0136]]),
-      "b/a"   : gv.gvar(2.0,0.5)
+      "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
+      "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]]),
+      "b/a"   : gv.gvar(2.0, 0.5)
    }
    x = {                      # independent variable
-      "data1" : np.array([0.1,1.0]),
-      "data2" : np.array([0.1,0.5])
+      "data1" : np.array([0.1, 1.0]),
+      "data2" : np.array([0.1, 0.5])
    }
-   prior = dict(a=gv.gvar(0.5,0.5),b=gv.gvar(0.5,0.5))
+   prior = dict(a=gv.gvar(0.5, 0.5), b=gv.gvar(0.5, 0.5))
    
-   def fcn(x,p):                # fit function of x and parameters p[k]
+   def fcn(x, p):             # fit function of x and parameters p[k]
       ans = {}
-      for k in ["data1","data2"]:
+      for k in ["data1", "data2"]:
          ans[k] = gv.exp(p['a'] + x[k]*p['b'])
       ans['b/a'] = p['b']/p['a']
       return ans
       
    # do the fit   
-   fit = lsqfit.nonlinear_fit(data=(x,y),prior=prior,fcn=fcn)
+   fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn)
    print(fit.format(100))     # print standard summary of fit
    
    p = fit.p                  # best-fit values for parameters
-   outputs = dict(a=p['a'],b=p['b'])
+   outputs = dict(a=p['a'], b=p['b'])
    outputs['b/a'] = p['b']/p['a']
-   inputs = dict(y=y,prior=prior)
+   inputs = dict(y=y, prior=prior)
    print(gv.fmt_values(outputs))              # tabulate outputs
-   print(gv.fmt_errorbudget(outputs,inputs))  # print error budget for outputs
+   print(gv.fmt_errorbudget(outputs, inputs)) # print error budget for outputs
    
    # save best-fit values in file "outputfile.p" for later use
    import pickle
-   pickle.dump(fit.p,open("outputfile.p","wb"))
+   pickle.dump(fit.p, open("outputfile.p", "wb"))
 
-This code fits the function ``f(x,a,b)= exp(a+b*x)`` (see ``fcn(x,p)``) to two
-sets of data, labeled ``data1`` and ``data2``, by varying parameters ``a`` and
-``b`` until ``f(x["data1"],a,b)`` and ``f(x["data2"],a,b)`` equal
-``y["data1"]`` and ``y["data2"]``, respectively, to within the ``y``\s'
-errors. The means and covariance matrices for the ``y``\s are specified in the
-``gv.gvar(...)``\s used to create them: for example, ::
+This code fits the function ``f(x, a, b)= exp(a+b*x)`` (see ``fcn(x, p)``)
+to two sets of data, labeled ``data1`` and ``data2``, by varying parameters
+``a`` and ``b`` until ``f(x["data1"], a, b)`` and ``f(x["data2"], a, b)``
+equal ``y["data1"]`` and ``y["data2"]``, respectively, to within the
+``y``\s' errors. The means and covariance matrices for the ``y``\s are
+specified in the ``gv.gvar(...)``\s used to create them: for example, ::
    
    >>> print y['data1']
    [1.376 +- 0.0685565 2.01 +- 0.236643]
@@ -66,7 +66,7 @@ The dictionary ``prior`` gives *a priori* estimates for the two parameters,
 ``a`` and ``b``: each is assumed to be ``0.5 +- 0.5`` before fitting. In
 addition, there is an extra piece of input data, ``y["b/a"]``, which indicates
 that ``b/a`` is ``2.0 +- 0.5``. The fit function for this data is simply the
-ratio ``b/a`` (represented by ``p['b']/p['a']`` in fit function ``fcn(x,p)``.)
+ratio ``b/a`` (represented by ``p['b']/p['a']`` in fit function ``fcn(x, p)``.)
 
 The output from the code sample above is::
 
@@ -112,7 +112,7 @@ best-fit values of the parameters in a file for later use. They are recovered
 using :mod:`pickle` again::
    
    >>> import pickle
-   >>> p = pickle.load(open("outputfile.p","rb"))
+   >>> p = pickle.load(open("outputfile.p", "rb"))
    >>> print(p['a'])
    0.252798 +- 0.0323152
    >>> print(p['b'])
@@ -133,19 +133,19 @@ prior rather than ``y``::
    ... as before ...
    
    y = {                      # data for the dependent variable
-      "data1" : gv.gvar([1.376,2.010],[[ 0.0047,0.01],[ 0.01,0.056]]),
-      "data2" : gv.gvar([1.329,1.582],[[ 0.0047,0.0067],[0.0067,0.0136]])
+      "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
+      "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]])
    }
    x = {                      # independent variable
-      "data1" : np.array([0.1,1.0]),
-      "data2" : np.array([0.1,0.5])
+      "data1" : np.array([0.1, 1.0]),
+      "data2" : np.array([0.1, 0.5])
    }
-   prior = dict(a=gv.gvar(0.5,0.5))
-   prior['b'] = prior['a']*gv.gvar(2.0,0.5)
+   prior = dict(a=gv.gvar(0.5, 0.5))
+   prior['b'] = prior['a']*gv.gvar(2.0, 0.5)
 
-   def fcn(x,p):              # fit function of x and parameters p[k]
+   def fcn(x, p):             # fit function of x and parameters p[k]
       ans = {}
-      for k in ["data1","data2"]:
+      for k in ["data1", "data2"]:
          ans[k] = gv.exp(p['a'] + x[k]*p['b'])
       return ans
       
@@ -208,14 +208,14 @@ implement in Python using the :mod:`gvar` module::
 
    import gvar as gv
    
-   def make_data():                      # make x,y fit data
+   def make_data():                      # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0,0.01)
-       c = [gv.gvar(cr(),0.01) for n in range(100)]
+       cr = gv.gvar(0.0, 0.01)
+       c = [gv.gvar(cr(), 0.01) for n in range(100)]
        x_xmax = x/max(x)
        noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
        y = f_exact(x)*noise
-       return x,y
+       return x, y
 
 Variable ``cr`` represents a gaussian distribution with mean ``0.0`` and width
 ``0.01``, which we use as a random number generator: ``cr()`` is a number
@@ -260,7 +260,7 @@ fake data.
 
 Basic Fits
 ----------
-Now that we have fit data, ``x,y = make_data(100)``, we pretend ignorance
+Now that we have fit data, ``x, y = make_data(100)``, we pretend ignorance
 of the exact functional relationship between ``x`` and ``y`` (*i.e.*,
 ``y=f_exact(x)``). Typically we *do* know the functional form and have some
 *a priori* idea about the parameter values. The point of the fit is to
@@ -275,15 +275,15 @@ our fit::
 
    import numpy as np
    
-   def f(x,p):          # function used to fit x,y data
+   def f(x, p):         # function used to fit x, y data
        a = p['a']       # array of a[i]s
        E = p['E']       # array of E[i]s
-       return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
+       return sum(ai*np.exp(-Ei*x) for ai, Ei in zip(a, E))
 
 The fit parameters, ``a[i]`` and ``E[i]``, are stored in a
 dictionary, using labels ``a`` and ``b`` to access them. These parameters
 are varied in the fit to find the best-fit values ``p=p_fit`` for which
-``f(x,p_fit)`` most closely approximates the ``y``\s in our fit data. The
+``f(x, p_fit)`` most closely approximates the ``y``\s in our fit data. The
 number of exponentials included in the sum is specified implicitly in this
 function, by the lengths of the ``p['a']`` and ``p['E']`` arrays.
 
@@ -305,8 +305,8 @@ that represents this information is built using the following code::
 
    def make_prior(nexp):               # make priors for fit parameters
        prior = gv.BufferDict()         # prior -- any dictionary works
-       prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
-       prior['E'] = [gv.gvar(i+1,0.5) for i in range(nexp)]
+       prior['a'] = [gv.gvar(0.5, 0.5) for i in range(nexp)]
+       prior['E'] = [gv.gvar(i+1, 0.5) for i in range(nexp)]
        return prior
 
 where ``nexp`` is the number of exponential terms that will be used (and
@@ -326,7 +326,7 @@ If saving is unnecessary, :class:`gvar.BufferDict` can be replaced by
 With fit data, a fit function, and a prior for the fit parameters, we are 
 finally ready to do the fit, which is now easy::
 
-  fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior)
+  fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior)
   
 So pulling together the entire code, from this section and the previous
 one, our complete Python program for making fake data and fitting it is::
@@ -338,39 +338,39 @@ one, our complete Python program for making fake data and fitting it is::
    def f_exact(x):                     # exact f(x)
        return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
 
-   def f(x,p):                         # function used to fit x,y data
+   def f(x, p):                        # function used to fit x, y data
        a = p['a']                      # array of a[i]s
        E = p['E']                      # array of E[i]s
-       return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
+       return sum(ai*np.exp(-Ei*x) for ai, Ei in zip(a, E))
 
-   def make_data():                    # make x,y fit data
+   def make_data():                    # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0,0.01)
-       c = [gv.gvar(cr(),0.01) for n in range(100)]
+       cr = gv.gvar(0.0, 0.01)
+       c = [gv.gvar(cr(), 0.01) for n in range(100)]
        x_xmax = x/max(x)
        noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
        y = f_exact(x)*noise
-       return x,y
+       return x, y
 
    def make_prior(nexp):               # make priors for fit parameters
        prior = gv.BufferDict()         # prior -- any dictionary works
-       prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
-       prior['E'] = [gv.gvar(i+1,0.5) for i in range(nexp)]
+       prior['a'] = [gv.gvar(0.5, 0.5) for i in range(nexp)]
+       prior['E'] = [gv.gvar(i+1, 0.5) for i in range(nexp)]
        return prior
 
    def main():
-       gv.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
-       x,y = make_data()               # make fit data
+       gv.ranseed([2009, 2010, 2011, 2012]) # initialize random numbers (opt.)
+       x, y = make_data()              # make fit data
        p0 = None                       # make larger fits go faster (opt.)
-       for nexp in range(3,20):
-           print('************************************* nexp =',nexp)
+       for nexp in range(3, 20):
+           print('************************************* nexp =', nexp)
            prior = make_prior(nexp)
-           fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
+           fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior, p0=p0)
            print(fit)                  # print the fit results
            E = fit.p['E']              # best-fit parameters
            a = fit.p['a']
-           print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-           print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
+           print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
+           print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
            print()
            if fit.chi2/fit.dof<1.:
                p0 = fit.pmean          # starting point for next fit (opt.)
@@ -637,7 +637,7 @@ output from ``fit.format(15)``\)::
              20  6.2447e-09  6.0779e-09   6.092e-10
 
 This information is presented again in the following plot, which shows the
-ratio ``y/f(x,p)``, as a function of ``x``, using the best-fit parameters
+ratio ``y/f(x, p)``, as a function of ``x``, using the best-fit parameters
 ``p``. The correct result for this ratio, of course, is one. The smooth
 variation in the data --- smooth compared with the size of the
 statistical-error bars --- is an indication of the statistical correlations
@@ -650,12 +650,12 @@ This particular plot was made using the :mod:`matplotlib` module, with the
 following code added to the end of ``main()`` (outside the loop)::
 
       import pylab as plt   
-      ratio = y/f(x,fit.pmean)
-      plt.xlim(0,21)
+      ratio = y/f(x, fit.pmean)
+      plt.xlim(0, 21)
       plt.xlabel('x')
       plt.ylabel('y/f(x,p)')
-      plt.errorbar(x=x,y=gv.mean(ratio),yerr=gv.sdev(ratio),fmt='ob')
-      plt.plot([0.0,21.0],[1.0,1.0])
+      plt.errorbar(x=x, y=gv.mean(ratio), yerr=gv.sdev(ratio), fmt='ob')
+      plt.plot([0.0, 21.0], [1.0, 1.0])
       plt.show()
 
 
@@ -672,16 +672,16 @@ section. First we need to add errors to the ``x``\s, which we do by
 changing ``make_data`` so that each ``x`` has a random value within about 
 ``+-0.001%`` of its original value and an error::
 
-   def make_data():                    # make x,y fit data
+   def make_data():                    # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0,0.01)
-       c = [gv.gvar(cr(),0.01) for n in range(100)]
+       cr = gv.gvar(0.0, 0.01)
+       c = [gv.gvar(cr(), 0.01) for n in range(100)]
        x_xmax = x/max(x)
        noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
        y = f_exact(x)*noise            # noisy y[i]s
-       xfac = gv.gvar(1.0,0.00001)     # gaussian distrib'n: 1 +- 0.001%
-       x = np.array([xi*gv.gvar(xfac(),xfac.sdev) for xi in x]) # noisy x[i]s
-       return x,y
+       xfac = gv.gvar(1.0, 0.00001)    # gaussian distrib'n: 1 +- 0.001%
+       x = np.array([xi*gv.gvar(xfac(), xfac.sdev) for xi in x]) # noisy x[i]s
+       return x, y
    
 Here :class:`gvar.GVar` object ``xfac`` is used as a random number
 generator: each time it is called, ``xfac()`` is a different random number
@@ -692,55 +692,45 @@ for each ``x`` is, obviously, specified by the mean and standard deviation
 of that ``x``, which is read directly out of the array of ``x``\s produced 
 by ``make_data()``::
 
-   def make_prior(nexp,x):             # make priors for fit parameters
+   def make_prior(nexp, x):            # make priors for fit parameters
        prior = gv.BufferDict()         # prior -- any dictionary works
-       prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
-       prior['E'] = [gv.gvar(i+1,0.5) for i in range(nexp)]
+       prior['a'] = [gv.gvar(0.5, 0.5) for i in range(nexp)]
+       prior['E'] = [gv.gvar(i+1, 0.5) for i in range(nexp)]
        prior['x'] = x                  # x now an array of parameters
-                                       # replace x by None in fit data
        return prior
 
    def main():
-       gv.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
-       x,y = make_data()               # make fit data
+       gv.ranseed([2009, 2010, 2011, 2012]) # initialize random numbers (opt.)
+       x, y = make_data()              # make fit data
        p0 = None                       # make larger fits go faster (opt.)
-       for nexp in range(3,20):
-           print('************************************* nexp =',nexp)
-           prior = make_prior(nexp,x)
-           fit = lsqfit.nonlinear_fit(data=(None,y),fcn=f,prior=prior,p0=p0)
+       for nexp in range(3, 20):
+           print('************************************* nexp =', nexp)
+           prior = make_prior(nexp, x)
+           fit = lsqfit.nonlinear_fit(data=y, fcn=f, prior=prior, p0=p0)
            print(fit)                  # print the fit results
            E = fit.p['E']              # best-fit parameters
            a = fit.p['a']
-           print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-           print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
+           print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
+           print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
            print()
            if fit.chi2/fit.dof<1.:
                p0 = fit.pmean          # starting point for next fit (opt.)
    
-Note that ``x`` has been replaced in the fit data by the Python null
-variable ``None``. This underscores the fact that
-:class:`lsqfit.nonlinear_fit` is completely uninterested in the independent
-variable ``x`` in the fit data. It makes no use of it beyond passing it
-through to the fit function. This means that the independent variable ``x``
-in the fit data can be replaced by any collection of data, using any data
-type that is desired; it is often a convenient way to send data to the
-fit function that is neither a ``y`` nor a parameter.
+The fit data now consists of just the ``y`` array (``data=y``), and the 
+fit function loses its ``x`` argument and gets its ``x`` values from the 
+fit parameters ``p`` instead::
 
-The final code modification is to the fit function, which now ignores its
-first argument (formerly ``x``), but gets ``x`` values from the parameters
-``p`` instead::
-
-   def f(xdummy,p):
+   def f(p):
        a = p['a']
        E = p['E']
        x = p['x']
-       return sum(ai*exp(-Ei*x) for ai,Ei in zip(a,E))
+       return sum(ai*exp(-Ei*x) for ai, Ei in zip(a, E))
 
 Running the new code gives, for ``nexp=6`` terms::
 
    ************************************* nexp = 6
    Least Square Fit:
-     chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -95.553    itns = 6
+     chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.734    itns = 6
 
    Parameters:
                  a_    0.402497 +-   0.0041           (     0.5 +-      0.5)
@@ -796,8 +786,8 @@ build the correlation between adjacent ``E[i]``\s into our prior.
 We do this by introducing a :class:`gvar.GVar` object ``de[i]`` for each
 separate difference ``E[i]-E[i-1]``, with ``de[0]`` being ``E[0]``::
 
-   de = [gvar(0.9,0.01) for i in range(nexp)]
-   de[0] = gvar(1,0.5)     #  different distribution for E[0]
+   de = [gvar(0.9, 0.01) for i in range(nexp)]
+   de[0] = gvar(1, 0.5)    # different distribution for E[0]
    
 Then ``de[0]`` specifies the probability distribution for ``E[0]``,
 ``de[0]+de[1]`` the distribution for ``E[1]``, ``de[0]+de[1]+de[2]`` the
@@ -810,7 +800,7 @@ For ``nexp=3``, this implies that ::
 
    >>> print(E)
    [1 +- 0.5 1.9 +- 0.5001 2.8 +- 0.5002]
-   >>> print(E[1]-E[0],E[2]-E[1])
+   >>> print(E[1]-E[0], E[2]-E[1])
    0.9 +- 0.01 0.9 +- 0.01
 
 which shows that each ``E[i]`` separately has an uncertainty of ``+-0.5`` 
@@ -821,9 +811,9 @@ introduce these correlations::
 
    def make_prior(nexp):               # make priors for fit parameters
        prior = gv.BufferDict()         # prior -- any dictionary works
-       prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
-       de = [gv.gvar(0.9,0.01) for i in range(nexp)]
-       de[0] = gv.gvar(1,0.5)     
+       prior['a'] = [gv.gvar(0.5, 0.5) for i in range(nexp)]
+       de = [gv.gvar(0.9, 0.01) for i in range(nexp)]
+       de[0] = gv.gvar(1, 0.5)     
        prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
        return prior
    
@@ -862,7 +852,7 @@ ten times more precise than the prior, to ``E[6]-E[5] = 0.900(10)``, which
 is just what was put into the fit through the prior (the fit data adds no
 new information). The correlated prior allows us to merge our *a priori*
 information about the energy differences with the new information carried
-by the fit data ``x,y``.
+by the fit data ``x, y``.
 
 Note that the Gaussian Bayes Factor (see ``logGBF`` in the output) is
 significantly larger with the correlated prior (``logGBF = -67.0``) than it
@@ -889,7 +879,7 @@ we are using the data to get a feel for what is a reasonable prior.
 
 This method is implemented in a driver program ::
     
-    fit,z = lsqfit.empbayes_fit(z0,fitargs)
+    fit, z = lsqfit.empbayes_fit(z0, fitargs)
     
 which varies :mod:`numpy` array ``z``, starting at ``z0``, to maximize
 ``fit.logGBF`` where ::
@@ -905,19 +895,19 @@ To illustrate, consider tuning the widths of the priors for the amplitudes,
 ``prior['a']``, in the example from the previous section. This is done by
 adding the following code to the end of ``main()`` subroutine::
 
-   def fitargs(z,nexp=nexp,prior=prior,f=f,data=(x,y),p0=p0):
+   def fitargs(z, nexp=nexp, prior=prior, f=f, data=(x, y), p0=p0):
        z = np.exp(z)
-       prior['a'] = [gv.gvar(0.5,0.5*z[0]) for i in range(nexp)]
-       return dict(prior=prior,data=data,fcn=f,p0=p0)
+       prior['a'] = [gv.gvar(0.5, 0.5*z[0]) for i in range(nexp)]
+       return dict(prior=prior, data=data, fcn=f, p0=p0)
    ##
    z0 = [0.0]
-   fit,z = empbayes_fit(z0,fitargs,tol=1e-3)
+   fit, z = empbayes_fit(z0, fitargs, tol=1e-3)
    print(fit)                  # print the optimized fit results
    E = fit.p['E']              # best-fit parameters
    a = fit.p['a']
-   print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-   print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
-   print("prior['a'] =",fit.prior['a'][0])
+   print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
+   print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
+   print("prior['a'] =", fit.prior['a'][0])
    print()
 
 Function ``fitargs`` generates a dictionary containing the arguments for
@@ -1000,9 +990,9 @@ an error-budget table::
 
    outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
             'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
-   inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}
+   inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
    print(fit.fmt_values(outputs))
-   print(fit.fmt_errorbudget(outputs,inputs))
+   print(fit.fmt_errorbudget(outputs, inputs))
 
 This gives the following output::
 
@@ -1087,18 +1077,18 @@ fit, putting the rest into ``ymod`` as above (up to a maximum of ``20``
 terms, which is close enough to infinity)::
 
    def main():
-       gv.ranseed([2009,2010,2011,2012])  # initialize random numbers (opt.)
+       gv.ranseed([2009, 2010, 2011, 2012])  # initialize random numbers (opt.)
        max_prior = make_prior(20)         # maximum sized prior
        p0 = None                          # make larger fits go faster (opt.)
-       for nexp in range(1,7):
-           print('************************************* nexp =',nexp)
+       for nexp in range(1, 7):
+           print('************************************* nexp =', nexp)
            fit_prior = gv.BufferDict()    # part of max_pior used in fit
            ymod_prior = gv.BufferDict()   # part of max_prior absorbed in ymod
            for k in max_prior:
                fit_prior[k] = max_prior[k][:nexp]
                ymod_prior[k] = max_prior[k][nexp:]
-           x,y = make_data(ymod_prior)    # make fit data
-           fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=fit_prior,p0=p0)
+           x, y = make_data(ymod_prior)   # make fit data
+           fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=fit_prior, p0=p0)
            print(fit.format(10))          # print the fit results
            print()
            if fit.chi2/fit.dof<1.:
@@ -1109,10 +1099,10 @@ We put all of our *a priori* knowledge about parameters into prior
 the first ``nexp`` terms. The remaining part of ``max_prior`` is used to
 correct the exact data, which comes from a new ``make_data``::
 
-   def make_data(ymod_prior):          # make x,y fit data
-       x = np.arange(1.,10*0.2+1.,0.2)
-       ymod = f_exact(x)-f(x,ymod_prior)        
-       return x,ymod
+   def make_data(ymod_prior):          # make x, y fit data
+       x = np.arange(1., 10*0.2+1., 0.2)
+       ymod = f_exact(x)-f(x, ymod_prior)        
+       return x, ymod
    
 Running the new code produces the following output, where again ``nexp`` is
 the number of exponentials kept in the fit (and ``20-nexp`` is the number
@@ -1330,7 +1320,7 @@ computing the inverse matrix.
 The standard solution to this common problem in least-squares fitting is 
 to introduce an *svd* cut, here called ``svdcut``::
 
-   fit = nonlinear_fit(data=(x,ymod),fcn=f,prior=prior,p0=p0,svdcut=1e-12)
+   fit = nonlinear_fit(data=(x, ymod), fcn=f, prior=prior, p0=p0, svdcut=1e-12)
    
 Then the inverse of the ``y`` covariance matrix is computed from its
 eigenvalues and eigenvectors, but with any eigenvalue smaller than
@@ -1393,9 +1383,9 @@ code, ::
 
    outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
               'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
-   inputs = {'E':max_prior['E'],'a':max_prior['a'],'svd':fit.svdcorrection}
+   inputs = {'E':max_prior['E'], 'a':max_prior['a'], 'svd':fit.svdcorrection}
    print(fit.fmt_values(outputs))
-   print(fit.fmt_errorbudget(outputs,inputs))
+   print(fit.fmt_errorbudget(outputs, inputs))
 
 which gives::
 
@@ -1444,7 +1434,7 @@ modified to include a bootstrap analysis by adding the following to the end of
 the ``main()`` subroutine::
    
    Nbs = 40                                     # number of bootstrap copies
-   outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[],'a2/a0':[]}   # results
+   outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[], 'a2/a0':[]}   # results
    for bsfit in fit.bootstrap_iter(n=Nbs):
        E = bsfit.pmean['E']                     # best-fit parameter values
        a = bsfit.pmean['a']                     #   (ignore errors)
@@ -1453,12 +1443,12 @@ the ``main()`` subroutine::
        outputs['a1/a0'].append(a[1]/a[0])
        outputs['a2/a0'].append(a[2]/a[0])
    # extract means and standard deviations from the bootstrap output
-   from numpy import mean,std
+   from numpy import mean, std
    for k in outputs:
-       outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+       outputs[k] = gv.gvar(np.mean(outputs[k]), np.std(outputs[k]))
    print('Bootstrap results:')
-   print('E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0'])
-   print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])
+   print('E1/E0 =', outputs['E1/E0'], '  E2/E1 =', outputs['E2/E0'])
+   print('a1/a0 =', outputs['a1/a0'], '  a2/a0 =', outputs['a2/a0'])
    
 The results are consistent with the results obtained directly from the fit
 (when using ``svdcut=1e-12``)::
@@ -1468,8 +1458,10 @@ The results are consistent with the results obtained directly from the fit
    a1/a0 = 1.01777 +- 0.0755551   a2/a0 = 1.06962 +- 0.275993
 
 In particular, the bootstrap analysis confirms our previous error estimates
-(to within 10-20%, since ``Nbs=40``). When a quantity is not particularly 
-gaussian, using medians instead of means might be more robust.
+(to within 10-20%, since ``Nbs=40``). When ``Nbs`` is small, it is often
+safer to use the median instead of the mean as the estimator (this can be 
+done by changing the line ``outputs[k] = gv.gvar(np.mean(...`` above to 
+``outputs[k] = gvar.dataset.avg_data(outputs[k], bstrap=True)``).
 
 
 Troubleshooting
@@ -1479,7 +1471,7 @@ such as::
 
    Traceback (most recent call last):
      File "<stdin>", line 10, in <module>
-       fit = nonlinear_fit(data=(None,y),prior=prior,fcn=f)
+       fit = nonlinear_fit(data=(None, y), prior=prior, fcn=f)
      File "/Users/gpl/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
        fit = multifit(p0, nf, self._chiv, **self.fitterargs)
      File "_utilities.pyx", line 303, in lsqfit._utilities.multifit.__init__ (src/lsqfit/_utilities.c:2668)
@@ -1498,7 +1490,7 @@ Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
 ``chi**2``. One fix is to include *svd* cuts in the fit by setting, for
-example, ``svdcut=(1e-14,1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
+example, ``svdcut=(1e-14, 1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
 These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.
 
@@ -1508,15 +1500,15 @@ of the covariance matrices has a zero mode. A common cause is if the same
 think that ::
 
    >>> import gvar as gv
-   >>> z = gv.gvar(1,1)
-   >>> prior = gv.BufferDict(a=z,b=z)
+   >>> z = gv.gvar(1, 1)
+   >>> prior = gv.BufferDict(a=z, b=z)
 
 creates a prior ``1 +- 1`` for each of parameter ``a`` and parameter ``b``.
 Indeed each parameter separately is of order ``1 +- 1``, but in a fit the two
 parameters would be forced equal to each other because their priors are both
 set equal to the same :class:`gvar.GVar`, ``z``::
 
-   >>> print(prior['a'],prior['b'])
+   >>> print(prior['a'], prior['b'])
    1 +- 1 1 +- 1
    >>> print(prior['a']-prior['b'])
    0 +- 0
@@ -1538,7 +1530,7 @@ the cut). Of course, simply replacing ``b`` by ``a`` in the fit function would
 be even better. If, on the other hand, ``a`` and ``b`` were not meant to
 fluctuate together, the prior should be redefined::
 
-   >>> prior = gv.BufferDict(a=gv.gvar(1,1),b=gv.gvar(1,1))
+   >>> prior = gv.BufferDict(a=gv.gvar(1, 1), b=gv.gvar(1, 1))
 
 where now each parameter has its own :class:`gvar.GVar`.   
    

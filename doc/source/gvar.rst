@@ -45,12 +45,12 @@ deviations are small enough).
     
 A multidimensional collection ``x[i]`` of gaussian variables is
 characterized by the means ``x[i].mean`` for each variable, together with a
-covariance matrix ``cov[i,j]``. Diagonal elements of ``cov`` specify the
-standard deviations of different variables: ``x[i].sdev = cov[i,i]**0.5``.
+covariance matrix ``cov[i, j]``. Diagonal elements of ``cov`` specify the
+standard deviations of different variables: ``x[i].sdev = cov[i, i]**0.5``.
 Nonzero off-diagonal elements imply correlations between different
 variables::
     
-    cov[i,j] = <x[i]*x[j]>  -  <x[i]> * <x[j]>
+    cov[i, j] = <x[i]*x[j]>  -  <x[i]> * <x[j]>
     
 where, in general, ``<y>`` is the expectation value or mean of random variable
 ``y``.
@@ -62,13 +62,13 @@ An object of type |GVar| represents a single gaussian variable. Such an
 object can be created for a single variable, with mean ``xmean`` and
 standard deviation ``xsdev`` (both scalars), using::
     
- 	x = gvar.gvar(xmean,xsdev).
+ 	x = gvar.gvar(xmean, xsdev).
     
 This function can also be used to convert strings like ``"-72.374(22)"`` or
 ``"511.2 +- 0.3"`` into |GVar|\s: for example, ::
     
     >>> import gvar
-    >>> x = gvar.gvar(3.1415,0.0002)
+    >>> x = gvar.gvar(3.1415, 0.0002)
     >>> print(x)
     3.1415 +- 0.0002
     >>> x = gvar.gvar("3.1415(2)")
@@ -106,7 +106,7 @@ the different |GVar|\s in it.
 To create an array of |GVar|\s with mean values specified by array
 ``xmean`` and covariance matrix ``xcov``, use ::
     
-	x = gvar.gvar(xmean,xcov)
+	x = gvar.gvar(xmean, xcov)
     
 where array ``x`` has the same shape as ``xmean`` (and ``xcov.shape =
 xmean.shape+xmean.shape``). Then each element ``x[i]`` of a one-dimensional
@@ -114,8 +114,8 @@ array, for example, is a |GVar| where::
     
     x[i].mean = xmean[i]        # mean of x[i]
     x[i].val  = xmean[i]        # same as x[i].mean
-    x[i].sdev = xcov[i,i]**0.5  # std deviation of x[i]
-    x[i].var  = xcov[i,i]       # variance of x[i]
+    x[i].sdev = xcov[i, i]**0.5  # std deviation of x[i]
+    x[i].var  = xcov[i, i]       # variance of x[i]
     
 |GVar|\s can be used in arithmetic expressions, just like Python
 floats. These expressions result in new |GVar|\s whose means and standard
@@ -126,21 +126,21 @@ arcsinh, arccosh, arctanh``.
     
 As an example, ::
     
-    >>> x,y = gvar.gvar([0.1,10.],[[0.015625,0.],[0.,4.]])
+    >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.], [0., 4.]])
     >>> print('x =', x, '   y =', y)
     x = 0.1 +- 0.125    y = 10 +- 2
     
 makes ``x`` and ``y`` |GVar|\s with standard deviations ``sigma_x=0.125`` and
 ``sigma_y=2``, and, in this case, no correlation between ``x`` and ``y``
-(since ``cov[i,j]=0`` when ``i!=j``). If now we set, for example, ::
+(since ``cov[i, j]=0`` when ``i!=j``). If now we set, for example, ::
     
     >>> f = x+y
-    >>> print('f =',f)
+    >>> print('f =', f)
     f = 10.1 +- 2.0039
     
 then ``f`` is a |GVar| with ::
     
-    f.var = df/dx cov[0,0] df/dx + df/dx cov[0,1] df/dy + ... 
+    f.var = df/dx cov[0, 0] df/dx + df/dx cov[0, 1] df/dy + ... 
           = 2.0039**2
     
 where ``cov`` is the original covariance matrix used to define ``x`` and
@@ -164,7 +164,7 @@ This is easily computed (for the example above)::
     0.125
     >>> print(f.partialsdev(y))        # uncertainty in f due to y
     2.0
-    >>> print(f.partialsdev(x,y))      # uncertainty in f due to x and y
+    >>> print(f.partialsdev(x, y))      # uncertainty in f due to x and y
     2.00390244274
     >>> print(f.sdev)                  # should be the same
     2.00390244274
@@ -172,10 +172,10 @@ This is easily computed (for the example above)::
 :func:`gvar.gvar` can also be used to convert strings or tuples stored in
 arrays or dictionaries into |GVar|\s: for example, ::
     
-    >>> garray = gvar.gvar(["2(1)","10+-5",(99,3),gvar.gvar(0,2)])
+    >>> garray = gvar.gvar(["2(1)", "10+-5", (99, 3), gvar.gvar(0, 2)])
     >>> print(garray)
     [2 +- 1 10 +- 5 99 +- 3 0 +- 2]
-    >>> gdict = gvar.gvar(dict(a="2(1)",b=["10+-5",(99,3),gvar.gvar(0,2)]))
+    >>> gdict = gvar.gvar(dict(a="2(1)", b=["10+-5", (99, 3), gvar.gvar(0, 2)]))
     >>> print(gdict)
     {'a': 2 +- 1, 'b': array([10 +- 5, 99 +- 3, 0 +- 2], dtype=object)}
     
@@ -183,7 +183,7 @@ If the covariance matrix in ``gvar.gvar`` is diagonal, it can be replaced
 by an array of standard deviations (square roots of diagonal entries in
 ``cov``). The example above, therefore, is equivalent to::
     
-    >>> x,y = gvar.gvar([0.1,10.],[0.125,2.])
+    >>> x, y = gvar.gvar([0.1, 10.], [0.125, 2.])
     >>> print('x =', x, '   y =', y)
     x = 0.1 +- 0.125    y = 10 +- 2
     
@@ -193,19 +193,19 @@ Computing Covariance Matrices
 The covariance matrix for a set of |GVar|\s, ``g0 g1`` ...,
 can be computed using ::
     
-    gvar.evalcov([g0,g1,..]) -> cov_g
+    gvar.evalcov([g0, g1...]) -> cov_g
     
-where ``cov_g[i,j]`` gives the covariance between ``gi`` and ``gj``.
+where ``cov_g[i, j]`` gives the covariance between ``gi`` and ``gj``.
 Instead of a list or array of ``g``\s, one can also give a dictionary ``g``
 where ``g[k]`` is a |GVar|. In this case :func:`gvar.evalcov` returns a
-doubly-indexed dictionary ``cov_g[k1][k2]`` where keys ``k1,k2`` are 
+doubly-indexed dictionary ``cov_g[k1][k2]`` where keys ``k1, k2`` are 
 in ``g``.
     
 Using the example from the previous section, the code
     
-    >>> x,y = gvar.gvar([0.1,10.],[[0.015625,0.],[0.,4.]])
+    >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.], [0., 4.]])
     >>> f = x+y
-    >>> print(gvar.evalcov([x,y,f]))
+    >>> print(gvar.evalcov([x, y, f]))
     [[ 0.015625  0.        0.015625]
      [ 0.        4.        4.      ]
      [ 0.015625  4.        4.015625]]
@@ -218,13 +218,13 @@ rather than an array since dictionaries are far more flexible. ``gvar.evalcov``
 can be used to evaluate the covariance matrix for a dictionary containing
 |GVar|\s and/or arbitrary arrays of |GVar|\s::
     
-    >>> d = dict(x=x,y=y,g=[x+y,x-y])
+    >>> d = dict(x=x, y=y, g=[x+y, x-y])
     >>> cov = gvar.evalcov(d)
-    >>> print(cov['x','x'])
+    >>> print(cov['x', 'x'])
     0.015625
-    >>> print(cov['x','y'])
+    >>> print(cov['x', 'y'])
     0.0
-    >>> print(cov['x','g'])
+    >>> print(cov['x', 'g'])
     [ 0.015625  0.015625]
     
     
@@ -235,7 +235,7 @@ Random Number Generators
 |GVar|\s represent probability distributions. It is possible to use them
 to generate random numbers from those distributions. For example, in
     
-    >>> z = gvar.gvar(2.0,0.5)
+    >>> z = gvar.gvar(2.0, 0.5)
     >>> print(z())
     2.29895701465
     >>> print(z())
@@ -253,9 +253,9 @@ a new array of random numbers. The random number arrays have the same
 shape as the array ``g`` of |GVar|\s and have the distribution implied 
 by those random variables (including correlations). For example,
     
-    >>> a = gvar.gvar(1.0,1.0)
-    >>> da = gvar.gvar(0.0,0.1)
-    >>> g = [a,a+da]
+    >>> a = gvar.gvar(1.0, 1.0)
+    >>> da = gvar.gvar(0.0, 0.1)
+    >>> g = [a, a+da]
     >>> giter = gvar.raniter(f)
     >>> print(next(giter))
     [ 1.51874589  1.59987422]
@@ -274,7 +274,7 @@ and ``a+da``.
 |GVar|\s. In such cases the iterator returns a dictionary with the same
 layout::
     
-    >>> g = dict(a=gvar.gvar(0,1),b=[gvar.gvar(0,100),gvar.gvar(10,1e-3)])
+    >>> g = dict(a=gvar.gvar(0, 1), b=[gvar.gvar(0, 100), gvar.gvar(10, 1e-3)])
     >>> print(g)
     {'a': 0 +- 1, 'b': [0 +- 100, 10 +- 0.001]}
     >>> giter = gvar.raniter(g)
@@ -287,7 +287,7 @@ One use for such random number generators is dealing with situations where
 the standard deviations are too large to justify the linearization 
 assumed in defining functions of gaussian variables. Consider, for example,
     
-    >>> x = gvar.gvar(1.,3.)
+    >>> x = gvar.gvar(1., 3.)
     >>> print(cos(x))
     0.540302 +- 2.52441
     
@@ -301,13 +301,13 @@ the resulting distribution is not gaussian)::
     # estimate mean,sdev from 1000 random x's
     >>> ran_x = numpy.array([x() for in range(1000)]) 
     >>> ran_cos = numpy.cos(ran_x)
-    >>> print('mean =',ran_cos.mean(),'  std dev =',ran_cos.std())
+    >>> print('mean =', ran_cos.mean(), '  std dev =', ran_cos.std())
     mean = 0.0350548954142   std dev = 0.718647118869
     
     # check by doing more (and different) random numbers
     >>> ran_x = numpy.array([x() for in range(100000)])
     >>> ran_cos = numpy.cos(ran_x)
-    >>> print('mean =',ran_cos.mean(),'  std dev =',ran_cos.std())
+    >>> print('mean =', ran_cos.mean(), '  std dev =', ran_cos.std())
     mean = 0.00806276057656   std dev = 0.706357174056
     
 This procedure generalizes trivially for multidimensional analyses, using 
@@ -320,7 +320,7 @@ distribution. Bootstrap copies of a data set, described by a collection of
 |GVar|\s, can be used as new (fake) data sets having the same statistical
 errors and correlations::
     
-    >>> g = gvar.gvar([1.1,0.8],[[0.01,0.005],[0.005,0.01]])
+    >>> g = gvar.gvar([1.1, 0.8], [[0.01, 0.005], [0.005, 0.01]])
     >>> print(g)
     [1.1 +- 0.1 0.8 +- 0.1]
     >>> print(gvar.evalcov(g))                  # print covariance matrix
@@ -350,21 +350,21 @@ Another potential issue is roundoff error, which can become problematic if
 there is a wide range of standard deviations among correlated modes. For
 example, the following code works as expected::
     
-    >>> from gvar import gvar,evalcov
+    >>> from gvar import gvar, evalcov
     >>> tiny = 1e-4
-    >>> a = gvar(0.,1.)
-    >>> da = gvar(tiny,tiny)
-    >>> a,ada = gvar([a.mean,(a+da).mean],evalcov([a,a+da])) # = a,a+da
+    >>> a = gvar(0., 1.)
+    >>> da = gvar(tiny, tiny)
+    >>> a, ada = gvar([a.mean, (a+da).mean], evalcov([a, a+da])) # = a,a+da
     >>> print(ada-a)   # should be da again
     0.0001 +- 0.0001
     
 Reducing ``tiny``, however, leads to problems::
     
-    >>> from gvar import gvar,evalcov
+    >>> from gvar import gvar, evalcov
     >>> tiny = 1e-8
-    >>> a = gvar(0.,1.)
-    >>> da = gvar(tiny,tiny)
-    >>> a,ada = gvar([a.mean,(a+da).mean],evalcov([a,a+da])) # = a,a+da
+    >>> a = gvar(0., 1.)
+    >>> da = gvar(tiny, tiny)
+    >>> a, ada = gvar([a.mean, (a+da).mean], evalcov([a, a+da])) # = a, a+da
     >>> print(ada-a)   # should be da again
     1e-8 +- 0
     
@@ -388,7 +388,7 @@ standard deviation of the |GVar| as well as correlations between it and any
 other function of the underlying variables. A |GVar| can be constructed at a
 very low level by supplying all three pieces of information --- for example, ::
     
-	f = gvar.gvar(fmean,fder,cov)
+	f = gvar.gvar(fmean, fder, cov)
     
 where ``fmean`` is the mean, ``fder`` is an array where ``fder[i]`` is the
 derivative of ``f`` with respect to the ``i``-th underlying variable
@@ -408,12 +408,12 @@ obtained using :func:`gvar.switch_gvar`: for example, ::
     ...
     x = gvar.gvar(...)
     y = gvar.gvar(...)
-    z = f(x,y)
+    z = f(x, y)
     ... other manipulations involving x and y ...
     gvar.switch_gvar()
     a = gvar(...)
     b = gvar(...)
-    c = g(a,b)
+    c = g(a, b)
     ... other manipulations involving a and b (but not x and y) ...
     
 Here the :func:`gvar.gvar` used to create ``a`` and ``b`` is a different
@@ -460,18 +460,18 @@ The following function creates an iterator that generates random arrays
 from the distribution defined by array (or dictionary) ``g`` of |GVar|\s. 
 The random numbers incorporate any correlations implied by the ``g``\s.
 
-.. autofunction:: gvar.raniter(g,n=None,svdcut=None,svdnum=None,rescale=True)
+.. autofunction:: gvar.raniter(g, n=None, svdcut=None, svdnum=None, rescale=True)
 
-.. autofunction:: gvar.bootstrap_iter(g,n=None,svdcut=None,svdnum=None,rescale=True)
+.. autofunction:: gvar.bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True)
 
 .. autofunction:: gvar.ranseed(a)
 
 Two functions that are useful for tabulating results and for analyzing where
 the errors in a |GVar| constructed from other |GVar|\s come from:
 
-.. autofunction:: gvar.fmt_errorbudget(outputs,inputs,ndigit=2,percent=True)
+.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndigit=2, percent=True)
 
-.. autofunction:: gvar.fmt_values(outputs,ndigit=3)
+.. autofunction:: gvar.fmt_values(outputs, ndigit=3)
 
 The following functions creates new functions that generate |GVar|\s (to 
 replace :func:`gvar.gvar`):
@@ -489,12 +489,12 @@ The following function can be used to rebuild collections of |GVar|\s,
 ignoring all correlations with other variables. It can also be used to 
 introduce correlations between uncorrelated variables.
 
-.. autofunction:: gvar.rebuild(g,gvar=gvar,corr=0.0)
+.. autofunction:: gvar.rebuild(g, gvar=gvar, corr=0.0)
 
 Finally there is a utility function and a class for implementing an *svd*
 analysis of a covariance or other symmetric, positive matrix:
 
-.. autofunction:: gvar.svd(g,svdcut=None,svdnum=None,compute_delta=False,rescale=False)
+.. autofunction:: gvar.svd(g, svdcut=None, svdnum=None, compute_delta=False, rescale=False)
    
    
 Classes
@@ -523,7 +523,7 @@ The fundamental class for representing gaussian variables is:
    
    .. automethod:: __str__
    
-   .. automethod:: fmt(d=4,sep='')
+   .. automethod:: fmt(d=4, sep='')
    
    Two attributes and a method make reference to the original
    variables from which ``self`` is derived:
@@ -562,11 +562,11 @@ supports Python pickling:
    
    .. automethod:: isscalar(k)
    
-   .. automethod:: add(k,v=None)
+   .. automethod:: add(k, v=None)
    
 SVD analysis is handled by the following class:
 
-.. autoclass:: gvar.SVD(mat,svdcut=None,svdnum=None,compute_delta=False,rescale=False)
+.. autoclass:: gvar.SVD(mat, svdcut=None, svdnum=None, compute_delta=False, rescale=False)
 
    .. automethod:: decomp(n)
 

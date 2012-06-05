@@ -7,7 +7,7 @@ Created by Peter Lepage on 2010-01-04.
 Copyright (c) 2010 Cornell University. All rights reserved.
 """
 USE_SVD = True
-DO_BOOTSTRAP = False
+DO_BOOTSTRAP = True
 DO_ERRORBUDGET = True
 
 SVDCUT = 1e-12 if USE_SVD else None
@@ -92,7 +92,8 @@ def main():
             # print bsfit
         # extract means and standard deviations from the bootstrap output
         for k in outputs:
-            outputs[k] = gd.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+            # outputs[k] = gd.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+            outputs[k] = gd.dataset.avg_data(outputs[k],bstrap=True)
         print 'Bootstrap results:'
         print 'E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0']
         print 'a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0']

@@ -19,6 +19,9 @@ from __future__ import print_function   # makes this work for python2 and 3
 
 DO_PLOT = False
 DO_BOOTSTRAP = False
+DO_SVD = False
+
+SVDCUT = 1e-10 if DO_SVD else None
 
 import lsqfit
 import numpy as np
@@ -62,18 +65,19 @@ def main():
         # eps = gv.gvar(1,1e-300)   # use svdcut to make it independent
         # prior['a'] *= eps
         # y *= eps
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,
+                                   p0=p0,svdcut=SVDCUT)
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
-        print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-        print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
+        print('E1/E0 =',(E[1]/E[0]).fmt(3),'  E2/E0 =',(E[2]/E[0]).fmt(3))
+        print('a1/a0 =',(a[1]/a[0]).fmt(3),'  a2/a0 =',(a[2]/a[0]).fmt(3))
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
     
     if DO_BOOTSTRAP:
-        Nbs = 40                                     # number of bootstrap copies
+        Nbs = 10                                     # number of bootstrap copies
             
         outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[],'a2/a0':[],'E1':[],'a1':[]}   # results
         for bsfit in fit.bootstrap_iter(n=Nbs):
@@ -91,9 +95,11 @@ def main():
 
         # extract means and standard deviations from the bootstrap output
         for k in outputs:
-            outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+            outputs[k] = gv.dataset.avg_data(outputs[k],bstrap=True).fmt(3)
+                                 # gv.gvar(np.mean(outputs[k]),
+                                 # np.std(outputs[k])).fmt(3)
         print('Bootstrap results:')
-        print('E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0'])
+        print('E1/E0 =',outputs['E1/E0'],'  E2/E0 =',outputs['E2/E0'])
         print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])
         print('E1 =',outputs['E1'],'  a1 =',outputs['a1'])
         

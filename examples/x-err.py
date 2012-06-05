@@ -35,10 +35,10 @@ lsqfit.nonlinear_fit.alt_fmt_table_line='%11s_%12.2f%12.2f%12.2f\n'
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
 
-def f(x,p):                         # function used to fit x,y data
+def f(p):                         # function used to fit x,y data
     a = p['a']                      # array of a[i]s
     E = p['E']                      # array of E[i]s
-    x = p['x']
+    x = p['x']                      # x is a parameter
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
 def make_data():                    # make x,y fit data
@@ -57,7 +57,6 @@ def make_prior(nexp,x):             # make priors for fit parameters
     prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
     prior['E'] = [gv.gvar(i+1,0.5) for i in range(nexp)]
     prior['x'] = x                  # x now an array of parameters
-                                    # replace x by None in fit data
     return prior
 
 def main():
@@ -67,13 +66,13 @@ def main():
     for nexp in range(3,8):
         print('************************************* nexp =',nexp)
         prior = make_prior(nexp,x)
-        fit = lsqfit.nonlinear_fit(data=(None,y),fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(data=y,fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
         fit.check_roundoff()
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
-        print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
-        print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
+        print('E1/E0 =',(E[1]/E[0]).fmt(3),'  E2/E0 =',(E[2]/E[0]).fmt(3))
+        print('a1/a0 =',(a[1]/a[0]).fmt(3),'  a2/a0 =',(a[2]/a[0]).fmt(3))
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
@@ -97,7 +96,8 @@ def main():
 
         # extract means and standard deviations from the bootstrap output
         for k in outputs:
-            outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+            outputs[k] = gv.gvar(np.mean(outputs[k]),
+                                 np.std(outputs[k])).fmt(3)
         print('Bootstrap results:')
         print('E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0'])
         print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])

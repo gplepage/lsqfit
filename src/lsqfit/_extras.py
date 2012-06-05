@@ -78,14 +78,14 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
         
         x1 = gvar.gvar(...)
         x2 = gvar.gvar(...)
-        xavg = wavg([x1,x2])    # weighted average of x1 and x2
+        xavg = wavg([x1, x2])   # weighted average of x1 and x2
         
     In this example, ``x1`` and ``x2`` could be replaced by arrays of 
     |GVar|\s, in which case ``xavg`` is an array as well: for example, ::
         
-        x1 = [gvar.gvar(...),gvar.gvar(...)]
-        x2 = [gvar.gvar(...),gvar.gvar(...)]
-        xavg = wavg([x1,x2])    # xavg[i] is wgtd avg of x1[i] and x2[i]
+        x1 = [gvar.gvar(...), gvar.gvar(...)]
+        x2 = [gvar.gvar(...), gvar.gvar(...)]
+        xavg = wavg([x1, x2])   # xavg[i] is wgtd avg of x1[i] and x2[i]
         
         
     :param xa: The |GVar|\s to be averaged. ``xa`` is a one-dimensional
