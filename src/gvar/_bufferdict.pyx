@@ -15,7 +15,7 @@ import collections
 import numpy
 import copy
 import pickle
-import gvar as gv
+import gvar as _gvar
 
 ## BufferDict ##
 BUFFERDICTDATA = collections.namedtuple('BUFFERDICTDATA',['slice','shape'])
@@ -153,11 +153,11 @@ class BufferDict(collections.MutableMapping):
         if len(self._buf)<1:
             return self.__dict__.copy()
         odict = self.__dict__.copy()
-        if isinstance(self._buf[0],gv.GVar):
+        if isinstance(self._buf[0],_gvar.GVar):
             buf = odict['_buf']
             del odict['_buf']
-            odict['_buf.mean'] = gv.mean(buf)
-            odict['_buf.cov'] = gv.evalcov(buf)
+            odict['_buf.mean'] = _gvar.mean(buf)
+            odict['_buf.cov'] = _gvar.evalcov(buf)
         data = odict['_data']
         del odict['_data']
         odict['_data.tuple'] = {}
@@ -168,7 +168,7 @@ class BufferDict(collections.MutableMapping):
     def __setstate__(self,odict):
         """ Restore state when unpickling when elements are GVars. """
         if '_buf.mean' in odict:
-            buf = gv.gvar(odict['_buf.mean'],odict['_buf.cov'])
+            buf = _gvar.gvar(odict['_buf.mean'],odict['_buf.cov'])
             del odict['_buf.mean']
             del odict['_buf.cov']
             odict['_buf'] = buf

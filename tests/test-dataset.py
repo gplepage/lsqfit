@@ -192,7 +192,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertLess(numpy.std(ac_a-ac_ex)*2,eps)
         b = np.array([[x(),x()] for i in range(N)])
         b = (b[:-2]+b[1:-1]+b[2:])/3.
-        ac_ex = np.array(zip(ac_ex,ac_ex))
+        ac_ex = np.array(list(zip(ac_ex,ac_ex)))
         ac_b = autocorr(b,5)
         self.assertLess(numpy.std(ac_b-ac_ex),eps)
         c = dict(a=a,b=b)

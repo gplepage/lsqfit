@@ -1,6 +1,10 @@
 Things we want to think about:
 - check documentation more carefully in light of huge rearrangements.
 
+- gvar-setup.py lsqfit-setup.py gdev-setup.py  need to be checked. Review
+  MANIFEST.in. 
+
+- rest "make sdist" -- see if the distribution works.
 
 Not Clear we want to do them:
 - nonlinear_fit.format is irritating with its maxline. Replace with a
@@ -12,10 +16,7 @@ Not Clear we want to do them:
   framework (with self.assertRaises(ValueError): stmt). Should be able to
   get the 92% (missing 39 statements) coverage closer to 100%.
 
-- simplify the unittests. Get away from the complicated loops over many
-  variations and simply list variations one at a time --- code easier to
-  read and also easier to figure out which variation failed if not using
-  loops (most important reason).
+- simplify the unittests. 
 
 - Build a more efficient mode for pickling BufferDicts containing GDevs.
   Current approach reconstructs the GDevs from their means and from their

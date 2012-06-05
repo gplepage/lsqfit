@@ -22,7 +22,7 @@ one-dimensional gaussian distribution (``1+-1``) might look like ::
     
     >>> random_numbers = [1.739, 2.682, 2.493, -0.460, 0.603, 0.800]
     
-while six samples from a two-dimensional distribution (``[1+-1,2+-1]``)
+while six samples from a two-dimensional distribution (``[1+-1, 2+-1]``)
 might be ::
     
     >>> random_arrays = [[ 0.494, 2.734], [ 0.172, 1.400], [ 1.571, 1.304], 
@@ -31,7 +31,7 @@ might be ::
 Samples from more complicated multidimensional distributions are represented
 by dictionaries whose values are lists of numbers or arrays: for example, ::
 
-   >>> random_dict = dict(n=random_numbers,a=random_arrays)
+   >>> random_dict = dict(n=random_numbers, a=random_arrays)
 
 where list elements ``random_dict['n'][i]`` and ``random_dict['a'][i]`` are
 part of the same multidimensional sample for every ``i`` --- that is, the
@@ -42,14 +42,14 @@ With large samples, we typically want to estimate the mean value of the
 underlying distribution. This is done using :func:`gvar.dataset.avg_data`:
 for example, ::
     
-    >>> print(gvar.dataset.avg_data(random_numbers))
+    >>> print(avg_data(random_numbers))
     1.3095 +- 0.452117
     
 indicates that ``1.31(45)`` is our best guess, based only upon the samples in
 ``random_numbers``, for the mean of the distribution from which those samples
 were drawn. Similarly ::
     
-    >>> print(gvar.dataset.avg_data(random_arrays))
+    >>> print(avg_data(random_arrays))
     [0.946667 +- 0.217418 1.66817 +- 0.251002]  
       
 indicates that the means for the two-dimensional distribution behind
@@ -57,7 +57,7 @@ indicates that the means for the two-dimensional distribution behind
 be applied to a dictionary whose values are lists of numbers/arrays: for
 example, ::
     
-    >>> print(gvar.dataset.avg_data(random_dict))
+    >>> print(avg_data(random_dict))
     {'a': array([0.946667 +- 0.217418, 1.66817 +- 0.251002], dtype=object), 
      'n': 1.3095 +- 0.452117}
     
@@ -84,10 +84,10 @@ distribution (labeled ``n``) or from the two-dimensional distribution (labeled
 ``a``). Assuming the file is called ``datafile``, this data can be read into
 a dictionary, essentially identical to the ``data`` dictionary above, using::
     
-    >>> data = gvar.dataset.Dataset("datafile")
+    >>> data = Dataset("datafile")
     >>> print(data['a'])
     [array([ 0.494, 2.734]), array([ 0.172, 1.400]), array([ 1.571, 1.304]) ... ]
-    >>> print(gvar.dataset.avg_data(data['n']))
+    >>> print(avg_data(data['n']))
     1.3095 +- 0.452117
     
 The brackets and commas can be omitted in the input file for one-dimensional
@@ -118,14 +118,14 @@ and could be read into a |Dataset| using::
     
     import yaml
     
-    data = gvar.dataset.Dataset()
-    with open("datafile","r") as dfile:
+    data = Dataset()
+    with open("datafile", "r") as dfile:
         for d in yaml.load_all(dfile.read()):   # iterate over yaml records  
             data.append(d)                      # d is a dictionary
     
 Finally note that data can be binned, into bins of size ``binsize``, using
 :func:`gvar.dataset.bin_data`. For example,
-``gvar.dataset.bin_data(data,binsize=3)`` replaces every three samples in
+``gvar.dataset.bin_data(data, binsize=3)`` replaces every three samples in
 ``data`` by the average of those samples. This creates a dataset that is
 ``1/3`` the size of the original but has the same mean. Binning is useful
 for making large datasets more manageable, and also for removing
@@ -136,8 +136,8 @@ Class |Dataset| can also be used to build a dataset sample by
 sample in code: for example, ::
     
     >>> a = Dataset()
-    >>> a.append(n=1.739,a=[ 0.494, 2.734])
-    >>> a.append(n=2.682,a=[ 0.172, 1.400])
+    >>> a.append(n=1.739, a=[ 0.494, 2.734])
+    >>> a.append(n=2.682, a=[ 0.172, 1.400])
     ...
     
 creates the same dataset as above.
@@ -147,13 +147,13 @@ Functions
 ----------   
 The functions defined in the module are:
 
-.. autofunction:: gvar.dataset.avg_data(data,median=False,spread=False,bstrap=False)
+.. autofunction:: gvar.dataset.avg_data(data, median=False, spread=False, bstrap=False)
 
-.. autofunction:: gvar.dataset.autocorr(data,ncorr=None)
+.. autofunction:: gvar.dataset.autocorr(data, ncorr=None)
 
-.. autofunction:: gvar.dataset.bin_data(data,binsize=2)
+.. autofunction:: gvar.dataset.bin_data(data, binsize=2)
 
-.. autofunction:: gvar.dataset.bootstrap_iter(data,n=None)
+.. autofunction:: gvar.dataset.bootstrap_iter(data, n=None)
 
 
 Classes
@@ -167,9 +167,9 @@ multidimensional distributions:
    
    .. autoattribute:: samplesize
       
-   .. automethod:: append(*args,**kargs)
+   .. automethod:: append(*args, **kargs)
    
-   .. automethod:: extend(*args,**kargs)
+   .. automethod:: extend(*args, **kargs)
    
    .. automethod:: grep(rexp)
    
