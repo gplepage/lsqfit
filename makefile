@@ -13,20 +13,17 @@
 
 PYTHON = python
 
-%.so : %.pyx
-	$(PYTHON) $*-setup.py build_ext --inplace
-
 install : 
-	$(PYTHON) setup.py install --user --record installed-files
+	$(PYTHON) setup.py install --user --record installed-files.$(PYTHON)
 
 install-sys : 		
-	$(PYTHON) setup.py install --record installed-files
+	$(PYTHON) setup.py install --record installed-files.$(PYTHON)
 
 uninstall :			# not sure this works --- be careful
-	cat installed-files | xargs rm -rf
+	cat installed-files.$(PYTHON) | xargs rm -rf
 
 install-gdev :
-	$(PYTHON) gdev-setup.py install --user
+	$(PYTHON) gdev-setup.py install --user --record installed-files.gdev
 
 doc-html:
 	rm -rf doc/html; cd doc/source; make html; mv _build/html ..

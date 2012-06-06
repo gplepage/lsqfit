@@ -2,7 +2,6 @@
 # encoding: utf-8
 """
 Alias gvar to the old name, gdev. For use with legacy codes only.
-
 """
 # Created by G. Peter Lepage (Cornell University) on 2012-05-27.
 # Copyright (c) 2008-2012 G. Peter Lepage. 
@@ -19,13 +18,16 @@ Alias gvar to the old name, gdev. For use with legacy codes only.
 
 from gvar import *
 import gvar as _gvar
+
 gdev = gvar
 GDev = GVar
 GDevFactory = GVarFactory
 switch_gdev = switch_gvar
 restore_gdev = restore_gvar
 gdev_factory = gvar_factory
+asgdev = asgvar
+valder_var = valder
 
 def rebuild(g, corr=0.0, gdev=gdev):
-    return _gvar.rebuild(g,corr=corr,gvar=gdev)
+    return _gvar.rebuild(g, corr=corr, gvar=gdev)
 ##

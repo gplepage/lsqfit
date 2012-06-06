@@ -6,7 +6,7 @@ doc/lsqfit.pdf
 *.c
 examples/*.p
 examples/*.tmp
-installed-files
+installed-files.*
 MANIFEST
 dist/
 doc/source/_build/
