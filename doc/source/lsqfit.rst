@@ -204,11 +204,11 @@ nonlinear_fit Objects
       data: that is, ``fit.y`` is obtained by adding ``svdcorrection[0]``
       to the (flattened) input data. Similarly, ``svdcorrection[1]`` is the
       correction for the prior: ``fit.prior`` is obtained by adding
-      ``svdcorrection[1]`` to the (flattened) input prior. Each 
-      ``svdcorrection[i]`` is either a flattened array or ``None``, if there
-      was no *svd* correction. This is mostly used as an input variable when
-      creating error budgets, to assess how much of the error in a final
-      result is caused by the *svd* cut.
+      ``svdcorrection[1]`` to the (flattened) input prior. Each
+      ``svdcorrection[i]`` is either a flattened array, or ``None``, if
+      there was no *svd* correction. ``svdcorrection`` is mostly used as an
+      input variable when creating error budgets, to assess how much of the
+      error in a final result is caused by the *svd* cut.
       
    .. attribute:: time
    
@@ -256,7 +256,7 @@ nonlinear_fit Objects
    
    .. automethod:: dump_pmean(filename)
 
-   .. automethod:: nonlinear_fit.laod_parameters(filename)
+   .. automethod:: nonlinear_fit.load_parameters(filename)
    
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 

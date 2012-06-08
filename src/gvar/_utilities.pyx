@@ -304,12 +304,12 @@ def fmt_values(outputs,ndigit=3):
 def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
         
-    :param outputs: Dictionary of |GVar|\s for which partial standard 
-        deviations are computed.
-    :param inputs: Dictionary of lists of: |GVar|\s or arrays/dictionaries 
-        of |GVar|\s. The partial standard deviation due to the input
-        quantities in each list is tabulated for each output quantity in
-        ``outputs``.
+    :param outputs: Dictionary of |GVar|\s for which an error budget 
+        is computed.
+    :param inputs: Dictionary of: |GVar|\s, arrays/dictionaries of 
+        |GVar|\s, or lists of |GVar|\s and/or arrays/dictionaries of
+        |GVar|\s. ``fmt_errorbudget`` tabulates the parts of the standard
+        deviations of each ``outputs[ko]`` due to each ``inputs[ki]``.
     :param ndigit: Number of decimal places displayed in table.
     :type ndigit: ``int``
     :param percent: Tabulate % errors if ``percent is True``; otherwise
@@ -643,11 +643,11 @@ def valder(v):
         numpy.array([newgvar(vi,0.0) for vi in v])
         
     The use of ``newgvar`` to create the |GVar|\s means that these
-    variables are incompatible with those created by ``gvar.gvar``. It also
-    means that the vector of derivatives ``x.der`` for any |GVar| ``x``
-    formed from elements of ``vd = valder(v)`` correspond to derivatives
-    with respect to ``vd``: that is, ``x.der[i]`` is the derivative of
-    ``x`` with respect to ``vd.flat[i]``.
+    variables are incompatible with those created by ``gvar.gvar``. 
+    More usefully, it also means that the vector of derivatives ``x.der``
+    for any |GVar| ``x`` formed from elements of ``vd = valder(v)``
+    correspond to derivatives with respect to ``vd``: that is, ``x.der[i]``
+    is the derivative of ``x`` with respect to ``vd.flat[i]``.
         
     In general, the shape of the array returned by ``valder`` is the
     same as that of ``vv``.

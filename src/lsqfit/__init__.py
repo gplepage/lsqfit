@@ -346,9 +346,9 @@ class nonlinear_fit(object):
             
         :param maxline: Maximum number of data points for which fit 
             results and input data are tabulated. ``maxline<0`` implies
-            that only only ``chi2``, ``Q``, ``logGBF``, and ``itns``
-            are tabulated; no parameter values are included. Default
-            is ``maxline=0``.
+            that only ``chi2``, ``Q``, ``logGBF``, and ``itns`` are
+            tabulated; no parameter values are included. Default is
+            ``maxline=0``.
         :type maxline: integer
         :returns: String containing detailed information about last fit.
         """
