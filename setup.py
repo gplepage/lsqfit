@@ -81,7 +81,7 @@ setup(name='lsqfit',
     These packages use the Gnu Scientific Library (GSL) to do the
     fitting, numpy for efficient array arithmetic, and cython to
     compile efficient core routines and interface code.
-    """
+    """ 
     ,
     classifiers = [                     #
         'Development Status :: 5 - Production/Stable',
