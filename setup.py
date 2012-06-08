@@ -64,7 +64,7 @@ setup(name='lsqfit',
     ext_modules=ext_modules,
     cmdclass={'build_ext':build_ext,'build_py':build_py},
     requires=["cython (>=0.14)","numpy (>=1.0)"],
-    url="git@github.com:gplepage/lsqfit.git",
+    url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3',
     platforms='Unix',
     long_description="""\
