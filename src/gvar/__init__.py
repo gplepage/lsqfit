@@ -180,10 +180,12 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
           ``compute_inv=True``. The order of the vectors is reversed
           relative to ``svd.val`` and ``svd.vec``
     """
+    ## replace g by a copy of g ##
     if hasattr(g,'keys'):
         g = BufferDict(g)
     else:
         g = numpy.array(g)
+    ##
     cov = evalcov(g.flat)
     if numpy.all(cov == numpy.diag(numpy.diag(cov))):
         ## covariance matrix diagonal => don't change it ##
@@ -215,3 +217,6 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     return g
 ##
         
+## legacy code support ##
+fmt_partialsdev = fmt_errorbudget 
+##

@@ -840,6 +840,22 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             lsqfit._reformat(p,[[10,20,30,40]])
         ##
     ##
+    def test_dump(self):
+        y = {0 : gv.gvar(1,2), 1 : gv.gvar(3,4)}
+        prior = {0 : gv.gvar(1.5, 1)}
+        def f(p):
+            return {0:p[0],1:p[0]}
+        ##
+        fit = nonlinear_fit(data=y,prior=prior,fcn=f)
+        fit.dump_p("test-lsqfit.p")
+        p = nonlinear_fit.load_parameters("test-lsqfit.p")
+        self.assert_gvclose(p[0],fit.p[0])
+        self.assert_gvclose(p[0],wavg([y[0],y[1],prior[0]]))
+        fit.dump_pmean("test-lsqfit.p")
+        pmean = fit.load_parameters("test-lsqfit.p")
+        self.assertAlmostEqual(pmean[0],fit.pmean[0])
+        os.remove("test-lsqfit.p")
+    ##
     def test_partialerr1(self):
         """ fit.p.der """
         # verifies that derivatives in fit.p relate properly to inputs

@@ -12,7 +12,7 @@
 
 PYTHON = python
 
-tests:
+test-all tests:
 	#================================================================ gvar
 	- $(PYTHON) -m unittest test-gvar
 	#========================================================== bufferdict

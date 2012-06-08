@@ -3,20 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>lsqfit.todo</string>
+	<string>INSTALLATION</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>lsqfit.todo</string>
 			<key>lastUsed</key>
-			<date>2012-06-01T22:42:14Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2012-06-07T17:13:47Z</date>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>src</string>
 			<key>regexFolderFilter</key>
@@ -28,7 +24,7 @@
 			<key>filename</key>
 			<string>gdev.py</string>
 			<key>lastUsed</key>
-			<date>2012-06-01T22:42:14Z</date>
+			<date>2012-06-07T03:07:14Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -43,31 +39,37 @@
 					<key>filename</key>
 					<string>doc/source/index.rst</string>
 					<key>lastUsed</key>
-					<date>2012-05-28T20:20:46Z</date>
+					<date>2012-06-03T18:15:04Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/overview.rst</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T00:35:31Z</date>
+					<date>2012-06-05T02:40:40Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/gvar.rst</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T00:18:26Z</date>
+					<date>2012-06-06T17:58:48Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>doc/source/gvar_dataset.rst</string>
+					<key>lastUsed</key>
+					<date>2012-06-05T22:14:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/lsqfit.rst</string>
 					<key>lastUsed</key>
-					<date>2012-05-27T20:59:38Z</date>
+					<date>2012-06-07T03:22:20Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/fig1.eps</string>
 					<key>lastUsed</key>
-					<date>2011-10-07T20:45:34Z</date>
+					<date>2012-06-05T22:15:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -89,13 +91,13 @@
 					<key>filename</key>
 					<string>doc/source/eg1.py</string>
 					<key>lastUsed</key>
-					<date>2012-05-27T20:25:42Z</date>
+					<date>2012-06-05T01:03:53Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/eg2.py</string>
 					<key>lastUsed</key>
-					<date>2012-05-27T20:25:48Z</date>
+					<date>2012-06-05T01:06:15Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -113,17 +115,15 @@
 					<key>filename</key>
 					<string>doc/source/eg5.py</string>
 					<key>lastUsed</key>
-					<date>2012-05-27T20:27:08Z</date>
+					<date>2012-06-05T01:59:39Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/Makefile</string>
 					<key>lastUsed</key>
-					<date>2010-07-28T02:44:34Z</date>
+					<date>2012-06-05T22:21:01Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>documentation</string>
 		</dict>
@@ -132,51 +132,59 @@
 			<array>
 				<dict>
 					<key>filename</key>
-					<string>CHANGES</string>
+					<string>setup.py</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T01:07:03Z</date>
+					<date>2012-06-07T17:26:41Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>gdev-setup.py</string>
+					<key>lastUsed</key>
+					<date>2012-06-06T02:33:55Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>makefile</string>
 					<key>lastUsed</key>
-					<date>2012-05-28T20:22:12Z</date>
+					<date>2012-06-06T14:17:12Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>.gitignore</string>
+					<key>lastUsed</key>
+					<date>2012-06-07T17:13:39Z</date>
+				</dict>
+				<dict>
+					<key>filename</key>
+					<string>CHANGES</string>
+					<key>lastUsed</key>
+					<date>2012-06-07T03:37:38Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>README</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T00:30:01Z</date>
+					<date>2012-06-07T17:13:54Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>INSTALLATION</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T00:56:26Z</date>
+					<date>2012-06-07T19:26:35Z</date>
+					<key>selected</key>
+					<true/>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>MANIFEST.in</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T01:06:15Z</date>
+					<date>2012-06-07T19:26:35Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>COPYING</string>
 					<key>lastUsed</key>
-					<date>2012-05-29T01:06:31Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>setup.py</string>
-					<key>lastUsed</key>
-					<date>2012-05-29T01:06:28Z</date>
-				</dict>
-				<dict>
-					<key>filename</key>
-					<string>gvar-setup.py</string>
-					<key>lastUsed</key>
-					<date>2012-05-29T00:32:14Z</date>
+					<date>2012-06-07T17:17:21Z</date>
 				</dict>
 			</array>
 			<key>expanded</key>
@@ -185,8 +193,6 @@
 			<string>build files</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>tests</string>
 			<key>regexFolderFilter</key>
@@ -195,8 +201,6 @@
 			<string>tests</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>examples</string>
 			<key>regexFolderFilter</key>
@@ -209,6 +213,20 @@
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
+		<key>.gitignore</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>8</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>CHANGES</key>
 		<dict>
 			<key>caret</key>
@@ -216,7 +234,7 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>42</integer>
+				<integer>140</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -230,7 +248,7 @@
 				<key>column</key>
 				<integer>0</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>509</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -242,23 +260,23 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>21</integer>
+				<integer>4</integer>
 				<key>line</key>
-				<integer>62</integer>
+				<integer>17</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>11</integer>
 		</dict>
 		<key>MANIFEST.in</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>72</integer>
-				<key>line</key>
 				<integer>0</integer>
+				<key>line</key>
+				<integer>13</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -270,30 +288,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>13</integer>
+				<integer>12</integer>
 				<key>line</key>
-				<integer>8</integer>
+				<integer>15</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>9</integer>
-				<key>line</key>
-				<integer>8</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>8</integer>
-			</dict>
 		</dict>
 		<key>doc/source/Makefile</key>
 		<dict>
@@ -353,7 +355,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>28</integer>
+			<integer>0</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
@@ -374,30 +376,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>17</integer>
+				<integer>62</integer>
 				<key>line</key>
-				<integer>92</integer>
+				<integer>24</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>46</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>13</integer>
-				<key>line</key>
-				<integer>92</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>17</integer>
-				<key>line</key>
-				<integer>92</integer>
-			</dict>
+			<integer>37</integer>
 		</dict>
 		<key>doc/source/eg3.py</key>
 		<dict>
@@ -464,30 +450,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>15</integer>
+				<integer>42</integer>
 				<key>line</key>
-				<integer>103</integer>
+				<integer>94</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>57</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>11</integer>
-				<key>line</key>
-				<integer>103</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>15</integer>
-				<key>line</key>
-				<integer>103</integer>
-			</dict>
+			<integer>0</integer>
 		</dict>
 		<key>doc/source/fig1.eps</key>
 		<dict>
@@ -522,23 +492,37 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>11</integer>
+				<integer>42</integer>
 				<key>line</key>
-				<integer>54</integer>
+				<integer>427</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>25</integer>
+			<integer>0</integer>
+		</dict>
+		<key>doc/source/gvar_dataset.rst</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>42</integer>
+				<key>line</key>
+				<integer>5</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 		<key>doc/source/index.rst</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>19</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>15</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -550,43 +534,43 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>51</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>170</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>112</integer>
 		</dict>
 		<key>doc/source/overview.rst</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>53</integer>
+				<integer>33</integer>
 				<key>line</key>
-				<integer>11</integer>
+				<integer>191</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>168</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>31</integer>
 				<key>line</key>
-				<integer>5</integer>
+				<integer>191</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>33</integer>
 				<key>line</key>
-				<integer>12</integer>
+				<integer>191</integer>
 			</dict>
 		</dict>
 		<key>examples/err-budget.py</key>
@@ -594,30 +578,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>28</integer>
+				<integer>14</integer>
 				<key>line</key>
-				<integer>85</integer>
+				<integer>23</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>26</integer>
-				<key>line</key>
-				<integer>85</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>28</integer>
-				<key>line</key>
-				<integer>85</integer>
-			</dict>
+			<integer>30</integer>
 		</dict>
 		<key>examples/makefile</key>
 		<dict>
@@ -633,19 +601,49 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>examples/p-corr.py</key>
+		<key>examples/p-corr.out</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>6</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>3</integer>
+				<integer>0</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
+		</dict>
+		<key>examples/p-corr.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>21</integer>
+				<key>line</key>
+				<integer>23</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>21</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>24</integer>
+			</dict>
 		</dict>
 		<key>examples/simple.out</key>
 		<dict>
@@ -696,9 +694,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>13</integer>
 				<key>line</key>
-				<integer>0</integer>
+				<integer>21</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -710,53 +708,37 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>49</integer>
+				<integer>55</integer>
 				<key>line</key>
-				<integer>106</integer>
+				<integer>68</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>41</integer>
+		</dict>
+		<key>gdev-setup.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>55</integer>
+				<key>line</key>
+				<integer>3</integer>
+			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>47</integer>
-				<key>line</key>
-				<integer>106</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>49</integer>
-				<key>line</key>
-				<integer>106</integer>
-			</dict>
 		</dict>
 		<key>gdev.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>27</integer>
+				<integer>34</integer>
 				<key>line</key>
-				<integer>25</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>gvar-setup.py</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>4</integer>
-				<key>line</key>
-				<integer>43</integer>
+				<integer>16</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -768,9 +750,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>31</integer>
 				<key>line</key>
-				<integer>20</integer>
+				<integer>4</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -782,30 +764,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>11</integer>
+				<integer>15</integer>
 				<key>line</key>
-				<integer>54</integer>
+				<integer>13</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>16</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>7</integer>
-				<key>line</key>
-				<integer>54</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>11</integer>
-				<key>line</key>
-				<integer>54</integer>
-			</dict>
+			<integer>0</integer>
 		</dict>
 		<key>nose-uncovered.py</key>
 		<dict>
@@ -826,14 +792,114 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>46</integer>
+				<integer>20</integer>
 				<key>line</key>
-				<integer>43</integer>
+				<integer>68</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>53</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>68</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>20</integer>
+				<key>line</key>
+				<integer>68</integer>
+			</dict>
+		</dict>
+		<key>src/gvar/__init__.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>70</integer>
+				<key>line</key>
+				<integer>119</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>17</integer>
+			<integer>40</integer>
+		</dict>
+		<key>src/gvar/_utilities.pyx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>58</integer>
+				<key>line</key>
+				<integer>303</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/lsqfit/__init__.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>34</integer>
+				<key>line</key>
+				<integer>474</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>266</integer>
+		</dict>
+		<key>src/lsqfit/_extras.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/lsqfit/_utilities.pyx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>195</integer>
+		</dict>
+		<key>src/lsqfit/version.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
 		</dict>
 		<key>tests/README</key>
 		<dict>
@@ -854,9 +920,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>39</integer>
+				<integer>9</integer>
 				<key>line</key>
-				<integer>27</integer>
+				<integer>14</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -898,9 +964,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>17</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>22</integer>
+				<integer>28</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -912,53 +978,47 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>22</integer>
+				<integer>24</integer>
 				<key>line</key>
-				<integer>674</integer>
+				<integer>842</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>20</integer>
-				<key>line</key>
-				<integer>674</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>22</integer>
-				<key>line</key>
-				<integer>674</integer>
-			</dict>
+			<integer>40</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>lsqfit.todo</string>
 		<string>doc/source/lsqfit.rst</string>
+		<string>doc/source/fig1.eps</string>
+		<string>doc/source/gvar_dataset.rst</string>
 		<string>tests/test-lsqfit.py</string>
 		<string>tests/makefile</string>
 		<string>examples/makefile</string>
 		<string>tests/README</string>
 		<string>CHANGES</string>
+		<string>.gitignore</string>
+		<string>gdev-setup.py</string>
+		<string>doc/source/Makefile</string>
 		<string>MANIFEST.in</string>
 		<string>COPYING</string>
 		<string>setup.py</string>
-		<string>gvar-setup.py</string>
 		<string>tests/test-gvar.py</string>
 		<string>tests/test-bufferdict.py</string>
 		<string>nose-uncovered.py</string>
 		<string>gdev.py</string>
+		<string>src/lsqfit/_utilities.pyx</string>
+		<string>src/lsqfit/version.py</string>
+		<string>src/gvar/_utilities.pyx</string>
 		<string>doc/source/index.rst</string>
 		<string>doc/source/overview.rst</string>
 		<string>doc/source/gvar.rst</string>
 		<string>makefile</string>
+		<string>src/lsqfit/__init__.py</string>
+		<string>src/lsqfit/_extras.py</string>
+		<string>src/gvar/__init__.py</string>
 		<string>README</string>
 		<string>INSTALLATION</string>
 		<string>doc/source/eg3.py</string>
@@ -966,6 +1026,7 @@
 		<string>doc/source/eg5.py</string>
 		<string>examples/err-budget.py</string>
 		<string>examples/p-corr.py</string>
+		<string>examples/p-corr.out</string>
 		<string>examples/simple.py</string>
 		<string>examples/x-err.py</string>
 		<string>examples/y-vs-x.py</string>
@@ -976,6 +1037,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{34, 69}, {549, 784}}</string>
+	<string>{{13, 94}, {549, 784}}</string>
 </dict>
 </plist>

@@ -424,8 +424,8 @@ about ``x`` and ``y``. Absent the ``switch_gvar`` line, ``c`` would have
 information about its derivatives with respect to ``x`` and ``y`` (zero
 derivative in both cases) and this would make calculations involving ``c``
 slightly slower than with the ``switch_gvar`` line. Usually the difference
-is negligible, but in cases with hundreds or thousands of underlying
-variables redefining ``gvar`` can make a substantial difference. Note that
+is negligible, but in cases with tens of thousands of underlying
+variables redefining ``gvar`` might make a difference. Note that
 the previous :func:`gvar.gvar` can be restored using
 :func:`gvar.restore_gvar`.
     

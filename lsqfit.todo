@@ -1,10 +1,8 @@
 Things we want to think about:
-- check documentation more carefully in light of huge rearrangements.
+- remake documentation for distribution
 
-- gvar-setup.py lsqfit-setup.py gdev-setup.py  need to be checked. Review
-  MANIFEST.in. 
-
-- rest "make sdist" -- see if the distribution works.
+- post to pypi --- need classifiers and need to understand what I am
+  actually doing (permissions).
 
 Not Clear we want to do them:
 - nonlinear_fit.format is irritating with its maxline. Replace with a

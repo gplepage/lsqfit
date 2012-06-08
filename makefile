@@ -14,16 +14,17 @@
 PYTHON = python
 
 install : 
-	$(PYTHON) setup.py install --user --record installed-files.$(PYTHON)
+	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHON)
 
 install-sys : 		
-	$(PYTHON) setup.py install --record installed-files.$(PYTHON)
+	$(PYTHON) setup.py install --record files-lsqfit.$(PYTHON)
 
-uninstall :			# not sure this works --- be careful
-	cat installed-files.$(PYTHON) | xargs rm -rf
+uninstall :			# mostly works (leaves some empty directories)
+	- cat files-lsqfit.$(PYTHON) | xargs rm -rf
+	- cat files-gdev.$(PYTHON) | xargs rm -rf
 
 install-gdev :
-	$(PYTHON) gdev-setup.py install --user --record installed-files.gdev
+	$(PYTHON) gdev-setup.py install --user --record files-gdev.$(PYTHON)
 
 doc-html:
 	rm -rf doc/html; cd doc/source; make html; mv _build/html ..
@@ -37,13 +38,9 @@ doc-all: doc-html doc-pdf
 sdist:			# source distribution
 	$(PYTHON) setup.py sdist
 
-lsqfit.tz:		# everything
-	$(MAKE) clean
-	tar --exclude '\.svn' --exclude 'old' --exclude 'tmp' -z -c -v -C .. -f lsqfit.tz lsqfit
-
 .PHONY: tests
 
-tests:
+tests test-all:
 	$(MAKE) -C tests PYTHON=$(PYTHON) tests
 
 run-examples:
@@ -51,14 +48,10 @@ run-examples:
 
 clean:
 	rm -f -r build __pycache__
-	rm -f *.so *.tmp *.pyc *.prof .coverage
-	rm -f gvar.c lsqfit_util.c
-	rm -f lsqfit.tz
+	rm -f *.so *.tmp *.pyc *.prof *.c .coverage 
 	rm -f -r dist
 	rm -rf src/lsqfit/*.c
 	rm -rf src/gvar/*.c
-	rm -rf src/lsqfit/*.pyc
-	rm -rf src/gvar/*.pyc
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean

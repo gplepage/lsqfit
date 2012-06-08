@@ -1,5 +1,5 @@
 include makefile README INSTALLATION COPYING MANIFEST.in CHANGES
-include setup.py gvar-setup.py lsqfit_util-setup.py gvar.pxd
+include setup.py src/gvar.pxd src/gvar/*.pxd src/lsqfit/*.pxd
 include gdev.py gdev-setup.py
 include doc/lsqfit.pdf
 
@@ -11,4 +11,3 @@ exclude examples/*.pyc
 exclude tests/*.pyc
 recursive-exclude tests/__pycache__ *
 recursive-exclude doc/source/_build *
-prune dist build

@@ -6,9 +6,9 @@ doc/lsqfit.pdf
 *.c
 examples/*.p
 examples/*.tmp
-installed-files.*
 MANIFEST
 dist/
 doc/source/_build/
 .coverage
 src/lsqfit/version.py
+files-*.python*

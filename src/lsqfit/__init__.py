@@ -101,7 +101,7 @@ class nonlinear_fit(object):
     are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
     ``fit.time``, respectively. Results for individual parameters in
     ``fit.p`` are of type |GVar|, and therefore carry information about
-    errors and correlations with other parameters.
+    errors and correlations with other parameters. 
         
     :param data: Fit data consisting of ``(x, y)`` where ``x`` is the 
         independent data that is passed to the fit function, and ``y`` is a
@@ -264,7 +264,7 @@ class nonlinear_fit(object):
         ##
         ## archive final parameter values if requested ##
         if self.p0file is not None:
-            self.dump_parameters(self.p0file)
+            self.dump_pmean(self.p0file)
         ##
         ##
         self.time = time.clock()-cpu_time
@@ -290,7 +290,7 @@ class nonlinear_fit(object):
     def _getpalt(self):
         """ Alternate version of ``fit.p``; no correlation with inputs  """
         if self._palt is None:
-            self._palt = _reformat(self.p0,         # 
+            self._palt = _reformat(self.pmean,         # 
                                    _gvar.gvar(self.pmean.flat, self.cov))
         return self._palt
     ##
@@ -471,14 +471,48 @@ class nonlinear_fit(object):
         return table
         ##
     ##
-    def dump_parameters(self, filename):
-        """ Dump current parameter values into file ``filename``."""
-        f = open(filename, "wb")
-        if self.p0.shape is not None:
-            pickle.dump(numpy.array(self.pmean), f)
-        else:
-            pickle.dump(dict(self.pmean), f) # dump as a dict
-        f.close()
+    @staticmethod
+    def load_parameters(filename):
+        """ Load parameters stored in file ``filename``. 
+            
+        ``p = nonlinear_fit.load_p(filename)`` is used to recover the
+        values of fit parameters dumped using ``fit.dump_p(filename)``
+        (or ``fit.dump_pmean(filename)``)
+        where ``fit`` is of type :class:`lsqfit.nonlinear_fit`. The 
+        layout of the returned parameters ``p`` is the same as that
+        of ``fit.p`` (or ``fit.pmean``).
+        """
+        with open(filename,"rb") as f:
+            return pickle.load(f)
+    ##
+    def dump_p(self, filename):
+        """ Dump parameter values (``fit.p``) into file ``filename``.
+            
+        ``fit.dump_p(filename)`` saves the best-fit parameter values
+        (``fit.p``) from a ``nonlinear_fit`` called ``fit``. These values
+        are recovered using 
+        ``p = nonlinear_fit.load_parameters(filename)``
+        where ``p``'s layout is the same as that of ``fit.p``.
+        """
+        with open(filename, "wb") as f:
+            pickle.dump(self.palt, f) # dump as a dict
+    ##
+    def dump_pmean(self, filename):
+        """ Dump parameter means (``fit.pmean``) into file ``filename``.
+            
+        ``fit.dump_pmean(filename)`` saves the means of the best-fit
+        parameter values (``fit.pmean``) from a ``nonlinear_fit`` called
+        ``fit``. These values are recovered using 
+        ``p0 = nonlinear_fit.load_parameters(filename)`` 
+        where ``p0``'s layout is the same as ``fit.pmean``. The saved
+        values can be used to initialize a later fit (``nonlinear_fit``
+        parameter ``p0``).
+        """
+        with open(filename, "wb") as f:
+            if self.p0.shape is not None:
+                pickle.dump(numpy.array(self.pmean), f)
+            else:
+                pickle.dump(dict(self.pmean), f) # dump as a dict
     ##
     def bootstrap_iter(self, n=None, datalist=None):
         """ Iterator that returns bootstrap copies of a fit.
@@ -677,8 +711,9 @@ def _unpack_p0(p0, p0file, prior):
     if p0file is not None:
         ## p0 is a filename; read in values ##
         try:
-            with open(p0file, "rb") as f:
-                p0 = pickle.load(f)
+            p0 = nonlinear_fit.load_parameters(p0file)
+            # with open(p0file, "rb") as f:
+            #     p0 = pickle.load(f)
         except (IOError, EOFError):
             if prior is None:
                 raise IOError("Can't read parameters from "+p0)

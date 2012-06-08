@@ -165,10 +165,10 @@ nonlinear_fit Objects
       
    .. attribute:: p
    
-      Best-fit parameters from last fit. Depending upon what was used for the
-      prior (or ``p0``), it is either: a dictionary (:class:`gvar.BufferDict`)
-      of |GVar|\s and/or arrays of |GVar|\s; or an array
-      (:class:`numpy.ndarray`) of |GVar|\s).
+      Best-fit parameters from last fit. Depending upon what was used for
+      the prior (or ``p0``), it is either: a dictionary
+      (:class:`gvar.BufferDict`) of |GVar|\s and/or arrays of |GVar|\s; or
+      an array (:class:`numpy.ndarray`) of |GVar|\s.
       
    .. attribute:: pmean
    
@@ -176,8 +176,8 @@ nonlinear_fit Objects
       
    .. attribute:: psdev
    
-      Standard deviations of the best-fit parameters from last fit (dictionary
-      or array).
+      Standard deviations of the best-fit parameters from last fit
+      (dictionary or array).
       
    .. attribute:: palt
    
@@ -200,10 +200,15 @@ nonlinear_fit Objects
       
    .. attribute:: svdcorrection
    
-      The sum of all *svd* corrections to the input data and priors. Its only
-      use is in creating error budgets: its contribution to a fit result's
-      error is the contribution due to the *svd* cut. Equals ``[ ]`` if 
-      there was no *svd* cut or it had no impact.
+      A list where ``svdcorrection[0]`` is the *svd* correction to the fit
+      data: that is, ``fit.y`` is obtained by adding ``svdcorrection[0]``
+      to the (flattened) input data. Similarly, ``svdcorrection[1]`` is the
+      correction for the prior: ``fit.prior`` is obtained by adding
+      ``svdcorrection[1]`` to the (flattened) input prior. Each 
+      ``svdcorrection[i]`` is either a flattened array or ``None``, if there
+      was no *svd* correction. This is mostly used as an input variable when
+      creating error budgets, to assess how much of the error in a final
+      result is caused by the *svd* cut.
       
    .. attribute:: time
    
@@ -221,20 +226,23 @@ nonlinear_fit Objects
       
    .. attribute:: x
       
-      The first field in the input ``data``. This is sometimes the independent
-      variable (as in 'y vs x' plot), but may be anything.
+      The first field in the input ``data``. This is sometimes the
+      independent variable (as in 'y vs x' plot), but may be anything. It
+      is set equal to ``False`` if the ``x`` field is omitted from the
+      input ``data``. (This also means that the fit function has no ``x``
+      argument: so ``f(p)`` rather than ``f(x,p)``.)
       
    .. attribute:: y
    
-      Fit data used in the fit. This may be differ from the input data if an
-      *svd* cut is used (``svdcut>0``). It is either a dictionary
+      Fit data used in the fit. This may be differ from the input data if
+      an *svd* cut is used (``svdcut>0``). It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input.
 
-   The main methods support doing the fits, printing out detailed
-   information about the last fit, doing bootstrap analyses of the fit
-   errors, checking the formatting of input data and the fit function,
-   and checking for roundoff errors in the final error estimates:
+   Additional methods are provided for printing out detailed information
+   about the fit, doing bootstrap analyses of the fit errors, dumping (for
+   later use) and loading parameter values, and checking for roundoff
+   errors in the final error estimates:
 
    .. automethod:: format(maxline=0)
    
@@ -242,8 +250,14 @@ nonlinear_fit Objects
    
    .. automethod:: fmt_values(outputs,ndigit=3)
       
-   .. automethod:: bootstrap_iter
-         
+   .. automethod:: bootstrap_iter(n=None,datalist=None)
+   
+   .. automethod:: dump_p(filename)
+   
+   .. automethod:: dump_pmean(filename)
+
+   .. automethod:: nonlinear_fit.laod_parameters(filename)
+   
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 
 

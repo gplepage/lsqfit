@@ -33,7 +33,7 @@ with open("src/lsqfit/version.py","w") as version_file:
 # extension modules 
 libraries = ["gsl","gslcblas"]
 include_dirs = [numpy.get_include()]
-extra_link_args = [] # ['-framework','vecLib'] # for Mac OSX
+extra_link_args = [] # ['-framework','vecLib'] # for Mac OSX ?
 ext_modules = [     #
     Extension("gvar._gvarcore",["src/gvar/_gvarcore.pyx"],libraries=libraries,
               include_dirs=include_dirs,extra_link_args=extra_link_args),
@@ -59,26 +59,42 @@ setup(name='lsqfit',
     description='Utilities for nonlinear least-squares fits.',
     author='G. Peter Lepage',
     author_email='g.p.lepage@cornell.edu',
-    license='GPLv3',
     packages=packages,
     package_dir=package_dir,
     ext_modules=ext_modules,
     cmdclass={'build_ext':build_ext,'build_py':build_py},
     requires=["cython (>=0.14)","numpy (>=1.0)"],
-    url="",
+    url="git@github.com:gplepage/lsqfit.git",
+    license='GPLv3',
+    platforms='Unix',
     long_description="""\
     These packages facilitate least-squares fitting of noisy data by
-    multi-dimensional, nonlinear functions of arbitrarily many parameters. The
-    central package is :mod:`lsqfit` which provides the fitting capability.
-    :mod:`lsqfit` makes heavy use of package :mod:`gvar`, which provides tools
-    for the analysis of error propagation, and also for the creation of
-    complicated multi-dimensional gaussian distributions. :mod:`lsqfit`
-    supports Bayesian priors for the fit parameters, with arbitrarily
-    complicated multidimensional gaussian distributions. A tutorial on fitting
-    is included in the documentation.
+    multi-dimensional, nonlinear functions of arbitrarily many
+    parameters. The central package is :mod:`lsqfit` which provides
+    the fitting capability. :mod:`lsqfit` makes heavy use of package
+    :mod:`gvar`, which provides tools for the analysis of error
+    propagation, and also for the creation of complicated
+    multi-dimensional gaussian distributions. :mod:`lsqfit` supports
+    Bayesian priors for the fit parameters, with arbitrarily
+    complicated multidimensional gaussian distributions.
 
-    These packages use the Gnu Scientific Library (GSL) to do the fitting,
-    numpy for efficient array arithmetic, and cython to compile efficient
-    interface code.
+    These packages use the Gnu Scientific Library (GSL) to do the
+    fitting, numpy for efficient array arithmetic, and cython to
+    compile efficient core routines and interface code.
     """
+    ,
+    classifiers = [                     #
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+        'Operating System :: MacOS :: MacOS X',
+        'Operating System :: POSIX',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Cython',
+        'Topic :: Scientific/Engineering'
+        ]
 )
