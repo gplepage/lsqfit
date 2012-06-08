@@ -1,8 +1,6 @@
 *.pyc
 build/
 __pycache__/
-doc/html/
-doc/lsqfit.pdf
 *.c
 examples/*.p
 examples/*.tmp
