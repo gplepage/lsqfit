@@ -9,7 +9,7 @@
     
     <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -26,9 +26,16 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="lsqfit 4.2 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
-    <link rel="prev" title="Overview and Tutorial" href="overview.html" /> 
+    <link rel="prev" title="Overview and Tutorial" href="overview.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
   </head>
   <body>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -667,12 +674,12 @@ the errors in a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> &#8211; Dictionary of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s for which partial standard 
-deviations are computed.</li>
-<li><strong>inputs</strong> &#8211; Dictionary of lists of: <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays/dictionaries 
-of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The partial standard deviation due to the input
-quantities in each list is tabulated for each output quantity in
-<tt class="docutils literal"><span class="pre">outputs</span></tt>.</li>
+<li><strong>outputs</strong> &#8211; Dictionary of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s for which an error budget 
+is computed.</li>
+<li><strong>inputs</strong> &#8211; Dictionary of: <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, arrays/dictionaries of 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or lists of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays/dictionaries of
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. <tt class="docutils literal"><span class="pre">fmt_errorbudget</span></tt> tabulates the parts of the standard
+deviations of each <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to each <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</li>
 <li><strong>ndigit</strong> (<tt class="docutils literal"><span class="pre">int</span></tt>) &#8211; Number of decimal places displayed in table.</li>
 <li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <tt class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></tt>; otherwise
 tabulate the errors themselves.</li>
@@ -1261,11 +1268,6 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
   <h4>Next topic</h4>
   <p class="topless"><a href="gvar_dataset.html"
                         title="next chapter"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/gvar.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">

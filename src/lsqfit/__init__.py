@@ -97,42 +97,74 @@ class nonlinear_fit(object):
          
     The best-fit values for the parameters are in ``fit.p``, while the
     ``chi**2``, the number of degrees of freedom, the logarithm of Gaussian
-    Bayes Factor, the number of iterations, and the cpu time for the fit
-    are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
+    Bayes Factor, the number of iterations, and the cpu time needed for the
+    fit are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
     ``fit.time``, respectively. Results for individual parameters in
     ``fit.p`` are of type |GVar|, and therefore carry information about
-    errors and correlations with other parameters. 
+    errors and correlations with other parameters.
         
-    :param data: Fit data consisting of ``(x, y)`` where ``x`` is the 
-        independent data that is passed to the fit function, and ``y`` is a
-        dictionary whose values are |GVar|\s or arrays of |GVar|\s
-        specifying the means and covariance matrix for the dependent data
-        (*i.e.*, the data being fit). ``y`` could instead be an array of
-        |GVar|\s, rather than a dictionary. Another format for ``data`` is
-        the 3-tuples ``(x, ymean, ycov)`` (or ``(x, ymean, ysdev)``) where
-        ``ymean`` is an array containing the mean ``y`` values, and
-        ``ycov`` is the corresponding covariance matrix (or ``ysdev`` the
-        corresponding array of standard deviations, if there are no
-        correlations). In this second case, ``ycov.shape`` must equal
-        ``ymean.shape+ymean.shape``. A final option is ``data=y`` in which
-        case the fit function is assumed to be independent of ``x``.
-    :type data: 2-tuple or 3-tuple or ``y``
-    :param fcn: Fit function ``fcn(x, p)`` of the independent data ``x`` 
-        and the parameters ``p``. The function should return approximations
-        to the ``y`` data in the same format used for ``y`` in ``data=(x,
-        y)`` (*i.e.*, a dictionary or array). Fit parameters are stored in
-        ``p``, which is either a dictionary, where ``p[k]`` is a single
-        parameter or an array of parameters (any shape), or an array of
-        parameters. When ``data=y`` or ``x=False``, the fit function 
-        should depend only upon the parameters: ``fcn(p)``.
+    :param data: Data to be fit by :class:`lsqfit.nonlinear_fit`. It can 
+        have any of the following formats:
+                
+            ``data = x, y``
+                ``x`` is the independent data that is passed to the fit
+                function with the fit parameters: ``fcn(x, p)``. ``y`` is a
+                dictionary (or array) of |GVar|\s that encode the means and
+                covariance matrix for the data that is to be fit being fit.
+                The fit function must return a result having the same
+                layout as ``y``.
+                    
+            ``data = y``
+                ``y`` is a dictionary (or array) of |GVar|\s that encode
+                the means and covariance matrix for the data being fit.
+                There is no independent data so the fit function depends
+                only upon the fit parameters: ``fit(p)``. The fit function
+                must return a result having the same layout as ``y``.
+            
+            ``data = x, ymean, ycov``
+                ``x`` is the independent data that is passed to the fit
+                function with the fit parameters: ``fcn(x, p)``. ``ymean``
+                is an array containing the mean values of the fit data.
+                ``ycov`` is an array containing the covariance matrix of
+                the fit data; ``ycov.shape`` equals ``2*ymean.shape``. 
+                The fit function must return an array having the same
+                shape as ``ymean``.
+            
+            ``data = x, ymean, ysdev``
+                ``x`` is the independent data that is passed to the fit
+                function with the fit parameters: ``fcn(x, p)``. ``ymean``
+                is an array containing the mean values of the fit data.
+                ``ysdev`` is an array containing the standard deviations of
+                the fit data; ``ysdev.shape`` equals ``ymean.shape``. The
+                data are assumed to be uncorrelated. The fit function must
+                return an array having the same shape as ``ymean``.
+                
+        Setting ``x=False`` in the first, third or fourth of these formats
+        implies that the fit function depends only on the fit parameters:
+        that is, ``fcn(p)`` instead of ``fcn(x, p)``. (This is not assumed
+        if ``x=None``.)
+    :param fcn: The function to be fit to ``data``. It is either a 
+        function of the independent data ``x`` and the fit parameters ``p``
+        (``fcn(x, p)``), or a function of just the fit parameters
+        (``fcn(p)``) when there is no ``x`` data or ``x=False``. The
+        parameters are tuned in the fit until the function returns values
+        that agree with the ``y`` data to within the ``y``\s' errors. The
+        function's return value must have the same layout as the ``y`` data
+        (a dictionary or an array). The fit parameters ``p`` are either: 1)
+        a dictionary where each ``p[k]`` is a single parameter or an array
+        of parameters (any shape); or, 2) a single array of parameters. The
+        layout of the parameters is the same as that of prior ``prior`` if
+        it is specified; otherwise, it is inferred from of the starting
+        value ``p0`` for the fit.
     :type fcn: function
     :param prior: A dictionary (or array) containing *a priori* estimates 
-        for all parameters ``p`` used by fit function ``fcn(x, p)``. Fit
-        parameters ``p`` are stored in a dictionary (or array) with the
-        same keys and structure (or shape) as ``prior``. The default value
-        is ``None``; ``prior`` must be defined if ``p0`` is ``None``.
+        for all parameters ``p`` used by fit function ``fcn(x, p)`` (or
+        ``fcn(p)``). Fit parameters ``p`` are stored in a dictionary (or
+        array) with the same keys and structure (or shape) as ``prior``.
+        The default value is ``None``; ``prior`` must be defined if ``p0``
+        is ``None``.
     :type prior: dictionary, array, or ``None``
-    :param p0: Starting values for fit parameters in fit. p0 should be a
+    :param p0: Starting values for fit parameters in fit. ``p0`` should be a
         dictionary with the same keys and structure as ``prior`` (or an
         array of the same shape if ``prior`` is an array). If ``p0`` is a
         string, it is taken as a file name and
@@ -279,7 +311,7 @@ class nonlinear_fit(object):
             
         Compares standard deviations from fit.p and fit.palt to see if they
         agree to within relative tolerance ``rtol`` and absolute tolerance
-        ``atol``. Generates an ``AssertionError`` if they do not (in which
+        ``atol``. Generates a warning if they do not (in which
         case an *svd* cut might be advisable).
         """
         psdev = _gvar.sdev(self.p.flat)

@@ -9,7 +9,7 @@
     
     <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -25,9 +25,16 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="lsqfit 4.2 documentation" href="index.html" />
-    <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" /> 
+    <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
   </head>
   <body>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -208,8 +215,8 @@ example,</p>
 </div>
 <p>The best-fit values for the parameters are in <tt class="docutils literal"><span class="pre">fit.p</span></tt>, while the
 <tt class="docutils literal"><span class="pre">chi**2</span></tt>, the number of degrees of freedom, the logarithm of Gaussian
-Bayes Factor, the number of iterations, and the cpu time for the fit
-are in <tt class="docutils literal"><span class="pre">fit.chi2</span></tt>, <tt class="docutils literal"><span class="pre">fit.dof</span></tt>, <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt>, <tt class="docutils literal"><span class="pre">fit.nit</span></tt>, and
+Bayes Factor, the number of iterations, and the cpu time needed for the
+fit are in <tt class="docutils literal"><span class="pre">fit.chi2</span></tt>, <tt class="docutils literal"><span class="pre">fit.dof</span></tt>, <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt>, <tt class="docutils literal"><span class="pre">fit.nit</span></tt>, and
 <tt class="docutils literal"><span class="pre">fit.time</span></tt>, respectively. Results for individual parameters in
 <tt class="docutils literal"><span class="pre">fit.p</span></tt> are of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, and therefore carry information about
 errors and correlations with other parameters.</p>
@@ -218,33 +225,66 @@ errors and correlations with other parameters.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (2-tuple or 3-tuple or <tt class="docutils literal"><span class="pre">y</span></tt>) &#8211; Fit data consisting of <tt class="docutils literal"><span class="pre">(x,</span> <span class="pre">y)</span></tt> where <tt class="docutils literal"><span class="pre">x</span></tt> is the 
-independent data that is passed to the fit function, and <tt class="docutils literal"><span class="pre">y</span></tt> is a
-dictionary whose values are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
-specifying the means and covariance matrix for the dependent data
-(<em>i.e.</em>, the data being fit). <tt class="docutils literal"><span class="pre">y</span></tt> could instead be an array of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, rather than a dictionary. Another format for <tt class="docutils literal"><span class="pre">data</span></tt> is
-the 3-tuples <tt class="docutils literal"><span class="pre">(x,</span> <span class="pre">ymean,</span> <span class="pre">ycov)</span></tt> (or <tt class="docutils literal"><span class="pre">(x,</span> <span class="pre">ymean,</span> <span class="pre">ysdev)</span></tt>) where
-<tt class="docutils literal"><span class="pre">ymean</span></tt> is an array containing the mean <tt class="docutils literal"><span class="pre">y</span></tt> values, and
-<tt class="docutils literal"><span class="pre">ycov</span></tt> is the corresponding covariance matrix (or <tt class="docutils literal"><span class="pre">ysdev</span></tt> the
-corresponding array of standard deviations, if there are no
-correlations). In this second case, <tt class="docutils literal"><span class="pre">ycov.shape</span></tt> must equal
-<tt class="docutils literal"><span class="pre">ymean.shape+ymean.shape</span></tt>. A final option is <tt class="docutils literal"><span class="pre">data=y</span></tt> in which
-case the fit function is assumed to be independent of <tt class="docutils literal"><span class="pre">x</span></tt>.</li>
-<li><strong>fcn</strong> (<em>function</em>) &#8211; Fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt> of the independent data <tt class="docutils literal"><span class="pre">x</span></tt> 
-and the parameters <tt class="docutils literal"><span class="pre">p</span></tt>. The function should return approximations
-to the <tt class="docutils literal"><span class="pre">y</span></tt> data in the same format used for <tt class="docutils literal"><span class="pre">y</span></tt> in <tt class="docutils literal"><span class="pre">data=(x,</span>
-<span class="pre">y)</span></tt> (<em>i.e.</em>, a dictionary or array). Fit parameters are stored in
-<tt class="docutils literal"><span class="pre">p</span></tt>, which is either a dictionary, where <tt class="docutils literal"><span class="pre">p[k]</span></tt> is a single
-parameter or an array of parameters (any shape), or an array of
-parameters. When <tt class="docutils literal"><span class="pre">data=y</span></tt> or <tt class="docutils literal"><span class="pre">x=False</span></tt>, the fit function 
-should depend only upon the parameters: <tt class="docutils literal"><span class="pre">fcn(p)</span></tt>.</li>
+<li><strong>data</strong> &#8211; <p>Data to be fit by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>. It can 
+have any of the following formats:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">y</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">x</span></tt> is the independent data that is passed to the fit
+function with the fit parameters: <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. <tt class="docutils literal"><span class="pre">y</span></tt> is a
+dictionary (or array) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that encode the means and
+covariance matrix for the data that is to be fit being fit.
+The fit function must return a result having the same
+layout as <tt class="docutils literal"><span class="pre">y</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">y</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">y</span></tt> is a dictionary (or array) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that encode
+the means and covariance matrix for the data being fit.
+There is no independent data so the fit function depends
+only upon the fit parameters: <tt class="docutils literal"><span class="pre">fit(p)</span></tt>. The fit function
+must return a result having the same layout as <tt class="docutils literal"><span class="pre">y</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ycov</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">x</span></tt> is the independent data that is passed to the fit
+function with the fit parameters: <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. <tt class="docutils literal"><span class="pre">ymean</span></tt>
+is an array containing the mean values of the fit data.
+<tt class="docutils literal"><span class="pre">ycov</span></tt> is an array containing the covariance matrix of
+the fit data; <tt class="docutils literal"><span class="pre">ycov.shape</span></tt> equals <tt class="docutils literal"><span class="pre">2*ymean.shape</span></tt>. 
+The fit function must return an array having the same
+shape as <tt class="docutils literal"><span class="pre">ymean</span></tt>.</dd>
+<dt><tt class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ysdev</span></tt></dt>
+<dd><tt class="docutils literal"><span class="pre">x</span></tt> is the independent data that is passed to the fit
+function with the fit parameters: <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. <tt class="docutils literal"><span class="pre">ymean</span></tt>
+is an array containing the mean values of the fit data.
+<tt class="docutils literal"><span class="pre">ysdev</span></tt> is an array containing the standard deviations of
+the fit data; <tt class="docutils literal"><span class="pre">ysdev.shape</span></tt> equals <tt class="docutils literal"><span class="pre">ymean.shape</span></tt>. The
+data are assumed to be uncorrelated. The fit function must
+return an array having the same shape as <tt class="docutils literal"><span class="pre">ymean</span></tt>.</dd>
+</dl>
+</div></blockquote>
+<p>Setting <tt class="docutils literal"><span class="pre">x=False</span></tt> in the first, third or fourth of these formats
+implies that the fit function depends only on the fit parameters:
+that is, <tt class="docutils literal"><span class="pre">fcn(p)</span></tt> instead of <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. (This is not assumed
+if <tt class="docutils literal"><span class="pre">x=None</span></tt>.)</p>
+</li>
+<li><strong>fcn</strong> (<em>function</em>) &#8211; The function to be fit to <tt class="docutils literal"><span class="pre">data</span></tt>. It is either a 
+function of the independent data <tt class="docutils literal"><span class="pre">x</span></tt> and the fit parameters <tt class="docutils literal"><span class="pre">p</span></tt>
+(<tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>), or a function of just the fit parameters
+(<tt class="docutils literal"><span class="pre">fcn(p)</span></tt>) when there is no <tt class="docutils literal"><span class="pre">x</span></tt> data or <tt class="docutils literal"><span class="pre">x=False</span></tt>. The
+parameters are tuned in the fit until the function returns values
+that agree with the <tt class="docutils literal"><span class="pre">y</span></tt> data to within the <tt class="docutils literal"><span class="pre">y</span></tt>s&#8217; errors. The
+function&#8217;s return value must have the same layout as the <tt class="docutils literal"><span class="pre">y</span></tt> data
+(a dictionary or an array). The fit parameters <tt class="docutils literal"><span class="pre">p</span></tt> are either: 1)
+a dictionary where each <tt class="docutils literal"><span class="pre">p[k]</span></tt> is a single parameter or an array
+of parameters (any shape); or, 2) a single array of parameters. The
+layout of the parameters is the same as that of prior <tt class="docutils literal"><span class="pre">prior</span></tt> if
+it is specified; otherwise, it is inferred from of the starting
+value <tt class="docutils literal"><span class="pre">p0</span></tt> for the fit.</li>
 <li><strong>prior</strong> (dictionary, array, or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; A dictionary (or array) containing <em>a priori</em> estimates 
-for all parameters <tt class="docutils literal"><span class="pre">p</span></tt> used by fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. Fit
-parameters <tt class="docutils literal"><span class="pre">p</span></tt> are stored in a dictionary (or array) with the
-same keys and structure (or shape) as <tt class="docutils literal"><span class="pre">prior</span></tt>. The default value
-is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">prior</span></tt> must be defined if <tt class="docutils literal"><span class="pre">p0</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>p0</strong> (dictionary, array, string or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Starting values for fit parameters in fit. p0 should be a
+for all parameters <tt class="docutils literal"><span class="pre">p</span></tt> used by fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt> (or
+<tt class="docutils literal"><span class="pre">fcn(p)</span></tt>). Fit parameters <tt class="docutils literal"><span class="pre">p</span></tt> are stored in a dictionary (or
+array) with the same keys and structure (or shape) as <tt class="docutils literal"><span class="pre">prior</span></tt>.
+The default value is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">prior</span></tt> must be defined if <tt class="docutils literal"><span class="pre">p0</span></tt>
+is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
+<li><strong>p0</strong> (dictionary, array, string or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Starting values for fit parameters in fit. <tt class="docutils literal"><span class="pre">p0</span></tt> should be a
 dictionary with the same keys and structure as <tt class="docutils literal"><span class="pre">prior</span></tt> (or an
 array of the same shape if <tt class="docutils literal"><span class="pre">prior</span></tt> is an array). If <tt class="docutils literal"><span class="pre">p0</span></tt> is a
 string, it is taken as a file name and
@@ -586,7 +626,7 @@ of <tt class="docutils literal"><span class="pre">fit.p</span></tt> (or <tt clas
 <dd><p>Check for roundoff errors in fit.p.</p>
 <p>Compares standard deviations from fit.p and fit.palt to see if they
 agree to within relative tolerance <tt class="docutils literal"><span class="pre">rtol</span></tt> and absolute tolerance
-<tt class="docutils literal"><span class="pre">atol</span></tt>. Generates an <tt class="docutils literal"><span class="pre">AssertionError</span></tt> if they do not (in which
+<tt class="docutils literal"><span class="pre">atol</span></tt>. Generates a warning if they do not (in which
 case an <em>svd</em> cut might be advisable).</p>
 </dd></dl>
 
@@ -870,11 +910,6 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="gvar_dataset.html"
                         title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/lsqfit.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
