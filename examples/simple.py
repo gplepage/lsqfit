@@ -39,6 +39,8 @@ x = {                      # independent variable
                            # a priori values for fit parameters
 prior = dict(a=gv.gvar(0.5,0.5),b=gv.gvar(0.5,0.5))
 
+# print(y["data1"][0].mean,"+-",y["data1"][0].sdev)
+# print(gv.evalcov(y["data1"]))
 def fcn(x,p):              # fit function of x and parameters p
    ans = {}
    for k in ["data1","data2"]:

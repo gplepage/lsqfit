@@ -1,3 +1,7 @@
+.. |GVar| replace:: :class:`gvar.GVar`
+.. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
+.. |BufferDict| replace:: :class:`gvar.BufferDict`
+
 Overview and Tutorial
 ========================
 
@@ -18,14 +22,14 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    import lsqfit
    
    y = {                      # data for the dependent variable
-      "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
-      "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]]),
-      "b/a"   : gv.gvar(2.0, 0.5)
-   }
+       "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
+       "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]]),
+       "b/a"   : gv.gvar(2.0, 0.5)
+       }
    x = {                      # independent variable
-      "data1" : np.array([0.1, 1.0]),
-      "data2" : np.array([0.1, 0.5])
-   }
+       "data1" : np.array([0.1, 1.0]),
+       "data2" : np.array([0.1, 0.5])
+       }
    prior = dict(a=gv.gvar(0.5, 0.5), b=gv.gvar(0.5, 0.5))
    
    def fcn(x, p):             # fit function of x and parameters p
@@ -57,20 +61,25 @@ equal ``y["data1"]`` and ``y["data2"]``, respectively, to within the
 ``y``\s' errors. The means and covariance matrices for the ``y``\s are
 specified in the ``gv.gvar(...)``\s used to create them: for example, ::
    
-   >>> print y['data1']
+   >>> print(y["data1"])
    [1.376 +- 0.0685565 2.01 +- 0.236643]
-
-shows the means and standard deviations for the data in the first data set
-(``0.0685565`` is the square root of the ``0.0047`` in the covariance
-matrix). The dictionary ``prior`` gives *a priori* estimates for the two
-parameters, ``a`` and ``b``: each is assumed to be ``0.5 +- 0.5`` before
-fitting; the parameters ``p[k]`` in the fit function ``fcn(x, p)`` are
-stored in a dictionary having the same keys as ``prior``. In addition,
-there is an extra piece of input data, ``y["b/a"]``, which indicates that
-``b/a`` is ``2.0 +- 0.5``. The fit function for this data is simply the
-ratio ``b/a`` (represented by ``p['b']/p['a']`` in fit function ``fcn(x,
-p)``). The fit function returns a dictionary having the same keys and 
-layout as the input data ``y``.
+   >>> print(y["data1"][0].mean,"+-",y["data1"][0].sdev)
+   1.376 +- 0.068556546004
+   >>> print(gv.evalcov(y["data1"]))   # covariance matrix
+   [[ 0.0047  0.01  ]
+    [ 0.01    0.056 ]]
+   
+shows the means, standard deviations and covariance matrix for the data in
+the first data set (``0.0685565`` is the square root of the ``0.0047`` in
+the covariance matrix). The dictionary ``prior`` gives *a priori* estimates
+for the two parameters, ``a`` and ``b``: each is assumed to be ``0.5 +-
+0.5`` before fitting. The parameters ``p[k]`` in the fit function ``fcn(x,
+p)`` are stored in a dictionary having the same keys and layout as
+``prior``. In addition, there is an extra piece of input data,
+``y["b/a"]``, which indicates that ``b/a`` is ``2.0 +- 0.5``. The fit
+function for this data is simply the ratio ``b/a`` (represented by
+``p['b']/p['a']`` in fit function ``fcn(x, p)``). The fit function returns
+a dictionary having the same keys and layout as the input data ``y``.
 
 The output from the code sample above is::
 
@@ -105,15 +114,14 @@ The output from the code sample above is::
 
 The best-fit values for ``a`` and ``b`` are ``0.253(32)`` and ``0.449(65)``,
 respectively; and the best-fit result for ``b/a`` is ``1.775(298)``, which,
-because of correlations, is slightly more accurate than might be expected from
-the separate errors for ``a`` and ``b``. 
-The error budget for each of these three quantities is tabulated at the end
-and shows that the bulk of the error in each case comes from uncertainties
-in the ``y`` data, with only small contributions from uncertainties in the
-priors ``prior``. The fit results corresponding to
-each piece of input data are also tabulated (``Fit: ...``); the agreement 
-is excellent, as expected given that the ``chi**2`` per degree of freedom
-is only ``0.17``.
+because of correlations, is slightly more accurate than might be expected
+from the separate errors for ``a`` and ``b``. The error budget for each of
+these three quantities is tabulated at the end and shows that the bulk of
+the error in each case comes from uncertainties in the ``y`` data, with
+only small contributions from uncertainties in the priors ``prior``. The
+fit results corresponding to each piece of input data are also tabulated
+(``Fit: ...``); the agreement is excellent, as expected given that the
+``chi**2`` per degree of freedom is only ``0.17``.
    
 The last section of the code uses Python's :mod:`pickle` module to save the
 best-fit values of the parameters in a file for later use. They are recovered
@@ -141,13 +149,13 @@ prior rather than ``y``::
    ... as before ...
    
    y = {                      # data for the dependent variable
-      "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
-      "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]])
-   }
+       "data1" : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
+       "data2" : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]])
+       }
    x = {                      # independent variable
-      "data1" : np.array([0.1, 1.0]),
-      "data2" : np.array([0.1, 0.5])
-   }
+       "data1" : np.array([0.1, 1.0]),
+       "data2" : np.array([0.1, 0.5])
+       }
    prior = dict(a=gv.gvar(0.5, 0.5))
    prior['b'] = prior['a']*gv.gvar(2.0, 0.5)
 
@@ -167,6 +175,49 @@ identical results to the first one --- very slightly less accurate, since
 there is less input data. We can often move information from the ``y`` data to
 the prior or back since both are forms of input information.
 
+There are several things worth noting from this example:
+
+   * The input data (``y``) is expressed in terms of gaussian random
+     variables --- quantities with means and a covariance matrix. These are
+     represented by objects of type :class:`gvar.GVar` in the code; module
+     :mod:`gvar` has a variety of tools for creating and manipulating
+     gaussian random variables.
+     
+   * The input data is stored in a dictionary (``y``) whose values can
+     be |GVar|\s or arrays of |GVar|\s. The use of a dictionary allows for
+     far greater flexibility than, say, an array. The fit function 
+     (``fcn(x, p)``) has to return a dictionary with the same layout as
+     that of ``y`` (that is, with the same keys and where the value for
+     each key has the same shape as the corresponding value in ``y``).
+     :mod:`lsqfit` does allow ``y`` to be an array instead of a dictionary, 
+     which might be preferable for very simple fits (but usually not 
+     otherwise).
+     
+   * The independent data (``x``) can be anything; it is simply passed 
+     through the fit code to the fit function ``fcn(x, p)``. It can 
+     also be omitted altogether, in which case the fit function 
+     depends only upon the parameters: ``fcn(p)``.
+      
+   * The fit parameters (``p`` in ``fcn(x, p)``) are also stored in a
+     dictionary whose values are |GVar|\s or arrays of |GVar|\s. Again this
+     allows for great flexibility. The layout of the parameter dictionary
+     is copied from that of the prior (``prior``). Again ``p`` can be a
+     single array instead of a dictionary, if that simplifies the code
+     (which is usually not the case).
+     
+   * The best-fit values of the fit parameters (``fit.p[k]``) are also
+     |GVar|\s and these capture statistical correlations between different
+     parameters that are indicated by the fit. The output parameters can be
+     combined in arithmetic expressions, using standard operators and
+     standard functions, to obtain derived quantities. These operations
+     take account of and track statistical correlations.
+     
+   * Function :func:`gvar.fmt_errorbudget` is a very useful
+     tool for assessing the origins (``inputs``) of the statistical errors
+     obtained in various final results (``outputs``). It is particularly
+     useful for analyzing the impact of the *a priori* uncertainties 
+     encoded in the prior (``prior``).
+   
 What follows is a brief tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
 As above, code for the examples is specified completely and so can be copied
@@ -623,7 +674,7 @@ There are several things to notice here:
 Finally we inspect the fit's quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
-output from ``fit.format(15)``\)::
+output from ``fit.format(100)``\)::
 
    Fit:
             x_i         y_i      f(x_i)        dy_i
@@ -644,12 +695,13 @@ output from ``fit.format(15)``\)::
              18  3.6605e-08  3.6794e-08   8.455e-10
              20  6.2447e-09  6.0779e-09   6.092e-10
 
-This information is presented again in the following plot, which shows the
-ratio ``y/f(x, p)``, as a function of ``x``, using the best-fit parameters
-``p``. The correct result for this ratio, of course, is one. The smooth
-variation in the data --- smooth compared with the size of the
-statistical-error bars --- is an indication of the statistical correlations
-between individual ``y``\s.
+The fit is excellent over the entire eight orders of magnitude. This
+information is presented again in the following plot, which shows the ratio
+``y/f(x, p)``, as a function of ``x``, using the best-fit parameters ``p``.
+The correct result for this ratio, of course, is one. The smooth variation
+in the data --- smooth compared with the size of the statistical-error bars
+--- is an indication of the statistical correlations between individual
+``y``\s.
 
 .. image:: fig1.*
    :width: 80%

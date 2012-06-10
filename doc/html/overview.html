@@ -77,14 +77,14 @@ complicated multi-dimensional gaussian distributions.</p>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># data for the dependent variable</span>
-   <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
-   <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]]),</span>
-   <span class="s">&quot;b/a&quot;</span>   <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-<span class="p">}</span>
+    <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
+    <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]]),</span>
+    <span class="s">&quot;b/a&quot;</span>   <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="p">}</span>
 <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># independent variable</span>
-   <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
-   <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="p">}</span>
+    <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+    <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="p">}</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p</span>
@@ -116,21 +116,26 @@ to two sets of data, labeled <tt class="docutils literal"><span class="pre">data
 equal <tt class="docutils literal"><span class="pre">y[&quot;data1&quot;]</span></tt> and <tt class="docutils literal"><span class="pre">y[&quot;data2&quot;]</span></tt>, respectively, to within the
 <tt class="docutils literal"><span class="pre">y</span></tt>s&#8217; errors. The means and covariance matrices for the <tt class="docutils literal"><span class="pre">y</span></tt>s are
 specified in the <tt class="docutils literal"><span class="pre">gv.gvar(...)</span></tt>s used to create them: for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">y</span><span class="p">[</span><span class="s">&#39;data1&#39;</span><span class="p">]</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s">&quot;data1&quot;</span><span class="p">])</span>
 <span class="go">[1.376 +- 0.0685565 2.01 +- 0.236643]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s">&quot;data1&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span><span class="s">&quot;+-&quot;</span><span class="p">,</span><span class="n">y</span><span class="p">[</span><span class="s">&quot;data1&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sdev</span><span class="p">)</span>
+<span class="go">1.376 +- 0.068556546004</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s">&quot;data1&quot;</span><span class="p">]))</span>   <span class="c"># covariance matrix</span>
+<span class="go">[[ 0.0047  0.01  ]</span>
+<span class="go"> [ 0.01    0.056 ]]</span>
 </pre></div>
 </div>
-<p>shows the means and standard deviations for the data in the first data set
-(<tt class="docutils literal"><span class="pre">0.0685565</span></tt> is the square root of the <tt class="docutils literal"><span class="pre">0.0047</span></tt> in the covariance
-matrix). The dictionary <tt class="docutils literal"><span class="pre">prior</span></tt> gives <em>a priori</em> estimates for the two
-parameters, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>: each is assumed to be <tt class="docutils literal"><span class="pre">0.5</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt> before
-fitting; the parameters <tt class="docutils literal"><span class="pre">p[k]</span></tt> in the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt> are
-stored in a dictionary having the same keys as <tt class="docutils literal"><span class="pre">prior</span></tt>. In addition,
-there is an extra piece of input data, <tt class="docutils literal"><span class="pre">y[&quot;b/a&quot;]</span></tt>, which indicates that
-<tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">2.0</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt>. The fit function for this data is simply the
-ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> (represented by <tt class="docutils literal"><span class="pre">p['b']/p['a']</span></tt> in fit function <tt class="docutils literal"><span class="pre">fcn(x,</span>
-<span class="pre">p)</span></tt>). The fit function returns a dictionary having the same keys and
-layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
+<p>shows the means, standard deviations and covariance matrix for the data in
+the first data set (<tt class="docutils literal"><span class="pre">0.0685565</span></tt> is the square root of the <tt class="docutils literal"><span class="pre">0.0047</span></tt> in
+the covariance matrix). The dictionary <tt class="docutils literal"><span class="pre">prior</span></tt> gives <em>a priori</em> estimates
+for the two parameters, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>: each is assumed to be <tt class="docutils literal"><span class="pre">0.5</span> <span class="pre">+-</span>
+<span class="pre">0.5</span></tt> before fitting. The parameters <tt class="docutils literal"><span class="pre">p[k]</span></tt> in the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span>
+<span class="pre">p)</span></tt> are stored in a dictionary having the same keys and layout as
+<tt class="docutils literal"><span class="pre">prior</span></tt>. In addition, there is an extra piece of input data,
+<tt class="docutils literal"><span class="pre">y[&quot;b/a&quot;]</span></tt>, which indicates that <tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">2.0</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt>. The fit
+function for this data is simply the ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> (represented by
+<tt class="docutils literal"><span class="pre">p['b']/p['a']</span></tt> in fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>). The fit function returns
+a dictionary having the same keys and layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>The output from the code sample above is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
   chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = -5.2381    itns = 5
@@ -163,15 +168,14 @@ Partial % Errors:
 </div>
 <p>The best-fit values for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> are <tt class="docutils literal"><span class="pre">0.253(32)</span></tt> and <tt class="docutils literal"><span class="pre">0.449(65)</span></tt>,
 respectively; and the best-fit result for <tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">1.775(298)</span></tt>, which,
-because of correlations, is slightly more accurate than might be expected from
-the separate errors for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>.
-The error budget for each of these three quantities is tabulated at the end
-and shows that the bulk of the error in each case comes from uncertainties
-in the <tt class="docutils literal"><span class="pre">y</span></tt> data, with only small contributions from uncertainties in the
-priors <tt class="docutils literal"><span class="pre">prior</span></tt>. The fit results corresponding to
-each piece of input data are also tabulated (<tt class="docutils literal"><span class="pre">Fit:</span> <span class="pre">...</span></tt>); the agreement
-is excellent, as expected given that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom
-is only <tt class="docutils literal"><span class="pre">0.17</span></tt>.</p>
+because of correlations, is slightly more accurate than might be expected
+from the separate errors for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>. The error budget for each of
+these three quantities is tabulated at the end and shows that the bulk of
+the error in each case comes from uncertainties in the <tt class="docutils literal"><span class="pre">y</span></tt> data, with
+only small contributions from uncertainties in the priors <tt class="docutils literal"><span class="pre">prior</span></tt>. The
+fit results corresponding to each piece of input data are also tabulated
+(<tt class="docutils literal"><span class="pre">Fit:</span> <span class="pre">...</span></tt>); the agreement is excellent, as expected given that the
+<tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom is only <tt class="docutils literal"><span class="pre">0.17</span></tt>.</p>
 <p>The last section of the code uses Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module to save the
 best-fit values of the parameters in a file for later use. They are recovered
 using <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> again:</p>
@@ -196,13 +200,13 @@ prior rather than <tt class="docutils literal"><span class="pre">y</span></tt>:<
 <div class="highlight-python"><div class="highlight"><pre><span class="o">...</span> <span class="k">as</span> <span class="n">before</span> <span class="o">...</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># data for the dependent variable</span>
-   <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
-   <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]])</span>
-<span class="p">}</span>
+    <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
+    <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]])</span>
+    <span class="p">}</span>
 <span class="n">x</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># independent variable</span>
-   <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
-   <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="p">}</span>
+    <span class="s">&quot;data1&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+    <span class="s">&quot;data2&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+    <span class="p">}</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
 <span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 
@@ -222,6 +226,46 @@ limits the ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> 
 identical results to the first one &#8212; very slightly less accurate, since
 there is less input data. We can often move information from the <tt class="docutils literal"><span class="pre">y</span></tt> data to
 the prior or back since both are forms of input information.</p>
+<p>There are several things worth noting from this example:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The input data (<tt class="docutils literal"><span class="pre">y</span></tt>) is expressed in terms of gaussian random
+variables &#8212; quantities with means and a covariance matrix. These are
+represented by objects of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in the code; module
+<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> has a variety of tools for creating and manipulating
+gaussian random variables.</li>
+<li>The input data is stored in a dictionary (<tt class="docutils literal"><span class="pre">y</span></tt>) whose values can
+be <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The use of a dictionary allows for
+far greater flexibility than, say, an array. The fit function
+(<tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>) has to return a dictionary with the same layout as
+that of <tt class="docutils literal"><span class="pre">y</span></tt> (that is, with the same keys and where the value for
+each key has the same shape as the corresponding value in <tt class="docutils literal"><span class="pre">y</span></tt>).
+<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> does allow <tt class="docutils literal"><span class="pre">y</span></tt> to be an array instead of a dictionary,
+which might be preferable for very simple fits (but usually not
+otherwise).</li>
+<li>The independent data (<tt class="docutils literal"><span class="pre">x</span></tt>) can be anything; it is simply passed
+through the fit code to the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. It can
+also be omitted altogether, in which case the fit function
+depends only upon the parameters: <tt class="docutils literal"><span class="pre">fcn(p)</span></tt>.</li>
+<li>The fit parameters (<tt class="docutils literal"><span class="pre">p</span></tt> in <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>) are also stored in a
+dictionary whose values are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Again this
+allows for great flexibility. The layout of the parameter dictionary
+is copied from that of the prior (<tt class="docutils literal"><span class="pre">prior</span></tt>). Again <tt class="docutils literal"><span class="pre">p</span></tt> can be a
+single array instead of a dictionary, if that simplifies the code
+(which is usually not the case).</li>
+<li>The best-fit values of the fit parameters (<tt class="docutils literal"><span class="pre">fit.p[k]</span></tt>) are also
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and these capture statistical correlations between different
+parameters that are indicated by the fit. The output parameters can be
+combined in arithmetic expressions, using standard operators and
+standard functions, to obtain derived quantities. These operations
+take account of and track statistical correlations.</li>
+<li>Function <a class="reference internal" href="gvar.html#gvar.fmt_errorbudget" title="gvar.fmt_errorbudget"><tt class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></tt></a> is a very useful
+tool for assessing the origins (<tt class="docutils literal"><span class="pre">inputs</span></tt>) of the statistical errors
+obtained in various final results (<tt class="docutils literal"><span class="pre">outputs</span></tt>). It is particularly
+useful for analyzing the impact of the <em>a priori</em> uncertainties
+encoded in the prior (<tt class="docutils literal"><span class="pre">prior</span></tt>).</li>
+</ul>
+</div></blockquote>
 <p>What follows is a brief tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
 As above, code for the examples is specified completely and so can be copied
@@ -664,7 +708,7 @@ and <tt class="docutils literal"><span class="pre">a0</span></tt>, but in fact i
 <p>Finally we inspect the fit&#8217;s quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
-output from <tt class="docutils literal"><span class="pre">fit.format(15)</span></tt>):</p>
+output from <tt class="docutils literal"><span class="pre">fit.format(100)</span></tt>):</p>
 <div class="highlight-python"><pre>Fit:
          x_i         y_i      f(x_i)        dy_i
 ------------------------------------------------
@@ -684,12 +728,13 @@ output from <tt class="docutils literal"><span class="pre">fit.format(15)</span>
           18  3.6605e-08  3.6794e-08   8.455e-10
           20  6.2447e-09  6.0779e-09   6.092e-10</pre>
 </div>
-<p>This information is presented again in the following plot, which shows the
-ratio <tt class="docutils literal"><span class="pre">y/f(x,</span> <span class="pre">p)</span></tt>, as a function of <tt class="docutils literal"><span class="pre">x</span></tt>, using the best-fit parameters
-<tt class="docutils literal"><span class="pre">p</span></tt>. The correct result for this ratio, of course, is one. The smooth
-variation in the data &#8212; smooth compared with the size of the
-statistical-error bars &#8212; is an indication of the statistical correlations
-between individual <tt class="docutils literal"><span class="pre">y</span></tt>s.</p>
+<p>The fit is excellent over the entire eight orders of magnitude. This
+information is presented again in the following plot, which shows the ratio
+<tt class="docutils literal"><span class="pre">y/f(x,</span> <span class="pre">p)</span></tt>, as a function of <tt class="docutils literal"><span class="pre">x</span></tt>, using the best-fit parameters <tt class="docutils literal"><span class="pre">p</span></tt>.
+The correct result for this ratio, of course, is one. The smooth variation
+in the data &#8212; smooth compared with the size of the statistical-error bars
+&#8212; is an indication of the statistical correlations between individual
+<tt class="docutils literal"><span class="pre">y</span></tt>s.</p>
 <img alt="_images/fig1.png" src="_images/fig1.png" style="width: 80%;" />
 <p>This particular plot was made using the <tt class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></tt> module, with the
 following code added to the end of <tt class="docutils literal"><span class="pre">main()</span></tt> (outside the loop):</p>

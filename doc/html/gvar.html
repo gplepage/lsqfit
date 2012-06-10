@@ -450,10 +450,9 @@ about <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class
 information about its derivatives with respect to <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> (zero
 derivative in both cases) and this would make calculations involving <tt class="docutils literal"><span class="pre">c</span></tt>
 slightly slower than with the <tt class="docutils literal"><span class="pre">switch_gvar</span></tt> line. Usually the difference
-is negligible, but in cases with tens of thousands of underlying
-variables redefining <tt class="docutils literal"><span class="pre">gvar</span></tt> might make a difference. Note that
-the previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> can be restored using
-<a class="reference internal" href="#gvar.restore_gvar" title="gvar.restore_gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.restore_gvar()</span></tt></a>.</p>
+is negligible. (It used to be more important, with an earlier
+implementation.) Note that the previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> can be restored
+using <a class="reference internal" href="#gvar.restore_gvar" title="gvar.restore_gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.restore_gvar()</span></tt></a>.</p>
 <p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are designed to work well with <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays. They
 can be combined in arithmetic expressions with arrays of numbers or of
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s; the results in both cases are arrays of
