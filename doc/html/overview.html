@@ -64,10 +64,10 @@
 <h1>Overview and Tutorial<a class="headerlink" href="#overview-and-tutorial" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The modules defined in here are designed to facilitate
+<p>The modules defined here are designed to facilitate
 least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
-<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> because it provides the fit functions. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> makes
+<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> because it provides the fitting functions. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> makes
 heavy use of auxiliary module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, which provides tools that
 facilitate the analysis of error propagation, and also the creation of
 complicated multi-dimensional gaussian distributions.</p>
@@ -87,7 +87,7 @@ complicated multi-dimensional gaussian distributions.</p>
 <span class="p">}</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
 
-<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p[k]</span>
+<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p</span>
    <span class="n">ans</span> <span class="o">=</span> <span class="p">{}</span>
    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&quot;data1&quot;</span><span class="p">,</span> <span class="s">&quot;data2&quot;</span><span class="p">]:</span>
       <span class="n">ans</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
@@ -121,12 +121,16 @@ specified in the <tt class="docutils literal"><span class="pre">gv.gvar(...)</sp
 </pre></div>
 </div>
 <p>shows the means and standard deviations for the data in the first data set
-(<tt class="docutils literal"><span class="pre">0.0685565</span></tt> is the square root of the <tt class="docutils literal"><span class="pre">0.0047</span></tt> in the covariance matrix).
-The dictionary <tt class="docutils literal"><span class="pre">prior</span></tt> gives <em>a priori</em> estimates for the two parameters,
-<tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>: each is assumed to be <tt class="docutils literal"><span class="pre">0.5</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt> before fitting. In
-addition, there is an extra piece of input data, <tt class="docutils literal"><span class="pre">y[&quot;b/a&quot;]</span></tt>, which indicates
-that <tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">2.0</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt>. The fit function for this data is simply the
-ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> (represented by <tt class="docutils literal"><span class="pre">p['b']/p['a']</span></tt> in fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>.)</p>
+(<tt class="docutils literal"><span class="pre">0.0685565</span></tt> is the square root of the <tt class="docutils literal"><span class="pre">0.0047</span></tt> in the covariance
+matrix). The dictionary <tt class="docutils literal"><span class="pre">prior</span></tt> gives <em>a priori</em> estimates for the two
+parameters, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>: each is assumed to be <tt class="docutils literal"><span class="pre">0.5</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt> before
+fitting; the parameters <tt class="docutils literal"><span class="pre">p[k]</span></tt> in the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt> are
+stored in a dictionary having the same keys as <tt class="docutils literal"><span class="pre">prior</span></tt>. In addition,
+there is an extra piece of input data, <tt class="docutils literal"><span class="pre">y[&quot;b/a&quot;]</span></tt>, which indicates that
+<tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">2.0</span> <span class="pre">+-</span> <span class="pre">0.5</span></tt>. The fit function for this data is simply the
+ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> (represented by <tt class="docutils literal"><span class="pre">p['b']/p['a']</span></tt> in fit function <tt class="docutils literal"><span class="pre">fcn(x,</span>
+<span class="pre">p)</span></tt>). The fit function returns a dictionary having the same keys and
+layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>The output from the code sample above is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
   chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = -5.2381    itns = 5
@@ -160,10 +164,14 @@ Partial % Errors:
 <p>The best-fit values for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> are <tt class="docutils literal"><span class="pre">0.253(32)</span></tt> and <tt class="docutils literal"><span class="pre">0.449(65)</span></tt>,
 respectively; and the best-fit result for <tt class="docutils literal"><span class="pre">b/a</span></tt> is <tt class="docutils literal"><span class="pre">1.775(298)</span></tt>, which,
 because of correlations, is slightly more accurate than might be expected from
-the separate errors for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>. The error budget, at the end, for
-each of these three quantities shows that the bulk of the error in each case
-comes from uncertainties in the <tt class="docutils literal"><span class="pre">y</span></tt> data, with only small contributions
-from uncertainties in the priors <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
+the separate errors for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>.
+The error budget for each of these three quantities is tabulated at the end
+and shows that the bulk of the error in each case comes from uncertainties
+in the <tt class="docutils literal"><span class="pre">y</span></tt> data, with only small contributions from uncertainties in the
+priors <tt class="docutils literal"><span class="pre">prior</span></tt>. The fit results corresponding to
+each piece of input data are also tabulated (<tt class="docutils literal"><span class="pre">Fit:</span> <span class="pre">...</span></tt>); the agreement
+is excellent, as expected given that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom
+is only <tt class="docutils literal"><span class="pre">0.17</span></tt>.</p>
 <p>The last section of the code uses Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module to save the
 best-fit values of the parameters in a file for later use. They are recovered
 using <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> again:</p>

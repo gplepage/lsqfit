@@ -3,10 +3,10 @@ Overview and Tutorial
 
 Introduction
 --------------------
-The modules defined in here are designed to facilitate
+The modules defined here are designed to facilitate
 least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
-:mod:`lsqfit` because it provides the fit functions. :mod:`lsqfit` makes
+:mod:`lsqfit` because it provides the fitting functions. :mod:`lsqfit` makes
 heavy use of auxiliary module :mod:`gvar`, which provides tools that
 facilitate the analysis of error propagation, and also the creation of
 complicated multi-dimensional gaussian distributions.
@@ -28,7 +28,7 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    }
    prior = dict(a=gv.gvar(0.5, 0.5), b=gv.gvar(0.5, 0.5))
    
-   def fcn(x, p):             # fit function of x and parameters p[k]
+   def fcn(x, p):             # fit function of x and parameters p
       ans = {}
       for k in ["data1", "data2"]:
          ans[k] = gv.exp(p['a'] + x[k]*p['b'])
@@ -61,12 +61,16 @@ specified in the ``gv.gvar(...)``\s used to create them: for example, ::
    [1.376 +- 0.0685565 2.01 +- 0.236643]
 
 shows the means and standard deviations for the data in the first data set
-(``0.0685565`` is the square root of the ``0.0047`` in the covariance matrix).
-The dictionary ``prior`` gives *a priori* estimates for the two parameters,
-``a`` and ``b``: each is assumed to be ``0.5 +- 0.5`` before fitting. In
-addition, there is an extra piece of input data, ``y["b/a"]``, which indicates
-that ``b/a`` is ``2.0 +- 0.5``. The fit function for this data is simply the
-ratio ``b/a`` (represented by ``p['b']/p['a']`` in fit function ``fcn(x, p)``.)
+(``0.0685565`` is the square root of the ``0.0047`` in the covariance
+matrix). The dictionary ``prior`` gives *a priori* estimates for the two
+parameters, ``a`` and ``b``: each is assumed to be ``0.5 +- 0.5`` before
+fitting; the parameters ``p[k]`` in the fit function ``fcn(x, p)`` are
+stored in a dictionary having the same keys as ``prior``. In addition,
+there is an extra piece of input data, ``y["b/a"]``, which indicates that
+``b/a`` is ``2.0 +- 0.5``. The fit function for this data is simply the
+ratio ``b/a`` (represented by ``p['b']/p['a']`` in fit function ``fcn(x,
+p)``). The fit function returns a dictionary having the same keys and 
+layout as the input data ``y``.
 
 The output from the code sample above is::
 
@@ -102,10 +106,14 @@ The output from the code sample above is::
 The best-fit values for ``a`` and ``b`` are ``0.253(32)`` and ``0.449(65)``,
 respectively; and the best-fit result for ``b/a`` is ``1.775(298)``, which,
 because of correlations, is slightly more accurate than might be expected from
-the separate errors for ``a`` and ``b``. The error budget, at the end, for
-each of these three quantities shows that the bulk of the error in each case
-comes from uncertainties in the ``y`` data, with only small contributions
-from uncertainties in the priors ``prior``.
+the separate errors for ``a`` and ``b``. 
+The error budget for each of these three quantities is tabulated at the end
+and shows that the bulk of the error in each case comes from uncertainties
+in the ``y`` data, with only small contributions from uncertainties in the
+priors ``prior``. The fit results corresponding to
+each piece of input data are also tabulated (``Fit: ...``); the agreement 
+is excellent, as expected given that the ``chi**2`` per degree of freedom
+is only ``0.17``.
    
 The last section of the code uses Python's :mod:`pickle` module to save the
 best-fit values of the parameters in a file for later use. They are recovered
