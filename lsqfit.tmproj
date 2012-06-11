@@ -3,14 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>setup.py</string>
+	<string>lsqfit.todo</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>lsqfit.todo</string>
 			<key>lastUsed</key>
-			<date>2012-06-07T17:13:47Z</date>
+			<date>2012-06-10T22:18:02Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>expanded</key>
@@ -53,13 +55,13 @@
 					<key>filename</key>
 					<string>doc/source/gvar.rst</string>
 					<key>lastUsed</key>
-					<date>2012-06-10T21:09:19Z</date>
+					<date>2012-06-10T22:18:02Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
 					<string>doc/source/gvar_dataset.rst</string>
 					<key>lastUsed</key>
-					<date>2012-06-10T20:27:28Z</date>
+					<date>2012-06-10T21:58:16Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -126,8 +128,6 @@
 					<date>2012-06-05T22:21:01Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>documentation</string>
 		</dict>
@@ -138,9 +138,7 @@
 					<key>filename</key>
 					<string>setup.py</string>
 					<key>lastUsed</key>
-					<date>2012-06-10T21:26:38Z</date>
-					<key>selected</key>
-					<true/>
+					<date>2012-06-10T21:39:06Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -197,14 +195,10 @@
 					<date>2012-06-08T03:11:34Z</date>
 				</dict>
 			</array>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>build files</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>tests</string>
 			<key>regexFolderFilter</key>
@@ -213,8 +207,6 @@
 			<string>tests</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
 			<key>name</key>
 			<string>examples</string>
 			<key>regexFolderFilter</key>
@@ -520,30 +512,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>24</integer>
+				<integer>32</integer>
 				<key>line</key>
-				<integer>3</integer>
+				<integer>428</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>3</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>4</integer>
-			</dict>
 		</dict>
 		<key>doc/source/gvar_dataset.rst</key>
 		<dict>
@@ -778,9 +754,9 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>31</integer>
+				<integer>52</integer>
 				<key>line</key>
-				<integer>4</integer>
+				<integer>3</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -820,29 +796,29 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>46</integer>
+				<integer>9</integer>
 				<key>line</key>
-				<integer>66</integer>
+				<integer>98</integer>
 			</dict>
 			<key>columnSelection</key>
 			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>53</integer>
+			<integer>0</integer>
 			<key>selectFrom</key>
 			<dict>
 				<key>column</key>
-				<integer>9</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>66</integer>
+				<integer>84</integer>
 			</dict>
 			<key>selectTo</key>
 			<dict>
 				<key>column</key>
-				<integer>47</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>66</integer>
+				<integer>99</integer>
 			</dict>
 		</dict>
 		<key>src/gvar/__init__.py</key>

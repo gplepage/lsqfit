@@ -1,8 +1,7 @@
 Things we want to think about:
-- remake documentation for distribution
+- remake documentation for posting
 
-- post to pypi --- need classifiers and need to understand what I am
-  actually doing (permissions).
+- post to pypi??? Do we need it when we have github?
 
 Not Clear we want to do them:
 - nonlinear_fit.format is irritating with its maxline. Replace with a
