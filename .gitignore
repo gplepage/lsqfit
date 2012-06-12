@@ -10,3 +10,4 @@ doc/source/_build/
 .coverage
 src/lsqfit/version.py
 files-*.python*
+lsqfit.todo
