@@ -255,15 +255,15 @@ single array instead of a dictionary, if that simplifies the code
 (which is usually not the case).</li>
 <li>The best-fit values of the fit parameters (<tt class="docutils literal"><span class="pre">fit.p[k]</span></tt>) are also
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and these capture statistical correlations between different
-parameters that are indicated by the fit. The output parameters can be
-combined in arithmetic expressions, using standard operators and
+parameters that are indicated by the fit. These output parameters can
+be combined in arithmetic expressions, using standard operators and
 standard functions, to obtain derived quantities. These operations
 take account of and track statistical correlations.</li>
-<li>Function <a class="reference internal" href="gvar.html#gvar.fmt_errorbudget" title="gvar.fmt_errorbudget"><tt class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></tt></a> is a very useful
-tool for assessing the origins (<tt class="docutils literal"><span class="pre">inputs</span></tt>) of the statistical errors
-obtained in various final results (<tt class="docutils literal"><span class="pre">outputs</span></tt>). It is particularly
-useful for analyzing the impact of the <em>a priori</em> uncertainties
-encoded in the prior (<tt class="docutils literal"><span class="pre">prior</span></tt>).</li>
+<li>Function <a class="reference internal" href="gvar.html#gvar.fmt_errorbudget" title="gvar.fmt_errorbudget"><tt class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></tt></a> is a useful tool for assessing
+the origins (<tt class="docutils literal"><span class="pre">inputs</span></tt>) of the statistical errors obtained in various
+final results (<tt class="docutils literal"><span class="pre">outputs</span></tt>). It is particularly useful for analyzing
+the impact of the <em>a priori</em> uncertainties encoded in the prior
+(<tt class="docutils literal"><span class="pre">prior</span></tt>).</li>
 </ul>
 </div></blockquote>
 <p>What follows is a brief tutorial that demonstrates in greater detail how to

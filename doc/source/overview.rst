@@ -207,16 +207,16 @@ There are several things worth noting from this example:
      
    * The best-fit values of the fit parameters (``fit.p[k]``) are also
      |GVar|\s and these capture statistical correlations between different
-     parameters that are indicated by the fit. The output parameters can be
-     combined in arithmetic expressions, using standard operators and
+     parameters that are indicated by the fit. These output parameters can
+     be combined in arithmetic expressions, using standard operators and
      standard functions, to obtain derived quantities. These operations
      take account of and track statistical correlations.
      
-   * Function :func:`gvar.fmt_errorbudget` is a very useful
-     tool for assessing the origins (``inputs``) of the statistical errors
-     obtained in various final results (``outputs``). It is particularly
-     useful for analyzing the impact of the *a priori* uncertainties 
-     encoded in the prior (``prior``).
+   * Function :func:`gvar.fmt_errorbudget` is a useful tool for assessing
+     the origins (``inputs``) of the statistical errors obtained in various
+     final results (``outputs``). It is particularly useful for analyzing
+     the impact of the *a priori* uncertainties encoded in the prior
+     (``prior``).
    
 What follows is a brief tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
