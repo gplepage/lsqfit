@@ -5,11 +5,11 @@ version, much of which will be invisible to most users. Significant pieces
 of lsqfit and gvar were refactored for simplicity, with replacements for a
 number of awkward constructions that reflected earlier but now obsolete
 ideas about how the code would be used. A somewhat inconvenient change is
-the renaming the gdev module to gvar (for "gaussian variable"): every
+renaming the gdev module to gvar (for "gaussian variable"): every
 instance of 'gdev' is now replaced by 'gvar', as is every 'GDev' by 'GVar'.
 The old names were wrong and therefore misleading. (A tiny 'gdev.py' file
 is included that aliases the new names with the old names, for use with old
-code.) In addition, the interfaces for many functions in lsqfit and
+code.) More usefully, the interfaces for many functions in lsqfit and
 especially gvar were made more uniform: for example, almost any gvar
 function that took an array of GVars as an argument can now also accept a
 single GVar or a dictionary whose values are single GVars or arrays of
@@ -26,8 +26,9 @@ The bigger changes include:
   "gaussian variable"). A new gdev.py module is included that aliases the
   new names to the old names, for use with old code. gdev.py is not
   installed with the rest of the code; if you need it (for old code)
-  install it, for example, using "make install-gdev". Obviously, a better
-  solution is to get rid of the old names.
+  install it, for example, using "make install-gdev"; or copy it to the the
+  directory containing the old code. Obviously, a better solution is to get
+  rid of the old names.
 
 - Correctly handles situations where priors are correlated with the fit
   data. Previously such correlations were ignored. This is the most
@@ -39,7 +40,7 @@ The bigger changes include:
 - Fit functions that depend only on the fit parameters (that is, have no
   dependence on an independent "x" variable) are now supported. This is
   signaled either by setting x=False in the fit data (data=(x,y)) or by
-  leaving x out altogether (data=y).
+  leaving x out altogether (data=y) in nonlinear_fit.
 
 - Rearranged gvar and lsqfit into packages instead of simple modules. This
   makes maintenance easier. It also reduces the number of names added to

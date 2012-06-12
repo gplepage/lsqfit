@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>lsqfit.todo</string>
 			<key>lastUsed</key>
-			<date>2012-06-10T22:18:02Z</date>
+			<date>2012-06-11T21:59:44Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -138,7 +138,7 @@
 					<key>filename</key>
 					<string>setup.py</string>
 					<key>lastUsed</key>
-					<date>2012-06-10T21:39:06Z</date>
+					<date>2012-06-11T16:02:36Z</date>
 				</dict>
 				<dict>
 					<key>filename</key>
@@ -195,6 +195,8 @@
 					<date>2012-06-08T03:11:34Z</date>
 				</dict>
 			</array>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>build files</string>
 		</dict>
@@ -796,30 +798,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>9</integer>
+				<integer>23</integer>
 				<key>line</key>
-				<integer>98</integer>
+				<integer>24</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>84</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>99</integer>
-			</dict>
 		</dict>
 		<key>src/gvar/__init__.py</key>
 		<dict>
@@ -829,6 +815,20 @@
 				<integer>70</integer>
 				<key>line</key>
 				<integer>119</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>src/gvar/_bufferdict.pyx</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>20</integer>
+				<key>line</key>
+				<integer>17</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -1024,6 +1024,7 @@
 		<string>MANIFEST.in</string>
 		<string>COPYING</string>
 		<string>setup.py</string>
+		<string>src/gvar/_bufferdict.pyx</string>
 		<string>tests/test-gvar.py</string>
 		<string>tests/test-bufferdict.py</string>
 		<string>nose-uncovered.py</string>

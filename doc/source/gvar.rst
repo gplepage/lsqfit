@@ -52,7 +52,7 @@ variables::
     
     cov[i, j] = <x[i]*x[j]>  -  <x[i]> * <x[j]>
     
-where, in general, ``<y>`` is the expectation value or mean of random variable
+where ``<y>`` denotes the expectation value or mean for a random variable
 ``y``.
     
     
@@ -100,8 +100,8 @@ dictionary is converted internally into a specialized (ordered) dictionary of
 type |BufferDict|, and dictionary-valued results are also |BufferDict|\s.
 |BufferDict|\s are also useful for archiving |GVar|\s, since they may be
 pickled using Python's :mod:`pickle` module; |GVar|\s cannot be pickled
-otherwise. A pickled |BufferDict| preserves all of the correlations between
-the different |GVar|\s in it.
+otherwise. A pickled |BufferDict| preserves any correlations that exist
+between the different |GVar|\s in it.
     
 To create an array of |GVar|\s with mean values specified by array
 ``xmean`` and covariance matrix ``xcov``, use ::
@@ -164,7 +164,7 @@ This is easily computed (for the example above)::
     0.125
     >>> print(f.partialsdev(y))        # uncertainty in f due to y
     2.0
-    >>> print(f.partialsdev(x, y))      # uncertainty in f due to x and y
+    >>> print(f.partialsdev(x, y))     # uncertainty in f due to x and y
     2.00390244274
     >>> print(f.sdev)                  # should be the same
     2.00390244274
