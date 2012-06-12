@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.2 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.2.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.2',
+        VERSION:     '4.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.2 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.2.1 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -398,15 +398,16 @@ input data&#8217;s covariance matrix is too singular to invert accurately
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
 <tt class="descname">svdcorrection</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p>A list where <tt class="docutils literal"><span class="pre">svdcorrection[0]</span></tt> is the <em>svd</em> correction to the fit
-data: that is, <tt class="docutils literal"><span class="pre">fit.y</span></tt> is obtained by adding <tt class="docutils literal"><span class="pre">svdcorrection[0]</span></tt>
-to the (flattened) input data. Similarly, <tt class="docutils literal"><span class="pre">svdcorrection[1]</span></tt> is the
-correction for the prior: <tt class="docutils literal"><span class="pre">fit.prior</span></tt> is obtained by adding
-<tt class="docutils literal"><span class="pre">svdcorrection[1]</span></tt> to the (flattened) input prior. Each
-<tt class="docutils literal"><span class="pre">svdcorrection[i]</span></tt> is either a flattened array, or <tt class="docutils literal"><span class="pre">None</span></tt>, if
-there was no <em>svd</em> correction. <tt class="docutils literal"><span class="pre">svdcorrection</span></tt> is mostly used as an
-input variable when creating error budgets, to assess how much of the
-error in a final result is caused by the <em>svd</em> cut.</p>
+<dd><p>A dictionary containing the (flattened) <em>svd</em> corrections, if any, to
+the fit data <tt class="docutils literal"><span class="pre">y</span></tt> and the prior <tt class="docutils literal"><span class="pre">prior</span></tt>. For example, <tt class="docutils literal"><span class="pre">fit.y</span></tt>
+is obtained by adding <tt class="docutils literal"><span class="pre">fit.svdcorrection['y']</span></tt> to to the
+(flattened) input <tt class="docutils literal"><span class="pre">y</span></tt> data. Similarly <tt class="docutils literal"><span class="pre">fit.prior</span></tt> is the input
+prior plus <tt class="docutils literal"><span class="pre">fit.svdcorrection['prior']</span></tt>. When there is no <em>svd</em>
+correction, the entries are set equal to <tt class="docutils literal"><span class="pre">None</span></tt>. When the input
+data and prior are correlated, <tt class="docutils literal"><span class="pre">fit.svdcorrection['all']</span></tt> contains
+the correction for the concatenated data and prior. There are no
+entries for keys <tt class="docutils literal"><span class="pre">'y'</span></tt> and <tt class="docutils literal"><span class="pre">'prior'</span></tt> in this case. There is also
+no entry for key <tt class="docutils literal"><span class="pre">'prior'</span></tt> when there is no prior.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -939,7 +940,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

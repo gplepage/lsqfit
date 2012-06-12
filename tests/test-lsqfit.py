@@ -461,7 +461,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,xo)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],[None,None])
+        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
         self.assertEqual(set(fdata.keys()), set(['y', 'prior',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['y'].mean,[1,10])
@@ -478,7 +478,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],[None,None])
+        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
         self.assertEqual(set(fdata.keys()), set(['y', 'prior',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['y'].mean,[1,10])
@@ -498,7 +498,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],[None])
+        self.assertEqual(fdata['svdcorrection'],{'all': None})
         self.assertEqual(set(fdata.keys()), set(['all',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['all'].mean,[1,10,2])
@@ -519,7 +519,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assertEqual(fdata['svdcorrection'],[None,None])
+        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
         self.assertEqual(set(fdata.keys()), set(['y','prior',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['y'].mean,[1,10])
@@ -540,7 +540,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assertEqual(fdata['svdcorrection'],[None])
+        self.assertEqual(fdata['svdcorrection'],{'all': None})
         self.assertEqual(set(fdata.keys()), set(['all',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['all'].mean,[1,10,1,1])
@@ -566,7 +566,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,xo)
         self.assert_gvclose(y,yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],[None,None])
+        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
         self.assertEqual(set(fdata.keys()), set(['y', 'prior',
                          'svdcorrection', 'logdet_prior']))
         self.assert_arraysequal(fdata['y'].mean,[1,10])
@@ -587,7 +587,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,xo)
         self.assert_gvclose(y['y'],yo['y'])
         self.assertIs(prior,None)
-        self.assertEqual(fdata['svdcorrection'],[None])
+        self.assertEqual(fdata['svdcorrection'],{'y': None})
         self.assertEqual(set(fdata.keys()), set(['y', 'svdcorrection']))
         self.assert_arraysequal(fdata['y'].mean,[1,10])
         self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])        
@@ -612,10 +612,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             if svdcut[0] == 0:
                 self.assert_gvclose(y,yo)
                 self.assert_gvclose((y[1]-y[0])/2,da)
-                self.assertIs(fdata['svdcorrection'][0],None)
+                self.assertIs(fdata['svdcorrection']['y'],None)
             else:
                 self.assert_gvclose((y[1]-y[0])/2,da_svd)
-                self.assertNotEqual(fdata['svdcorrection'][0],None)
+                self.assertNotEqual(fdata['svdcorrection']['y'],None)
                 with self.assertRaises(AssertionError):
                     self.assert_gvclose(y,yo)
             
@@ -623,10 +623,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             if svdcut[1] == 0:
                 self.assert_gvclose(prior,po)
                 self.assert_gvclose((prior[1]-prior[0])/2,da)
-                self.assertIs(fdata['svdcorrection'][1],None)
+                self.assertIs(fdata['svdcorrection']['prior'],None)
             else:
                 self.assert_gvclose((prior[1]-prior[0])/2,da_svd)
-                self.assertNotEqual(fdata['svdcorrection'][1],None)
+                self.assertNotEqual(fdata['svdcorrection']['prior'],None)
                 with self.assertRaises(AssertionError):
                     self.assert_gvclose(prior,po)
             self.assert_arraysclose(    #

@@ -199,16 +199,17 @@ nonlinear_fit Objects
       Quality factor for last fit (should be >0.1 for good fits).
       
    .. attribute:: svdcorrection
-   
-      A list where ``svdcorrection[0]`` is the *svd* correction to the fit
-      data: that is, ``fit.y`` is obtained by adding ``svdcorrection[0]``
-      to the (flattened) input data. Similarly, ``svdcorrection[1]`` is the
-      correction for the prior: ``fit.prior`` is obtained by adding
-      ``svdcorrection[1]`` to the (flattened) input prior. Each
-      ``svdcorrection[i]`` is either a flattened array, or ``None``, if
-      there was no *svd* correction. ``svdcorrection`` is mostly used as an
-      input variable when creating error budgets, to assess how much of the
-      error in a final result is caused by the *svd* cut.
+      
+      A dictionary containing the (flattened) *svd* corrections, if any, to
+      the fit data ``y`` and the prior ``prior``. For example, ``fit.y``
+      is obtained by adding ``fit.svdcorrection['y']`` to to the
+      (flattened) input ``y`` data. Similarly ``fit.prior`` is the input
+      prior plus ``fit.svdcorrection['prior']``. When there is no *svd*
+      correction, the entries are set equal to ``None``. When the input
+      data and prior are correlated, ``fit.svdcorrection['all']`` contains
+      the correction for the concatenated data and prior. There are no
+      entries for keys ``'y'`` and ``'prior'`` in this case. There is also
+      no entry for key ``'prior'`` when there is no prior.
       
    .. attribute:: time
    

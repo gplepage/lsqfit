@@ -363,7 +363,10 @@ cdef class GVar:
             else:
                 a = numpy.asarray(a)
             for ai in a.flat:
-                assert ai.cov is self.cov,"Incompatible |GVar|\s."
+                if ai is None:
+                    continue
+                else:
+                    assert ai.cov is self.cov,"Incompatible |GVar|\s."
                 for i in range(ai.d.size):
                     j = ai.d.v[i].i
                     if j<dstart:

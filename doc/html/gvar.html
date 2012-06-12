@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.2',
+        VERSION:     '4.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.2 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.2.1 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -99,7 +99,7 @@ Nonzero off-diagonal elements imply correlations between different
 variables:</p>
 <div class="highlight-python"><pre>cov[i, j] = &lt;x[i]*x[j]&gt;  -  &lt;x[i]&gt; * &lt;x[j]&gt;</pre>
 </div>
-<p>where, in general, <tt class="docutils literal"><span class="pre">&lt;y&gt;</span></tt> is the expectation value or mean of random variable
+<p>where <tt class="docutils literal"><span class="pre">&lt;y&gt;</span></tt> denotes the expectation value or mean for a random variable
 <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 </div>
 <div class="section" id="creating-gaussian-variables">
@@ -143,8 +143,8 @@ dictionary is converted internally into a specialized (ordered) dictionary of
 type <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>, and dictionary-valued results are also <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s.
 <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s are also useful for archiving <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, since they may be
 pickled using Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module; <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be pickled
-otherwise. A pickled <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> preserves all of the correlations between
-the different <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in it.</p>
+otherwise. A pickled <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> preserves any correlations that exist
+between the different <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in it.</p>
 <p>To create an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with mean values specified by array
 <tt class="docutils literal"><span class="pre">xmean</span></tt> and covariance matrix <tt class="docutils literal"><span class="pre">xcov</span></tt>, use</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">xmean</span><span class="p">,</span> <span class="n">xcov</span><span class="p">)</span>
@@ -202,7 +202,7 @@ This is easily computed (for the example above):</p>
 <span class="go">0.125</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>        <span class="c"># uncertainty in f due to y</span>
 <span class="go">2.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>      <span class="c"># uncertainty in f due to x and y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>     <span class="c"># uncertainty in f due to x and y</span>
 <span class="go">2.00390244274</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">sdev</span><span class="p">)</span>                  <span class="c"># should be the same</span>
 <span class="go">2.00390244274</span>
@@ -1299,7 +1299,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

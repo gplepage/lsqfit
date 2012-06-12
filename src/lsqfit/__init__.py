@@ -234,12 +234,6 @@ class nonlinear_fit(object):
         self.y = y   
         self.prior = prior  
         self.svdcorrection = fdata['svdcorrection']
-        if 'all' in fdata:
-            self.descr = " (input data correlated with prior)" 
-        elif 'prior' not in fdata:
-            self.descr = " (no prior)"
-        else:
-            self.descr = ""
         self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
         flatfcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y, x=self.x)
@@ -442,8 +436,14 @@ class nonlinear_fit(object):
             logGBF = str(self.logGBF)
         ##
         ## create header ##
+        if 'all' in self.svdcorrection:
+            descr = " (input data correlated with prior)" 
+        elif 'prior' not in self.svdcorrection:
+            descr = " (no prior)"
+        else:
+            descr = ""
         table = ('Least Square Fit%s:\n  chi2/dof [dof] = %.2g [%d]    Q = %s'
-                 '    logGBF = %s' % (self.descr, chi2_dof, dof, Q, logGBF))
+                 '    logGBF = %s' % (descr, chi2_dof, dof, Q, logGBF))
         table = table+("    itns = %d\n" % self.nit)
         if maxline < 0:
             return table
@@ -659,7 +659,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
     Output data in ``fdata`` includes: fit decompositions of ``y`` 
     (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
     both together (``fdata["all"]``) if they are correlated. 
-    ``fdata["svdcorrection"]`` contains a list of all *svd* corrections
+    ``fdata["svdcorrection"]`` contains a dictionary with all *svd* corrections
     (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
     the logarithm of the determinant of the prior's covariance matrix.
     """
@@ -681,7 +681,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
         raise ValueError("data tuple wrong length: "+str(len(data)))
     ##
     ## create svd script ##
-    fdata = dict(svdcorrection=[])
+    fdata = dict(svdcorrection={})
         
     def _apply_svd(k, data, fdata=fdata, svdcut=svdcut, svdnum=svdnum):
         """ apply svd cut and save related data """
@@ -689,7 +689,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
         ans = _gvar.svd(data, svdcut=svdcut[i], svdnum=svdnum[i], 
                         rescale=True, compute_inv=True)
         fdata[k] = _FDATA(mean=_gvar.mean(data.flat), wgt=_gvar.svd.inv_wgt)
-        fdata['svdcorrection'].append(_gvar.svd.correction)
+        fdata['svdcorrection'][k] = _gvar.svd.correction
         if k == 'prior':
             fdata['logdet_prior'] = _gvar.svd.logdet
         return ans
