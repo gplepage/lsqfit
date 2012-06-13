@@ -223,8 +223,6 @@ class BufferDict(collections.MutableMapping):
         is not in ``self``, use ``self.add(k,v)`` to add it.
         """
         if k not in self:
-            # if not isinstance(self._buf,list):
-            #     self._buf = list(self._buf)
             v = numpy.asarray(v)
             if v.shape==():
                 ## add single piece of data ##
@@ -240,22 +238,20 @@ class BufferDict(collections.MutableMapping):
                 ##
             self._keys.append(k)
         else:
-            # if isinstance(self._buf,list):
-            #     self._buf = numpy.array(self._buf)
             d = self._data[k]
             if d.shape is None:
                 try:
                     self._buf[d.slice] = v
                 except ValueError:
-                    print("*** Not a scalar?",numpy.shape(v))
-                    raise
+                    raise ValueError("*** Not a scalar? Shape=%s" 
+                                     % str(numpy.shape(v)))
             else:
                 v = numpy.asarray(v)
                 try:
                     self._buf[d.slice] = v.flat
                 except ValueError:
-                    print("*** Shape mismatch?",v.shape,"not",d.shape)
-                    raise
+                    raise ValueError("*** Shape mismatch? %s not %s" % 
+                                     (str(v.shape),str(d.shape)))
     ##
     def __delitem__(self,k):
         raise NotImplementedError("Cannot delete items from BufferDict.")
