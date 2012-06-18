@@ -88,9 +88,9 @@ def print_fit(fit,vd):
     """ print out fit """
     output = '\n'
     if fit.prior is None:
-        cd = {'data':[fit.y.flat]}
+        cd = {'data':fit.y}
     else:
-        cd = {'data':[fit.y.flat],'priors':[fit.prior.flat]}
+        cd = {'data':fit.y,'priors':fit.prior}
     output += fit.fmt_values(vd) + '\n' 
     output += fit.fmt_errorbudget(vd,cd,percent=next(bool_iter))
     output += '\n'+fit.format(nline=1000)+'\n'
@@ -107,12 +107,18 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         gvar = gv.gvar
         # gv.ranseed((1969,1974))   # don't use; want different rans each time
         self.label = None
-        os.system("rm -f test-lsqfit.p")
+        try:
+            os.unlink("test-lsqfit.p")
+        except OSError:
+            pass
     ##
     def tearDown(self):
         global gvar
         gvar = None
-        os.system("rm -f test-lsqfit.p")
+        try:
+            os.unlink("test-lsqfit.p")
+        except OSError:
+            pass
         # if self.label is not None:
         #     print self.label
     ##
@@ -132,10 +138,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(fit.dof,2)
         self.assertAlmostEqual(fit.Q,1.0)
         self.assertAlmostEqual(fit.chi2,0.0)
-        cd = {'data':[fit.y.flat],'priors':[fit.prior.flat],'p':[fit.prior['p']]}
+        cd = {'data':fit.y,'priors':fit.prior,'p':[fit.prior['p']]}
         err = {}
-        err['data'] = fit.p['p'][1].partialsdev(fit.y.flat)
-        err['priors'] = fit.p['p'][1].partialsdev(fit.prior.flat)
+        err['data'] = fit.p['p'][1].partialsdev(fit.y)
+        err['priors'] = fit.p['p'][1].partialsdev(fit.prior)
         err['p'] = fit.p['p'][1].partialsdev(fit.prior['p'])
         if yfac>100*pfac:
             self.assert_gvclose(fit.p,pr)
@@ -712,7 +718,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             prior = lsqfit._unpack_gvars(prior)
             p = lsqfit._unpack_p0(p0=None,p0file=fn,prior=prior)
             self.assert_arraysequal(p['v'],vout)
-        os.system("rm -f "+fn)
+        os.unlink(fn)
         p = lsqfit._unpack_p0(p0=None,p0file=fn,prior=prior)
         def nonzero_p0(x):
             if not isinstance(x,np.ndarray):
@@ -886,7 +892,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(fit.p['not y'].dotder(p['not y'].der),1.0)
 
         err = partialerrors({"y":fit.p['y'],"not y":fit.p['not y']},
-                            {"y":[fit.y.flat], "not y":[p["not y"]],
+                            {"y":fit.y, "not y":[p["not y"]],
                                 "other prior":[p["y"]]})
         self.assertAlmostEqual(err["y","y"],wavg(y).sdev)
         self.assertAlmostEqual(err["y","not y"],0.0)
@@ -924,7 +930,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(fit.p['not y'].dotder(p['not y'].der),1.0)
 
         err = partialerrors({"y":fit.p['y'],"not y":fit.p['not y']},
-                            {"y":[fit.y.flat], "not y":[p["not y"]],
+                            {"y":fit.y, "not y":[p["not y"]],
                                 "other prior":[p["y"]]})
         self.assertAlmostEqual(err["y","y"],wavg(y).sdev)
         self.assertAlmostEqual(err["y","not y"],0.0)

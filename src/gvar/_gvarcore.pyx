@@ -427,7 +427,7 @@ cdef class GVar:
     property sdev:
         """ Standard deviation. """
         def __get__(self):
-            cdef double var = self.cov.expval(self.d) # self.d.dot(self.cov.dot(self.d))
+            cdef double var = self.cov.expval(self.d) 
             if var>=0:
                 return c_sqrt(var)
             else:
@@ -437,7 +437,7 @@ cdef class GVar:
         """ Variance. """
         # @cython.boundscheck(False)
         def __get__(self):
-            return self.cov.expval(self.d)  # self.d.dot(self.cov.dot(self.d))
+            return self.cov.expval(self.d)  
         ##
     def dotder(self,numpy.ndarray[numpy.double_t,ndim=1] v not None):
         """ Return the dot product of ``self.der`` and ``v``. """
@@ -471,10 +471,9 @@ class GVarFactory:
         
     .. function:: gvar(x,xcov)
         
-        Returns an array of |GVar|\s with means given by array ``x`` 
-        and a covariance matrix given by array ``xcov``, where 
-        ``xcov.shape = x.shape+x.shape``. The result has the same shape
-        as ``x``.
+        Returns an array of |GVar|\s with means given by array ``x`` and a
+        covariance matrix given by array ``xcov``, where ``xcov.shape =
+        2*x.shape``. The result has the same shape as ``x``.
         
     .. function:: gvar((x,xsdev))
         
@@ -484,27 +483,26 @@ class GVarFactory:
         
         Returns a |GVar| corresponding to string ``xstr`` which is 
         either of the form ``"xmean +- xsdev"`` or ``"x(xerr)"`` (see
-        :meth:`GVar.fmt`.)
+        :meth:`GVar.fmt`).
         
     .. function:: gvar(xgvar)
         
         Returns |GVar| ``xgvar`` unchanged.
         
-    .. function:: gvar(dict(x=xstr,y=(x,xsdev)...))
+    .. function:: gvar(xdict)
         
-        Returns a dictionary (:class:`BufferDict`) ``b`` where
-        ``b['x'] = gvar(xstr)``, ``b['y']=gvar(x,xsdev)``...
+        Returns a dictionary (:class:`BufferDict`) ``b`` where 
+        ``b[k] = gvar(xdict[k])`` for every key in dictionary ``xdict``.
+        The values in ``xdict``, therefore, can be strings, tuples or 
+        |GVar|\s (see above), or arrays of these.
         
-    .. function:: gvar([[(x1,x1sdev)...]...])
+    .. function:: gvar(xarray)
         
-        Returns an array ``numpy.array([[gvar(x1,x1sdev)...]...])``. Works
-        for arrays of any shape.
-            
-    .. function:: gvar([[x1str...]...])
-        
-        Returns an array ``numpy.array([[gvar(xstr1)...]...])`` where
-        ``x1str...`` are strings. Works for arrays of any shape.
-            
+        Returns an array ``a`` having the same shape as ``xarray`` where
+        every element ``a[i...] = gvar(xarray[i...])``. The values in
+        ``xarray``, therefore, can be strings, tuples or |GVar|\s (see
+        above).
+                    
     ``gvar.gvar`` is actually an object of type :class:`gvar.GVarFactory`.  
     """
     def __init__(self,cov=None):

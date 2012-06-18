@@ -148,37 +148,50 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     :param compute_inv: Compute representation of inverse of covariance 
         matrix if ``True``; the result is stored in ``svd.inv_wgt`` (see
         below). Default value is ``False``.
-        
+    :returns: A copy of ``g`` with the same means but with a covariance
+        matrix modified by *svd* cuts.
+       
     Data from the *svd* analysis of ``g``'s covariance matrix is stored in
     ``svd`` itself:
             
-        - ``svd.val``: eigenvalues of the covariance matrix after *svd* 
-          cuts (and after rescaling if ``rescale=True``); the eigenvalues
-          are ordered, with the smallest first;
+    .. attribute:: svd.val
+    
+        Eigenvalues of the covariance matrix after *svd* cuts (and after
+        rescaling if ``rescale=True``); the eigenvalues are ordered, with
+        the smallest first.
         
-        - ``svd.vec``: eigenvectors of the covariance matrix after *svd* 
-          cuts (and after rescaling if ``rescale=True``), where
-          ``svd.vec[i]`` is the vector corresponding to ``svd.val[i]``;
+    .. attribute:: svd.vec
+     
+        Eigenvectors of the covariance matrix after *svd* cuts (and after
+        rescaling if ``rescale=True``), where ``svd.vec[i]`` is the vector
+        corresponding to ``svd.val[i]``.
           
-        - ``svd.eigen_range``: ratio of the smallest to largest eigenvalue
-          before *svd* cuts are applied (but after rescaling if
-          ``rescale=True``);
+    .. attribute:: svd.eigen_range
         
-        - ``svd.D``: diagonal of matrix used to rescale the covariance 
-          matrix before applying *svd* cuts (cuts are applied to 
-          ``D cov D``) if ``rescale=True``; ``svd.D`` is ``None`` if
-          ``rescale=False``;
-          
-        - ``svd.logdet``: logarithm of the determinant of the covariance 
-          matrix after *svd* cuts are applied;
-          
-        - ``svd.correction``: vector of the *svd* corrections to ``g.flat``;
+        Ratio of the smallest to largest eigenvalue before *svd* cuts are
+        applied (but after rescaling if ``rescale=True``).
         
-        - ``svd.inv_wgt``: the sum of the outer product of vectors 
-          ``inv_wgt[i]`` with themselves equals the inverse of the 
-          covariance matrix after *svd* cuts. Only computed if
-          ``compute_inv=True``. The order of the vectors is reversed
-          relative to ``svd.val`` and ``svd.vec``
+    .. attribute:: svd.D    
+    
+        Diagonal of matrix used to rescale the covariance matrix before
+        applying *svd* cuts (cuts are applied to ``D*cov*D``) if
+        ``rescale=True``; ``svd.D`` is ``None`` if ``rescale=False``.
+          
+    .. attribute:: svd.logdet
+    
+        Logarithm of the determinant of the covariance matrix after *svd*
+        cuts are applied.
+          
+    .. attribute:: svd.correction
+    
+        Vector of the *svd* corrections to ``g.flat``;
+        
+    .. attribute:: svd.inv_wgt
+    
+        The sum of the outer product of vectors ``inv_wgt[i]`` with
+        themselves equals the inverse of the covariance matrix after *svd*
+        cuts. Only computed if ``compute_inv=True``. The order of the
+        vectors is reversed relative to ``svd.val`` and ``svd.vec``
     """
     ## replace g by a copy of g ##
     if hasattr(g,'keys'):

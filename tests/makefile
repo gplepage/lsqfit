@@ -12,19 +12,12 @@
 
 PYTHON = python
 
-test-all tests:
-	#================================================================ gvar
-	- $(PYTHON) -m unittest test-gvar
-	#========================================================== bufferdict
-	- $(PYTHON) -m unittest test-bufferdict
-	#============================================================= dataset
-	- $(PYTHON) -m unittest test-dataset
-	#============================================================== lsqfit
-	- $(PYTHON) -m unittest test-lsqfit
+tests test-all:
+	$(PYTHON) -m unittest discover
 
 coverage:
 	nosetests -s --with-coverage --cover-erase\
-	   --cover-package=lsqfit test-bufferdict.py test-lsqfit.py
+	   --cover-package=lsqfit test_bufferdict.py test_lsqfit.py
 
 clean:
 	rm -rf *.pyc __pycache__ .coverage *.p

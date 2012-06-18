@@ -67,25 +67,23 @@ class ArrayTests(object):
 
 class test_bufferdict(unittest.TestCase,ArrayTests):
     def setUp(self):
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         b = BufferDict()
         bkeys = ['scalar','vector','tensor']
         bvalues = [0.,np.array([1.,2.]),np.array([[3.,4.],[5.,6.]])]
         bslices = [0,slice(1, 3, None),slice(3, 7, None)]
         bbuf = np.arange(7.)
-        bkeybuf = ['scalar','vector','','tensor','','','']
-        b.add('scalar',0.)
-        b['scalar']  # test flipping bt list and array
-        b.add('vector',np.array([1.,2.]))
-        b.add('tensor',[[3.,4.],[5.,6.]])
+        b['scalar'] = 0.
+        b['vector'] = [1.,2.]
+        b['tensor'] = [[3.,4.],[5.,6.]]
     ##
     def tearDown(self):
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         b = None
     ##
     def test_b_flat(self):
         """ b.flat """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         self.assert_arraysequal(b.flat,bbuf)
         self.assertEqual(b.size,len(bbuf))
         b.flat = 10.+bbuf
@@ -93,9 +91,24 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         for k,v in zip(bkeys,bvalues):
             self.assert_arraysequal(b[k],10.+v)
         b.flat = bbuf
+        bbuf_save = np.array(bbuf)
         for k in b:
             b[k] = 10.
-        self.assert_arraysequal(bbuf,np.zeros(np.shape(bbuf))+10.)
+        self.assert_arraysequal(bbuf,bbuf_save)
+    ##
+    def test_b_buf(self):
+        """ b.buf """
+        global b,bkeys,bvalues,bslices,bbuf
+        self.assert_arraysequal(b.flat,bbuf)
+        self.assertEqual(b.size,len(bbuf))
+        b.buf = 10.+bbuf
+        self.assert_arraysequal(b.buf,10.+bbuf)
+        for k,v in zip(bkeys,bvalues):
+            self.assert_arraysequal(b[k],10.+v)
+        b.buf = bbuf
+        for k in b:
+            b[k] = 10.
+        self.assert_arraysequal(bbuf,np.zeros(bbuf.size)+10.)
     ##
     def test_b_keys(self):
         """ b.keys """
@@ -104,19 +117,19 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
     ##
     def test_b_slice(self):
         """ b.slice(k) """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         for k,sl in zip(bkeys,bslices):
             self.assertEqual(sl,b.slice(k))
     ##
     def test_b_getitem(self):
         """ v = b[k] """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         for k,v in zip(bkeys,bvalues):
             self.assert_arraysequal(b[k],v)
     ##
     def test_b_setitem(self):
         """ b[k] = v """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         for k,v in zip(bkeys,bvalues):
             b[k] = v + 10.
             self.assert_arraysequal(b[k],v+10.)
@@ -138,7 +151,7 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
     ##
     def test_bufferdict_b(self):
         """ BufferDict(b) """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         nb = BufferDict(b)
         for k in bkeys:
             self.assert_arraysequal(nb[k] , b[k])
@@ -153,11 +166,11 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         with self.assertRaises(ValueError):
             nb = BufferDict(b,buf=nb.flat[:-1])
     ##
-    def test_b_adddict(self):
+    def test_b_update(self):
         """ b.add(dict(..)) """
-        global b,bkeys,bvalues,bslices,bbuf,bkeybuf
+        global b,bkeys,bvalues,bslices,bbuf
         nb = BufferDict()
-        nb.add(b)
+        nb.update(b)
         for k in bkeys:
             self.assert_arraysequal(nb[k] , b[k])
             nb[k] += 10.
@@ -179,7 +192,7 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         """ b.flat assignment err """
         global b,bbuf
         with self.assertRaises(ValueError):
-            b.flat = bbuf[:-1]
+            b.buf = bbuf[:-1]
     ##
     def test_b_del_err(self):
         """ del b[k] """

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.1 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.2.1',
+        VERSION:     '4.2.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.2.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.2.2 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -480,10 +480,9 @@ shape of <tt class="docutils literal"><span class="pre">x</span></tt>.</p>
 <dl class="function">
 <dt>
 <tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>x</em>, <em>xcov</em><big>)</big></dt>
-<dd><p>Returns an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with means given by array <tt class="docutils literal"><span class="pre">x</span></tt> 
-and a covariance matrix given by array <tt class="docutils literal"><span class="pre">xcov</span></tt>, where 
-<tt class="docutils literal"><span class="pre">xcov.shape</span> <span class="pre">=</span> <span class="pre">x.shape+x.shape</span></tt>. The result has the same shape
-as <tt class="docutils literal"><span class="pre">x</span></tt>.</p>
+<dd><p>Returns an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with means given by array <tt class="docutils literal"><span class="pre">x</span></tt> and a
+covariance matrix given by array <tt class="docutils literal"><span class="pre">xcov</span></tt>, where <tt class="docutils literal"><span class="pre">xcov.shape</span> <span class="pre">=</span>
+<span class="pre">2*x.shape</span></tt>. The result has the same shape as <tt class="docutils literal"><span class="pre">x</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -497,7 +496,7 @@ as <tt class="docutils literal"><span class="pre">x</span></tt>.</p>
 <tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>xstr</em><big>)</big></dt>
 <dd><p>Returns a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> corresponding to string <tt class="docutils literal"><span class="pre">xstr</span></tt> which is 
 either of the form <tt class="docutils literal"><span class="pre">&quot;xmean</span> <span class="pre">+-</span> <span class="pre">xsdev&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;x(xerr)&quot;</span></tt> (see
-<a class="reference internal" href="#gvar.GVar.fmt" title="gvar.GVar.fmt"><tt class="xref py py-meth docutils literal"><span class="pre">GVar.fmt()</span></tt></a>.)</p>
+<a class="reference internal" href="#gvar.GVar.fmt" title="gvar.GVar.fmt"><tt class="xref py py-meth docutils literal"><span class="pre">GVar.fmt()</span></tt></a>).</p>
 </dd></dl>
 
 <dl class="function">
@@ -508,23 +507,20 @@ either of the form <tt class="docutils literal"><span class="pre">&quot;xmean</s
 
 <dl class="function">
 <dt>
-<tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>dict(x=xstr</em>, <em>y=(x</em>, <em>xsdev)...)</em><big>)</big></dt>
-<dd><p>Returns a dictionary (<a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">BufferDict</span></tt></a>) <tt class="docutils literal"><span class="pre">b</span></tt> where
-<tt class="docutils literal"><span class="pre">b['x']</span> <span class="pre">=</span> <span class="pre">gvar(xstr)</span></tt>, <tt class="docutils literal"><span class="pre">b['y']=gvar(x,xsdev)</span></tt>...</p>
+<tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>xdict</em><big>)</big></dt>
+<dd><p>Returns a dictionary (<a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">BufferDict</span></tt></a>) <tt class="docutils literal"><span class="pre">b</span></tt> where 
+<tt class="docutils literal"><span class="pre">b[k]</span> <span class="pre">=</span> <span class="pre">gvar(xdict[k])</span></tt> for every key in dictionary <tt class="docutils literal"><span class="pre">xdict</span></tt>.
+The values in <tt class="docutils literal"><span class="pre">xdict</span></tt>, therefore, can be strings, tuples or 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (see above), or arrays of these.</p>
 </dd></dl>
 
 <dl class="function">
 <dt>
-<tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>[[(x1,x1sdev)...]...]</em><big>)</big></dt>
-<dd><p>Returns an array <tt class="docutils literal"><span class="pre">numpy.array([[gvar(x1,x1sdev)...]...])</span></tt>. Works
-for arrays of any shape.</p>
-</dd></dl>
-
-<dl class="function">
-<dt>
-<tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>[[x1str...]...]</em><big>)</big></dt>
-<dd><p>Returns an array <tt class="docutils literal"><span class="pre">numpy.array([[gvar(xstr1)...]...])</span></tt> where
-<tt class="docutils literal"><span class="pre">x1str...</span></tt> are strings. Works for arrays of any shape.</p>
+<tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>xarray</em><big>)</big></dt>
+<dd><p>Returns an array <tt class="docutils literal"><span class="pre">a</span></tt> having the same shape as <tt class="docutils literal"><span class="pre">xarray</span></tt> where
+every element <tt class="docutils literal"><span class="pre">a[i...]</span> <span class="pre">=</span> <span class="pre">gvar(xarray[i...])</span></tt>. The values in
+<tt class="docutils literal"><span class="pre">xarray</span></tt>, therefore, can be strings, tuples or <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (see
+above).</p>
 </dd></dl>
 
 <p><tt class="docutils literal"><span class="pre">gvar.gvar</span></tt> is actually an object of type <tt class="xref py py-class docutils literal"><span class="pre">gvar.GVarFactory</span></tt>.</p>
@@ -824,7 +820,7 @@ correlations between different elements of <tt class="docutils literal"><span cl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>g</strong> &#8211; An array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dicitionary whose values are 
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</li>
 <li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number <tt class="docutils literal"><span class="pre">(|svdcut|&lt;=1)</span></tt>.) &#8211; If positive, replace eigenvalues of the covariance 
@@ -842,35 +838,67 @@ below). Default value is <tt class="docutils literal"><span class="pre">False</s
 </ul>
 </td>
 </tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A copy of <tt class="docutils literal"><span class="pre">g</span></tt> with the same means but with a covariance
+matrix modified by <em>svd</em> cuts.</p>
+</td>
+</tr>
 </tbody>
 </table>
 <p>Data from the <em>svd</em> analysis of <tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s covariance matrix is stored in
 <tt class="docutils literal"><span class="pre">svd</span></tt> itself:</p>
-<blockquote>
-<div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">svd.val</span></tt>: eigenvalues of the covariance matrix after <em>svd</em> 
-cuts (and after rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>); the eigenvalues
-are ordered, with the smallest first;</li>
-<li><tt class="docutils literal"><span class="pre">svd.vec</span></tt>: eigenvectors of the covariance matrix after <em>svd</em> 
-cuts (and after rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>), where
-<tt class="docutils literal"><span class="pre">svd.vec[i]</span></tt> is the vector corresponding to <tt class="docutils literal"><span class="pre">svd.val[i]</span></tt>;</li>
-<li><tt class="docutils literal"><span class="pre">svd.eigen_range</span></tt>: ratio of the smallest to largest eigenvalue
-before <em>svd</em> cuts are applied (but after rescaling if
-<tt class="docutils literal"><span class="pre">rescale=True</span></tt>);</li>
-<li><tt class="docutils literal"><span class="pre">svd.D</span></tt>: diagonal of matrix used to rescale the covariance 
-matrix before applying <em>svd</em> cuts (cuts are applied to 
-<tt class="docutils literal"><span class="pre">D</span> <span class="pre">cov</span> <span class="pre">D</span></tt>) if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>; <tt class="docutils literal"><span class="pre">svd.D</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt> if
-<tt class="docutils literal"><span class="pre">rescale=False</span></tt>;</li>
-<li><tt class="docutils literal"><span class="pre">svd.logdet</span></tt>: logarithm of the determinant of the covariance 
-matrix after <em>svd</em> cuts are applied;</li>
-<li><tt class="docutils literal"><span class="pre">svd.correction</span></tt>: vector of the <em>svd</em> corrections to <tt class="docutils literal"><span class="pre">g.flat</span></tt>;</li>
-<li><tt class="docutils literal"><span class="pre">svd.inv_wgt</span></tt>: the sum of the outer product of vectors 
-<tt class="docutils literal"><span class="pre">inv_wgt[i]</span></tt> with themselves equals the inverse of the 
-covariance matrix after <em>svd</em> cuts. Only computed if
-<tt class="docutils literal"><span class="pre">compute_inv=True</span></tt>. The order of the vectors is reversed
-relative to <tt class="docutils literal"><span class="pre">svd.val</span></tt> and <tt class="docutils literal"><span class="pre">svd.vec</span></tt></li>
-</ul>
-</div></blockquote>
+<dl class="attribute">
+<dt id="gvar.svd.val">
+<tt class="descclassname">svd.</tt><tt class="descname">val</tt><a class="headerlink" href="#gvar.svd.val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvalues of the covariance matrix after <em>svd</em> cuts (and after
+rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>); the eigenvalues are ordered, with
+the smallest first.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.vec">
+<tt class="descclassname">svd.</tt><tt class="descname">vec</tt><a class="headerlink" href="#gvar.svd.vec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvectors of the covariance matrix after <em>svd</em> cuts (and after
+rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>), where <tt class="docutils literal"><span class="pre">svd.vec[i]</span></tt> is the vector
+corresponding to <tt class="docutils literal"><span class="pre">svd.val[i]</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.eigen_range">
+<tt class="descclassname">svd.</tt><tt class="descname">eigen_range</tt><a class="headerlink" href="#gvar.svd.eigen_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ratio of the smallest to largest eigenvalue before <em>svd</em> cuts are
+applied (but after rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.D">
+<tt class="descclassname">svd.</tt><tt class="descname">D</tt><a class="headerlink" href="#gvar.svd.D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Diagonal of matrix used to rescale the covariance matrix before
+applying <em>svd</em> cuts (cuts are applied to <tt class="docutils literal"><span class="pre">D*cov*D</span></tt>) if
+<tt class="docutils literal"><span class="pre">rescale=True</span></tt>; <tt class="docutils literal"><span class="pre">svd.D</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt> if <tt class="docutils literal"><span class="pre">rescale=False</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.logdet">
+<tt class="descclassname">svd.</tt><tt class="descname">logdet</tt><a class="headerlink" href="#gvar.svd.logdet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithm of the determinant of the covariance matrix after <em>svd</em>
+cuts are applied.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.correction">
+<tt class="descclassname">svd.</tt><tt class="descname">correction</tt><a class="headerlink" href="#gvar.svd.correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vector of the <em>svd</em> corrections to <tt class="docutils literal"><span class="pre">g.flat</span></tt>;</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.inv_wgt">
+<tt class="descclassname">svd.</tt><tt class="descname">inv_wgt</tt><a class="headerlink" href="#gvar.svd.inv_wgt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the outer product of vectors <tt class="docutils literal"><span class="pre">inv_wgt[i]</span></tt> with
+themselves equals the inverse of the covariance matrix after <em>svd</em>
+cuts. Only computed if <tt class="docutils literal"><span class="pre">compute_inv=True</span></tt>. The order of the
+vectors is reversed relative to <tt class="docutils literal"><span class="pre">svd.val</span></tt> and <tt class="docutils literal"><span class="pre">svd.vec</span></tt></p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -991,11 +1019,11 @@ supports Python pickling:</p>
 <dt id="gvar.BufferDict">
 <em class="property">class </em><tt class="descclassname">gvar.</tt><tt class="descname">BufferDict</tt><a class="headerlink" href="#gvar.BufferDict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary whose data is packed into a 1-d buffer (numpy.array).</p>
-<p>A <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> object is a dictionary-like object whose values must either
-be scalars or arrays (like <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays, with arbitrary shapes). 
-The scalars and arrays are assembled into different parts of a single 
-one-dimensional buffer. The various scalars and arrays are retrieved 
-using keys, as in a dictionary: <em>e.g.</em>,</p>
+<p>A <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> object is a dictionary-like object whose values must
+either be scalars or arrays (like <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays, with arbitrary
+shapes). The scalars and arrays are assembled into different parts of a
+single one-dimensional buffer. The various scalars and arrays are
+retrieved using keys, as in a dictionary: <em>e.g.</em>,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">BufferDict</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;scalar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;vector&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]</span>
@@ -1022,8 +1050,8 @@ using keys, as in a dictionary: <em>e.g.</em>,</p>
                 <span class="p">(</span><span class="s">&#39;tensor&#39;</span><span class="p">,[[</span><span class="mf">3.</span><span class="p">,</span><span class="mf">4.</span><span class="p">],[</span><span class="mf">5.</span><span class="p">,</span><span class="mf">6.</span><span class="p">]])])</span>
 </pre></div>
 </div>
-<p>where in the second case the order of the keys is preserved in <tt class="docutils literal"><span class="pre">a</span></tt> (that 
-is, <tt class="docutils literal"><span class="pre">BufferDict</span></tt> is an ordered dictionary).</p>
+<p>where in the second case the order of the keys is preserved in <tt class="docutils literal"><span class="pre">a</span></tt>
+(that is, <tt class="docutils literal"><span class="pre">BufferDict</span></tt> is an ordered dictionary).</p>
 <p>The keys and associated shapes in a <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> can be transferred to a
 different buffer, creating a new <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>: <em>e.g.</em>, using <tt class="docutils literal"><span class="pre">a</span></tt> from
 above,</p>
@@ -1037,23 +1065,29 @@ above,</p>
 <span class="go">[  1.  10.  20.  30.  40.  50.  60.]</span>
 </pre></div>
 </div>
-<p>Note how <tt class="docutils literal"><span class="pre">b</span></tt> references <tt class="docutils literal"><span class="pre">buf</span></tt> and can modify it. One can also replace
-the buffer in the original <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> using, for example, 
-<tt class="docutils literal"><span class="pre">a.flat</span> <span class="pre">=</span> <span class="pre">buf</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">flat</span> <span class="o">=</span> <span class="n">buf</span>
+<p>Note how <tt class="docutils literal"><span class="pre">b</span></tt> references <tt class="docutils literal"><span class="pre">buf</span></tt> and can modify it. One can also
+replace the buffer in the original <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> using, for example,
+<tt class="docutils literal"><span class="pre">a.buf</span> <span class="pre">=</span> <span class="pre">buf</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="s">&#39;tensor&#39;</span><span class="p">])</span>
 <span class="go">[[ 30.  40.]</span>
 <span class="go"> [ 50.  60.]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;tensor&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="mf">10.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+<span class="go">[  1.  10.  20.  300.  400.  500.  600.]</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">a.flat</span></tt> is an iterator for the <tt class="docutils literal"><span class="pre">numpy</span></tt> array used for <tt class="docutils literal"><span class="pre">a</span></tt>&#8216;s buffer.
-It can be used to access and change the buffer directly. <tt class="docutils literal"><span class="pre">a.flatten()</span></tt>
-is a copy of the buffer.</p>
+<p><tt class="docutils literal"><span class="pre">a.buf</span></tt> is the numpy array used for <tt class="docutils literal"><span class="pre">a</span></tt>&#8216;s buffer. It can be used to
+access and change the buffer directly. In <tt class="docutils literal"><span class="pre">a.buf</span> <span class="pre">=</span> <span class="pre">buf</span></tt>, the new
+buffer <tt class="docutils literal"><span class="pre">buf</span></tt> must be a <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array of the correct shape. The
+buffer can also be accessed through iterator <tt class="docutils literal"><span class="pre">a.flat</span></tt> (in analogy
+with <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays), and through <tt class="docutils literal"><span class="pre">a.flatten()</span></tt> which returns a
+copy of the buffer.</p>
 <p>A <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> functions like a dictionary except: a) items cannot be
-deleted once inserted; b) all values must be either scalars or
-(<tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt>) arrays of scalars, where the scalars can be any noniterable
-type that works with <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays; and c) any new value assigned to a
-key must have the same size and shape as the original value.</p>
+deleted once inserted; b) all values must be either scalars or arrays
+of scalars, where the scalars can be any noniterable type that works
+with <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays; and c) any new value assigned to a key must
+have the same size and shape as the original value.</p>
 <p>Note that <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s can be pickled and unpickled even when they 
 store <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (which themselves cannot be pickled separately).</p>
 <p>The main attributes are:</p>
@@ -1070,13 +1104,25 @@ store <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt clas
 </dd></dl>
 
 <dl class="attribute">
+<dt id="gvar.BufferDict.buf">
+<tt class="descname">buf</tt><a class="headerlink" href="#gvar.BufferDict.buf" title="Permalink to this definition">¶</a></dt>
+<dd><p>The buffer array. Allows direct access to the buffer: for example,
+<tt class="docutils literal"><span class="pre">self.buf[i]</span> <span class="pre">=</span> <span class="pre">new_val</span></tt> sets the value of the <tt class="docutils literal"><span class="pre">i-th</span></tt> element in
+the buffer to value <tt class="docutils literal"><span class="pre">new_val</span></tt>.  Setting <tt class="docutils literal"><span class="pre">self.buf</span> <span class="pre">=</span> <span class="pre">nbuf</span></tt>
+replaces the old buffer by new buffer <tt class="docutils literal"><span class="pre">nbuf</span></tt>. This only works if
+<tt class="docutils literal"><span class="pre">nbuf</span></tt> is a one-dimensional <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array having the same
+length as the old buffer, since <tt class="docutils literal"><span class="pre">nbuf</span></tt> itself is used as the new
+buffer (not a copy).</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="gvar.BufferDict.shape">
 <tt class="descname">shape</tt><a class="headerlink" href="#gvar.BufferDict.shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Always equal to <tt class="docutils literal"><span class="pre">None</span></tt>. This attribute is included since
 <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s share several attributes with <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays to
 simplify coding that might support either type. Being dictionaries
 they do not have shapes in the sense of <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays (hence
-<tt class="docutils literal"><span class="pre">None</span></tt>).</p>
+the shape is <tt class="docutils literal"><span class="pre">None</span></tt>).</p>
 </dd></dl>
 
 <p>The main methods are:</p>
@@ -1099,16 +1145,9 @@ they do not have shapes in the sense of <tt class="xref py py-mod docutils liter
 </dd></dl>
 
 <dl class="method">
-<dt id="gvar.BufferDict.add">
-<tt class="descname">add</tt><big>(</big><em>k</em>, <em>v=None</em><big>)</big><a class="headerlink" href="#gvar.BufferDict.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>Augment buffer with data <tt class="docutils literal"><span class="pre">v</span></tt>, indexed by key <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">v</span></tt> is either a scalar or a <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array (or a list or
-other data type that can be changed into a numpy.array).
-If <tt class="docutils literal"><span class="pre">v</span></tt> is a <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array, it can have any shape.</p>
-<p>Same as <tt class="docutils literal"><span class="pre">self[k]</span> <span class="pre">=</span> <span class="pre">v</span></tt> except: 1) when <tt class="docutils literal"><span class="pre">v</span> <span class="pre">is</span> <span class="pre">None</span></tt>, in which case k 
-is assumed to be a dictionary and each entry in it is added; and 
-2) when <tt class="docutils literal"><span class="pre">k</span></tt> is already used in <tt class="docutils literal"><span class="pre">self</span></tt>, in which case a 
-<tt class="docutils literal"><span class="pre">ValueError</span></tt> is raised.</p>
+<dt id="gvar.BufferDict.update">
+<tt class="descname">update</tt><big>(</big><em>d</em><big>)</big><a class="headerlink" href="#gvar.BufferDict.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add contents of dictionary <tt class="docutils literal"><span class="pre">d</span></tt> to <tt class="docutils literal"><span class="pre">self</span></tt>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1299,7 +1338,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

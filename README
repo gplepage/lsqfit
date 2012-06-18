@@ -14,11 +14,13 @@ version).
 
 These packages use the Gnu Scientific Library (GSL) to do the fitting,
 numpy for efficient array arithmetic, and cython to compile efficient code
-that interfaces between Python and the C-based GSL.
+that interfaces between Python and the C-based GSL. The fitter uses
+automatic differentiation to compute gradients, which greatly simplifies
+the design of fitting functions.
 
-Information on how to install the components is in the INSTALLATION file.
+Information on how to install the components is in the INSTALLATION file. 
 
-To test the libraries try 'make test-all'. (Some tests involve random
+To test the libraries try 'make tests'. (Some tests involve random
 numbers and so may occasionally --- less than 1 in 100 runs --- fail due to
 rare multi-sigma fluctuations; rerun the tests if they do fail.) Some
 examples are give in the examples/ subdirectory.

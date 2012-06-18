@@ -545,13 +545,23 @@ supports Python pickling:
    
    .. autoattribute:: flat
    
+   .. attribute:: buf
+   
+      The buffer array. Allows direct access to the buffer: for example,
+      ``self.buf[i] = new_val`` sets the value of the ``i-th`` element in
+      the buffer to value ``new_val``.  Setting ``self.buf = nbuf``
+      replaces the old buffer by new buffer ``nbuf``. This only works if
+      ``nbuf`` is a one-dimensional :mod:`numpy` array having the same
+      length as the old buffer, since ``nbuf`` itself is used as the new
+      buffer (not a copy).
+      
    .. attribute:: shape
       
       Always equal to ``None``. This attribute is included since 
       |BufferDict|\s share several attributes with :mod:`numpy` arrays to
       simplify coding that might support either type. Being dictionaries
       they do not have shapes in the sense of :mod:`numpy` arrays (hence 
-      ``None``).
+      the shape is ``None``).
    
    The main methods are:
    
@@ -561,8 +571,10 @@ supports Python pickling:
    
    .. automethod:: isscalar(k)
    
-   .. automethod:: add(k, v=None)
-   
+   .. method:: update(d)
+      
+      Add contents of dictionary ``d`` to ``self``.
+      
 SVD analysis is handled by the following class:
 
 .. autoclass:: gvar.SVD(mat, svdcut=None, svdnum=None, compute_delta=False, rescale=False)

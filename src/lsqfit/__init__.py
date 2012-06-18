@@ -508,11 +508,11 @@ class nonlinear_fit(object):
         """ Load parameters stored in file ``filename``. 
             
         ``p = nonlinear_fit.load_p(filename)`` is used to recover the
-        values of fit parameters dumped using ``fit.dump_p(filename)``
-        (or ``fit.dump_pmean(filename)``)
-        where ``fit`` is of type :class:`lsqfit.nonlinear_fit`. The 
-        layout of the returned parameters ``p`` is the same as that
-        of ``fit.p`` (or ``fit.pmean``).
+        values of fit parameters dumped using ``fit.dump_p(filename)`` (or
+        ``fit.dump_pmean(filename)``) where ``fit`` is of type
+        :class:`lsqfit.nonlinear_fit`. The layout of the returned
+        parameters ``p`` is the same as that of ``fit.p`` (or
+        ``fit.pmean``).
         """
         with open(filename,"rb") as f:
             return pickle.load(f)
@@ -835,7 +835,7 @@ def _unpack_fcn(fcn, p0, y, x):
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
             def nfcn(p, x=x, fcn=fcn, po=po):
-                po.flat = p
+                po.buf = p
                 ans = fcn(po) if x is False else fcn(x, po)
                 if hasattr(ans, 'flat'):
                     return ans.flat
@@ -855,7 +855,7 @@ def _unpack_fcn(fcn, p0, y, x):
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
             def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
-                po.flat = p
+                po.buf = p
                 fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
@@ -868,19 +868,18 @@ def _build_chiv(fdata, fcn):
     """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
     if 'all' in fdata:
         ## y and prior correlated ##
+        if fdata['all'].wgt.ndim != 2:
+            raise ValueError("fdata['all'].wgt is 1d! dim = "
+                             +str(fdata['all'].wgt.ndim))
         def chiv(p, fcn=fcn, fd=fdata['all']):
             delta = numpy.concatenate((fcn(p), p))-fd.mean
-            return (_util_dot(fd.wgt, delta) if fd.wgt.ndim==2 
-                    else fd.wgt*delta)
+            return _util_dot(fd.wgt, delta)
         ##
         def chivw(p, fcn=fcn, fd=fdata['all']):
             delta = numpy.concatenate((fcn(p), p))-fd.mean
-            if fd.wgt.ndim == 2:
-                wgt2 = numpy.sum(numpy.outer(wj, wj) 
-                                for wj in reversed(fd.wgt))
-                return _util_dot(wgt2, delta)
-            else:
-                return fd.wgt*fd.wgt*delta
+            wgt2 = numpy.sum(numpy.outer(wj, wj) 
+                            for wj in reversed(fd.wgt))
+            return _util_dot(wgt2, delta)
         ##
         chiv.nf = len(fdata['all'].wgt)
         ##

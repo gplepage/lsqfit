@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 Alias gvar to the old name, gdev. For use with legacy codes only.
 """

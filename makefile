@@ -41,7 +41,7 @@ sdist:			# source distribution
 .PHONY: tests
 
 tests test-all:
-	$(MAKE) -C tests PYTHON=$(PYTHON) tests
+	$(PYTHON) -m unittest discover
 
 run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
@@ -50,8 +50,9 @@ clean:
 	rm -f -r build __pycache__
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage 
 	rm -f -r dist
-	rm -rf src/lsqfit/*.c
-	rm -rf src/gvar/*.c
+	rm -f src/lsqfit/*.c
+	rm -f src/gvar/*.c
+	rm -f src/*.c
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean

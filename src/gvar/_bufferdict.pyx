@@ -24,11 +24,11 @@ BUFFERDICTDATA = collections.namedtuple('BUFFERDICTDATA',['slice','shape'])
 class BufferDict(collections.MutableMapping):
     """ Dictionary whose data is packed into a 1-d buffer (numpy.array).
         
-    A |BufferDict| object is a dictionary-like object whose values must either
-    be scalars or arrays (like :mod:`numpy` arrays, with arbitrary shapes). 
-    The scalars and arrays are assembled into different parts of a single 
-    one-dimensional buffer. The various scalars and arrays are retrieved 
-    using keys, as in a dictionary: *e.g.*,
+    A |BufferDict| object is a dictionary-like object whose values must
+    either be scalars or arrays (like :mod:`numpy` arrays, with arbitrary
+    shapes). The scalars and arrays are assembled into different parts of a
+    single one-dimensional buffer. The various scalars and arrays are
+    retrieved using keys, as in a dictionary: *e.g.*,
         
         >>> a = BufferDict()
         >>> a['scalar'] = 0.0
@@ -55,8 +55,8 @@ class BufferDict(collections.MutableMapping):
         a = BufferDict([('scalar',0.0),('vector',[1.,2.]),
                         ('tensor',[[3.,4.],[5.,6.]])])
         
-    where in the second case the order of the keys is preserved in ``a`` (that 
-    is, ``BufferDict`` is an ordered dictionary).
+    where in the second case the order of the keys is preserved in ``a``
+    (that is, ``BufferDict`` is an ordered dictionary).
         
     The keys and associated shapes in a |BufferDict| can be transferred to a
     different buffer, creating a new |BufferDict|: *e.g.*, using ``a`` from
@@ -71,24 +71,30 @@ class BufferDict(collections.MutableMapping):
         >>> print(buf)
         [  1.  10.  20.  30.  40.  50.  60.]
         
-    Note how ``b`` references ``buf`` and can modify it. One can also replace
-    the buffer in the original |BufferDict| using, for example, 
-    ``a.flat = buf``:
+    Note how ``b`` references ``buf`` and can modify it. One can also
+    replace the buffer in the original |BufferDict| using, for example,
+    ``a.buf = buf``:
         
-        >>> a.flat = buf
+        >>> a.buf = buf
         >>> print(a['tensor'])
         [[ 30.  40.]
          [ 50.  60.]]
+        >>> a['tensor'] *= 10.
+        >>> print(buf)
+        [  1.  10.  20.  300.  400.  500.  600.]
         
-    ``a.flat`` is an iterator for the ``numpy`` array used for ``a``'s buffer.
-    It can be used to access and change the buffer directly. ``a.flatten()``
-    is a copy of the buffer.
+    ``a.buf`` is the numpy array used for ``a``'s buffer. It can be used to
+    access and change the buffer directly. In ``a.buf = buf``, the new
+    buffer ``buf`` must be a :mod:`numpy` array of the correct shape. The
+    buffer can also be accessed through iterator ``a.flat`` (in analogy
+    with :mod:`numpy` arrays), and through ``a.flatten()`` which returns a
+    copy of the buffer.
          
     A |BufferDict| functions like a dictionary except: a) items cannot be
-    deleted once inserted; b) all values must be either scalars or
-    (:mod:`numpy`) arrays of scalars, where the scalars can be any noniterable
-    type that works with :mod:`numpy` arrays; and c) any new value assigned to a
-    key must have the same size and shape as the original value.
+    deleted once inserted; b) all values must be either scalars or arrays
+    of scalars, where the scalars can be any noniterable type that works
+    with :mod:`numpy` arrays; and c) any new value assigned to a key must
+    have the same size and shape as the original value.
         
     Note that |BufferDict|\s can be pickled and unpickled even when they 
     store |GVar|\s (which themselves cannot be pickled separately).
@@ -119,12 +125,14 @@ class BufferDict(collections.MutableMapping):
                 ## make copy of BufferDict bd, possibly with new buffer ##
                 self._keys = copy.copy(bd._keys)
                 self._data = copy.copy(bd._data)
-                self._buf = numpy.array(bd._buf) if buf is None else numpy.asarray(buf)
-                if bd.size!=self.size:
-                    raise ValueError("buf is wrong size: "+str(self.size)+" not "
-                                        +str(bd.size))
+                self._buf = (numpy.array(bd._buf) if buf is None 
+                             else numpy.asarray(buf))
+                if bd.size != self.size:
+                    raise ValueError("buf is wrong size --- %s not %s"
+                                     % (self.size,bd.size))
                 if self._buf.ndim!=1:
-                    raise ValueError("buf must be 1-d: "+str(self._buf.shape))
+                    raise ValueError("buf must be 1-d, not shape = %s"
+                                     % (self._buf.shape,))
                 ##
             elif buf is None:
                 self._buf = numpy.array([],int)
@@ -138,15 +146,18 @@ class BufferDict(collections.MutableMapping):
                     ##
                 else:
                     ## bd an array of tuples ##
-                    if not all([(isinstance(bdi,tuple) and len(bdi)==2) for bdi in bd]):
-                        raise ValueError("BufferDict argument must be dict or list of 2-tuples.")
+                    if not all([(isinstance(bdi,tuple) 
+                               and len(bdi)==2) for bdi in bd]):
+                        raise ValueError(
+                            "BufferDict argument must be dict or list of 2-tuples.")
                     for ki,vi in bd:
                         self[ki] = vi
                     ##
                 ##
             else:
-                raise ValueError("bd must be a BufferDict in BufferDict(bd,buf): "
-                                    +str(bd.__class__))
+                raise ValueError(
+                    "bd must be a BufferDict in BufferDict(bd,buf), not %s"
+                                    % str(type(bd)))
     ##
     def __getstate__(self):
         """ Capture state for pickling when elements are GVars. """
@@ -181,30 +192,20 @@ class BufferDict(collections.MutableMapping):
                                                     shape=data[k][1])
         self.__dict__.update(odict)
     ##
-    def add(self,k,v=None):
+    def add(self,k,v):
         """ Augment buffer with data ``v``, indexed by key ``k``.
             
         ``v`` is either a scalar or a :mod:`numpy` array (or a list or
         other data type that can be changed into a numpy.array).
         If ``v`` is a :mod:`numpy` array, it can have any shape.
             
-        Same as ``self[k] = v`` except: 1) when ``v is None``, in which case k 
-        is assumed to be a dictionary and each entry in it is added; and 
-        2) when ``k`` is already used in ``self``, in which case a 
-        ``ValueError`` is raised.
+        Same as ``self[k] = v`` except when ``k`` is already used in
+        ``self``, in which case a ``ValueError`` is raised.
         """
-        if v is None:
-            if hasattr(k,'keys'):
-                for kk in k:
-                    self[kk] = k[kk]
-            else:
-                for ki,vi in k:
-                    self[ki] = vi
+        if k in self:
+            raise ValueError("Key %s already used."%k)
         else:
-            if k in self:
-                raise ValueError("Key %s already used."%k)
-            else:
-                self[k] = v
+            self[k] = v
     ##
     def __getitem__(self,k):
         """ Return piece of buffer corresponding to key ``k``. """
@@ -279,14 +280,8 @@ class BufferDict(collections.MutableMapping):
         return self._buf.flat
     ##
     def _setflat(self,buf):
-        """ Replaces buffer with buf if same size. """
-        if len(buf)==len(self._buf):
-            self._buf = numpy.asarray(buf)
-            if self._buf.ndim!=1:
-                raise ValueError("Buffer is not 1-d: "+str(self._buf.shape))
-        else:
-            raise ValueError("Buffer wrong size: %d not %d"
-                            %(len(buf),len(self._buf)))
+        """ Assigns buffer with buf if same size. """
+        self._buf.flat = buf
     ##
     flat = property(_getflat,_setflat,doc='Buffer array iterator.')
     def flatten(self):
@@ -296,7 +291,21 @@ class BufferDict(collections.MutableMapping):
     def _getbuf(self):      # obsolete --- for backwards compatibility
         return self._buf
     ##
-    buf = property(_getbuf,_setflat,doc='Similar to flatten(), but reveals real buffer')
+    def _setbuf(self,buf):
+        """ Replace buffer with ``buf``. 
+            
+        ``buf`` must be a 1-dimensional :mod:`numpy` array of the same size
+        as ``self._buf``.
+        """
+        if isinstance(buf,numpy.ndarray) and buf.shape == self._buf.shape:
+            self._buf = buf
+        else:
+            raise ValueError(
+                "New buffer wrong type or shape ---\n    %s,%s   not   %s,%s"
+                % (type(buf), numpy.shape(buf), 
+                type(self._buf), self._buf.shape))
+    ##
+    buf = property(_getbuf,_setbuf,doc='The buffer array (not a copy).')
     def _getsize(self):
         """ Length of buffer. """
         return len(self._buf)
