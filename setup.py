@@ -65,7 +65,7 @@ setup(name='lsqfit',
     cmdclass={'build_ext':build_ext,'build_py':build_py},
     requires=["cython (>=0.14)","numpy (>=1.0)"],
     url="https://github.com/gplepage/lsqfit.git",
-    license='GPLv3',
+    license='GPLv3+',
     platforms='Any',
     long_description="""\
     These packages facilitate least-squares fitting of noisy data by
