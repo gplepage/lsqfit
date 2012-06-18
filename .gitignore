@@ -11,3 +11,7 @@ doc/source/_build/
 src/lsqfit/version.py
 files-*.python*
 lsqfit.todo
+lsqfit.tmproj
+nose-uncovered.py
+yyy*
+xxx*
