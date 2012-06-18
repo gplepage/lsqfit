@@ -25,7 +25,7 @@ import numpy
 LSQFIT_VERSION = '4.2.2'
 
 # create lsqfit/version.py so lsqfit knows its version number 
-with open("src/lsqfit/version.py","w") as version_file:
+with open("src/lsqfit/_version.py","w") as version_file:
     version_file.write(  #
         "# File created by lsqfit setup.py\nversion = '%s'\n" 
         % LSQFIT_VERSION)
@@ -66,7 +66,7 @@ setup(name='lsqfit',
     requires=["cython (>=0.14)","numpy (>=1.0)"],
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3',
-    platforms='Unix',
+    platforms='Any',
     long_description="""\
     These packages facilitate least-squares fitting of noisy data by
     multi-dimensional, nonlinear functions of arbitrarily many
@@ -76,7 +76,9 @@ setup(name='lsqfit',
     propagation, and also for the creation of complicated
     multi-dimensional gaussian distributions. :mod:`lsqfit` supports
     Bayesian priors for the fit parameters, with arbitrarily
-    complicated multidimensional gaussian distributions.
+    complicated multidimensional gaussian distributions. It uses
+    automatic differentiation to compute gradients, greatly simplifying
+    the design of fit functions.
 
     These packages use the Gnu Scientific Library (GSL) to do the
     fitting, numpy for efficient array arithmetic, and cython to

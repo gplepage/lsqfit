@@ -79,7 +79,7 @@ import gvar as _gvar
 from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import multifit, multiminex, gammaQ
-from .version import version as __version__
+from ._version import version as __version__
 ##
 
 _FDATA = collections.namedtuple('_FDATA', ['mean', 'wgt'])

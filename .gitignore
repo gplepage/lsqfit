@@ -8,7 +8,7 @@ MANIFEST
 dist/
 doc/source/_build/
 .coverage
-src/lsqfit/version.py
+src/lsqfit/_version.py
 files-*.python*
 lsqfit.todo
 lsqfit.tmproj

@@ -3,4 +3,8 @@ unittest). Use 'make tests' to run all of the tests. To run under a
 different version of python, say python3 for example, use 
 'make PYTHON=python3 tests'.
 
+Some tests involve random numbers and so may occasionally --- less than 1
+in 100 runs --- fail due to rare multi-sigma fluctuations; rerun the tests
+if they do fail.
+
  
