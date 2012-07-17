@@ -385,12 +385,12 @@ class nonlinear_fit(object):
                     if g.isscalar(k):
                         names.append(k)
                     else:
-                        fmt = None
+                        fmtstr = None
                         for idx in numpy.ndindex(g[k].shape):
-                            if fmt is None:
-                                fmt = len(idx)*"%d,"
-                                fmt = fmt[:-1]
-                            names.append(fmt % idx)
+                            if fmtstr is None:
+                                fmtstr = len(idx)*"%d,"
+                                fmtstr = fmtstr[:-1]
+                            names.append(fmtstr % idx)
                         names[-g[k].size] = k+" "+names[-g[k].size]
                 # names = g.size*[""]
                 # for k in g:
@@ -404,7 +404,10 @@ class nonlinear_fit(object):
                 if len(g.shape) == 1:
                     names = list(range(len(g)))
                 else:
-                    names = list(numpy.ndindex(g.shape))
+                    names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
+            maxlen = max([len(ni) for ni in names])
+            fmtstr = "%%%ds" % max(maxlen,16)
+            names = [(fmtstr % ni) for ni in names]
             return names
         ##
         ## unpack arguments, etc ##
@@ -468,7 +471,7 @@ class nonlinear_fit(object):
             if len(pnames[i]) > max_pnames:
                 max_pnames = len(pnames[i])
         for i in range(len(p)):
-            table = (table + (nonlinear_fit.fmt_label%pnames[i]) 
+            table = (table + pnames[i] 
                     + (nonlinear_fit.fmt_parameter % (p[i], dp[i])))
             p0, dp0 = prior_p0[i], prior_dp[i]
             table = table + '           ' + (nonlinear_fit.fmt_prior
