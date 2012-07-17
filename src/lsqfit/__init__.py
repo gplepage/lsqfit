@@ -380,14 +380,26 @@ class nonlinear_fit(object):
         """
         def bufnames(g):
             if g.shape is None:
-                names = g.size*[""]
+                names = []
                 for k in g:
-                    gk_slice = g.slice(k)
-                    if (isinstance(gk_slice, slice) and 
-                        gk_slice.start<gk_slice.stop):
-                        names[gk_slice.start] = k
+                    if g.isscalar(k):
+                        names.append(k)
                     else:
-                        names[gk_slice] = k
+                        fmt = None
+                        for idx in numpy.ndindex(g[k].shape):
+                            if fmt is None:
+                                fmt = len(idx)*"%d,"
+                                fmt = fmt[:-1]
+                            names.append(fmt % idx)
+                        names[-g[k].size] = k+" "+names[-g[k].size]
+                # names = g.size*[""]
+                # for k in g:
+                #     gk_slice = g.slice(k)
+                #     if (isinstance(gk_slice, slice) and 
+                #         gk_slice.start<gk_slice.stop):
+                #         names[gk_slice.start] = k
+                #     else:
+                #         names[gk_slice] = k
             else:
                 if len(g.shape) == 1:
                     names = list(range(len(g)))
@@ -450,8 +462,11 @@ class nonlinear_fit(object):
         ##
         ## create parameter table ##
         table = table + '\nParameters:\n'
+        max_pnames = 0
         for i in range(len(pnames)):
-            pnames[i] = str(pnames[i])+'_'
+            pnames[i] = str(pnames[i]) # +'_'
+            if len(pnames[i]) > max_pnames:
+                max_pnames = len(pnames[i])
         for i in range(len(p)):
             table = (table + (nonlinear_fit.fmt_label%pnames[i]) 
                     + (nonlinear_fit.fmt_parameter % (p[i], dp[i])))
