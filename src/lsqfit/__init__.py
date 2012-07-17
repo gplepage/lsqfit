@@ -198,10 +198,14 @@ class nonlinear_fit(object):
     :param fitterargs: Dictionary of arguments passed on to 
         :class:`lsqfit.multifit`, which does the fitting.
     """
-        
-    fmt_parameter = '%12g +- %8.2g'
-    fmt_label = "%16s"
-    fmt_prior = '(%8.2g +- %8.2g)'
+    @staticmethod
+    def fmt_parameter(p):  
+        return '%12g +- %8.2g' % (p.mean,p.sdev)
+    ##
+    @staticmethod
+    def fmt_prior(p):
+        return '(%8.2g +- %8.2g)' % (p.mean,p.sdev)
+    ##
     fmt_table_header = '%12s%12s%12s%12s\n'
     fmt_table_line = '%12.5g%12.5g%12.5g%12.5g\n'
     alt_fmt_table_line = '%11s_%12.5g%12.5g%12.5g\n'
@@ -356,9 +360,7 @@ class nonlinear_fit(object):
             
         The format of the output is controlled by the following format
         strings:
-            
-            * ``nonlinear_fit.fmt_label`` - parameter labels
-            
+                        
             * ``nonlinear_fit.fmt_parameter`` - parameters
                 
             * ``nonlinear_fit.fmt_prior`` - priors
@@ -378,7 +380,7 @@ class nonlinear_fit(object):
         :type maxline: integer
         :returns: String containing detailed information about last fit.
         """
-        def bufnames(g):
+        def bufnames(g,strsize=16):
             if g.shape is None:
                 names = []
                 for k in g:
@@ -392,21 +394,13 @@ class nonlinear_fit(object):
                                 fmtstr = fmtstr[:-1]
                             names.append(fmtstr % idx)
                         names[-g[k].size] = str(k)+" "+names[-g[k].size]
-                # names = g.size*[""]
-                # for k in g:
-                #     gk_slice = g.slice(k)
-                #     if (isinstance(gk_slice, slice) and 
-                #         gk_slice.start<gk_slice.stop):
-                #         names[gk_slice.start] = k
-                #     else:
-                #         names[gk_slice] = k
             else:
                 if len(g.shape) == 1:
                     names = list(range(len(g)))
                 else:
                     names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
             maxlen = max([len(ni) for ni in names])
-            fmtstr = "%%%ds_" % max(maxlen,16)
+            fmtstr = "%%%ds_" % max(maxlen,strsize)
             names = [(fmtstr % ni) for ni in names]
             return names
         ##
@@ -430,17 +424,6 @@ class nonlinear_fit(object):
             chi2_dof = self.chi2/self.dof
         else:
             chi2_dof = self.chi2
-        p = self.pmean.flat
-        dp = self.psdev.flat
-        fitfcn = self.fcn
-        prior = self.prior
-        if prior is None:
-            prior_p0 = self.p0.flat
-            prior_dp = len(prior_p0)*[float('inf')]
-        else:
-            prior_p0 = _gvar.mean(prior.flat)
-            prior_dp = _gvar.sdev(prior.flat)
-        pnames = bufnames(self.p0)
         try:
             Q = '%.2g' % self.Q
         except:
@@ -465,28 +448,28 @@ class nonlinear_fit(object):
         ##
         ## create parameter table ##
         table = table + '\nParameters:\n'
-        max_pnames = 0
-        for i in range(len(pnames)):
-            pnames[i] = str(pnames[i]) # +'_'
-            if len(pnames[i]) > max_pnames:
-                max_pnames = len(pnames[i])
-        for i in range(len(p)):
-            table = (table + pnames[i] 
-                    + (nonlinear_fit.fmt_parameter % (p[i], dp[i])))
-            p0, dp0 = prior_p0[i], prior_dp[i]
-            table = table + '           ' + (nonlinear_fit.fmt_prior
-                                            % (p0, dp0))
-            table = table +'\n'
+        ## create parameter list ##
+        pnames = bufnames(self.p)
+        param = self.p.flat
+        prior = (self.prior.flat if self.prior is not None else
+                 self.p0.flat + _gvar(0,float('inf')))
+        for pn,pa,pr in zip(pnames,param,prior):
+            table += (pn + nonlinear_fit.fmt_parameter(pa) + 14*' '
+                         + nonlinear_fit.fmt_prior(pr) + '\n')
+        ##
         if maxline <= 0 or self.data is None:
             return table
         ##
+        # fmt_table_header = '%12s%12s%12s%12s\n'
+        # fmt_table_line = '%12.5g%12.5g%12.5g%12.5g\n'
+        # alt_fmt_table_line = '%11s_%12.5g%12.5g%12.5g\n'
+        
         ## create table comparing fit results to data ## 
         x = self.x
         ydict = self.y
         y = _gvar.mean(ydict.flat)
         dy = _gvar.sdev(ydict.flat)
-        # dy = ycov**0.5 if len(ycov.shape)==1 else ycov.diagonal()**0.5
-        f = fitfcn(self.pmean) if x is False else fitfcn(x, self.pmean)
+        f = self.fcn(self.pmean) if x is False else self.fcn(x, self.pmean)
         if ydict.shape is None:
             ## convert f from dict to flat numpy array using yo ##
             yo = BufferDict(ydict, buf=ydict.size*[None])
@@ -509,7 +492,7 @@ class nonlinear_fit(object):
             lsqfit_table_line = nonlinear_fit.fmt_table_line
         except:
             tabulate_x = False
-            x = bufnames(self.y)
+            x = bufnames(self.y,strsize=12)
             lsqfit_table_line = nonlinear_fit.alt_fmt_table_line
         table = table + '\nFit:\n'
         header = (nonlinear_fit.fmt_table_header % 
