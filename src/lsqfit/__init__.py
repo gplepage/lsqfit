@@ -383,7 +383,7 @@ class nonlinear_fit(object):
                 names = []
                 for k in g:
                     if g.isscalar(k):
-                        names.append(k)
+                        names.append(str(k))
                     else:
                         fmtstr = None
                         for idx in numpy.ndindex(g[k].shape):
@@ -391,7 +391,7 @@ class nonlinear_fit(object):
                                 fmtstr = len(idx)*"%d,"
                                 fmtstr = fmtstr[:-1]
                             names.append(fmtstr % idx)
-                        names[-g[k].size] = k+" "+names[-g[k].size]
+                        names[-g[k].size] = str(k)+" "+names[-g[k].size]
                 # names = g.size*[""]
                 # for k in g:
                 #     gk_slice = g.slice(k)
@@ -406,7 +406,7 @@ class nonlinear_fit(object):
                 else:
                     names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
             maxlen = max([len(ni) for ni in names])
-            fmtstr = "%%%ds" % max(maxlen,16)
+            fmtstr = "%%%ds_" % max(maxlen,16)
             names = [(fmtstr % ni) for ni in names]
             return names
         ##
