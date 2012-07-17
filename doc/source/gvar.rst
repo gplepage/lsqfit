@@ -443,14 +443,16 @@ The function used to create gaussian variable objects is:
 
 .. autofunction:: gvar.gvar(...)
 
-Means, standard deviations, variances, and covariance matrices can 
-be extracted from arrays (or dictionaries) of |GVar|\s using:
+Means, standard deviations, variances, formatted strings, and covariance
+matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
 
 .. autofunction:: gvar.mean(g)
 
 .. autofunction:: gvar.sdev(g)
 
 .. autofunction:: gvar.var(g)
+
+.. autofunction:: gvar.fmt(g,d=None,sep='')
 
 .. autofunction:: gvar.evalcov(g)
 
@@ -522,7 +524,7 @@ The fundamental class for representing gaussian variables is:
    
    .. automethod:: __str__
    
-   .. automethod:: fmt(d=4, sep='')
+   .. automethod:: fmt(d=None, sep='')
    
    Two attributes and a method make reference to the original
    variables from which ``self`` is derived:
@@ -533,9 +535,9 @@ The fundamental class for representing gaussian variables is:
    
    .. automethod:: dotder(v)
 
-The following class is a specialized form of an ordered dictionary for holding
-|GVar|\s (or other scalars) and arrays of |GVar|\s (or other scalars) that
-supports Python pickling:
+The following class is a specialized form of an ordered dictionary for
+holding |GVar|\s (or other scalars) and arrays of |GVar|\s (or other
+scalars) that supports Python pickling:
 
 .. autoclass:: gvar.BufferDict
 

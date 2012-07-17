@@ -418,6 +418,20 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(x.fmt(3),"%.3f(%d)"%(x.mean,round(x.sdev*1000)))
         self.assertEqual(y.fmt(3),"%.3f(%.3f)"%(y.mean,round(y.sdev,3)))
     ##
+    def test_fmt2(self):
+        """ fmt(x) """
+        g1 = gvar(1.5,0.5)
+        self.assertEqual(fmt(g1),g1.fmt())
+        g2 = [g1,2*g1]
+        fmtg2 = fmt(g2)
+        self.assertEqual(fmtg2[0],g2[0].fmt())
+        self.assertEqual(fmtg2[1],g2[1].fmt())
+        g3 = dict(g1=g1,g2=g2)
+        fmtg3 = fmt(g3)
+        self.assertEqual(fmtg3['g1'],g1.fmt())
+        self.assertEqual(fmtg3['g2'][0],g2[0].fmt())
+        self.assertEqual(fmtg3['g2'][1],g2[1].fmt())
+    ##
     def test_partialvar(self):
         """ x.partialvar x.partialsdev fmt_errorbudget """
         gvar = gvar_factory()

@@ -1,4 +1,10 @@
-Version 4.2 -- 2012-06-07
+Version 4.2.3 -- (not yet released)
+===================================
+
+- Added new utility function gvar.fmt(g) which formats every GVar in
+  GVar/array/dictionary g.
+
+Version 4.2.2 -- 2012-06-07
 =========================
 This version involves significant internal change relative to the last
 version, much of which will be invisible to most users. Significant pieces
