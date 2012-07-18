@@ -204,7 +204,7 @@ class nonlinear_fit(object):
     ##
     @staticmethod
     def fmt_prior(p):
-        return '(%8.2g +- %8.2g)' % (p.mean,p.sdev)
+        return '%8.2g +- %8.2g' % (p.mean,p.sdev)
     ##
     fmt_table_header = '%12s%12s%12s%12s\n'
     fmt_table_line = '%12.5g%12.5g%12.5g%12.5g\n'
@@ -352,7 +352,7 @@ class nonlinear_fit(object):
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
-    def format(self, *args, **kargs): 
+    def format(self, maxline=0, compact=True, nline=None): 
         """ Formats fit output details into a string for printing.
             
         The best-fit values for the fitting function are tabulated
@@ -380,6 +380,11 @@ class nonlinear_fit(object):
         :type maxline: integer
         :returns: String containing detailed information about last fit.
         """
+        ## unpack arguments ##
+        if nline is not None and maxline == 0:
+            maxline = nline         # for legacy code (old name)
+        ##
+        ## define formatting functions ##
         def bufnames(g,strsize=16):
             if g.shape is None:
                 names = []
@@ -400,25 +405,24 @@ class nonlinear_fit(object):
                 else:
                     names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
             maxlen = max([len(ni) for ni in names])
-            fmtstr = "%%%ds_" % max(maxlen,strsize)
+            fmtstr = "%%%ds " % max(maxlen,strsize)
             names = [(fmtstr % ni) for ni in names]
             return names
         ##
-        ## unpack arguments, etc ##
-        if (args and kargs) or len(args)>1 or len(kargs)>1:
-            raise ValueError("Too many arguments.")
-        if args:
-            maxline = args[0]
-        elif kargs:
-            if 'maxline' in kargs:
-                maxline = kargs['maxline']
-            elif 'nline' in kargs:
-                maxline = kargs['nline']
-            else:
-                raise ValueError("Unknown keyword argument: %s"
-                                 % list(kargs.keys())[0])
+        if compact:
+            def fmt_parameter(p):  
+                return '%15s' % p.fmt(sep=' ')
+            ##
+            fmt_prior = fmt_parameter
         else:
-            maxline = 0     # default
+            def fmt_parameter(p):  
+                return '%12g +- %8.2g' % (p.mean,p.sdev)
+            ##
+            def fmt_prior(p):
+                return '%8.2g +- %8.2g' % (p.mean,p.sdev)
+            ##
+        ##
+        ## unpack arguments, etc ##
         dof = self.dof
         if dof > 0:
             chi2_dof = self.chi2/self.dof
@@ -454,8 +458,10 @@ class nonlinear_fit(object):
         prior = (self.prior.flat if self.prior is not None else
                  self.p0.flat + _gvar(0,float('inf')))
         for pn,pa,pr in zip(pnames,param,prior):
-            table += (pn + nonlinear_fit.fmt_parameter(pa) + 14*' '
-                         + nonlinear_fit.fmt_prior(pr) + '\n')
+            pa = fmt_parameter(pa)
+            pr = '[ ' + fmt_prior(pr) + ' ]'
+            sp = int(len(pa)/2+1)*' '
+            table += pn + pa + sp + pr + '\n'
         ##
         if maxline <= 0 or self.data is None:
             return table

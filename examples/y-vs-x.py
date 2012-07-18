@@ -28,10 +28,6 @@ import numpy as np
 import gvar as gv
 
 # show fewer digits in output
-def fmt_parameter(p):
-    return '%12.3f +- %8.3f' % (p.mean,p.sdev)
-##
-lsqfit.nonlinear_fit.fmt_parameter = staticmethod(fmt_parameter)
 lsqfit.nonlinear_fit.alt_fmt_table_line='%11s_%12.2f%12.2f%12.2f\n'
 #
 
