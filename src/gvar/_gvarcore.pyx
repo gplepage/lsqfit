@@ -325,33 +325,38 @@ cdef class GVar:
             else:
                 return str(v) + ' +- inf'
             ##
-        if ndecimal is None and dv == 0:
-            ## default formatting when self.sdev == 0 ##
-            if v == 0:
-                return "0(0)"
-            else:
-                ans = ("%g" % v).split('e')
-                if len(ans) == 2:
-                    return ans[0] + "(0)e" + ans[1]
+        if ndecimal is None:
+            if dv == 0:
+                ##  simplify if self.sdev == 0 ##
+                if v == 0:
+                    return "0(0)"
                 else:
-                    return ans[0] + "(0)"
-            ##
-        if ndecimal is None and (v == 0 or abs(dv/v) >= 100):
-            ## default formatting when self.sdev much larger than |self.mean| ##
-            if dv >= 1e6 or dv < 1e-5:
-                ans = ("%.1e" % dv).split('e')
-                return "0.0("+ans[0]+")e"+ans[1]
-            else:
-                v = 0
-            ##
-        if ndecimal is None and v != 0 and (abs(v) >= 1e6 or abs(v) < 1e-5):
-            ## use exponential notation because of large |self.mean| ##
-            exponent = numpy.floor(numpy.log10(abs(v)))
-            fac = 10.**exponent
-            mantissa = (self/fac).fmt(ndecimal)
-            exponent = "e" + ("%.0e"%fac).split("e")[-1]
-            return mantissa + exponent
-            ##
+                    ans = ("%g" % v).split('e')
+                    if len(ans) == 2:
+                        return ans[0] + "(0)e" + ans[1]
+                    else:
+                        return ans[0] + "(0)"
+                ##
+            if v == 0 or abs(dv/v) >= 100:
+                ##  set v=0 if self.sdev much larger than |self.mean| ##
+                if dv >= 1e6 or dv < 1e-5:
+                    ans = ("%.1e" % dv).split('e')
+                    return "0.0("+ans[0]+")e"+ans[1]
+                else:
+                    v = 0
+                ##
+            if abs(v/dv) >= 1e7:
+                ## use +- format if dv very small ##
+                return "%g +- %.2g" % (v,dv)
+                ##
+            if v != 0 and (abs(v) >= 1e6 or abs(v) < 1e-5):
+                ## exponential notation for large |self.mean| ##
+                exponent = numpy.floor(numpy.log10(abs(v)))
+                fac = 10.**exponent
+                mantissa = (self/fac).fmt(ndecimal)
+                exponent = "e" + ("%.0e"%fac).split("e")[-1]
+                return mantissa + exponent
+                ##
         ##
         if ndecimal is None:
             ## compute default number of decimal places ##

@@ -268,6 +268,9 @@ class nonlinear_fit(object):
         self.chi2 = numpy.sum(fit.f**2)
         self.Q = gammaQ(self.dof/2., self.chi2/2.)
         self.nit = fit.nit
+        self.abstol = fit.abstol
+        self.reltol = fit.reltol
+        self.alg = fit.alg
         self._p = None          # lazy evaluation
         self._palt = None       # lazy evaluation
         self.psdev = _reformat(self.p0, [covii**0.5 
@@ -495,8 +498,25 @@ class nonlinear_fit(object):
         for di in data:
             table += fst % tuple(di)
         ##
+        ## tabulate settings ## 
+        def svdfmt(x):
+            """ Format svd elements. """
+            x1 ,x2 = x
+            x1 = "%.2g" % x1 if x1 is not None else 'None'
+            x2 = "%.2g" % x2 if x2 is not None else 'None'
+            return "(" + x1 + "," + x2 + ")"
+        ##
+        settings = "\nSettings:\n  svdcut = %s   svdnum = %s" % ( #
+            svdfmt(self.svdcut), svdfmt(self.svdnum))
+        settings += "    reltol/abstol = %.2g/%.2g\n" % ( #
+            self.reltol, self.abstol)
+        if pstyle == 'm':
+            settings = ""
+        if self.alg != "lmsder":
+            settings += "  alg = %s\n" % self.alg
+        ##
         if maxline <= 0 or self.data is None:
-            return table
+            return table + settings
         ## create table comparing fit results to data ## 
         ny = self.y.size
         stride = 1 if maxline >= ny else (int(ny/maxline) + 1)
@@ -531,7 +551,7 @@ class nonlinear_fit(object):
         for di in data:
             table += fst % tuple(di)
         ##
-        return table
+        return table + settings
     ##
     @staticmethod
     def load_parameters(filename):
