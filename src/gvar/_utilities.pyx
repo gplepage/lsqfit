@@ -106,7 +106,7 @@ def mean(g):
         buf[i] = gi.v
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 ##
-def fmt(g,d=None,sep=''):
+def fmt(g, ndecimal=None, sep='', d=None):
     """ Format :class:`gvar.GVar`\s in ``g``.
         
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
@@ -116,8 +116,10 @@ def fmt(g,d=None,sep=''):
     """
     cdef unsigned int i
     cdef GVar gi
+    if d is not None:
+        ndecimal = d        # legacy name
     if isinstance(g,GVar):
-        return g.fmt(d=d,sep=sep)
+        return g.fmt(ndecimal=ndecimal,sep=sep)
     if hasattr(g,'keys'):
         if not isinstance(g,BufferDict):
             g = BufferDict(g)
@@ -306,23 +308,24 @@ def wsum_gvar(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
         wd.v[i].v = der[idx[i]]
     return GVar(wv,wd,cov)
 ##
-def fmt_values(outputs,ndigit=3):
+def fmt_values(outputs, ndecimal=None, ndigit=None):
     """ Tabulate :class:`gvar.GVar`\s in ``outputs``. 
         
     :param outputs: A dictionary of :class:`gvar.GVar` objects. 
-    :param ndigit: Number of digits displayed in table; if ``None``, 
-        use ``str(outputs[k])`` instead.
-    :type ndigit: ``int`` or ``None``
+    :param ndecimal: Format values ``v`` using ``v.fmt(ndecimal)``.
+    :type ndecimal: ``int`` or ``None``
     :returns: A table (``str``) containing values and standard 
         deviations for variables in ``outputs``, labeled by the keys
         in ``outputs``.
     """
+    if ndigit is not None:
+        ndecimal = ndigit
     ans = "Values:\n"
     for vk in outputs:
-        ans += "%19s: %-20s\n" % (vk,outputs[vk].fmt(ndigit))
+        ans += "%19s: %-20s\n" % (vk,outputs[vk].fmt(ndecimal))
     return ans
 ##
-def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
+def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
         
     :param outputs: Dictionary of |GVar|\s for which an error budget 
@@ -331,8 +334,8 @@ def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
         |GVar|\s, or lists of |GVar|\s and/or arrays/dictionaries of
         |GVar|\s. ``fmt_errorbudget`` tabulates the parts of the standard
         deviations of each ``outputs[ko]`` due to each ``inputs[ki]``.
-    :param ndigit: Number of decimal places displayed in table.
-    :type ndigit: ``int``
+    :param ndecimal: Number of decimal places displayed in table.
+    :type ndecimal: ``int``
     :param percent: Tabulate % errors if ``percent is True``; otherwise
         tabulate the errors themselves.
     :type percent: boolean
@@ -342,6 +345,8 @@ def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
         ``inputs`` (rows).
     """
     ## collect partial errors ##
+    if ndigit is not None:
+        ndecimal = ndigit       # legacy name
     err = {}
     for ko in outputs:
         for ki in inputs:
@@ -351,7 +356,7 @@ def fmt_errorbudget(outputs,inputs,ndigit=2,percent=True):
             err[ko,ki] = outputs[ko].partialvar(*inputs_ki)**0.5                
     ##
     ## form table ##
-    lfmt = "%19s:"+len(outputs)*("%10."+str(ndigit)+"f")+"\n"
+    lfmt = "%19s:"+len(outputs)*("%10."+str(ndecimal)+"f")+"\n"
     hfmt = "%20s"+len(outputs)*("%10s")+"\n"
     if percent:
         val = numpy.array([abs(outputs[vk].mean) 

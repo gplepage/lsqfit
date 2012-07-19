@@ -378,7 +378,10 @@ class nonlinear_fit(object):
             tabulated; no parameter values are included. Default is
             ``maxline=0``.
         :type maxline: integer
-        :returns: String containing detailed information about last fit.
+        :param compact: If ``True``, use compact notation for parameters
+            and data.
+        :type compact: True or False
+        :returns: String containing detailed information about fit.
         """
         ## unpack arguments ##
         if nline is not None and maxline == 0:
@@ -401,7 +404,7 @@ class nonlinear_fit(object):
                         names[-g[k].size] = str(k)+" "+names[-g[k].size]
             else:
                 if len(g.shape) == 1:
-                    names = list(range(len(g)))
+                    names = [str(ni) for ni in range(len(g))]
                 else:
                     names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
             maxlen = max([len(ni) for ni in names])
@@ -456,10 +459,13 @@ class nonlinear_fit(object):
         pnames = bufnames(self.p)
         param = self.p.flat
         prior = (self.prior.flat if self.prior is not None else
-                 self.p0.flat + _gvar(0,float('inf')))
+                 self.p0.flatten() + _gvar.gvar(0,float('inf')))
         for pn,pa,pr in zip(pnames,param,prior):
             pa = fmt_parameter(pa)
-            pr = '[ ' + fmt_prior(pr) + ' ]'
+            pr = fmt_prior(pr)
+            # if compact and pr == pa:
+            #     continue
+            pr = '[ ' + pr + ' ]'
             sp = int(len(pa)/2+1)*' '
             table += pn + pa + sp + pr + '\n'
         ##

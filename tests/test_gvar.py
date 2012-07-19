@@ -414,9 +414,24 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     ##
     def test_fmt(self):
         """ x.fmt """
-        self.assertEqual(x.fmt(None),x.fmt(1) )
+        self.assertEqual(x.fmt(None),x.fmt(2) )
         self.assertEqual(x.fmt(3),"%.3f(%d)"%(x.mean,round(x.sdev*1000)))
         self.assertEqual(y.fmt(3),"%.3f(%.3f)"%(y.mean,round(y.sdev,3)))
+        self.assertEqual(gvar(".1234(341)").fmt(),"0.123(34)")
+        self.assertEqual(gvar(".1234(341)").fmt(1),"0.1(0)")
+        self.assertEqual(gvar(".1234(341)").fmt(5),"0.12340(3410)")
+        self.assertEqual(gvar(".1234(0)").fmt(),"0.1234(0)")
+        self.assertEqual(gvar("-.1234(341)").fmt(),"-0.123(34)")
+        self.assertEqual(gvar("-0.1234(341)").fmt(),"-0.123(34)")
+        self.assertEqual(gvar("10(1.3)").fmt(),"10.0(1.3)")
+        self.assertEqual(gvar("10.2(1.3)").fmt(),"10.2(1.3)")
+        self.assertEqual(gvar("-10.2(1.3)").fmt(),"-10.2(1.3)")
+        self.assertEqual(gvar("10(1.3)").fmt(0),"10(1)")
+        self.assertEqual(gvar("1e-9 +- 1.23e-12").fmt(),"1.0000(12)e-09")
+        self.assertEqual(gvar("1e-9 +- 1.23e-6").fmt(),"0.0(1.2)e-06")
+        self.assertEqual(gvar("1e-9 +- 0").fmt(),"1(0)e-09")
+        self.assertEqual(gvar("1e-9 +- 0.129").fmt(),"0.00(13)")
+        self.assertEqual(gvar("1.23(4)e-9").fmt(),"1.230(40)e-09")
     ##
     def test_fmt2(self):
         """ fmt(x) """
@@ -457,7 +472,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(z.partialsdev(s,a,d),z.sdev)
         tmp = fmt_errorbudget(outputs=dict(z=z),
               inputs=dict(s=s,a=a,d=d,sa=[s,a],sd=[s,d],ad=[a,d],sad=[s,a,d]),
-              ndigit=1)
+              ndecimal=1)
         out = "\n".join([
         "Partial % Errors:",
         "                             z",
@@ -474,7 +489,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         ""
         ])
         self.assertEqual(tmp,out,"fmt_errorbudget output wrong")
-        tmp = fmt_values(outputs=dict(s=s,z=z),ndigit=1)
+        tmp = fmt_values(outputs=dict(s=s,z=z),ndecimal=1)
         out = "\n".join([
         "Values:",
         "                  s: 1.0(2.0)            ",

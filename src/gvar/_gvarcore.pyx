@@ -299,35 +299,80 @@ cdef class GVar:
         cdef double ans = c_sqrt(self.v)
         return GVar(ans,self.d.mul(0.5/ans),self.cov)
     ##
-    def fmt(self,d=None,sep=''):
+    def fmt(self, ndecimal=None, sep='', d=None):
         """ Convert to string with format: ``mean(sdev)``. 
             
         Leading zeros in the standard deviation are omitted: for example,
-        ``25.67 +- 0.02`` becomes ``25.67(2)``. Parameter ``d`` specifies
-        how many digits follow the decimal point in the mean. Parameter
-        ``sep`` is a string that is inserted between the ``mean`` and the
-        ``(sdev)``. If ``d`` is ``None``, it is set automatically
-        to the larger of ``int(1-log(self.sdev)/log(10))`` or ``0``; this
-        will display the smallest number of digits needed to expose the
-        error.
+        ``25.67 +- 0.02`` becomes ``25.67(2)``. Parameter ``ndecimal``
+        specifies how many digits follow the decimal point in the mean.
+        Parameter ``sep`` is a string that is inserted between the ``mean``
+        and the ``(sdev)``. If ``ndecimal`` is ``None`` (default), it is set
+        automatically to the larger of ``int(2-log10(self.sdev))`` or
+        ``0``; this will display at least two digits of error. Very large
+        or very small numbers are written with exponential notation when
+        ``ndecimal`` is ``None``.
         """
+        if d is not None:
+            ndecimal = d            # legacy name
         dv = self.sdev
         v = self.mean
-        if d is None:
-            d = int(1-log(dv)/log(10.))
-            if d<0:
-                d = 0
-        if d is None or d<0 or d!=int(d):
+        ## special cases ##
+        if dv == float('inf'):
+            ## infinite sdev ##
+            if ndecimal > 0:
+                ft = "%%.%df" % int(ndecimal)
+                return (ft % v) + ' +- inf'
+            else:
+                return str(v) + ' +- inf'
+            ##
+        if ndecimal is None and dv == 0:
+            ## default formatting when self.sdev == 0 ##
+            if v == 0:
+                return "0(0)"
+            else:
+                ans = ("%g" % v).split('e')
+                if len(ans) == 2:
+                    return ans[0] + "(0)e" + ans[1]
+                else:
+                    return ans[0] + "(0)"
+            ##
+        if ndecimal is None and (v == 0 or abs(dv/v) >= 100):
+            ## default formatting when self.sdev much larger than |self.mean| ##
+            if dv >= 1e6 or dv < 1e-5:
+                ans = ("%.1e" % dv).split('e')
+                return "0.0("+ans[0]+")e"+ans[1]
+            else:
+                v = 0
+            ##
+        if ndecimal is None and v != 0 and (abs(v) >= 1e6 or abs(v) < 1e-5):
+            ## use exponential notation because of large |self.mean| ##
+            exponent = numpy.floor(numpy.log10(abs(v)))
+            fac = 10.**exponent
+            mantissa = (self/fac).fmt(ndecimal)
+            exponent = "e" + ("%.0e"%fac).split("e")[-1]
+            return mantissa + exponent
+            ##
+        ##
+        if ndecimal is None:
+            ## compute default number of decimal places ##
+            ndecimal = int(2-numpy.log10(dv))
+            if ndecimal<0:
+                ndecimal = 0
+            elif round(dv*10.**ndecimal,0) == 100:
+                ndecimal -= 1
+            ##
+        if ndecimal is None or ndecimal<0 or ndecimal!=int(ndecimal):
+            ## do not use compact notation ##
             return self.__str__()
-        fac = 10.**d
-        v = round(v,d)
-        if dv<1.0 and d>0:
-            ft =  '%.'+str(d)+'f%s(%d)'
-            dv = round(dv*fac,0)
+            ##
+        v = round(v,ndecimal)
+        dv = round(dv,ndecimal)
+        if dv<1.0 and ndecimal>0:
+            ft =  '%.'+str(ndecimal)+'f%s(%d)'
+            dv = round(dv*10.**ndecimal,0)
             return ft % (v,sep,int(dv))
         else:
-            dv = round(dv,d)
-            ft = '%.'+str(d)+'f%s(%.'+str(d)+'f)'
+            ft = '%.'+str(ndecimal)+'f%s(%.'+str(ndecimal)+'f)'
             return ft % (v,sep,dv)
     ##
     def partialvar(self,*args):
@@ -452,11 +497,11 @@ cdef class GVar:
 
 ## GVar factory functions ##
     
-_GDEVre1 = re.compile(r"([-+]?[0-9]*)[.]([0-9]+)\s*\(([.0-9]+)\)")
-_GDEVre2 = re.compile(r"([-+]?[0-9]+)\s*\(([0-9]*)\)")
-_GDEVre3 = re.compile(r"([-+]?[0-9.]*[e]*[+-]?[0-9]*)" + "\s*[+][-]\s*"
-                        +"([-+]?[0-9.]*[e]*[+-]?[0-9]*)")
-                        
+_RE1 = re.compile(r"(.*)\s*[+][-]\s*(.*)")
+_RE2 = re.compile(r"(.*)[e](.*)")
+_RE3 = re.compile(r"([-+]?)([0-9]*)[.]?([0-9]*)\s*\(([0-9]+)\)")
+_RE3a = re.compile(r"([-+]?[0-9]*[.]?[0-9]*)\s*\(([.0-9]+)\)")
+                       
 class GVarFactory:
     """ Create one or more new |GVar|\s.
         
@@ -567,32 +612,39 @@ class GVarFactory:
                 ## case 1: x is a string like "3.72(41)" or "3.2 +- 4" ##
                 x = x.strip()
                 try:
-                    x,y,z = _GDEVre1.match(x).groups()
-                    if x=='':
-                        x = '0'
-                    fac = 1./10.**len(y)
-                    if y=='':
-                        y = '0'
-                    if '.' in z:
-                        efac = 1.
-                    else:
-                        efac = fac
-                    x,y,z = float(x),float(y),float(z)
-                    if x>=0:
-                        return self(x+y*fac,z*efac)
-                    else:
-                        return self(x-y*fac,z*efac)
+                    # eg: 3.4 +- 0.7e-4
+                    a,c = _RE1.match(x).groups()
+                    return self(float(a), float(c))
                 except AttributeError:
-                    try:
-                        x,z = _GDEVre2.match(x).groups()
-                        return self(float(x),float(z))
-                    except AttributeError:
-                        try:
-                            x,z = _GDEVre3.match(x).groups()
-                            return self(float(x),float(z))
-                        except:
-                            raise ValueError(  # )
-                                    "Poorly formatted gvar string: "+x)
+                    pass
+                try:
+                    # eg: 3.4(1)e+10
+                    a,c = _RE2.match(x).groups()
+                    return self(a)*float("1e"+c)
+                except AttributeError:
+                    pass
+                try:
+                    # eg: +3.456(33)
+                    s,a,b,c = _RE3.match(x).groups()
+                    s = -1. if s == '-' else 1.
+                    if not a and not b:
+                        raise ValueError("Poorly formatted string: "+x)
+                    elif not b:
+                        return s*self(float(a),float(c))
+                    else:
+                        if not a:
+                            a = '0'
+                        fac = 1./10.**len(b)
+                        a,b,c = [float(xi) for xi in [a,b,c]]
+                        return s*self(a + b*fac, c*fac)
+                except AttributeError:
+                    pass
+                try:
+                    # eg: 3.456(1.234)
+                    a,c = _RE3a.match(x).groups()
+                    return self(float(a), float(c))
+                except AttributeError:
+                    raise ValueError("Poorly formatted string: "+x)
                 ##
             elif isinstance(x,GVar):
                 ## case 2: x is a GVar ##
