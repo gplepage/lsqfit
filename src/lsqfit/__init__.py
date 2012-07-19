@@ -198,18 +198,6 @@ class nonlinear_fit(object):
     :param fitterargs: Dictionary of arguments passed on to 
         :class:`lsqfit.multifit`, which does the fitting.
     """
-    @staticmethod
-    def fmt_parameter(p):  
-        return '%12g +- %8.2g' % (p.mean,p.sdev)
-    ##
-    @staticmethod
-    def fmt_prior(p):
-        return '%8.2g +- %8.2g' % (p.mean,p.sdev)
-    ##
-    fmt_table_header = '%12s%12s%12s%12s\n'
-    fmt_table_line = '%12.5g%12.5g%12.5g%12.5g\n'
-    alt_fmt_table_line = '%11s_%12.5g%12.5g%12.5g\n'
-        
     def __init__(self, data=None, fcn=None, prior=None, p0=None, #):
                 svdcut=None, svdnum=None, debug=False, **kargs): 
         ## capture arguments; initialize parameters ##
@@ -352,80 +340,119 @@ class nonlinear_fit(object):
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
-    def format(self, maxline=0, compact=True, nline=None): 
+    def format(self, maxline=0, pstyle='v', nline=None): 
         """ Formats fit output details into a string for printing.
-            
-        The best-fit values for the fitting function are tabulated
-        together with the input data if argument ``maxline>0``. 
-            
-        The format of the output is controlled by the following format
-        strings:
                         
-            * ``nonlinear_fit.fmt_parameter`` - parameters
-                
-            * ``nonlinear_fit.fmt_prior`` - priors
-                
-            * ``nonlinear_fit.fmt_table_header`` - header for data vs fit 
-            
-            * ``nonlinear_fit.fmt_table_line`` - line in data vs fit  
-            
-            * ``nonlinear_fit.alt_fmt_table_line`` - alt line in data vs fit
-            
-            
         :param maxline: Maximum number of data points for which fit 
             results and input data are tabulated. ``maxline<0`` implies
             that only ``chi2``, ``Q``, ``logGBF``, and ``itns`` are
             tabulated; no parameter values are included. Default is
             ``maxline=0``.
         :type maxline: integer
-        :param compact: If ``True``, use compact notation for parameters
-            and data.
-        :type compact: True or False
+        :param pstyle: Style used for parameter list. Supported values are
+            'vv' for very verbose, 'v' for verbose, and 'm' for minimal.
+            When 'm' is set, only parameters whose values differ from their
+            prior values are listed.
+        :type pstyle: 'vv', 'v', or 'm'
         :returns: String containing detailed information about fit.
         """
         ## unpack arguments ##
         if nline is not None and maxline == 0:
             maxline = nline         # for legacy code (old name)
-        ##
-        ## define formatting functions ##
-        def bufnames(g,strsize=16):
-            if g.shape is None:
-                names = []
-                for k in g:
-                    if g.isscalar(k):
-                        names.append(str(k))
-                    else:
-                        fmtstr = None
-                        for idx in numpy.ndindex(g[k].shape):
-                            if fmtstr is None:
-                                fmtstr = len(idx)*"%d,"
-                                fmtstr = fmtstr[:-1]
-                            names.append(fmtstr % idx)
-                        names[-g[k].size] = str(k)+" "+names[-g[k].size]
-            else:
-                if len(g.shape) == 1:
-                    names = [str(ni) for ni in range(len(g))]
-                else:
-                    names = [str(ni).strip("()") for ni in numpy.ndindex(g.shape)]
-            maxlen = max([len(ni) for ni in names])
-            fmtstr = "%%%ds " % max(maxlen,strsize)
-            names = [(fmtstr % ni) for ni in names]
-            return names
-        ##
-        if compact:
-            def fmt_parameter(p):  
-                return '%15s' % p.fmt(sep=' ')
-            ##
-            fmt_prior = fmt_parameter
+        if pstyle[:2] == 'vv':
+            pstyle = 'vv'
+        elif pstyle[:1] == 'v':
+            pstyle = 'v'
+        elif pstyle[:1] == 'm':
+            pstyle = 'm'
         else:
-            def fmt_parameter(p):  
-                return '%12g +- %8.2g' % (p.mean,p.sdev)
-            ##
-            def fmt_prior(p):
-                return '%8.2g +- %8.2g' % (p.mean,p.sdev)
-            ##
+            raise ValueError("Invalid pstyle: "+str(pstyle))
         ##
-        ## unpack arguments, etc ##
+        def collect(v1,v2,style='v',stride=1):
+            """ Collect data from v1 and v2 into table.
+                
+            Returns list of [label,v1fmt,v2fmt]s for each entry in v1 and
+            v2. Here v1fmt and v2fmt are strings representing entries in v1
+            and v2, while label is assembled from the key/index of the
+            entry.
+            """
+            ct = 0
+            ans = []
+            width = [0,0,0]
+            if v1.shape is None:
+                ## BufferDict ## 
+                for k in v1:
+                    ktag = str(k)
+                    if v1.isscalar(k):
+                        if ct%stride != 0:
+                            ct += 1
+                            continue
+                        if style in ['v','m']:
+                            v1fmt = v1[k].fmt(sep=' ')
+                            v2fmt = v2[k].fmt(sep=' ')
+                        else:
+                            v1fmt = str(v1[k])
+                            v2fmt = str(v2[k])
+                        if style == 'm' and v1fmt == v2fmt:
+                            ct += 1
+                            continue
+                        ans.append([ktag, v1fmt, v2fmt])
+                        w = [len(ai) for ai in ans[-1]]
+                        for i, (wo, wn) in enumerate(zip(width, w)):
+                            if wn > wo:
+                                width[i] = wn
+                        ct += 1
+                    else:
+                        ktag = ktag + " "
+                        for i in numpy.ndindex(v1[k].shape):
+                            if ct%stride != 0:
+                                ct += 1
+                                continue
+                            ifmt = (len(i)*"%d,")[:-1] % i
+                            if style in ['v','m']:
+                                v1fmt = v1[k][i].fmt(sep=' ')
+                                v2fmt = v2[k][i].fmt(sep=' ')
+                            else:
+                                v1fmt = str(v1[k][i])
+                                v2fmt = str(v2[k][i])
+                            if style == 'm' and v1fmt == v2fmt:
+                                ct += 1
+                                continue
+                            ans.append([ktag+ifmt, v1fmt, v2fmt])
+                            w = [len(ai) for ai in ans[-1]]
+                            for i, (wo, wn) in enumerate(zip(width, w)):
+                                if wn > wo:
+                                    width[i] = wn
+                            ct += 1
+                            ktag = ""
+                ##
+            else:
+                ## numpy array ## 
+                for k in numpy.ndindex(v1.shape):
+                    if ct%stride != 0:
+                        ct += 1
+                        continue
+                    kfmt = (len(k)*"%d,")[:-1] % k
+                    if style in ['v','m']:
+                        v1fmt = v1[k].fmt(sep=' ')
+                        v2fmt = v2[k].fmt(sep=' ')
+                    else:
+                        v1fmt = str(v1[k])
+                        v2fmt = str(v2[k])
+                    if style == 'm' and v1fmt == v2fmt:
+                        ct += 1
+                        continue
+                    ans.append([kfmt, v1fmt, v2fmt])
+                    w = [len(ai) for ai in ans[-1]]
+                    for i, (wo, wn) in enumerate(zip(width, w)):
+                        if wn > wo:
+                            width[i] = wn
+                    ct += 1
+                ##
+            collect.width = width
+            return ans
+        ##
+        ## build header ##
         dof = self.dof
         if dof > 0:
             chi2_dof = self.chi2/self.dof
@@ -439,8 +466,6 @@ class nonlinear_fit(object):
             logGBF = '%.5g' % self.logGBF
         except:
             logGBF = str(self.logGBF)
-        ##
-        ## create header ##
         if 'all' in self.svdcorrection:
             descr = " (input data correlated with prior)" 
         elif 'prior' not in self.svdcorrection:
@@ -455,66 +480,58 @@ class nonlinear_fit(object):
         ##
         ## create parameter table ##
         table = table + '\nParameters:\n'
-        ## create parameter list ##
-        pnames = bufnames(self.p)
-        param = self.p.flat
-        prior = (self.prior.flat if self.prior is not None else
-                 self.p0.flatten() + _gvar.gvar(0,float('inf')))
-        for pn,pa,pr in zip(pnames,param,prior):
-            pa = fmt_parameter(pa)
-            pr = fmt_prior(pr)
-            # if compact and pr == pa:
-            #     continue
-            pr = '[ ' + pr + ' ]'
-            sp = int(len(pa)/2+1)*' '
-            table += pn + pa + sp + pr + '\n'
+        prior = self.prior
+        if prior is None:
+            if self.p0.shape is None:
+                prior = _gvar.BufferDict(  #
+                    self.p0, buf=self.p0.flatten() + _gvar.gvar(0,float('inf')))
+            else:
+                prior = self.p0 + _gvar.gvar(0,float('inf'))
+        data = collect(self.p,prior,style=pstyle,stride=1)
+        w1,w2,w3 = collect.width
+        fst = "%%%ds%s%%%ds%s[ %%%ds ]\n" % ( #
+            max(w1,15), 3 * ' ', 
+            max(w2,10), int(max(w2,10)/2) * ' ', max(w3,10))
+        for di in data:
+            table += fst % tuple(di)
         ##
         if maxline <= 0 or self.data is None:
             return table
-        ##
-        # fmt_table_header = '%12s%12s%12s%12s\n'
-        # fmt_table_line = '%12.5g%12.5g%12.5g%12.5g\n'
-        # alt_fmt_table_line = '%11s_%12.5g%12.5g%12.5g\n'
-        
         ## create table comparing fit results to data ## 
-        x = self.x
-        ydict = self.y
-        y = _gvar.mean(ydict.flat)
-        dy = _gvar.sdev(ydict.flat)
-        f = self.fcn(self.pmean) if x is False else self.fcn(x, self.pmean)
-        if ydict.shape is None:
-            ## convert f from dict to flat numpy array using yo ##
-            yo = BufferDict(ydict, buf=ydict.size*[None])
-            for k in yo:
-                yo[k] = f[k]
-            f = yo.flat
-            ##
-        else:
-            f = numpy.asarray(f).flat
-            if len(f) == 1 and len(f) != y.size:
-                f = numpy.array(y.size*[f[0]])
-        ny = len(y)
+        ny = self.y.size
         stride = 1 if maxline >= ny else (int(ny/maxline) + 1)
-        try:    # include x values only if can make sense of them
-            assert x is not False
-            x = numpy.asarray(x).flatten()
-            assert len(x) == len(y)
-            "%f" % x[0]
-            tabulate_x = True
-            lsqfit_table_line = nonlinear_fit.fmt_table_line
-        except:
-            tabulate_x = False
-            x = bufnames(self.y,strsize=12)
-            lsqfit_table_line = nonlinear_fit.alt_fmt_table_line
-        table = table + '\nFit:\n'
-        header = (nonlinear_fit.fmt_table_header % 
-                ('x_i' if tabulate_x else 'key ', 'y_i', 'f(x_i)', 'dy_i'))
-        table = table + header + (len(header)-1)*'-' + '\n'
-        for i in range(0, ny, stride):
-            table = table + (lsqfit_table_line %
-                             (x[i], y[i], f[i], dy[i]))
-        return table
+        f = self.fcn(self.p) if self.x is False else self.fcn(self.x, self.p)
+        data = collect(self.y, f, style='v', stride=stride)
+        w1,w2,w3 = collect.width
+        clabels = ("key","y[key]","f(p)[key]")
+        if self.y.shape is not None and self.x is not False and self.x is not None:
+            ## use x[k] to label lines in table? ##
+            try:
+                x = numpy.array(self.x)
+                xlist = []
+                ct = 0
+                for k in numpy.ndindex(x.shape):
+                    if ct%stride != 0:
+                        ct += 1
+                        continue
+                    xlist.append("%g" % x[k])
+                assert len(xlist) == len(data)
+            except:
+                xlist = None
+            if xlist is not None:
+                for i,(d1,d2,d3) in enumerate(data):
+                    data[i] = (xlist[i],d2,d3)
+                clabels = ("x[k]","y[k]","f(x[k],p)")
+            ##
+        w1,w2,w3 = max(9,w1+4), max(9,w2+4), max(9,w3+4)
+        table += "\nFit:\n"
+        fst = "%%%ds%%%ds%%%ds\n" % (w1, w2, w3)
+        table += fst % clabels
+        table += (w1 + w2 + w3) * "-" + "\n"
+        for di in data:
+            table += fst % tuple(di)
         ##
+        return table
     ##
     @staticmethod
     def load_parameters(filename):

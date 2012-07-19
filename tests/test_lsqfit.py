@@ -29,11 +29,6 @@ import lsqfit
 
 FAST = False         # skips embayes and bootstrap tests
 
-# nonlinear_fit.fmt_parameter='%12.3f +- %8.3f'
-# nonlinear_fit.fmt_prior='(%8.2f +- %8.2f)'
-# nonlinear_fit.fmt_table_header='%12s%12s%12s%12s\n'
-# nonlinear_fit.fmt_table_line='%12.3f%12.3f%12.3f%12.3f\n'
-
 PRINT_FIT = False
 
 mean = gv.mean

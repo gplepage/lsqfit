@@ -452,7 +452,7 @@ matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
 
 .. autofunction:: gvar.var(g)
 
-.. autofunction:: gvar.fmt(g,d=None,sep='')
+.. autofunction:: gvar.fmt(g, ndecimal=None, sep='')
 
 .. autofunction:: gvar.evalcov(g)
 
@@ -470,9 +470,9 @@ The random numbers incorporate any correlations implied by the ``g``\s.
 Two functions that are useful for tabulating results and for analyzing where
 the errors in a |GVar| constructed from other |GVar|\s come from:
 
-.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndigit=2, percent=True)
+.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True)
 
-.. autofunction:: gvar.fmt_values(outputs, ndigit=3)
+.. autofunction:: gvar.fmt_values(outputs, ndecimal=None)
 
 The following functions creates new functions that generate |GVar|\s (to 
 replace :func:`gvar.gvar`):
@@ -524,7 +524,7 @@ The fundamental class for representing gaussian variables is:
    
    .. automethod:: __str__
    
-   .. automethod:: fmt(d=None, sep='')
+   .. automethod:: fmt(ndecimal=None, sep='')
    
    Two attributes and a method make reference to the original
    variables from which ``self`` is derived:
