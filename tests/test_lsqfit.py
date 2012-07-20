@@ -27,7 +27,7 @@ import gvar as gv
 from lsqfit import *
 import lsqfit
 
-FAST = True         # skips embayes and bootstrap tests
+FAST = False         # skips embayes and bootstrap tests
 
 PRINT_FIT = False
 
@@ -177,12 +177,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         ## case 1 - y and prior dictionaries ##
         y = dict(a=gv.gvar(1.5,1), b=gv.gvar(0.8,0.5))
         prior = dict(p=gv.gvar(0,2))
-        p0 = gv.mean(prior)
         def f(p): 
             return dict(a=p['p'], b=p['p'])
         ##
         fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15)
-        out = "\n".join([
+        out = "\n".join([ #
             'Least Square Fit:', 
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
             '', 
@@ -200,7 +199,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             ''])
         self.assertEqual(out, fit.format(100))
         self.assertEqual(out, fit.format(100, pstyle='v'))
-        out = "\n".join([
+        out = "\n".join([ #
             'Least Square Fit:', 
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
             '', 
@@ -213,7 +212,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(out,fit.format(pstyle="vv"))
         prior['dummy'] = gv.gvar(10,1)
         fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15)
-        out = "\n".join([
+        out = "\n".join([ #
             'Least Square Fit:', 
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
             '', 
@@ -222,6 +221,33 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             ''])
         self.assertEqual(out, fit.format(pstyle='m'))
         self.assert_gvclose(fit.p['p'], wavg([y['a'],y['b'],prior['p']]))
+        ##
+        ## case 2 - x and y; no prior ##
+        x = np.array([1.,2.])
+        y = np.array([gv.gvar(1.3,0.3), gv.gvar(1.9,0.5)])
+        prior = dict(p=gv.gvar(0,2))
+        p0 = gv.mean(prior)
+        def f(x,p):
+            return p['p']*x
+        ##
+        fit = nonlinear_fit(p0=p0, data=(x,y), fcn=f)
+        out = "\n".join([ #
+            'Least Square Fit (no prior):', 
+            '  chi2/dof [dof] = 0.8 [1]    Q = 0.37    logGBF = None    itns = 2', 
+            '', 
+            'Parameters:', 
+            '              p    1.09 (19)     [ 0.0 +- inf ]', 
+            '', 
+            'Fit:', 
+            '     x[k]         y[k]    f(x[k],p)', 
+            '-----------------------------------', 
+            '        1    1.30 (30)    1.09 (19)', 
+            '        2    1.90 (50)    2.19 (38)', 
+            '', 
+            'Settings:', 
+            '  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0', 
+            ''])
+        self.assertEqual(out,fit.format(100))
         ##
     ##
     def test_unusual_cases(self):
