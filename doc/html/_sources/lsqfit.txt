@@ -213,14 +213,14 @@ nonlinear_fit Objects
       
    .. attribute:: time
    
-      CPU time (in secs) taken by last fit.
+      CPU time (in secs) taken by fit.
       
    The input parameters to the fit can be accessed as attributes. Note 
    in particular attributes:
    
    .. attribute:: prior
    
-      Prior used in the fit. This may be differ from the input prior if an
+      Prior used in the fit. This may differ from the input prior if an
       *svd* cut is used (``svdcut>0``). It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input. Equals ``None`` if no prior was specified.
@@ -235,7 +235,7 @@ nonlinear_fit Objects
       
    .. attribute:: y
    
-      Fit data used in the fit. This may be differ from the input data if
+      Fit data used in the fit. This may differ from the input data if
       an *svd* cut is used (``svdcut>0``). It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input.

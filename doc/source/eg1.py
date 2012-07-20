@@ -87,7 +87,6 @@ def main():
         print 'E1 =',outputs['E1'],'  a1 =',outputs['a1']
         
     if DO_PLOT:
-        print fit.format(100)                   # print the fit results
         import pylab as plt   
         ratio = y/f(x,fit.pmean)
         plt.xlim(0,21)
