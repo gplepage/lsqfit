@@ -22,11 +22,6 @@ import numpy as np
 import gvar as gv
 import lsqfit
 
-# show fewer digits in output
-lsqfit.nonlinear_fit.fmt_parameter='%12.3f +- %8.3f'
-lsqfit.nonlinear_fit.alt_fmt_table_line='%11s_%12.2f%12.2f%12.2f\n'
-#
-
 y = {                      # data for the dependent variable
    "data1" : gv.gvar([1.376,2.010],[[ 0.0047,0.01],[ 0.01,0.056]]),
    "data2" : gv.gvar([1.329,1.582],[[ 0.0047,0.0067],[0.0067,0.0136]]),

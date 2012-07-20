@@ -83,7 +83,9 @@ A |GVar| can be converted to a string of this last format using the
     >>> print(x.fmt(5))
     3.14150(20)
     
-where the argument is the number of decimal places retained. 
+where the argument is the number of decimal places retained. (Omit the 
+argument and ``fmt()`` will adjust the number of decimal places 
+automatically to display the error to two significant figures.)
     
 Function ``gvar.asgvar(x)`` returns x if it is a |GVar|; 
 otherwise it returns ``gvar(x)``.
@@ -112,8 +114,8 @@ where array ``x`` has the same shape as ``xmean`` (and ``xcov.shape =
 xmean.shape+xmean.shape``). Then each element ``x[i]`` of a one-dimensional
 array, for example, is a |GVar| where::
     
-    x[i].mean = xmean[i]        # mean of x[i]
-    x[i].val  = xmean[i]        # same as x[i].mean
+    x[i].mean = xmean[i]         # mean of x[i]
+    x[i].val  = xmean[i]         # same as x[i].mean
     x[i].sdev = xcov[i, i]**0.5  # std deviation of x[i]
     x[i].var  = xcov[i, i]       # variance of x[i]
     

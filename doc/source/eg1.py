@@ -6,9 +6,11 @@ eg1.py - Code for "Making Fake Data" and "Basic Fits"
 Created by Peter Lepage on 2010-01-04.
 Copyright (c) 2010 Cornell University. All rights reserved.
 """
-DO_PLOT = False
+DO_PLOT = True
 DO_BOOTSTRAP = False
 
+import sys
+import tee
 import lsqfit
 import numpy as np
 import gvar as gd
@@ -40,18 +42,24 @@ def main():
     gd.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
     x,y = make_data()               # make fit data
     p0 = None                       # make larger fits go faster (opt.)
+    sys.stdout = tee.tee(sys.stdout, open("eg1.out","w"))
     for nexp in range(3,20):
-        print '************************************* nexp =',nexp
         prior = make_prior(nexp)
         fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
-        print fit                   # print the fit results
+        if fit.chi2/fit.dof<1.:
+            p0 = fit.pmean          # starting point for next fit (opt.)
+        if nexp in [8, 9, 10]:
+            print(".".center(73))
+        if nexp > 7 and nexp < 19:
+            continue
+        elif nexp not in [3]:
+            print("")
+        print '************************************* nexp =',nexp
+        print fit.format()                   # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
-        print
-        if fit.chi2/fit.dof<1.:
-            p0 = fit.pmean          # starting point for next fit (opt.)
     
     if DO_BOOTSTRAP:
         Nbs = 40                                     # number of bootstrap copies

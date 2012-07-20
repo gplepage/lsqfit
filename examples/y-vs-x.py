@@ -19,7 +19,7 @@ from __future__ import print_function   # makes this work for python2 and 3
 
 DO_PLOT = False
 DO_BOOTSTRAP = False
-DO_SVD = False
+DO_SVD = True
 
 SVDCUT = 1e-10 if DO_SVD else None
 

@@ -11,9 +11,11 @@ DO_EMPBAYES = True
 DO_ERRORBUDGET = True
 DO_PLOT = False
 
+import sys
 import lsqfit
 import numpy as np
 import gvar as gd
+import tee
 
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
@@ -57,6 +59,7 @@ def main():
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
     
+    sys_stdout = sys.stdout
     if DO_ERRORBUDGET:
         print E[1]/E[0]
         print (E[1]/E[0]).partialsdev(fit.prior['E'])
@@ -65,8 +68,11 @@ def main():
         outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}
+        
+        sys.stdout = tee.tee(sys_stdout, open("eg4b.out","w"))
         print fit.fmt_values(outputs)
         print fit.fmt_errorbudget(outputs,inputs)
+        sys.stdout = sys_stdout
         
     if DO_EMPBAYES:
         def fitargs(z,nexp=nexp,prior=prior,f=f,data=(x,y),p0=p0):
@@ -76,12 +82,14 @@ def main():
         ##
         z0 = [0.0]
         fit,z = lsqfit.empbayes_fit(z0,fitargs,tol=1e-3)
+        sys.stdout = tee.tee(sys_stdout, open("eg4a.out","w"))
         print fit                   # print the optimized fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
         print "prior['a'] =",fit.prior['a'][0]
+        sys.stdout = sys_stdout
         print
     
     if DO_PLOT:

@@ -490,7 +490,7 @@ class nonlinear_fit(object):
                     self.p0, buf=self.p0.flatten() + _gvar.gvar(0,float('inf')))
             else:
                 prior = self.p0 + _gvar.gvar(0,float('inf'))
-        data = collect(self.p,prior,style=pstyle,stride=1)
+        data = collect(self.palt,prior,style=pstyle,stride=1)
         w1,w2,w3 = collect.width
         fst = "%%%ds%s%%%ds%s[ %%%ds ]\n" % ( #
             max(w1,15), 3 * ' ', 

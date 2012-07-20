@@ -6,12 +6,15 @@ eg3.py - Code for "y has No Error Bars" and "SVD Cuts and Roundoff Error"
 Created by Peter Lepage on 2010-01-04.
 Copyright (c) 2010 Cornell University. All rights reserved.
 """
+
 USE_SVD = True
 DO_BOOTSTRAP = True
 DO_ERRORBUDGET = True
 
 SVDCUT = 1e-12 if USE_SVD else None
 
+import sys
+import tee
 import lsqfit
 import numpy as np
 import gvar as gd
@@ -42,6 +45,9 @@ def main():
     gd.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
     max_prior = make_prior(20)      # maximum sized prior
     p0 = None                       # make larger fits go faster (opt.)
+    sys_stdout = sys.stdout
+    if not USE_SVD:
+        sys.stdout = tee.tee(sys_stdout,open("eg5a.out","w"))
     for nexp in range(1,5):
         print '************************************* nexp =',nexp
         fit_prior = lsqfit.GPrior()     # prior used in fit
@@ -52,11 +58,11 @@ def main():
         x,y = make_data(ymod_prior)     # make fit data
         fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=fit_prior,p0=p0,svdcut=SVDCUT,maxit=10000)
         print fit.format(100)                   # print the fit results
-        if nexp>3:
-            E = fit.p['E']              # best-fit parameters
-            a = fit.p['a']
-            print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
-            print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+        # if nexp>3:
+        #     E = fit.p['E']              # best-fit parameters
+        #     a = fit.p['a']
+        #     print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
+        #     print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
             # E = fit.palt['E']              # best-fit parameters
             # a = fit.palt['a']
             # print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
@@ -64,15 +70,26 @@ def main():
         print
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
+    if not USE_SVD:
+        sys.stdout = tee.tee(sys_stdout,open("eg5b.out","w"))
+    else:
+        sys.stdout = tee.tee(sys_stdout,open("eg5c.out","w"))
+    print fit.format(100)
+    E = fit.p['E']              # best-fit parameters
+    a = fit.p['a']
+    print 'E1/E0 =',(E[1]/E[0]).fmt(),'  E2/E0 =',(E[2]/E[0]).fmt()
+    print 'a1/a0 =',(a[1]/a[0]).fmt(),'  a2/a0 =',(a[2]/a[0]).fmt()
+    sys.stdout = sys_stdout
     
     if DO_ERRORBUDGET:
+        if USE_SVD:
+            sys.stdout = tee.tee(sys_stdout,open("eg5d.out","w"))
         outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':max_prior['E'],'a':max_prior['a'],'svd':fit.svdcorrection}
         print fit.fmt_values(outputs)
         print fit.fmt_errorbudget(outputs,inputs)
-    
-        
+        sys.stdout = sys_stdout
         outputs = {''}
 
     if DO_BOOTSTRAP:
@@ -90,14 +107,16 @@ def main():
             # print E[:2]
             # print a[:2]
             # print bsfit
-        # extract means and standard deviations from the bootstrap output
-        for k in outputs:
-            # outputs[k] = gd.gvar(np.mean(outputs[k]),np.std(outputs[k]))
-            outputs[k] = gd.dataset.avg_data(outputs[k],bstrap=True)
+        # extract means and "standard deviations" from the bootstrap output
+        outputs = gd.dataset.avg_data(outputs,bstrap=True)
+        # for k in outputs:
+        #     outputs[k] = gd.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+        if USE_SVD:
+            sys.stdout = tee.tee(sys_stdout,open("eg5e.out","w"))
         print 'Bootstrap results:'
-        print 'E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0']
-        print 'a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0']
-        print 'E1 =',outputs['E1'],'  a1 =',outputs['a1']
+        print 'E1/E0 =',outputs['E1/E0'].fmt(),'  E2/E1 =',outputs['E2/E0'].fmt()
+        print 'a1/a0 =',outputs['a1/a0'].fmt(),'  a2/a0 =',outputs['a2/a0'].fmt()
+        print 'E1 =',outputs['E1'].fmt(),'  a1 =',outputs['a1'].fmt()
         
     # print fit.format(100)                   # print the fit results
     

@@ -21,6 +21,7 @@ from __future__ import print_function   # makes this work for python2 and 3
 import numpy as np
 import gvar as gv
 import lsqfit
+import sys
 
 y = {                      # data for the dependent variable
    "data1" : gv.gvar([1.376,2.010],[[ 0.0047,0.01],[ 0.01,0.056]]),
@@ -45,6 +46,7 @@ def fcn(x,p):              # fit function of x and parameters p
 
 # do the fit
 fit = lsqfit.nonlinear_fit(data=(x,y),prior=prior,fcn=fcn)
+sys.stdout = open("eg0.out","w")
 print(fit.format(100))     # print standard summary of fit
 
 p = fit.p                  # best-fit values for parameters
@@ -55,5 +57,5 @@ print(fit.fmt_values(outputs))             # tabulate outputs
 print(fit.fmt_errorbudget(outputs,inputs)) # print error budget for outputs
 
 # save best-fit values in file "outputfile.p" for later use
-import pickle
-pickle.dump(fit.p,open("outputfile.p","wb"))
+# import pickle
+# pickle.dump(fit.p,open("outputfile.p","wb"))

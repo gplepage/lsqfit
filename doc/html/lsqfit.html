@@ -452,33 +452,27 @@ later use) and loading parameter values, and checking for roundoff
 errors in the final error estimates:</p>
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.format">
-<tt class="descname">format</tt><big>(</big><em>maxline=0</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">format</tt><big>(</big><em>maxline=0</em>, <em>pstyle='v'</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
-<p>The best-fit values for the fitting function are tabulated
-together with the input data if argument <tt class="docutils literal"><span class="pre">maxline&gt;0</span></tt>.</p>
-<p>The format of the output is controlled by the following format
-strings:</p>
-<blockquote>
-<div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.fmt_label</span></tt> - parameter labels</li>
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.fmt_parameter</span></tt> - parameters</li>
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.fmt_prior</span></tt> - priors</li>
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.fmt_table_header</span></tt> - header for data vs fit</li>
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.fmt_table_line</span></tt> - line in data vs fit</li>
-<li><tt class="docutils literal"><span class="pre">nonlinear_fit.alt_fmt_table_line</span></tt> - alt line in data vs fit</li>
-</ul>
-</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>maxline</strong> (<em>integer</em>) &#8211; Maximum number of data points for which fit 
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>maxline</strong> (<em>integer</em>) &#8211; Maximum number of data points for which fit 
 results and input data are tabulated. <tt class="docutils literal"><span class="pre">maxline&lt;0</span></tt> implies
 that only <tt class="docutils literal"><span class="pre">chi2</span></tt>, <tt class="docutils literal"><span class="pre">Q</span></tt>, <tt class="docutils literal"><span class="pre">logGBF</span></tt>, and <tt class="docutils literal"><span class="pre">itns</span></tt> are
 tabulated; no parameter values are included. Default is
-<tt class="docutils literal"><span class="pre">maxline=0</span></tt>.</td>
+<tt class="docutils literal"><span class="pre">maxline=0</span></tt>.</li>
+<li><strong>pstyle</strong> (<em>&#8216;vv&#8217;, &#8216;v&#8217;, or &#8216;m&#8217;</em>) &#8211; Style used for parameter list. Supported values are
+&#8216;vv&#8217; for very verbose, &#8216;v&#8217; for verbose, and &#8216;m&#8217; for minimal.
+When &#8216;m&#8217; is set, only parameters whose values differ from their
+prior values are listed.</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">String containing detailed information about last fit.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">String containing detailed information about fit.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -486,7 +480,7 @@ tabulated; no parameter values are included. Default is
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.fmt_errorbudget">
-<tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndigit=2</em>, <em>percent=True</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate error budget for <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -499,7 +493,7 @@ is computed.</li>
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or lists of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays/dictionaries of
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. <tt class="docutils literal"><span class="pre">fmt_errorbudget</span></tt> tabulates the parts of the standard
 deviations of each <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to each <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</li>
-<li><strong>ndigit</strong> (<tt class="docutils literal"><span class="pre">int</span></tt>) &#8211; Number of decimal places displayed in table.</li>
+<li><strong>ndecimal</strong> (<tt class="docutils literal"><span class="pre">int</span></tt>) &#8211; Number of decimal places displayed in table.</li>
 <li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <tt class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></tt>; otherwise
 tabulate the errors themselves.</li>
 </ul>
@@ -517,7 +511,7 @@ Output variables are labeled by the keys in <tt class="docutils literal"><span c
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.fmt_values">
-<tt class="descname">fmt_values</tt><big>(</big><em>outputs</em>, <em>ndigit=3</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_values" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">fmt_values</tt><big>(</big><em>outputs</em>, <em>ndecimal=None</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">outputs</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -525,8 +519,7 @@ Output variables are labeled by the keys in <tt class="docutils literal"><span c
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>outputs</strong> &#8211; A dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> objects.</li>
-<li><strong>ndigit</strong> (<tt class="docutils literal"><span class="pre">int</span></tt> or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Number of digits displayed in table; if <tt class="docutils literal"><span class="pre">None</span></tt>, 
-use <tt class="docutils literal"><span class="pre">str(outputs[k])</span></tt> instead.</li>
+<li><strong>ndecimal</strong> (<tt class="docutils literal"><span class="pre">int</span></tt> or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Format values <tt class="docutils literal"><span class="pre">v</span></tt> using <tt class="docutils literal"><span class="pre">v.fmt(ndecimal)</span></tt>.</li>
 </ul>
 </td>
 </tr>

@@ -27,11 +27,6 @@ import lsqfit
 import numpy as np
 import gvar as gv
 
-# show fewer digits in output
-lsqfit.nonlinear_fit.fmt_parameter='%12.3f +- %8.3f'
-lsqfit.nonlinear_fit.alt_fmt_table_line='%11s_%12.2f%12.2f%12.2f\n'
-#
-
 
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
@@ -69,8 +64,8 @@ def main():
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
-        print('E1/E0 =',(E[1]/E[0]).fmt(3),'  E2/E0 =',(E[2]/E[0]).fmt(3))
-        print('a1/a0 =',(a[1]/a[0]).fmt(3),'  a2/a0 =',(a[2]/a[0]).fmt(3))
+        print('E1/E0 =',(E[1]/E[0]).fmt(),'  E2/E0 =',(E[2]/E[0]).fmt())
+        print('a1/a0 =',(a[1]/a[0]).fmt(),'  a2/a0 =',(a[2]/a[0]).fmt())
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)

@@ -81,47 +81,21 @@ function for this data is simply the ratio ``b/a`` (represented by
 ``p['b']/p['a']`` in fit function ``fcn(x, p)``). The fit function returns
 a dictionary having the same keys and layout as the input data ``y``.
 
-The output from the code sample above is::
+The output from the code sample above is:
 
-   Least Square Fit:
-     chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = -5.2381    itns = 5
+.. literalinclude:: eg0.out
 
-   Parameters:
-                 a_    0.252798 +-    0.032           (     0.5 +-      0.5)
-                 b_    0.448762 +-    0.065           (     0.5 +-      0.5)
-
-   Fit:
-           key          y_i      f(x_i)        dy_i
-   ------------------------------------------------
-           b/a_           2      1.7752         0.5
-         data1_       1.376      1.3467    0.068557
-              _        2.01      2.0169     0.23664
-         data2_       1.329      1.3467    0.068557
-              _       1.582      1.6115     0.11662
-
-   Values:
-                     a: 0.253(32)           
-                   b/a: 1.775(298)          
-                     b: 0.449(65)           
-
-   Partial % Errors:
-                                a       b/a         b
-   --------------------------------------------------
-                     y:     12.75     16.72     14.30
-                 prior:      0.92      1.58      1.88
-   --------------------------------------------------
-                 total:     12.78     16.80     14.42
-
-The best-fit values for ``a`` and ``b`` are ``0.253(32)`` and ``0.449(65)``,
-respectively; and the best-fit result for ``b/a`` is ``1.775(298)``, which,
-because of correlations, is slightly more accurate than might be expected
-from the separate errors for ``a`` and ``b``. The error budget for each of
-these three quantities is tabulated at the end and shows that the bulk of
-the error in each case comes from uncertainties in the ``y`` data, with
-only small contributions from uncertainties in the priors ``prior``. The
-fit results corresponding to each piece of input data are also tabulated
-(``Fit: ...``); the agreement is excellent, as expected given that the
-``chi**2`` per degree of freedom is only ``0.17``.
+   
+The best-fit values for ``a`` and ``b`` are ``0.253(32)`` and
+``0.449(65)``, respectively; and the best-fit result for ``b/a`` is
+``1.775(298)``, which, because of correlations, is slightly more accurate
+than might be expected from the separate errors for ``a`` and ``b``. The
+error budget for each of these three quantities is tabulated at the end and
+shows that the bulk of the error in each case comes from uncertainties in
+the ``y`` data, with only small contributions from uncertainties in the
+priors ``prior``. The fit results corresponding to each piece of input data
+are also tabulated (``Fit: ...``); the agreement is excellent, as expected
+given that the ``chi**2`` per degree of freedom is only ``0.17``.
    
 The last section of the code uses Python's :mod:`pickle` module to save the
 best-fit values of the parameters in a file for later use. They are recovered
@@ -446,152 +420,9 @@ more complicated fits go about 30 times faster since the output from one
 fit is used as the starting point for the next fit --- see the discussion
 of the ``p0`` parameter for :class:`lsqfit.nonlinear_fit`.) Running
 this code produces the following output, which is reproduced here in some
-detail in order to illustrate a variety of features::
+detail in order to illustrate a variety of features:
 
-   ************************************* nexp = 3
-   Least Square Fit:
-     chi2/dof [dof] = 6.4e+02 [15]    Q = 0    logGBF = -4876    itns = 33
-
-   Parameters:
-                 a_   0.0191246 +-  0.00089           (     0.5 +-      0.5)
-                  _   0.0237325 +-   0.0011           (     0.5 +-      0.5)
-                  _   0.0515777 +-   0.0024           (     0.5 +-      0.5)
-                 E_     1.04066 +-   0.0024           (       1 +-      0.5)
-                  _     2.06475 +-   0.0024           (       2 +-      0.5)
-                  _     3.72957 +-   0.0026           (       3 +-      0.5)
-
-   E1/E0 = 1.98408 +- 0.0024544   E2/E0 = 3.58385 +- 0.00628162
-   a1/a0 = 1.24094 +- 0.000263974   a2/a0 = 2.69693 +- 0.00126443
-
-   ************************************* nexp = 4
-   Least Square Fit:
-     chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = -74.426    itns = 291
-
-   Parameters:
-                 a_    0.401753 +-    0.004           (     0.5 +-      0.5)
-                  _    0.405533 +-   0.0042           (     0.5 +-      0.5)
-                  _     0.49513 +-   0.0072           (     0.5 +-      0.5)
-                  _       1.124 +-    0.012           (     0.5 +-      0.5)
-                 E_     0.90037 +-  0.00051           (       1 +-      0.5)
-                  _     1.80235 +-   0.0012           (       2 +-      0.5)
-                  _     2.77306 +-   0.0085           (       3 +-      0.5)
-                  _     4.38303 +-     0.02           (       4 +-      0.5)
-
-   E1/E0 = 2.00178 +- 0.00117831   E2/E0 = 3.07991 +- 0.00919665
-   a1/a0 = 1.00941 +- 0.00287022   a2/a0 = 1.23242 +- 0.0128117
-
-   ************************************* nexp = 5
-   Least Square Fit:
-     chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = -73.627    itns = 6
-
-   Parameters:
-                 a_    0.401829 +-    0.004           (     0.5 +-      0.5)
-                  _    0.404845 +-   0.0044           (     0.5 +-      0.5)
-                  _    0.477577 +-    0.026           (     0.5 +-      0.5)
-                  _    0.626663 +-     0.28           (     0.5 +-      0.5)
-                  _    0.617964 +-     0.35           (     0.5 +-      0.5)
-                 E_    0.900363 +-  0.00051           (       1 +-      0.5)
-                  _     1.80192 +-   0.0014           (       2 +-      0.5)
-                  _     2.75937 +-    0.022           (       3 +-      0.5)
-                  _     4.09341 +-     0.26           (       4 +-      0.5)
-                  _     4.94923 +-     0.48           (       5 +-      0.5)
-
-   E1/E0 = 2.00132 +- 0.00139785   E2/E0 = 3.06473 +- 0.0238493
-   a1/a0 = 1.0075 +- 0.00413287   a2/a0 = 1.18851 +- 0.0629341
-
-   ************************************* nexp = 6
-   Least Square Fit:
-     chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = -73.771    itns = 6
-
-   Parameters:
-                 a_    0.401835 +-    0.004           (     0.5 +-      0.5)
-                  _    0.404032 +-   0.0047           (     0.5 +-      0.5)
-                  _    0.460419 +-    0.041           (     0.5 +-      0.5)
-                  _    0.598159 +-     0.24           (     0.5 +-      0.5)
-                  _    0.471462 +-     0.37           (     0.5 +-      0.5)
-                  _    0.451949 +-     0.46           (     0.5 +-      0.5)
-                 E_    0.900353 +-  0.00051           (       1 +-      0.5)
-                  _     1.80145 +-   0.0017           (       2 +-      0.5)
-                  _     2.74537 +-    0.034           (       3 +-      0.5)
-                  _     3.97765 +-     0.32           (       4 +-      0.5)
-                  _     4.95873 +-     0.49           (       5 +-      0.5)
-                  _     6.00919 +-      0.5           (       6 +-      0.5)
-
-   E1/E0 = 2.00083 +- 0.00166713   E2/E0 = 3.04921 +- 0.0372569
-   a1/a0 = 1.00547 +- 0.00554293   a2/a0 = 1.14579 +- 0.101026
-
-   ************************************* nexp = 7
-   Least Square Fit:
-     chi2/dof [dof] = 0.45 [15]    Q = 0.96    logGBF = -73.873    itns = 6
-
-   Parameters:
-                 a_    0.401835 +-    0.004           (     0.5 +-      0.5)
-                  _    0.403622 +-   0.0048           (     0.5 +-      0.5)
-                  _    0.452267 +-    0.047           (     0.5 +-      0.5)
-                  _    0.598425 +-     0.22           (     0.5 +-      0.5)
-                  _    0.416291 +-     0.37           (     0.5 +-      0.5)
-                  _    0.417308 +-     0.46           (     0.5 +-      0.5)
-                  _    0.459911 +-     0.49           (     0.5 +-      0.5)
-                 E_    0.900348 +-  0.00051           (       1 +-      0.5)
-                  _     1.80122 +-   0.0018           (       2 +-      0.5)
-                  _     2.73849 +-    0.039           (       3 +-      0.5)
-                  _     3.93758 +-     0.33           (       4 +-      0.5)
-                  _     4.96349 +-     0.49           (       5 +-      0.5)
-                  _     6.01884 +-      0.5           (       6 +-      0.5)
-                  _     7.01563 +-      0.5           (       7 +-      0.5)
-
-   E1/E0 = 2.00058 +- 0.00179764   E2/E0 = 3.04159 +- 0.0430577
-   a1/a0 = 1.00445 +- 0.00620982   a2/a0 = 1.1255 +- 0.116229
-                                        .
-                                        .
-                                        .
-                                        
-    ************************************* nexp = 19
-    Least Square Fit:
-      chi2/dof [dof] = 0.46 [15]    Q = 0.96    logGBF = -73.951    itns = 1
-
-    Parameters:
-                  a_    0.401835 +-    0.004           (     0.5 +-      0.5)
-                   _    0.403323 +-   0.0049           (     0.5 +-      0.5)
-                   _    0.446511 +-    0.051           (     0.5 +-      0.5)
-                   _    0.600997 +-     0.21           (     0.5 +-      0.5)
-                   _    0.380338 +-     0.37           (     0.5 +-      0.5)
-                   _    0.395013 +-     0.46           (     0.5 +-      0.5)
-                   _    0.450063 +-     0.49           (     0.5 +-      0.5)
-                   _    0.479737 +-      0.5           (     0.5 +-      0.5)
-                   _     0.49226 +-      0.5           (     0.5 +-      0.5)
-                   _    0.497112 +-      0.5           (     0.5 +-      0.5)
-                   _    0.498932 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499606 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499855 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499947 +-      0.5           (     0.5 +-      0.5)
-                   _     0.49998 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499993 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499997 +-      0.5           (     0.5 +-      0.5)
-                   _    0.499999 +-      0.5           (     0.5 +-      0.5)
-                   _         0.5 +-      0.5           (     0.5 +-      0.5)
-                  E_    0.900345 +-  0.00051           (       1 +-      0.5)
-                   _     1.80105 +-   0.0019           (       2 +-      0.5)
-                   _     2.73354 +-    0.042           (       3 +-      0.5)
-                   _     3.91278 +-     0.33           (       4 +-      0.5)
-                   _     4.96687 +-     0.49           (       5 +-      0.5)
-                   _     6.02418 +-      0.5           (       6 +-      0.5)
-                   _     7.01928 +-      0.5           (       7 +-      0.5)
-                   _     8.00922 +-      0.5           (       8 +-      0.5)
-                   _     9.00374 +-      0.5           (       9 +-      0.5)
-                   _     10.0014 +-      0.5           (      10 +-      0.5)
-                   _     11.0005 +-      0.5           (      11 +-      0.5)
-                   _     12.0002 +-      0.5           (      12 +-      0.5)
-                   _     13.0001 +-      0.5           (      13 +-      0.5)
-                   _          14 +-      0.5           (      14 +-      0.5)
-                   _          15 +-      0.5           (      15 +-      0.5)
-                   _          16 +-      0.5           (      16 +-      0.5)
-                   _          17 +-      0.5           (      17 +-      0.5)
-                   _          18 +-      0.5           (      18 +-      0.5)
-                   _          19 +-      0.5           (      19 +-      0.5)
-
-    E1/E0 = 2.0004 +- 0.0018858   E2/E0 = 3.0361 +- 0.0466706
-    a1/a0 = 1.0037 +- 0.00663103   a2/a0 = 1.11118 +- 0.125291
+.. literalinclude:: eg1.out
    
 There are several things to notice here:
 
@@ -677,23 +508,23 @@ parameters, in the following table (obtained in the code by printing the
 output from ``fit.format(100)``\)::
 
    Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.27518     0.27521   0.0027439
-              2    0.079505    0.079521  0.00079613
-              3    0.028911    0.028921  0.00029149
-              4    0.011266    0.011272  0.00011468
-              5   0.0045023   0.0045063  4.6409e-05
-              6   0.0018171   0.0018194  1.9025e-05
-              7  0.00073619  0.00073746  7.8556e-06
-              8  0.00029873   0.0002994  3.2608e-06
-              9  0.00012129  0.00012163    1.36e-06
-             10  4.9257e-05  4.9426e-05  5.7008e-07
-             12  8.1264e-06  8.1636e-06    1.02e-07
-             14  1.3415e-06  1.3485e-06  1.8887e-08
-             16  2.2171e-07  2.2275e-07  3.7159e-09
-             18  3.6605e-08  3.6794e-08   8.455e-10
-             20  6.2447e-09  6.0779e-09   6.092e-10
+        x[k]               y[k]          f(x[k],p)
+   -----------------------------------------------
+           1        0.2752 (27)        0.2752 (20)
+           2       0.07951 (80)       0.07952 (58)
+           3       0.02891 (29)       0.02892 (21)
+           4       0.01127 (11)      0.011272 (83)
+           5      0.004502 (46)      0.004506 (34)
+           6      0.001817 (19)      0.001819 (14)
+           7     0.0007362 (79)     0.0007375 (57)
+           8     0.0002987 (33)     0.0002994 (24)
+           9     0.0001213 (14)    0.00012163 (99)
+          10    0.00004926 (57)    0.00004943 (41)
+          12       8.13(10)e-06      8.164(72)e-06
+          14      1.342(19)e-06      1.348(13)e-06
+          16      2.217(37)e-07      2.227(23)e-07
+          18      3.661(85)e-08      3.679(40)e-08
+          20       6.24(61)e-09      6.078(71)e-09
 
 The fit is excellent over the entire eight orders of magnitude. This
 information is presented again in the following plot, which shows the ratio
@@ -786,43 +617,9 @@ fit parameters ``p`` instead::
        x = p['x']
        return sum(ai*exp(-Ei*x) for ai, Ei in zip(a, E))
 
-Running the new code gives, for ``nexp=6`` terms::
+Running the new code gives, for ``nexp=6`` terms:
 
-   ************************************* nexp = 6
-   Least Square Fit:
-     chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.734    itns = 6
-
-   Parameters:
-                 a_    0.402497 +-   0.0041           (     0.5 +-      0.5)
-                  _    0.428721 +-    0.032           (     0.5 +-      0.5)
-                  _    0.583018 +-     0.23           (     0.5 +-      0.5)
-                  _     0.40374 +-     0.38           (     0.5 +-      0.5)
-                  _    0.421848 +-     0.46           (     0.5 +-      0.5)
-                  _    0.463996 +-     0.49           (     0.5 +-      0.5)
-                 E_    0.900682 +-   0.0006           (       1 +-      0.5)
-                  _     1.81758 +-     0.02           (       2 +-      0.5)
-                  _      2.9487 +-     0.28           (       3 +-      0.5)
-                  _     3.97546 +-     0.49           (       4 +-      0.5)
-                  _     5.02085 +-      0.5           (       5 +-      0.5)
-                  _     6.01467 +-      0.5           (       6 +-      0.5)
-                 x_    0.999997 +-    1e-05           (       1 +-    1e-05)
-                  _     1.99996 +-    2e-05           (       2 +-    2e-05)
-                  _     3.00001 +-    3e-05           (       3 +-    3e-05)
-                  _     4.00006 +-  3.6e-05           (       4 +-    4e-05)
-                  _     5.00005 +-  3.4e-05           (       5 +-    5e-05)
-                  _     6.00002 +-  3.9e-05           (       6 +-    6e-05)
-                  _     6.99999 +-    4e-05           (       7 +-    7e-05)
-                  _     7.99996 +-  4.2e-05           (       8 +-    8e-05)
-                  _     8.99993 +-    5e-05           (       9 +-    9e-05)
-                  _     9.99992 +-  5.9e-05           (      10 +-   0.0001)
-                  _     11.9999 +-  7.9e-05           (      12 +-  0.00012)
-                  _     13.9999 +-  0.00011           (      14 +-  0.00014)
-                  _     15.9999 +-  0.00015           (      16 +-  0.00016)
-                  _     18.0002 +-  0.00018           (      18 +-  0.00018)
-                  _     20.0002 +-   0.0002           (      20 +-   0.0002)
-
-   E1/E0 = 2.01801 +- 0.0219085   E2/E0 = 3.27385 +- 0.307128
-   a1/a0 = 1.06515 +- 0.0772791   a2/a0 = 1.4485 +- 0.574717
+.. literalinclude:: eg2.out
 
 This looks quite a bit like what we obtained before, except that now there 
 are 15 more parameters, one for each ``x``, and also now all results are
@@ -878,30 +675,10 @@ introduce these correlations::
        return prior
    
 Running the code as before, but now with the correlated prior in place, we
-obtain the following fit with ``nexp=7`` terms::
+obtain the following fit with ``nexp=7`` terms:
+
+.. literalinclude:: eg3.out
    
-   ************************************* nexp = 7
-   Least Square Fit:
-     chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = -66.989    itns = 3
-
-   Parameters:
-                 a_    0.401798 +-    0.004           (     0.5 +-      0.5)
-                  _    0.401633 +-   0.0041           (     0.5 +-      0.5)
-                  _    0.403819 +-    0.012           (     0.5 +-      0.5)
-                  _    0.394153 +-    0.045           (     0.5 +-      0.5)
-                  _    0.398183 +-     0.15           (     0.5 +-      0.5)
-                  _    0.504394 +-     0.31           (     0.5 +-      0.5)
-                  _    0.515886 +-     0.42           (     0.5 +-      0.5)
-                 E_    0.900318 +-  0.00051           (       1 +-      0.5)
-                  _     1.80009 +-   0.0011           (     1.9 +-      0.5)
-                  _     2.70085 +-     0.01           (     2.8 +-      0.5)
-                  _      3.6008 +-    0.014           (     3.7 +-      0.5)
-                  _     4.50084 +-    0.017           (     4.6 +-      0.5)
-                  _     5.40084 +-     0.02           (     5.5 +-      0.5)
-                  _     6.30084 +-    0.022           (     6.4 +-      0.5)
-
-   E1/E0 = 1.9994 +- 0.0010494   E2/E0 = 2.99988 +- 0.0110833
-   a1/a0 = 0.999589 +- 0.00250023   a2/a0 = 1.00503 +- 0.0279927
    
 The results are similar to before for the leading parameters, but
 substantially more accurate for parameters describing the second and later
@@ -977,30 +754,9 @@ to parameter ``z``. Function :func:`lsqfit.empbayes_fit` does fits for
 different values of ``z`` and selects the ``z`` that maximizes ``fit.logGBF``.
 It returns the corresponding fit and the value of ``z``.
 
-This code generates the following output when ``nexp=7``::
+This code generates the following output when ``nexp=7``:
 
-   Least Square Fit:
-     chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = -60.457    itns = 1
-
-   Parameters:
-                 a_    0.402651 +-    0.004           (     0.5 +-    0.095)
-                  _    0.402469 +-   0.0041           (     0.5 +-    0.095)
-                  _    0.407096 +-   0.0079           (     0.5 +-    0.095)
-                  _    0.385447 +-     0.02           (     0.5 +-    0.095)
-                  _    0.430817 +-    0.058           (     0.5 +-    0.095)
-                  _     0.47765 +-    0.074           (     0.5 +-    0.095)
-                  _    0.493185 +-    0.089           (     0.5 +-    0.095)
-                 E_    0.900307 +-   0.0005           (       1 +-      0.5)
-                  _     1.80002 +-    0.001           (     1.9 +-      0.5)
-                  _     2.70233 +-   0.0085           (     2.8 +-      0.5)
-                  _     3.60274 +-    0.013           (     3.7 +-      0.5)
-                  _      4.5033 +-    0.017           (     4.6 +-      0.5)
-                  _     5.40351 +-    0.019           (     5.5 +-      0.5)
-                  _     6.30355 +-    0.022           (     6.4 +-      0.5)
-
-   E1/E0 = 1.99934 +- 0.00100622   E2/E0 = 3.00156 +- 0.00926136
-   a1/a0 = 0.999549 +- 0.00245793   a2/a0 = 1.01104 +- 0.0165249
-   prior['a'] = 0.5 +- 0.0950546
+.. literalinclude:: eg4a.out
 
 Reducing the width of the ``prior['a']``\s from ``0.5`` to ``0.1`` increased
 ``logGBF`` from ``-67.0`` to ``-60.5``. The error for ``a2/a0`` is 40%
@@ -1054,22 +810,9 @@ an error-budget table::
    print(fit.fmt_values(outputs))
    print(fit.fmt_errorbudget(outputs, inputs))
 
-This gives the following output::
+This gives the following output:
 
-   Values:
-                 E2/E0: 3.000(11)           
-                 E1/E0: 1.999(1)            
-                 a2/a0: 1.005(28)           
-                 a1/a0: 1.000(3)            
-
-   Partial % Errors:
-                            E2/E0     E1/E0     a2/a0     a1/a0
-   ------------------------------------------------------------
-                     a:      0.09      0.01      1.07      0.02
-                     y:      0.07      0.05      0.78      0.19
-                     E:      0.35      0.02      2.45      0.16
-   ------------------------------------------------------------
-                 total:      0.37      0.05      2.79      0.25
+.. literalinclude:: eg4b.out
    
 This table suggests, for example, that reducing the statistical errors in
 the input ``y`` data would significantly reduce the final errors in
@@ -1166,110 +909,9 @@ correct the exact data, which comes from a new ``make_data``::
    
 Running the new code produces the following output, where again ``nexp`` is
 the number of exponentials kept in the fit (and ``20-nexp`` is the number
-pushed into the modified dependent variable ``ymod``)::
+pushed into the modified dependent variable ``ymod``):
 
-   ************************************* nexp = 1
-   Least Square Fit (y correlated with prior):
-     chi2/dof [dof] = 0.056 [10]    Q = 1    logGBF = -16.24    itns = 5
-
-   Parameters:
-                 a_    0.400845 +-  0.00094           (     0.5 +-      0.5)
-                 E_    0.900324 +-   0.0004           (       1 +-      0.5)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.14803     0.16292     0.10692
-            1.2     0.12825     0.13607    0.074202
-            1.4     0.10957     0.11365    0.051975
-            1.6    0.092853    0.094922    0.036625
-            1.8    0.078298     0.07928     0.02591
-              2    0.065813    0.066216    0.018378
-            2.2      0.0552    0.055305    0.013057
-            2.4    0.046231    0.046191   0.0092867
-            2.6     0.03868     0.03858   0.0066089
-            2.8    0.032339    0.032223   0.0047043
-
-
-   ************************************* nexp = 2
-   Least Square Fit (y correlated with prior):
-     chi2/dof [dof] = 0.056 [10]    Q = 1    logGBF = -35.133    itns = 4
-
-   Parameters:
-                 a_    0.399968 +-  0.00079           (     0.5 +-      0.5)
-                  _    0.400415 +-    0.026           (     0.5 +-      0.5)
-                 E_    0.899986 +-  0.00031           (       1 +-      0.5)
-                  _     1.79983 +-     0.02           (     1.9 +-     0.54)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.22281     0.22882    0.044661
-            1.2     0.17939     0.18202    0.025977
-            1.4     0.14454     0.14568    0.015244
-            1.6     0.11677     0.11725    0.008997
-            1.8    0.094655    0.094842   0.0053294
-              2    0.076998    0.077061   0.0031644
-            2.2    0.062849    0.062861   0.0018817
-            2.4    0.051462    0.051455   0.0011199
-            2.6    0.042257    0.042246  0.00066679
-            2.8    0.034786    0.034776  0.00039704
-
-
-   ************************************* nexp = 3
-   Least Square Fit (y correlated with prior):
-     chi2/dof [dof] = 0.058 [10]    Q = 1    logGBF = -50.219    itns = 4
-
-   Parameters:
-                 a_    0.399938 +-  0.00082           (     0.5 +-      0.5)
-                  _    0.398106 +-    0.034           (     0.5 +-      0.5)
-                  _    0.401049 +-    0.098           (     0.5 +-      0.5)
-                 E_    0.899975 +-  0.00032           (       1 +-      0.5)
-                  _     1.79848 +-    0.024           (     1.9 +-     0.54)
-                  _     2.69343 +-      0.2           (     2.8 +-     0.57)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.25322     0.25564     0.01863
-            1.2     0.19676     0.19765   0.0090783
-            1.4     0.15446     0.15478   0.0044619
-            1.6     0.12244     0.12255   0.0022047
-            1.8    0.097892     0.09793   0.0010932
-              2    0.078847    0.078859  0.00054319
-            2.2    0.063905    0.063908  0.00027026
-            2.4    0.052065    0.052065  0.00013456
-            2.6    0.042602    0.042601   6.701e-05
-            2.8    0.034983    0.034982   3.337e-05
-
-
-   ************************************* nexp = 4
-   Least Square Fit (input data correlated with prior):
-     chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = -67.447    itns = 5
-
-   Parameters:
-                 a_    0.399937 +-  0.00077           (     0.5 +-      0.5)
-                  _    0.398315 +-    0.032           (     0.5 +-      0.5)
-                  _    0.401742 +-      0.1           (     0.5 +-      0.5)
-                  _    0.403269 +-     0.15           (     0.5 +-      0.5)
-                 E_    0.899975 +-   0.0003           (       1 +-      0.5)
-                  _     1.79859 +-    0.023           (     1.9 +-     0.54)
-                  _     2.69522 +-     0.19           (     2.8 +-     0.57)
-                  _     3.60827 +-     0.28           (     3.7 +-     0.61)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.26558      0.2666   0.0077614
-            1.2     0.20266     0.20297   0.0031677
-            1.4     0.15728     0.15737   0.0013035
-            1.6     0.12378     0.12381  0.00053913
-            1.8    0.098532     0.09854  0.00022369
-              2    0.079153    0.079155  9.2995e-05
-            2.2    0.064051    0.064051  3.8703e-05
-            2.4    0.052134    0.052134  1.6117e-05
-            2.6    0.042635    0.042635   6.712e-06
-            2.8    0.034999    0.034998  2.7948e-06
+.. literalinclude:: eg5a.out
 
 Here we use ``fit.format(10)`` to print out a table of ``x`` and 
 ``y`` (actually ``ymod``) values, together with the value of the 
@@ -1321,38 +963,9 @@ SVD Cuts and Roundoff Error
 -----------------------------
 We did not display values for ``E1/E0``, ``a1/a0`` ... in the example in 
 the previous section. Had we done so a problem would have been immediately
-apparent: for example, ::
+apparent: for example, 
 
-   ************************************* nexp = 4
-   Least Square Fit (input data correlated with prior):
-     chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = -67.447    itns = 5
-
-   Parameters:
-                 a_    0.399937 +-  0.00077           (     0.5 +-      0.5)
-                  _    0.398315 +-    0.032           (     0.5 +-      0.5)
-                  _    0.401742 +-      0.1           (     0.5 +-      0.5)
-                  _    0.403269 +-     0.15           (     0.5 +-      0.5)
-                 E_    0.899975 +-   0.0003           (       1 +-      0.5)
-                  _     1.79859 +-    0.023           (     1.9 +-     0.54)
-                  _     2.69522 +-     0.19           (     2.8 +-     0.57)
-                  _     3.60827 +-     0.28           (     3.7 +-     0.61)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.26558      0.2666   0.0077614
-            1.2     0.20266     0.20297   0.0031677
-            1.4     0.15728     0.15737   0.0013035
-            1.6     0.12378     0.12381  0.00053913
-            1.8    0.098532     0.09854  0.00022369
-              2    0.079153    0.079155  9.2995e-05
-            2.2    0.064051    0.064051  3.8703e-05
-            2.4    0.052134    0.052134  1.6117e-05
-            2.6    0.042635    0.042635   6.712e-06
-            2.8    0.034999    0.034998  2.7948e-06
-
-   E1/E0 = 1.99849 +- 0.154988   E2/E0 = 2.99477 +- 1.65242
-   a1/a0 = 0.995944 +- 0.514388   a2/a0 = 1.00451 +- 2.32754
+.. literalinclude:: eg5b.out
    
 The standard deviations quoted for ``E1/E0``, *etc.* are much too large
 compared with the standard deviations shown for the individual parameters.
@@ -1391,38 +1004,9 @@ less precision in the final results since we are in effect decreasing the
 precision of the input ``y`` data (a conservative move); but numerical
 stability is worth the tradeoff.
 
-Rerunning our fit with ``svdcut=1e-12`` we obtain ::
+Rerunning our fit with ``svdcut=1e-12`` we obtain 
 
-   ************************************* nexp = 4
-   Least Square Fit (input data correlated with prior):
-     chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = -55.494    itns = 3
-
-   Parameters:
-                 a_    0.400162 +-   0.0013           (     0.5 +-      0.5)
-                  _    0.404161 +-    0.039           (     0.5 +-      0.5)
-                  _    0.404572 +-     0.11           (     0.5 +-      0.5)
-                  _    0.408034 +-     0.16           (     0.5 +-      0.5)
-                 E_    0.900066 +-  0.00052           (       1 +-      0.5)
-                  _     1.80348 +-    0.031           (     1.9 +-     0.54)
-                  _     2.71749 +-     0.21           (     2.8 +-     0.57)
-                  _     3.62392 +-     0.29           (     3.7 +-     0.61)
-
-   Fit:
-            x_i         y_i      f(x_i)        dy_i
-   ------------------------------------------------
-              1     0.26558     0.26686   0.0077614
-            1.2     0.20266     0.20309   0.0031677
-            1.4     0.15728     0.15742   0.0013035
-            1.6     0.12378     0.12383  0.00053913
-            1.8    0.098532     0.09855  0.00022369
-              2    0.079153    0.079159  9.2995e-05
-            2.2    0.064051    0.064053  3.8703e-05
-            2.4    0.052134    0.052135  1.6117e-05
-            2.6    0.042635    0.042635   6.712e-06
-            2.8    0.034999    0.034999  2.7948e-06
-
-   E1/E0 = 2.00372 +- 0.0330005   E2/E0 = 3.01921 +- 0.234244
-   a1/a0 = 1.00999 +- 0.0955902   a2/a0 = 1.01102 +- 0.269968
+.. literalinclude:: eg5c.out
 
 and consistency has been restored. Note that taking ``svdcut=-1e-12`` (with a
 minus sign) causes the problematic modes to be dropped. This is a more
@@ -1447,22 +1031,9 @@ code, ::
    print(fit.fmt_values(outputs))
    print(fit.fmt_errorbudget(outputs, inputs))
 
-which gives::
+which gives:
 
-   Values:
-                 E2/E0: 3.019(234)          
-                 E1/E0: 2.004(33)           
-                 a2/a0: 1.011(270)          
-                 a1/a0: 1.010(96)           
-
-   Partial % Errors:
-                            E2/E0     E1/E0     a2/a0     a1/a0
-   ------------------------------------------------------------
-                     a:      2.53      0.66     10.71      3.47
-                   svd:      1.30      0.49      1.81      2.46
-                     E:      7.22      1.43     24.39      8.45
-   ------------------------------------------------------------
-                 total:      7.76      1.65     26.70      9.46
+.. literalinclude:: eg5d.out
    
 Here the contribution from the *svd* cut is rather modest.
 
@@ -1502,26 +1073,25 @@ the ``main()`` subroutine::
        outputs['E2/E0'].append(E[2]/E[0])
        outputs['a1/a0'].append(a[1]/a[0])
        outputs['a2/a0'].append(a[2]/a[0])
-   # extract means and standard deviations from the bootstrap output
-   from numpy import mean, std
-   for k in outputs:
-       outputs[k] = gv.gvar(np.mean(outputs[k]), np.std(outputs[k]))
+       outputs['E1'].append(E[1])
+       outputs['a1'].append(a[1])
+   # extract "means" and "standard deviations" from the bootstrap output;
+   # print using .fmt() to create compact representation of GVars
+   outputs = gv.dataset.avg_data(outputs,bstrap=True)
    print('Bootstrap results:')
-   print('E1/E0 =', outputs['E1/E0'], '  E2/E1 =', outputs['E2/E0'])
-   print('a1/a0 =', outputs['a1/a0'], '  a2/a0 =', outputs['a2/a0'])
+   print('E1/E0 =', outputs['E1/E0'].fmt(), '  E2/E1 =', outputs['E2/E0'].fmt())
+   print('a1/a0 =', outputs['a1/a0'].fmt(), '  a2/a0 =', outputs['a2/a0'].fmt())
+   print('E1 =', outputs['E1'].fmt(), '  a1 =', outputs['a1'].fmt())
    
 The results are consistent with the results obtained directly from the fit
-(when using ``svdcut=1e-12``)::
+(when using ``svdcut=1e-12``):
 
-   Bootstrap results:
-   E1/E0 = 2.00618 +- 0.027411   E2/E1 = 3.05219 +- 0.195792
-   a1/a0 = 1.01777 +- 0.0755551   a2/a0 = 1.06962 +- 0.275993
+.. literalinclude:: eg5e.out
 
 In particular, the bootstrap analysis confirms our previous error estimates
-(to within 10-20%, since ``Nbs=40``). When ``Nbs`` is small, it is often
-safer to use the median instead of the mean as the estimator (this can be 
-done by changing the line ``outputs[k] = gv.gvar(np.mean(...`` above to 
-``outputs[k] = gvar.dataset.avg_data(outputs[k], bstrap=True)``).
+(to within 10-30%, since ``Nbs=40``). When ``Nbs`` is small, it is often
+safer to use the median instead of the mean as the estimator, which is 
+what ``gv.dataset.avg_data`` does because flag ``bstrap`` is set to ``True``. 
 
 
 Troubleshooting
@@ -1532,7 +1102,7 @@ such as::
    Traceback (most recent call last):
      File "<stdin>", line 10, in <module>
        fit = nonlinear_fit(data=(None, y), prior=prior, fcn=f)
-     File "/Users/gpl/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
+     File "/Users/xxx/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
        fit = multifit(p0, nf, self._chiv, **self.fitterargs)
      File "_utilities.pyx", line 303, in lsqfit._utilities.multifit.__init__ (src/lsqfit/_utilities.c:2668)
    RuntimeError: Python error in fit function: 33

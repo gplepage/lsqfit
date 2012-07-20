@@ -245,13 +245,13 @@ nonlinear_fit Objects
    later use) and loading parameter values, and checking for roundoff
    errors in the final error estimates:
 
-   .. automethod:: format(maxline=0)
+   .. automethod:: format(maxline=0, pstyle='v')
    
-   .. automethod:: fmt_errorbudget(outputs,inputs,ndigit=2,percent=True)
+   .. automethod:: fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True)
    
-   .. automethod:: fmt_values(outputs,ndigit=3)
+   .. automethod:: fmt_values(outputs, ndecimal=None)
       
-   .. automethod:: bootstrap_iter(n=None,datalist=None)
+   .. automethod:: bootstrap_iter(n=None, datalist=None)
    
    .. automethod:: dump_p(filename)
    
