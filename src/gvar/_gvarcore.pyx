@@ -319,7 +319,7 @@ cdef class GVar:
         ## special cases ##
         if dv == float('inf'):
             ## infinite sdev ##
-            if ndecimal > 0:
+            if ndecimal is not None and ndecimal > 0:
                 ft = "%%.%df" % int(ndecimal)
                 return (ft % v) + ' +- inf'
             else:

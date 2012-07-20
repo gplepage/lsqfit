@@ -27,7 +27,7 @@ import gvar as gv
 from lsqfit import *
 import lsqfit
 
-FAST = False         # skips embayes and bootstrap tests
+FAST = True         # skips embayes and bootstrap tests
 
 PRINT_FIT = False
 
@@ -171,6 +171,58 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.label = ("nonlinear_fit prior-dominated" 
                 if yf>1 else "nonlinear_fit data-dominated")
             self.t_basicfit(yf,pf,p0file)
+    ##
+    def test_format(self):
+        """ fit.format """
+        ## case 1 - y and prior dictionaries ##
+        y = dict(a=gv.gvar(1.5,1), b=gv.gvar(0.8,0.5))
+        prior = dict(p=gv.gvar(0,2))
+        p0 = gv.mean(prior)
+        def f(p): 
+            return dict(a=p['p'], b=p['p'])
+        ##
+        fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15)
+        out = "\n".join([
+            'Least Square Fit:', 
+            '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
+            '', 
+            'Parameters:', 
+            '              p    0.90 (44)     [  0.0 (2.0) ]', 
+            '', 
+            'Fit:', 
+            '      key       y[key]    f(p)[key]', 
+            '-----------------------------------', 
+            '        a    1.5 (1.0)    0.90 (44)', 
+            '        b    0.80 (50)    0.90 (44)',
+            '',
+            'Settings:', 
+            '  svdcut = (1e-15,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0', 
+            ''])
+        self.assertEqual(out, fit.format(100))
+        self.assertEqual(out, fit.format(100, pstyle='v'))
+        out = "\n".join([
+            'Least Square Fit:', 
+            '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
+            '', 
+            'Parameters:', 
+            '              p   0.895238 +- 0.436436          [     0 +- 2 ]', 
+            '', 
+            'Settings:', 
+            '  svdcut = (1e-15,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0', 
+            '']) 
+        self.assertEqual(out,fit.format(pstyle="vv"))
+        prior['dummy'] = gv.gvar(10,1)
+        fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15)
+        out = "\n".join([
+            'Least Square Fit:', 
+            '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -1.8235    itns = 2', 
+            '', 
+            'Parameters:', 
+            '              p    0.90 (44)     [  0.0 (2.0) ]', 
+            ''])
+        self.assertEqual(out, fit.format(pstyle='m'))
+        self.assert_gvclose(fit.p['p'], wavg([y['a'],y['b'],prior['p']]))
+        ##
     ##
     def test_unusual_cases(self):
         """ unusual cases """
@@ -641,17 +693,6 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(     #
                 fdata['logdet_prior'],
                 np.log(np.linalg.det(gv.evalcov(prior.flat))))
-            
-        # self.assertEqual(fdata['svdcorrection'],[None,None])
-        # self.assertEqual(set(fdata.keys()), set(['y','prior',
-        #                  'svdcorrection', 'logdet_prior']))
-        # self.assert_arraysequal(fdata['y'].mean,[1,10])
-        # self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])
-        # self.assert_arraysequal(fdata['prior'].mean,[1,1])
-        # self.assert_arraysequal(fdata['prior'].wgt,[0.5,0.25])
-        # self.assertAlmostEqual(     #
-        #     fdata['logdet_prior'],
-        #     np.log(np.linalg.det(gv.evalcov(prior.flat))))
         ##
         ## others: svdcut= # or (#,#); svdnum too?; 
         ## case ?? - wrong length data tuple ##
