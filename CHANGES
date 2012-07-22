@@ -1,22 +1,35 @@
-Version 4.2.3 -- (not yet released)
-===================================
+Version 4.2.3 -- 2012-07-22
+===========================
+This version updates printing of GVars and of nonlinear_fits:
+
 - Enhanced the formatting capabilities of GVar.fmt. If g is a GVar, then
   gvar.fmt() will create a string representation of g that shows the
   leading 2 digits of the error (used to be 1). The new code handles
   special cases much more effectively. For example very large or small
-  numbers are handled using exponential notation (eg, 1.23(4)e+10 meaning
+  numbers are represented using exponential notation (eg, 1.23(4)e+10 meaning
   1.23e+10 +- 4e+8). Also removed some bugs in the conversion from strings
-  to GVars (eg, couldn't handle "-.2345(1)").
+  to GVars (eg, couldn't handle "-.2345(1)"). Added new unittests for fmt
+  (in test_gvar.py).
 
-- Changed the format of the fit report produced by nonlinear_fit.format.
-  New format is more compact. Also can be further streamlined using new
-  option pstyle='m'.
+- Changed the format of the fit report produced by
+  nonlinear_fit.format(..). New format is more compact and more
+  informative. In particular, indices for parameter arrays are included in
+  the output to make finding a particular element easier. Also include
+  errors on the fit values when data and fit are printed out. Output can be
+  streamlined using new option pstyle='m'. (Setting pstyle='vv' gives
+  output a lot like the old format.) Added unittests for format(..) (in
+  test_lsqfit.py).
 
-- Added new utility function gvar.fmt(g) which formats every GVar in
-  GVar/array/dictionary g.
+- Added new utility function gvar.fmt(g..) which formats every GVar in
+  GVar/array/dictionary g (using x.fmt(..) for every GVar x in g).
+
+- Scripts eg0.py ... eg5.py in doc/source now generate program output in
+  files, with names like eg0.out and eg5b.out, that are read directly into
+  the documentation. This simplifies the building of the documentation as
+  changes are made to reporting functions (see above).
 
 Version 4.2.2 -- 2012-06-07
-=========================
+===========================
 This version involves significant internal change relative to the last
 version, much of which will be invisible to most users. Significant pieces
 of lsqfit and gvar were refactored for simplicity, with replacements for a

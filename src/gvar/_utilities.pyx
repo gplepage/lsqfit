@@ -127,7 +127,7 @@ def fmt(g, ndecimal=None, sep='', d=None):
         g = numpy.asarray(g)
     buf = []
     for i,gi in enumerate(g.flat):
-        buf.append(gi.fmt(d=d,sep=sep))
+        buf.append(gi.fmt(ndecimal=ndecimal,sep=sep))
     return BufferDict(g,buf=buf) if g.shape is None else numpy.reshape(buf,g.shape)
 def sdev(g):
     """ Extract standard deviations from :class:`gvar.GVar`\s in ``g``.

@@ -203,14 +203,14 @@ class BufferDict(collections.MutableMapping):
         ``self``, in which case a ``ValueError`` is raised.
         """
         if k in self:
-            raise ValueError("Key %s already used."%k)
+            raise ValueError("Key %s already used." % str(k))
         else:
             self[k] = v
     ##
     def __getitem__(self,k):
         """ Return piece of buffer corresponding to key ``k``. """
         if k not in self._data:
-            raise KeyError("undefined key: %s" % k)
+            raise KeyError("undefined key: %s" % str(k))
         if isinstance(self._buf,list):
             self._buf = numpy.array(self._buf)
         d = self._data[k]
@@ -288,7 +288,7 @@ class BufferDict(collections.MutableMapping):
         """ Copy of buffer array. """
         return numpy.array(self._buf)
     ##
-    def _getbuf(self):      # obsolete --- for backwards compatibility
+    def _getbuf(self):  
         return self._buf
     ##
     def _setbuf(self,buf):
