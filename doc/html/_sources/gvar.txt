@@ -551,7 +551,7 @@ scalars) that supports Python pickling:
    
    .. attribute:: buf
    
-      The buffer array. Allows direct access to the buffer: for example,
+      The (1d) buffer array. Allows direct access to the buffer: for example,
       ``self.buf[i] = new_val`` sets the value of the ``i-th`` element in
       the buffer to value ``new_val``.  Setting ``self.buf = nbuf``
       replaces the old buffer by new buffer ``nbuf``. This only works if
