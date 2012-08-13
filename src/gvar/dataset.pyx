@@ -517,7 +517,10 @@ class Dataset(dict):
         if len(args)==2:
             ## append(k,m) ##
             k = args[0]
-            d = numpy.asarray(args[1],float)
+            try:
+                d = numpy.asarray(args[1],float)
+            except ValueError:
+                raise ValueError("Can't convert data to an array.")
             if d.shape==():
                 d = d.flat[0]
             if k not in self:
