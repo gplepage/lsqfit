@@ -1,3 +1,29 @@
+Version 4.2.4 -- 2012-08-18
+===========================
+This update is to fix a bug. Since version 4.2.2 lsqfit has been able to 
+deal correctly with statistical correlations between priors and the input
+fit data. The code checks automatically for such correlations, and modifies
+the definition of chi**2 appropriately if it finds correlations. There was
+a bug in part of the code that checks for correlations, causing it to miss
+certain situations. That bug is fixed in this update. Also 
+
+Other changes:
+
+- Renamed gvar.orthogonal to gvar.uncorrelated, which is more intelligible
+  (and also now has correct code).
+
+- gvar.dataset.autocorr() is now done properly (with FFTs) and so can
+  handle large datasets. It now computes autocorrelations for all
+  intervals.
+
+- lsqfit now issues deprecation warnings if the old classes GPrior,
+  CGPrior, or LSQFit are used. These have been superseded in recent
+  versions (by gvar.BufferDict and lsqfit.nonlinear_fit), and the old names
+  have been attached to the new constructs, but the correspondence between
+  old and new is only approximate --- hence the warning.
+
+- Documentation improvements in the Tutorial.
+
 Version 4.2.3 -- 2012-07-22
 ===========================
 This version updates printing of GVars and of nonlinear_fits:

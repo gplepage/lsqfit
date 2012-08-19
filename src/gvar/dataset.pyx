@@ -204,68 +204,58 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     ##
 ##
  
-def autocorr(data,ncorr=None):
+def autocorr(data):
     """ Compute autocorrelation in random data. 
         
     ``data`` is a list of random numbers or random arrays, or a dictionary
     of lists of random numbers/arrays. 
         
-    When ``data`` is a list of random numbers, ``autocorr(data,ncorr)``
-    returns an array of length ``ncorr`` where ``autocorr(data,ncorr)[i]``
-    is the correlation between elements in ``data`` that are separated by
-    distance ``i`` in the list: for example, ::
+    When ``data`` is a list of random numbers, ``autocorr(data)`` returns
+    an array where ``autocorr(data)[i]`` is the correlation between
+    elements in ``data`` that are separated by distance ``i`` in the list:
+    for example, ::
         
         >>> print(autocorr([2,-2,2,-2,2,-2]))
         [ 1. -1.  1. -1.  1. -1.]
             
     shows perfect correlation between elements separated by an even
     interval in the list, and perfect anticorrelation between elements by
-    an odd interval. Correlations are computed only for ``i < ncorr``
-    unless ``ncorr`` is ``None``, in which case all possible separations
-    are analyzed.
+    an odd interval.
         
-    ``autocorr(data,ncorr)`` returns a list of arrays of autocorrelation
+    ``autocorr(data)`` returns a list of arrays of autocorrelation
     coefficients when ``data`` is a list of random arrays. Again
-    ``autocorr(data,ncorr)[i]`` gives the autocorrelations for ``data``
-    elements separated by distance ``i`` in the list. Similarly
-    ``autocorr(data,ncorr)`` returns a dictionary when ``data`` is a
-    dictionary.
+    ``autocorr(data)[i]`` gives the autocorrelations for ``data`` elements
+    separated by distance ``i`` in the list. Similarly ``autocorr(data)``
+    returns a dictionary when ``data`` is a dictionary.
         
-    The computational cost of running ``autocorr`` grows linearly with
-    ``ncorr`` and, obviously, with the size of ``data``.
+    ``autocorr(data)`` uses FFTs to compute the autocorrelations; the cost
+    of computing the autocorrelations should grow roughly linearly with the
+    number of random samples in ``data`` (up to logarithms).
     """
     if hasattr(data,'keys'):
         ## data is a dictionary ## 
         ans = dict()
         for k in data:
-            ans[k] = autocorr(data[k],ncorr=ncorr)
+            ans[k] = autocorr(data[k])
         ##
         return ans
     ## data is an array ## 
     if numpy.ndim(data) < 1 or len(data) < 2:
         raise ValueError("Need at least two samples to compute autocorr.")
-    if ncorr is not None and ncorr < 1:
-        return None
     ## force data into a numpy array of floats ##
     try:
         data = numpy.asarray(data,float)
     except ValueError:
         raise ValueError("Inconsistent array shapes or data types in data.")
-    ##    
-    var = numpy.var(data,axis=0)
-    mean = numpy.mean(data,axis=0)
-    ncorr = min(ncorr,len(data)) if ncorr is not None else len(data)
-    if data.ndim == 1:
-        delta = data - mean
-        ans = numpy.zeros(ncorr,float)
-    else:
-        delta = data - mean[numpy.newaxis,...]
-        ans = numpy.zeros((ncorr,)+data[0].shape, float)
-    for i in range(ncorr):
-        delta_p = delta[:-i] if i>0 else delta
-        delta_m = delta[i:]
-        ans[i] = numpy.mean(delta_p*delta_m,axis=0)/var
-    return ans
+    ##  
+    datat = data.transpose()
+    ans = numpy.zeros(datat.shape,float)
+    idxlist = numpy.ndindex(datat.shape[:-1])  
+    for idx in numpy.ndindex(datat.shape[:-1]):
+        f = datat[idx]
+        dft = numpy.fft.fft(f-f.mean())
+        ans[idx] = numpy.fft.ifft(dft*dft.conjugate()).real/f.var()/len(f)
+    return ans.transpose()
     ##       
 ##
     

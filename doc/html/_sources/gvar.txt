@@ -458,6 +458,8 @@ matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
 
 .. autofunction:: gvar.evalcov(g)
 
+.. autofunction:: gvar.uncorrelated(g1, g2)
+
 
 The following function creates an iterator that generates random arrays
 from the distribution defined by array (or dictionary) ``g`` of |GVar|\s. 

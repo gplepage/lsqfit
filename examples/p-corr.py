@@ -46,7 +46,7 @@ def make_data():                    # make x,y fit data
     return x,y
 
 def make_prior(nexp):               # make priors for fit parameters
-    prior = lsqfit.GPrior()         # Gaussian prior -- dictionary-like
+    prior = gv.BufferDict()         # dictionary-like
     prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
     de = [gv.gvar(0.9,0.01) for i in range(nexp)]
     de[0] = gv.gvar(1,0.5)    

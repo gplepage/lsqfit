@@ -747,7 +747,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
     ##
     if prior is not None:
         ## have prior ##
-        if data_is_3tuple or _gvar.orthogonal(y.flat, prior.flat):
+        if data_is_3tuple or _gvar.uncorrelated(y.flat, prior.flat):
             ## y uncorrelated with prior ##
             y = _apply_svd('y', y)
             prior = _apply_svd('prior', prior)
@@ -980,10 +980,24 @@ def _build_chiv(fdata, fcn):
 ##
 
 ## legacy definitions (obsolete) ##
+class _legacy_constructor:
+    def __init__(self,cl,msg):
+        self.cl = cl
+        self.msg = msg
+    ##
+    def __call__(self,*args,**kargs):
+        warnings.warn(self.msg, UserWarning, stacklevel=2)
+        return self.cl(*args,**kargs)
+    ##
+##
+    
 BufferDict = _gvar.BufferDict
-CGPrior = _gvar.BufferDict           
-GPrior = _gvar.BufferDict   
-LSQFit = nonlinear_fit
+CGPrior = _legacy_constructor(
+    _gvar.BufferDict,"CGPrior is deprecated; use gvar.BufferDict instead.")           
+GPrior = _legacy_constructor(
+    _gvar.BufferDict,"GPrior is deprecated; use gvar.BufferDict instead.")   
+LSQFit = _legacy_constructor(
+    nonlinear_fit,"LSQFit is deprecated; use lsqfit.nonlinear_fit instead.")
 ##
 
        

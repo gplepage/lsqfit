@@ -637,24 +637,30 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(sdev(gvar(1,2)),2.)
         self.assertEqual(var(gvar(1,2)),4.)
     ##
-    def test_orthogonal(self):
+    def test_uncorrelated(self):
+        """ uncorrelated(g1, g2) """
         a = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
         b = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
         c = np.array([gvar(1,2),gvar(3,4),gvar(5,6)])
         d = np.array([gvar(1,2),gvar(3,4),gvar(5,6)])
-        self.assertTrue(orthogonal(a,b))
-        self.assertTrue(not orthogonal(a,a))
-        self.assertTrue(orthogonal(a['x'],a['y']))
-        self.assertTrue(not orthogonal(a['x'],a))
-        self.assertTrue(orthogonal(a,c))
-        self.assertTrue(orthogonal(c,a))
-        self.assertTrue(orthogonal(c,d))
-        self.assertTrue(not orthogonal(c,c))
+        self.assertTrue(uncorrelated(a,b))
+        self.assertTrue(not uncorrelated(a,a))
+        self.assertTrue(uncorrelated(a['x'],a['y']))
+        self.assertTrue(not uncorrelated(a['x'],a))
+        self.assertTrue(uncorrelated(a,c))
+        self.assertTrue(uncorrelated(c,a))
+        self.assertTrue(uncorrelated(c,d))
+        self.assertTrue(not uncorrelated(c,c))
         a['x'] += b['x']
-        self.assertTrue(not orthogonal(a,b))
+        self.assertTrue(not uncorrelated(a,b))
         d += c[0]
-        self.assertTrue(not orthogonal(c,d))
-        self.assertTrue(not orthogonal(a,b['x']))
+        self.assertTrue(not uncorrelated(c,d))
+        self.assertTrue(not uncorrelated(a,b['x']))
+        a, b = gvar([1,2],[[1,.1],[.1,4]])
+        c = 2*a
+        self.assertTrue(not uncorrelated(a,c))
+        self.assertTrue(not uncorrelated(b,c))
+        self.assertTrue(not uncorrelated(a,b))
     ##
     def test_evalcov1(self):
         """ evalcov(array) """

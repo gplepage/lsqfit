@@ -235,9 +235,9 @@ fit data. We do this by forming ``y_exact*noise`` where ::
 
    noise = 1 + sum_n=0..99 c[n]*(x/x_max)**n,
    
-Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are gaussian random 
-numbers with means and standard deviations of order ``0.01``. This is easy to
-implement in Python using the :mod:`gvar` module::
+Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are gaussian
+random variable with means and standard deviations of order ``0.01``. This
+is easy to implement in Python using the :mod:`gvar` module::
 
    import gvar as gv
    
@@ -250,9 +250,10 @@ implement in Python using the :mod:`gvar` module::
        y = f_exact(x)*noise
        return x, y
 
-Variable ``cr`` represents a gaussian distribution with mean ``0.0`` and width
-``0.01``, which we use as a random number generator: ``cr()`` is a number
-drawn randomly from the distribution represented by ``cr``::
+Gaussian variable ``cr`` represents a gaussian distribution with mean
+``0.0`` and width ``0.01``, which we use here as a random number generator:
+``cr()`` is a number drawn randomly from the distribution represented by
+``cr``::
 
    >>> print(cr)
    0 +- 0.01
@@ -285,8 +286,8 @@ The diagonal elements of the covariance matrix are the variances of the
 individual ``y``\s; the off-diagonal elements are a measure of the
 correlations ``< (y[i]-<y[i]>) * (y[j]-<y[j]>) >``.
 
-The gaussian deviates ``y[i]`` together with the numbers ``x[i]`` comprise our
-fake data.
+The gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
+our fake data.
 
 
 .. _basic-fits:
@@ -814,12 +815,17 @@ This gives the following output:
 
 .. literalinclude:: eg4b.out
    
-This table suggests, for example, that reducing the statistical errors in
-the input ``y`` data would significantly reduce the final errors in
-``E1/E0`` and ``a1/a0``, but would have only a slight impact on errors in
-``E2/E0`` and ``a2/a0``. In fact a four-fold reduction in the ``y`` errors
-reduces the ``E1/E0`` error to 0.02% (from 0.05%) while leaving the
-``E2/E0`` error at 0.36%.
+This table shows, for example, that the 0.37% uncertainty in ``E2/E0``
+comes from a 0.09% contribution due to ``prior['a']``, a 0.07% contribution
+due to due to statistical errors in the fit data ``y``, and a 0.35%
+contribution due to ``prior['E']``, where, again, the total error is the
+sum in quadrature of the partial errors. This suggests that reducing the
+statistical errors in the input ``y`` data would reduce the error in
+``E2/E0`` only slightly. On the other hand, more accurate ``y`` data should
+significantly reduce the errors in ``E1/E0`` and ``a1/a0``, where ``y`` is
+the dominant source of uncertainty. In fact a four-fold reduction in the
+``y`` errors reduces the ``E1/E0`` error to 0.02% (from 0.05%) while
+leaving the ``E2/E0`` error at 0.36%.
 
 
 ``y`` has No Error Bars
@@ -1038,7 +1044,10 @@ which gives:
 Here the contribution from the *svd* cut is rather modest.
 
 The method :func:`lsqfit.nonlinear_fit.check_roundoff` can be used to check
-for roundoff errors. It generates a warning if roundoff looks to be a problem.
+for roundoff errors by adding the line ``fit.check_roundoff()`` after the
+fit. It generates a warning if roundoff looks to be a problem. This check
+is done automatically if ``debug=True`` is added to argument list of
+:class:`lsqfit.nonlinear_fit`.
 
 
 Bootstrap Error Analysis

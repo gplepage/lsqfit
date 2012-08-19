@@ -187,16 +187,17 @@ class test_dataset(unittest.TestCase,ArrayTests):
         x = gvar(2,0.1)
         a = np.array([x() for i in range(N)])
         a = (a[:-2]+a[1:-1]+a[2:])/3.
-        ac_ex = np.array([1.,0.667,0.333,0,0])
-        ac_a = autocorr(a,5)
+        ac_ex = np.zeros(a.shape,float)
+        ac_ex[:3] = np.array([1.,0.66667,0.33333])
+        ac_a = autocorr(a)
         self.assertLess(numpy.std(ac_a-ac_ex)*2,eps)
         b = np.array([[x(),x()] for i in range(N)])
         b = (b[:-2]+b[1:-1]+b[2:])/3.
         ac_ex = np.array(list(zip(ac_ex,ac_ex)))
-        ac_b = autocorr(b,5)
+        ac_b = autocorr(b)
         self.assertLess(numpy.std(ac_b-ac_ex),eps)
         c = dict(a=a,b=b)
-        ac_c = autocorr(c,5)
+        ac_c = autocorr(c)
         self.assert_arraysequal(ac_c['a'],ac_a)
         self.assert_arraysequal(ac_c['b'],ac_b)
     ##

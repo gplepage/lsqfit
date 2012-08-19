@@ -121,7 +121,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         """ checks means, sdevs, fit.cov, etc in extreme cases """
         ycov = np.array([[2.,.25],[.25,4.]])*yfac
         y = gv.gvar([1.,4.],ycov)
-        pr = GPrior()
+        pr = gv.BufferDict()
         pcov = np.array([[2.,.5],[.5,1.]])*pfac
         pr['p'] = gv.gvar([4.,16.],pcov)
         def fcn(x,p):
@@ -308,7 +308,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                                 for i in range(ny+1)])
             y = (yo[:-1]+yo[1:])/2.             # introduce correlations
             rooty = (rootyo[:-1]+rootyo[1:])/2
-            pr = GPrior()
+            pr = gv.BufferDict()
             pr['rooty'] = rooty
             def fcn(x,p):
                 return p['rooty']**2
@@ -934,7 +934,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         y = [gvar(y(),y.sdev) for i in range(ny)]
         ##
         ## prior ##
-        p = GPrior()
+        p = gv.BufferDict()
         p.add("y",gvar(0.1,1e4))
         p.add("not y",gvar(3.0,0.125))
         ##
@@ -973,7 +973,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         y = [gvar(y(),y.sdev) for i in range(ny)]
         ##
         ## prior ##
-        p = GPrior()
+        p = gv.BufferDict()
         p["y"] = gvar(0.1,1e4)
         p["not y"] = gvar(3.0,0.125)
         ##
