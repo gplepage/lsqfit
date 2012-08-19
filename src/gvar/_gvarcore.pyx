@@ -384,8 +384,11 @@ cdef class GVar:
         """ Compute partial variance due to |GVar|\s in ``args``.
             
         This method computes the part of ``self.var`` due to the |GVar|\s
-        in ``args``. If ``args[i]`` is derived from other |GVar|\s, the
-        variance coming from these is included in the result.
+        in ``args``. If ``args[i]`` is correlated with other |GVar|\s, the
+        variance coming from these is included in the result as well. (This
+        last convention is necessary because variances associated with
+        correlated |GVar|\s cannot be disentangled into contributions
+        corresponding to each variable separately.)
             
         :param args[i]: Variables contributing to the partial variance.
         :type args[i]: |GVar| or array/dictionary of |GVar|\s
@@ -393,6 +396,7 @@ cdef class GVar:
         """
         cdef GVar ai
         cdef svec md
+        cdef smat cov
         cdef numpy.ndarray[numpy.int_t,ndim=1] dmask
         cdef numpy.ndarray[numpy.int_t,ndim=1] md_idx
         cdef numpy.ndarray[numpy.double_t,ndim=1] md_v
@@ -402,8 +406,9 @@ cdef class GVar:
             return 0.0
         dstart = self.d.v[0].i
         dstop = self.d.v[self.d.size-1].i+1
-        ## create a mask = 1 if args[i].der component!=0; 0 otherwise ## 
-        dmask = numpy.zeros(dstop-dstart,int)
+        ## create a mask = 1 if (cov * args[i].der) component!=0; 0 otherwise ## 
+        ## a) collect all indices referenced in args[i].der ##
+        iset = set()
         for a in args:
             if a is None:
                 continue
@@ -417,14 +422,24 @@ cdef class GVar:
                     continue
                 else:
                     assert ai.cov is self.cov,"Incompatible |GVar|\s."
-                for i in range(ai.d.size):
-                    j = ai.d.v[i].i
-                    if j<dstart:
-                        continue
-                    elif j>=dstop:
-                        break
-                    else:
-                        dmask[j-dstart] |= 1
+                iset.update(ai.d.indices())
+        ##
+        ## b) collect indices connected to args[i].der indices by self.cov ##
+        cov = self.cov
+        jset = set()
+        for i in iset:
+            jset.update(cov.rowlist[i].indices())
+        ##
+        ## c) build the mask ##
+        dmask = numpy.zeros(dstop-dstart,int)
+        for j in sorted(jset):
+            if j<dstart:
+                continue
+            elif j>=dstop:
+                break
+            else:
+                dmask[j-dstart] |= 1
+        ##
         ##
         ## create masked derivative vector for self ##
         md_size = 0
@@ -446,8 +461,11 @@ cdef class GVar:
         """ Compute partial standard deviation due to |GVar|\s in ``args``.
             
         This method computes the part of ``self.sdev`` due to the |GVar|\s
-        in ``args``. If ``args[i]`` is derived from other |GVar|\s, the
-        standard deviation coming from these is included in the result.
+        in ``args``. If ``args[i]`` is correlated with other |GVar|\s, the
+        standard deviation coming from these is included in the result as
+        well. (This last convention is necessary because variances
+        associated with correlated |GVar|\s cannot be disentangled into
+        contributions corresponding to each variable separately.)
             
         :param args[i]: Variables contributing to the partial standard
             deviation.

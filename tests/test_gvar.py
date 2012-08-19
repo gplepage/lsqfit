@@ -465,9 +465,11 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         a,b = gvar([1,2],[[4,5],[5,16]])
         z = x+y+2*a+3*b
         self.assertEqual(z.var,x.var+y.var
-                            +np.dot([2.,3.],np.dot(evalcov([a,b]),[2.,3.])))
+                         +np.dot([2.,3.],np.dot(evalcov([a,b]),[2.,3.])))
         self.assertEqual(z.partialvar(x,y),x.var+y.var)
-        self.assertEqual(z.partialvar(x,a),x.var+4*a.var)
+        self.assertEqual(z.partialvar(x,a),
+                         x.var+np.dot([2.,3.],np.dot(evalcov([a,b]),[2.,3.])))
+        self.assertEqual(z.partialvar(a),z.partialvar(a))
         ##
         ## test different arg types, fmt_errorbudget, fmt_values ##
         s = gvar(1,2)

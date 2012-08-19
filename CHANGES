@@ -12,6 +12,12 @@ Other changes:
 - Renamed gvar.orthogonal to gvar.uncorrelated, which is more intelligible
   (and also now has correct code).
 
+- Fixed bug in gvar.GVar.partialvar (and therefore also
+  gvar.fmt_errorbudget). The partial variance due to some GVar g should
+  include the contributions from all other GVars that are statistically
+  correlated with g. This previous code missed correlated but unreferenced
+  variables that should have been included automatically. 
+
 - gvar.dataset.autocorr() is now done properly (with FFTs) and so can
   handle large datasets. It now computes autocorrelations for all
   intervals.

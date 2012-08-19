@@ -129,6 +129,7 @@ def fmt(g, ndecimal=None, sep='', d=None):
     for i,gi in enumerate(g.flat):
         buf.append(gi.fmt(ndecimal=ndecimal,sep=sep))
     return BufferDict(g,buf=buf) if g.shape is None else numpy.reshape(buf,g.shape)
+##
 def sdev(g):
     """ Extract standard deviations from :class:`gvar.GVar`\s in ``g``.
         
@@ -339,6 +340,16 @@ def fmt_values(outputs, ndecimal=None, ndigit=None):
 ##
 def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
+       
+    For each output ``outputs[ko]``, ``fmt_errorbudget`` computes the
+    contributions to ``outputs[ko]``'s standard deviation coming from the
+    |GVar|\s collected in ``inputs[ki]``. This is done for each key
+    combination ``(ko,ki)`` and the results are tabulated with columns and
+    rows labeled by ``ko`` and ``ki``, respectively. If a |GVar| in
+    ``inputs[ki]`` is correlated with other |GVar|\s, the contribution from
+    the others is included in the ``ki`` contribution as well (since
+    contributions from correlated |GVar|\s cannot be resolved). The table
+    is returned as a string.
         
     :param outputs: Dictionary of |GVar|\s for which an error budget 
         is computed.

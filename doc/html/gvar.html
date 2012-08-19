@@ -684,6 +684,15 @@ the errors in a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar
 <dt id="gvar.fmt_errorbudget">
 <tt class="descclassname">gvar.</tt><tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em><big>)</big><a class="headerlink" href="#gvar.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate error budget for <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</p>
+<p>For each output <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>, <cite>fmt_errorbudget</cite> computes the
+contributions to <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>&#8216;s standard deviation coming from the
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s collected in <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>. This is done for each key
+combination <tt class="docutils literal"><span class="pre">(ko,ki)</span></tt> and the results are tabulated with columns and
+rows labeled by <tt class="docutils literal"><span class="pre">ko</span></tt> and <tt class="docutils literal"><span class="pre">ki</span></tt>, respectively. If a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in
+<tt class="docutils literal"><span class="pre">inputs[ki]</span></tt> is correlated with other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the contribution from
+the others is included in the <tt class="docutils literal"><span class="pre">ki</span></tt> contribution as well (since
+contributions from correlated <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be resolved). The table
+is returned as a string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -953,8 +962,11 @@ or standard deviation coming from other <a class="reference internal" href="#gva
 <tt class="descname">partialvar</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#gvar.GVar.partialvar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute partial variance due to <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">args</span></tt>.</p>
 <p>This method computes the part of <tt class="docutils literal"><span class="pre">self.var</span></tt> due to the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
-in <tt class="docutils literal"><span class="pre">args</span></tt>. If <tt class="docutils literal"><span class="pre">args[i]</span></tt> is derived from other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the
-variance coming from these is included in the result.</p>
+in <tt class="docutils literal"><span class="pre">args</span></tt>. If <tt class="docutils literal"><span class="pre">args[i]</span></tt> is correlated with other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the
+variance coming from these is included in the result as well. (This
+last convention is necessary because variances associated with
+correlated <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be disentangled into contributions
+corresponding to each variable separately.)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -972,8 +984,11 @@ variance coming from these is included in the result.</p>
 <tt class="descname">partialsdev</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#gvar.GVar.partialsdev" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute partial standard deviation due to <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">args</span></tt>.</p>
 <p>This method computes the part of <tt class="docutils literal"><span class="pre">self.sdev</span></tt> due to the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
-in <tt class="docutils literal"><span class="pre">args</span></tt>. If <tt class="docutils literal"><span class="pre">args[i]</span></tt> is derived from other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the
-standard deviation coming from these is included in the result.</p>
+in <tt class="docutils literal"><span class="pre">args</span></tt>. If <tt class="docutils literal"><span class="pre">args[i]</span></tt> is correlated with other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the
+standard deviation coming from these is included in the result as
+well. (This last convention is necessary because variances
+associated with correlated <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be disentangled into
+contributions corresponding to each variable separately.)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />

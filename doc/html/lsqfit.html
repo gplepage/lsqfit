@@ -482,6 +482,15 @@ prior values are listed.</li>
 <dt id="lsqfit.nonlinear_fit.fmt_errorbudget">
 <tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate error budget for <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</p>
+<p>For each output <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>, <cite>fmt_errorbudget</cite> computes the
+contributions to <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>&#8216;s standard deviation coming from the
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s collected in <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>. This is done for each key
+combination <tt class="docutils literal"><span class="pre">(ko,ki)</span></tt> and the results are tabulated with columns and
+rows labeled by <tt class="docutils literal"><span class="pre">ko</span></tt> and <tt class="docutils literal"><span class="pre">ki</span></tt>, respectively. If a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in
+<tt class="docutils literal"><span class="pre">inputs[ki]</span></tt> is correlated with other <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the contribution from
+the others is included in the <tt class="docutils literal"><span class="pre">ki</span></tt> contribution as well (since
+contributions from correlated <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be resolved). The table
+is returned as a string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
