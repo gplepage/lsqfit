@@ -144,7 +144,7 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
         ``None``.
     :type svdnum: ``None`` or int
     :param rescale: Rescale the input matrix to make its diagonal elements 
-        equal to 1.0 before applying *svd* cuts.
+        equal to 1.0 before applying *svd* cuts. (Default is ``True``.)
     :param compute_inv: Compute representation of inverse of covariance 
         matrix if ``True``; the result is stored in ``svd.inv_wgt`` (see
         below). Default value is ``False``.
@@ -155,7 +155,7 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     ``svd`` itself:
             
     .. attribute:: svd.val
-    
+        
         Eigenvalues of the covariance matrix after *svd* cuts (and after
         rescaling if ``rescale=True``); the eigenvalues are ordered, with
         the smallest first.
@@ -172,22 +172,22 @@ def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
         applied (but after rescaling if ``rescale=True``).
         
     .. attribute:: svd.D    
-    
+        
         Diagonal of matrix used to rescale the covariance matrix before
         applying *svd* cuts (cuts are applied to ``D*cov*D``) if
         ``rescale=True``; ``svd.D`` is ``None`` if ``rescale=False``.
           
     .. attribute:: svd.logdet
-    
+        
         Logarithm of the determinant of the covariance matrix after *svd*
         cuts are applied.
           
     .. attribute:: svd.correction
-    
+        
         Vector of the *svd* corrections to ``g.flat``;
         
     .. attribute:: svd.inv_wgt
-    
+        
         The sum of the outer product of vectors ``inv_wgt[i]`` with
         themselves equals the inverse of the covariance matrix after *svd*
         cuts. Only computed if ``compute_inv=True``. The order of the

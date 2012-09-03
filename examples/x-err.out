@@ -144,7 +144,7 @@ a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
 
 ************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = -69.779    itns = 6
+  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = -69.78    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]

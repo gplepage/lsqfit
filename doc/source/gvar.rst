@@ -499,7 +499,7 @@ introduce correlations between uncorrelated variables.
 Finally there is a utility function and a class for implementing an *svd*
 analysis of a covariance or other symmetric, positive matrix:
 
-.. autofunction:: gvar.svd(g, svdcut=None, svdnum=None, compute_delta=False, rescale=False)
+.. autofunction:: gvar.svd(g, svdcut=None, svdnum=None, compute_delta=False, rescale=True)
    
    
 Classes
