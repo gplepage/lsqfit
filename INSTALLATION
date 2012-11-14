@@ -7,19 +7,18 @@ To install:
 		(http://www.gnu.org/software/gsl/)
 		
 	b. The numpy python library - provides fast floating-point array 
-		operations in python.
+		operations in python. Versions earlier than 1.6 may not work.
 		(http://numpy.scipy.org/)
 
 	c. The cython python package - provides a variant of python that 
 		compiles into C code that can itself be compiled and is faster (but
-      less flexible) than ordinary python. Versions earlier than 0.14
-		don't work. 
+      less flexible) than ordinary python. Versions earlier than 0.16
+		may not work. 
 		(http://www.cython.org/)
 				
 	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2. It does
 	not work for Python versions 2.5.X or earlier. It has not been tested 
-	for Python 3.0 and 3.1, but likely works at least with the latter. Very
-	limited testing suggests that fitting is faster with 2.7 than 3.2.
+	for Python 3.0 and 3.1, but likely works at least with the latter. 
 		
 2. Use 'make install'. This will build the gvar and lsqfit packages, and 
 	then copy them into a standard directory in the user's space that

@@ -75,12 +75,14 @@ This function can also be used to convert strings like ``"-72.374(22)"`` or
     >>> print(x)
     3.1415 +- 0.0002
       
-A |GVar| can be converted to a string of this last format using the
+This |GVar| can be converted to a more compact string using the
 :meth:`GVar.fmt` method: for example, ::
     
     >>> print(x.fmt(4))
     3.1415(2)
     >>> print(x.fmt(5))
+    3.14150(20)
+    >>> print(x.fmt())
     3.14150(20)
     
 where the argument is the number of decimal places retained. (Omit the 

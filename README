@@ -12,6 +12,13 @@ is included in the documentation; documentation is in the doc/ subdirectory
 (see doc/html/index.html for the html version or doc/lsqfit.pdf for a pdf
 version).
 
+This code has been used on a laptop to fit functions of tens-to-thousands
+of parameters to tens-to-thousands of pieces of data. The use of
+dictionaries (rather than arrays) to represent fit data facilitates
+simultaneous fits to multiple types of data. Fit-function parameters can
+also be represented as dictionaries, usually leading to much more
+intelligible code.
+
 These packages use the Gnu Scientific Library (GSL) to do the fitting,
 numpy for efficient array arithmetic, and cython to compile efficient code
 that interfaces between Python and the C-based GSL. The fitter uses

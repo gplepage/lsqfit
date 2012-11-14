@@ -245,6 +245,9 @@ class nonlinear_fit(object):
             else:
                 p0gvar = self.prior.flatten() + p0
                 nchivw = self.y.size + self.prior.size
+            f = self.fcn(self.p0) if self.x is False else self.fcn(self.x,self.p0)
+            if not _y_fcn_match(self.y, f):
+                raise ValueError(_y_fcn_match.msg)
             for p in [p0, p0gvar]:
                 f = flatfcn(p)
                 if len(f)!=self.y.size:
@@ -977,6 +980,30 @@ def _build_chiv(fdata, fcn):
     chiv.chivw = chivw
     return chiv
 ##
+
+def _y_fcn_match(y, f):
+    if hasattr(f,'keys'):
+        f = BufferDict(f)
+    else:
+        f = numpy.array(f)
+    if y.shape != f.shape:
+        _y_fcn_match.msg = ("shape mismatch between y and fcn: "
+                            + str(y.shape) + ", " + str(f.shape) )
+        return False
+    if y.shape is None:
+        for k in y:
+            if k not in f:
+                _y_fcn_match.msg = "key mismatch: " + str(k)
+                return False
+            if y.isscalar(k):
+                if not f.isscalar(k):
+                    _f_fcn_match.msg = "shape mismatch for key " + str(k)
+                    return False
+            elif y[k].shape != f[k].shape:
+                _y_fcn_match.msg = "shape mismatch for key " + str(k)
+                return False
+    return True
+##    
 ##
 
 ## legacy definitions (obsolete) ##

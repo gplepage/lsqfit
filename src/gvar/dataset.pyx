@@ -436,15 +436,16 @@ class Dataset(dict):
         []
     """
     def __init__(self,*args,**kargs):
+        cdef int binsize
         super(Dataset, self).__init__()
         if not args:
             return
         elif len(args)>1:
             raise TypeError("Expected at most 1 argument, got %d."%len(args))
         if 'nbin' in kargs and 'binsize' not in kargs:
-            binsize = kargs.get('nbin',1)   # for legacy code
+            binsize = int(kargs.get('nbin',1))   # for legacy code
         else:
-            binsize = kargs.get('binsize',1)
+            binsize = int(kargs.get('binsize',1))
         if binsize>1: 
             acc = {}
         keys = set(kargs.get('keys',[]))

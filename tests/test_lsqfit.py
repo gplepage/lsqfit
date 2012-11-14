@@ -884,6 +884,31 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_arraysequal(fout,yout)
         ##
     ##
+    def test_y_fcn_match(self):
+        ## y = dictionary ##
+        y = gv.BufferDict(a=gv.gvar(1,1),b=[gv.gvar(2,2),gv.gvar(3,3)])
+        self.assertTrue(lsqfit._y_fcn_match(y,dict(a=1.,b=[2.,3.])))
+        self.assertTrue(lsqfit._y_fcn_match(y,gv.BufferDict(a=1.,b=[2.,3.])))
+        self.assertFalse(lsqfit._y_fcn_match(y,dict(a=1.,b=[2.,3.,4.])))
+        self.assertFalse(lsqfit._y_fcn_match(y,dict(a=1.,b=2.)))
+        self.assertFalse(lsqfit._y_fcn_match(y,3.))
+        self.assertFalse(lsqfit._y_fcn_match(y,dict(x=1,y=[2,3.])))
+        self.assertFalse(lsqfit._y_fcn_match(y,[2.,3.]))
+        ##
+        ## y = array ## 
+        y = np.array([gv.gvar(2.,2.),gv.gvar(3.,3.)])
+        self.assertTrue(lsqfit._y_fcn_match(y,[4.,5.]))
+        self.assertFalse(lsqfit._y_fcn_match(y,[4.,5.,6.]))
+        self.assertFalse(lsqfit._y_fcn_match(y,dict(a=[4.,5.])))
+        self.assertFalse(lsqfit._y_fcn_match(y,3.))
+        ##
+        ## y = number ##
+        y = np.array(gv.gvar(1,1))
+        self.assertTrue(lsqfit._y_fcn_match(y,3.))
+        self.assertFalse(lsqfit._y_fcn_match(y,[4.,5.]))
+        self.assertFalse(lsqfit._y_fcn_match(y,dict(a=[4.,5.])))
+        ##
+    ##
     def test_reformat(self):
         ## arrays ## 
         p = [[1,2],[3,4]]
