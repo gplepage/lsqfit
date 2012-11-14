@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.4 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.5 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.2.4',
+        VERSION:     '4.2.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.2.4 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.2.5 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -120,11 +120,13 @@ standard deviation <tt class="docutils literal"><span class="pre">xsdev</span></
 <span class="go">3.1415 +- 0.0002</span>
 </pre></div>
 </div>
-<p>A <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> can be converted to a string of this last format using the
+<p>This <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> can be converted to a more compact string using the
 <a class="reference internal" href="#gvar.GVar.fmt" title="gvar.GVar.fmt"><tt class="xref py py-meth docutils literal"><span class="pre">GVar.fmt()</span></tt></a> method: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">fmt</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
 <span class="go">3.1415(2)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">fmt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+<span class="go">3.14150(20)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">fmt</span><span class="p">())</span>
 <span class="go">3.14150(20)</span>
 </pre></div>
 </div>
@@ -684,7 +686,7 @@ the errors in a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar
 <dt id="gvar.fmt_errorbudget">
 <tt class="descclassname">gvar.</tt><tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em><big>)</big><a class="headerlink" href="#gvar.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate error budget for <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</p>
-<p>For each output <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>, <cite>fmt_errorbudget</cite> computes the
+<p>For each output <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>, <tt class="docutils literal"><span class="pre">fmt_errorbudget</span></tt> computes the
 contributions to <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>&#8216;s standard deviation coming from the
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s collected in <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>. This is done for each key
 combination <tt class="docutils literal"><span class="pre">(ko,ki)</span></tt> and the results are tabulated with columns and
@@ -832,7 +834,7 @@ those in <tt class="docutils literal"><span class="pre">g</span></tt> are erased
 analysis of a covariance or other symmetric, positive matrix:</p>
 <dl class="function">
 <dt id="gvar.svd">
-<tt class="descclassname">gvar.</tt><tt class="descname">svd</tt><big>(</big><em>g</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>compute_delta=False</em>, <em>rescale=False</em><big>)</big><a class="headerlink" href="#gvar.svd" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">svd</tt><big>(</big><em>g</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>compute_delta=False</em>, <em>rescale=True</em><big>)</big><a class="headerlink" href="#gvar.svd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply svd cuts to collection of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">g</span></tt> is an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dictionary containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
 and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. <tt class="docutils literal"><span class="pre">svd(g,...)</span></tt> returns a copy of <tt class="docutils literal"><span class="pre">g</span></tt> whose
@@ -859,7 +861,7 @@ maximum eigenvalue. Default is <tt class="docutils literal"><span class="pre">No
 <tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenvalues; ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt>. Default is
 <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
 <li><strong>rescale</strong> &#8211; Rescale the input matrix to make its diagonal elements 
-equal to 1.0 before applying <em>svd</em> cuts.</li>
+equal to 1.0 before applying <em>svd</em> cuts. (Default is <tt class="docutils literal"><span class="pre">True</span></tt>.)</li>
 <li><strong>compute_inv</strong> &#8211; Compute representation of inverse of covariance 
 matrix if <tt class="docutils literal"><span class="pre">True</span></tt>; the result is stored in <tt class="docutils literal"><span class="pre">svd.inv_wgt</span></tt> (see
 below). Default value is <tt class="docutils literal"><span class="pre">False</span></tt>.</li>
@@ -1373,7 +1375,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
