@@ -380,8 +380,8 @@ about ``2e-8`` (with 64-bit floating point numbers --- ``tiny**2`` is what
 appears in the covariance matrix).
     
     
-Implementation Notes; Optimizations 
--------------------------------------
+Implementation Notes; Derivatives; Optimizations 
+------------------------------------------------
 There are two types of |GVar|: the underlying independent variables, created
 with calls to :func:`gvar.gvar`; and variables which are obtained from
 functions of the underlying variables. Each |GVar| must keep track of three
@@ -400,6 +400,15 @@ derivative of ``f`` with respect to the ``i``-th underlying variable
 and ``cov`` is the covariance matrix for the underlying variables (easily
 obtained from an existing |GVar| ``x`` using ``x.cov``).
     
+The derivatives stored in a |GVar| are sometimes useful. Consider, for
+example, an array ``x`` each of whose elements was created by a call to
+:func:`gvar.gvar`: ``x[i] = gvar.gvar(xi_mean,xi_sdev)``. Then
+derivatives of a function ``f(x)`` with respect to the ``x[i]`` can be
+computed from the |GVar| ``fx = f(x)`` using ``fx.dotder(x[i].der)``, which
+equals ``df(x)/dx[i]`` at the point ``x`` specified by the means of the
+``x[i]``\s. Note that this trick only works because the ``x[i]`` are 
+among the underlying (original) |GVar|\s (and not combinations of these).
+
 When there are lots of underlying variables, the number of derivatives can
 become rather large, potentially (though not necessarily) leading to slower
 calculations. One way to alleviate this problem, should it arise, is to
@@ -428,9 +437,10 @@ about ``x`` and ``y``. Absent the ``switch_gvar`` line, ``c`` would have
 information about its derivatives with respect to ``x`` and ``y`` (zero
 derivative in both cases) and this would make calculations involving ``c``
 slightly slower than with the ``switch_gvar`` line. Usually the difference
-is negligible. (It used to be more important, with an earlier
-implementation.) Note that the previous :func:`gvar.gvar` can be restored
-using :func:`gvar.restore_gvar`.
+is negligible --- it used to be more important, in earlier implementations
+of |GVar| before sparse matrices were introduced to keep track of
+covariances. Note that the previous :func:`gvar.gvar` can be restored using
+:func:`gvar.restore_gvar`.
     
 |GVar|\s are designed to work well with :mod:`numpy` arrays. They
 can be combined in arithmetic expressions with arrays of numbers or of
@@ -535,7 +545,10 @@ The fundamental class for representing gaussian variables is:
    Two attributes and a method make reference to the original
    variables from which ``self`` is derived:
    
-   .. autoattribute:: cov
+   .. attribute:: cov
+      
+      Underlying covariance matrix (type :class:`gvar.smat`) shared by all
+      |GVar|\s.
    
    .. autoattribute:: der
    
@@ -582,6 +595,22 @@ scalars) that supports Python pickling:
    .. method:: update(d)
       
       Add contents of dictionary ``d`` to ``self``.
+      
+   .. staticmethod:: BufferDict.load(fobj, use_json=False)
+   
+      Load serialized |BufferDict| from file object ``fobj``.
+      Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+      it uses :mod:`json` (obvioulsy).
+      
+   .. staticmethod:: loads(s, use_json=False)
+      
+      Load serialized |BufferDict| from string object ``s``.
+      Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+      it uses :mod:`json` (obvioulsy).
+   
+   .. automethod:: dump(fobj, use_json=False)
+   
+   .. automethod:: dumps(use_json=False)
       
 SVD analysis is handled by the following class:
 

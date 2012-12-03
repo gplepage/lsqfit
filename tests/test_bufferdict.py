@@ -207,6 +207,15 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         for k in b:
             self.assert_arraysequal(b[k],c[k])
     ##
+    def test_dump(self):
+        global b
+        b[0,1] = 2.
+        for use_json in [True,False]:
+            sb = b.dumps(use_json=use_json)
+            c = BufferDict.loads(sb, use_json=use_json)
+            for k in b:
+                self.assert_arraysequal(b[k],c[k])
+    ##
     def test_pickle_gvar(self):
         b = BufferDict(dict(a=gv.gvar(1,2),b=[gv.gvar(3,4),gv.gvar(5,6)]))
         sb = pckl.dumps(b)
@@ -214,6 +223,16 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         for k in b:
             self.assert_gvclose(b[k],c[k],rtol=1e-6)
     ##
+    def test_dump_gvar(self):
+        b = BufferDict(dict(a=gv.gvar(1,2),b=[gv.gvar(3,4),gv.gvar(5,6)]))
+        b[0,1] = b['a']+10*b['b'][0]
+        for use_json in [True,False]:
+            sb = b.dumps(use_json=use_json)
+            c = BufferDict.loads(sb, use_json=use_json)
+            for k in b:
+                self.assert_gvclose(b[k],c[k],rtol=1e-6)
+            self.assert_gvclose((c[0,1]-10*c['b'][0])/c['a'], 
+                                gv.gvar(1.0,0.0), rtol=1e-6)
 ##    
         
 if __name__ == '__main__':

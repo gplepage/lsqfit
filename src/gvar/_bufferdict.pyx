@@ -15,6 +15,15 @@ import collections
 import numpy
 import copy
 import pickle
+import json
+try:
+    # python 2
+    from StringIO import StringIO as _StringIO
+    _BytesIO = _StringIO
+except ImportError:
+    # python 3
+    from io import BytesIO as _BytesIO
+    from io import StringIO as _StringIO
 import gvar as _gvar
 
 ## BufferDict ##
@@ -319,6 +328,79 @@ class BufferDict(collections.MutableMapping):
         """ Return ``True`` if ``self[k]`` is scalar else ``False``."""
         return self._data[k].shape is None
     ##
+    def dump(self, fobj, use_json=False):
+        """ Serialize |BufferDict| in file object ``fobj``.
+                    
+        Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+        it uses :mod:`json` (obviously). :mod:`json` does not handle 
+        non-string valued keys very well. This attempts a workaround, but
+        it will only work in simpler cases. Serialization only works when
+        :mod:`pickle` (or :mod:`json`) knows how to serialize the data type
+        stored in the |BufferDict|'s buffer (or for |GVar|\s).
+        """
+        if not use_json:
+            pickle.dump(self, fobj)
+        else:
+            if isinstance(self._buf[0], _gvar.GVar):
+                tmp = _gvar.mean(self)
+                cov = _gvar.evalcov(self._buf)
+            else:
+                tmp = self
+                cov = None
+            d = {}
+            keys = []
+            for k in tmp:
+                jk = 's:' + k if str(k) == k else 'e:'+str(k)
+                keys.append(jk)
+                d[jk] = tmp[k] if self.isscalar(k) else tmp[k].tolist()
+            d['keys'] = keys
+            if cov is not None:
+                d['cov'] = cov.tolist()
+            json.dump(d, fobj)
+    ##
+    def dumps(self, use_json=False):
+        """ Serialize |BufferDict| into string.
+                    
+        Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+        it uses :mod:`json` (obviously). :mod:`json` does not handle
+        non-string valued keys very well. This attempts a workaround, but
+        it will only work in simpler cases (e.g., integers, tuples of
+        integers, etc.). Serialization only works when :mod:`pickle` (or
+        :mod:`json`) knows how to serialize the data type stored in the
+        |BufferDict|'s buffer (or for |GVar|\s).
+        """
+        f = _StringIO() if use_json else _BytesIO()
+        self.dump(f, use_json=use_json)
+        return f.getvalue()
+    ##
+    @staticmethod
+    def load(fobj, use_json=False):
+        """ Load serialized |BufferDict| from file object ``fobj``.
+                    
+        Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+        it uses :mod:`json` (obvioulsy).
+        """
+        if not use_json:
+            return pickle.load(fobj)
+        else:
+            d = json.load(fobj)
+            ans = BufferDict()
+            for jk in d['keys']:
+                k = str(jk[2:]) if jk[0] == 's' else eval(jk[2:])
+                ans[k] = d[jk]
+            if 'cov' in d:
+                ans.buf = _gvar.gvar(ans._buf,d['cov'])
+            return ans
+    ##
+    @staticmethod
+    def loads(s, use_json=False):
+        """ Load serialized |BufferDict| from file object ``fobj``.
+                    
+        Uses :mod:`pickle` unless ``use_json`` is ``True``, in which case
+        it uses :mod:`json` (obvioulsy).
+        """
+        f = _StringIO(s) if use_json else _BytesIO(s)
+        return BufferDict.load(f, use_json=use_json)
 ##
 ##
 
