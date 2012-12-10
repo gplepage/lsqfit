@@ -405,6 +405,19 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
 def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
     """ Return iterator for bootstrap copies of ``g``. 
         
+    The gaussian variables (|GVar| objects) in array (or dictionary) ``g``
+    collectively define a multidimensional gaussian distribution. The
+    iterator created by :func:`bootstrap_iter` generates an array (or
+    dictionary) of new |GVar|\s whose covariance matrix is the same as
+    ``g``'s but whose means are drawn at random from the original ``g``
+    distribution. This is a *bootstrap copy* of the original distribution.
+    Each iteration of the iterator has different means (but the same
+    covariance matrix). 
+        
+    :func:`bootstrap_iter` also works when ``g`` is a single |GVar|, in
+    which case the resulting iterator returns bootstrap copies of the
+    ``g``.
+        
     :param g: An array (or dictionary) of objects of type |GVar|.
     :type g: array or dictionary or BufferDict
     :param n: Maximum number of random iterations. Setting ``n=None``
@@ -419,7 +432,7 @@ def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
         ignore if set to ``None`` or negative.
     :type svdnum: ``None`` or positive ``int``
     :param rescale: Covariance matrix is rescaled so that diagonal elements
-        equal ``1`` if ``rescale=True``.
+        equal ``1`` before applying *svd* cuts if ``rescale=True``.
     :type rescale: bool
     :returns: An iterator that returns bootstrap copies of ``g``.
     """
@@ -437,7 +450,13 @@ def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
         count += 1
         z = numpy.random.normal(0.0,1.,nwgt)
         buf = g_flat + sum(zi*wi for zi,wi in zip(z,wgt))
-        yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
+        if g.shape is None:
+            yield BufferDict(g,buf=buf)
+        elif g.shape == ():
+            yield next(buf.flat)
+        else:
+            yield buf.reshape(g.shape)
+        # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
 ## 
 def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
@@ -454,8 +473,12 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
     individual entries ``g[k]`` may be |GVar|\s or arrays of |GVar|\s, 
     with arbitrary shapes.
         
-    :param g: An array (or dictionary) of objects of type |GVar|.
-    :type g: array or dictionary or BufferDict
+    :func:`raniter` also works when ``g`` is a single |GVar|, in which case
+    the resulting iterator returns random numbers drawn from the
+    distribution specified by ``g``.
+        
+    :param g: An array (or dictionary) of objects of type |GVar|; or a |GVar|.
+    :type g: array or dictionary or BufferDict or GVar
     :param n: Maximum number of random iterations. Setting ``n=None``
         (the default) implies there is no maximum number.
     :param svdcut: If positive, replace eigenvalues of the covariance
@@ -487,7 +510,13 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
         count += 1
         z = numpy.random.normal(0.0,1.,nwgt)
         buf = g_mean + sum(zi*wi for zi,wi in zip(z,wgt))
-        yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
+        if g.shape is None:
+            yield BufferDict(g,buf=buf)
+        elif g.shape == ():
+            yield next(buf.flat)
+        else:
+            yield buf.reshape(g.shape)
+        # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
 ##
 def ranseed(seed):
