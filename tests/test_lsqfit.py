@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012-2013 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -877,7 +877,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             (False,ydict,prarray,fcn_nox_ad,[sum(p0)]+p0[:2]),
             (False,yarray,prdict,fcn_nox_da,p0[:3]),
             (False,yarray,prarray,fcn_nox_aa,p0[:3])
-            ]:
+        ]:
             flatfcn = lsqfit._unpack_fcn(fcn=fcn,p0=pr,y=y,x=x)
             fout = flatfcn(np.array(p0))
             self.assert_arraysequal(np.shape(fout),np.shape(yout))
@@ -1025,8 +1025,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","not y"],p["not y"].sdev)
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
-    ##   
+    ## 
+    def test_multifit_exceptions(self):
+        """ multifit exceptions """
+        y = gv.gvar(["1(1)", "2(1)"])
+        prior = gv.gvar(dict(a="0(2)"))
+        with self.assertRaises(ValueError):
+            def f(p):
+                return [p['a']]*3
+            ##
+            fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
+        with self.assertRaises(ZeroDivisionError):
+            def f(p):
+                1/0.
+                return [p['a']]*2
+            ##
+            fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
+    ##
     def test_multifit(self):
+        """ multifit """
         nx = 3
         x0 = np.arange(nx)+1.
         def f(x,x0=x0):
@@ -1045,7 +1062,26 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                         alg='lmder')
         self.assert_arraysclose(ans.x,x0,rtol=1e-3)
     ##
+    def test_multiminex_exceptions(self):
+        """ multiminex exceptions """
+        x0 = np.array([6.0,-4.0])
+        with self.assertRaises(ZeroDivisionError):
+            def f(x):
+                1/0.
+                ff = (x[0]-5)**2 + (x[1]+3)**2
+                return -np.cos(ff)
+            ##
+            ans = multiminex(x0,f)
+        #
+        with self.assertRaises(TypeError):
+            def f(x):
+                ff = (x[0]-5)**2 + (x[1]+3)**2
+                return [-np.cos(ff)]
+            ##
+            ans = multiminex(x0,f)
+    ##
     def test_multiminex(self):
+        """ multiminex """
         def f(x):
             ff = (x[0]-5)**2 + (x[1]+3)**2
             return -np.cos(ff)

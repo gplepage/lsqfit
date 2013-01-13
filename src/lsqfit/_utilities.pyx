@@ -1,4 +1,4 @@
-# Copyright (c) 2011 G. Peter Lepage.
+# Copyright (c) 2011-13 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@ cimport gvar
 
 import gvar
 import numpy
+import sys
 
 ## gsl interface ## 
 cdef extern from "gsl/gsl_sf.h":
@@ -29,6 +30,10 @@ cdef extern from "gsl/gsl_errno.h":
     char* gsl_strerror(int errno)
     int GSL_SUCCESS
     int GSL_CONTINUE
+    int GSL_EFAILED
+
+cdef extern from "gsl/gsl_nan.h":
+    double GSL_NAN
     
 gsl_set_error_handler_off()
     
@@ -146,7 +151,7 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
     
 cdef extern from "gsl/gsl_multimin.h":
     ctypedef struct gsl_multimin_function:
-        double (*f) (gsl_vector* x, void* p) except 33
+        double (*f) (gsl_vector* x, void* p) except? 33.
         int n
         void * params
         
@@ -193,6 +198,7 @@ cdef extern from "gsl/gsl_multimin.h":
 ## multifit ## 
 _valder = None
 _p_f = None 
+_pyerr = None
     
 class multifit(object):
     """ Fitter for nonlinear least-squares multidimensional fits.
@@ -258,7 +264,7 @@ class multifit(object):
                  object f, double reltol=0.0001, double abstol=0.0, 
                  unsigned int maxit=1000, object alg='lmsder', 
                  object analyzer=None):
-        global _valder, _p_f
+        global _valder, _p_f, _pyerr
         cdef gsl_multifit_fdfsolver_type *T
         cdef gsl_multifit_fdfsolver *s
         cdef int status, rval
@@ -301,9 +307,20 @@ class multifit(object):
             status = gsl_multifit_fdfsolver_iterate(s)
             if status:
                 if status>=33:
-                    raise RuntimeError("Python error in fit function: %d"%status)
-                self.error = str(gsl_strerror(status))
-                break
+                    if _pyerr is not None:
+                        tmp = _pyerr
+                        _pyerr = None
+                        if hasattr(tmp[1],'with_traceback'):    # python3
+                            raise tmp[1].with_traceback(tmp[2])
+                        else:                                   # python2
+                            raise tmp[0], tmp[1].args, tmp[2]
+                    else:
+                        raise RuntimeError(
+                            "Python error in fit function: "+str(status)
+                        )
+                else:
+                    self.error = str(gsl_strerror(status))
+                    break
             if analyzer is not None:
                 analyzer(vector2array(s.x), vector2array(s.f),
                         matrix2array(s.J))
@@ -331,12 +348,17 @@ class multifit(object):
         return str(self.p)
     ##  
 ##
-    
+
 ## wrappers for multifit's python function ## 
 cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) except 33:
-    global _p_f
-    cdef numpy.ndarray f = _p_f(vector2array(vx))
-    # cdef numpy.ndarray[numpy.double_t,ndim=1] f = _p_f(vector2array(vx))
+    global _p_f, _pyerr
+    cdef numpy.ndarray f  
+    # can't do numpy.ndarray[object,ndim=1] because might be numbers
+    try:
+        f = _p_f(vector2array(vx))
+    except:
+        _pyerr = sys.exc_info()
+        raise Exception
     cdef unsigned int i
     cdef unsigned int n = vf.size
     for i in range(n):
@@ -344,10 +366,15 @@ cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) except 33:
     return GSL_SUCCESS
     
 cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) except 34:
-    global _p_f                                     # python fcn
+    global _p_f, _pyerr, _valder                     # python fcn, error info
     cdef gvar.GVar fi
     cdef gvar.svec fi_d
-    cdef numpy.ndarray[object, ndim=1] f = _p_f(_valder+vector2array(vx))
+    cdef numpy.ndarray[object, ndim=1] f #= _p_f(_valder+vector2array(vx))
+    try: 
+        f = _p_f(_valder+vector2array(vx))
+    except:
+        _pyerr = sys.exc_info()
+        raise Exception
     gsl_matrix_set_zero(mJ)
     assert len(f[0].cov) == mJ.size2, \
         'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
@@ -360,10 +387,15 @@ cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) except 34:
     
 cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, 
                 gsl_matrix* mJ) except 35:
-    global _p_f                                     # python fcn
+    global _p_f, _pyerr, _valder                    # python fcn, error info
     cdef gvar.GVar fi
     cdef gvar.svec f_i_d
-    cdef numpy.ndarray[object, ndim=1] f = _p_f(_valder+vector2array(vx))
+    cdef numpy.ndarray[object, ndim=1] f #= _p_f(_valder+vector2array(vx))
+    try:
+        f = _p_f(_valder+vector2array(vx))
+    except:
+        _pyerr = sys.exc_info()
+        raise Exception
     gsl_matrix_set_zero(mJ)
     assert len(f[0].cov) == mJ.size2, \
         'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
@@ -434,7 +466,7 @@ class multiminex(object):
     def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, object f, #):
                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
                  analyzer=None):
-        global _p_fs
+        global _p_fs, _pyerr
         cdef gsl_vector* vx0 = array2vector(x0)
         cdef int dim = vx0.size
         cdef gsl_vector* ss = array2vector(numpy.array(dim*[step]))
@@ -469,10 +501,16 @@ class multiminex(object):
         for it in range(1, maxit+1):
             status = gsl_multimin_fminimizer_iterate(s)
             if status:
-                if status==33:
-                    raise RuntimeError("Python error in fit function.")
-                self.error = str(gsl_strerror(status))
-                break
+                if _pyerr is not None:
+                    tmp = _pyerr
+                    _pyerr = None
+                    if hasattr(tmp[1],'with_traceback'):    # python3
+                        raise tmp[1].with_traceback(tmp[2])
+                    else:                                   # python2
+                        raise tmp[0], tmp[1].args, tmp[2]
+                else:
+                    self.error = str(gsl_strerror(status))
+                    break
             if analyzer is not None:
                 x = vector2array(gsl_multimin_fminimizer_x(s))
                 fx = gsl_multimin_fminimizer_minimum(s)
@@ -500,9 +538,13 @@ class multiminex(object):
 ##
     
 ## wrapper for multiminex's python function ##
-cdef double _c_fs(gsl_vector* vx, void* p) except 33:
-    global _p_fs
-    return _p_fs(vector2array(vx))
+cdef double _c_fs(gsl_vector* vx, void* p) except? 33.:
+    global _p_fs, _pyerr
+    try:
+        return _p_fs(vector2array(vx))
+    except:
+        _pyerr = sys.exc_info()
+        return GSL_NAN
 ##
 ##
 

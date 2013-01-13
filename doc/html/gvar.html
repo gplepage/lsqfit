@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.6 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.2.7 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.2.6',
+        VERSION:     '4.2.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.2.6 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.2.7 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.7 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -611,12 +611,15 @@ correlations intact.</p>
 same shape is returned if <tt class="docutils literal"><span class="pre">g</span></tt> is an array. When <tt class="docutils literal"><span class="pre">g</span></tt> is a dictionary, 
 individual entries <tt class="docutils literal"><span class="pre">g[k]</span></tt> may be <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, 
 with arbitrary shapes.</p>
+<p><a class="reference internal" href="#gvar.raniter" title="gvar.raniter"><tt class="xref py py-func docutils literal"><span class="pre">raniter()</span></tt></a> also works when <tt class="docutils literal"><span class="pre">g</span></tt> is a single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, in which case
+the resulting iterator returns random numbers drawn from the
+distribution specified by <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>g</strong> (<em>array or dictionary or BufferDict</em>) &#8211; An array (or dictionary) of objects of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>.</li>
+<li><strong>g</strong> (<em>array or dictionary or BufferDict or GVar</em>) &#8211; An array (or dictionary) of objects of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>; or a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>.</li>
 <li><strong>n</strong> &#8211; Maximum number of random iterations. Setting <tt class="docutils literal"><span class="pre">n=None</span></tt>
 (the default) implies there is no maximum number.</li>
 <li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number) &#8211; If positive, replace eigenvalues of the covariance
@@ -644,6 +647,17 @@ defined by <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 <dt id="gvar.bootstrap_iter">
 <tt class="descclassname">gvar.</tt><tt class="descname">bootstrap_iter</tt><big>(</big><em>g</em>, <em>n=None</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>rescale=True</em><big>)</big><a class="headerlink" href="#gvar.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return iterator for bootstrap copies of <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
+<p>The gaussian variables (<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> objects) in array (or dictionary) <tt class="docutils literal"><span class="pre">g</span></tt>
+collectively define a multidimensional gaussian distribution. The
+iterator created by <a class="reference internal" href="#gvar.bootstrap_iter" title="gvar.bootstrap_iter"><tt class="xref py py-func docutils literal"><span class="pre">bootstrap_iter()</span></tt></a> generates an array (or
+dictionary) of new <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s whose covariance matrix is the same as
+<tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s but whose means are drawn at random from the original <tt class="docutils literal"><span class="pre">g</span></tt>
+distribution. This is a <em>bootstrap copy</em> of the original distribution.
+Each iteration of the iterator has different means (but the same
+covariance matrix).</p>
+<p><a class="reference internal" href="#gvar.bootstrap_iter" title="gvar.bootstrap_iter"><tt class="xref py py-func docutils literal"><span class="pre">bootstrap_iter()</span></tt></a> also works when <tt class="docutils literal"><span class="pre">g</span></tt> is a single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, in
+which case the resulting iterator returns bootstrap copies of the
+<tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -660,7 +674,7 @@ discards eigenmodes with eigenvalues smaller than
 <tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenvalues in the covariance matrix for <tt class="docutils literal"><span class="pre">g</span></tt>; 
 ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt> or negative.</li>
 <li><strong>rescale</strong> (<em>bool</em>) &#8211; Covariance matrix is rescaled so that diagonal elements
-equal <tt class="docutils literal"><span class="pre">1</span></tt> if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>.</li>
+equal <tt class="docutils literal"><span class="pre">1</span></tt> before applying <em>svd</em> cuts if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>.</li>
 </ul>
 </td>
 </tr>
@@ -1427,7 +1441,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.2.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.2.7 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

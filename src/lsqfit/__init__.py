@@ -56,7 +56,7 @@ The :mod:`lsqfit` tutorial contains extended explanations and examples.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2012 G. Peter Lepage. 
+# Copyright (c) 2008-2013 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
