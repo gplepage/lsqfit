@@ -1,3 +1,8 @@
+Version 4.2.7.1 -- 2013-01-14
+=============================
+Adds a further tweak to the exception handling inside fit functions --- 
+slightly more robust than what is in 4.2.7.
+
 Version 4.2.7 -- 2013-01-13
 ===========================
 Another minor update:
