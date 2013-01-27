@@ -1,3 +1,8 @@
+Version ????
+=============
+gvar.fmt_errbudget(...) has new parameter to specify column widths. This
+allows for longer names for outputs and inputs.
+
 Version 4.2.7.1 -- 2013-01-14
 =============================
 Adds a further tweak to the exception handling inside fit functions --- 

@@ -16,3 +16,4 @@ nose-uncovered.py
 yyy*
 xxx*
 git-instructions
+*.sublime-*

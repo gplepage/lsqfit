@@ -374,7 +374,7 @@ class nonlinear_fit(object):
         else:
             raise ValueError("Invalid pstyle: "+str(pstyle))
         ##
-        def collect(v1,v2,style='v',stride=1):
+        def collect(v1, v2, style='v', stride=1):
             """ Collect data from v1 and v2 into table.
                 
             Returns list of [label,v1fmt,v2fmt]s for each entry in v1 and
@@ -434,6 +434,7 @@ class nonlinear_fit(object):
                 ##
             else:
                 ## numpy array ## 
+                v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
                     if ct%stride != 0:
                         ct += 1

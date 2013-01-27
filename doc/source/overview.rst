@@ -198,6 +198,14 @@ As above, code for the examples is specified completely and so can be copied
 into a file, and run as is. It can also be modified, allowing for
 experimentation.
 
+*About Printing:* The examples in this tutorial use the ``print`` function
+as it is used in Python 3. Drop the outermost parenthesis in each ``print``
+statement if using Python 2; or add ::
+
+  from __future__ import print_function
+
+at the start of your file. 
+
 .. _making-fake-data:
 
 Making Fake Data

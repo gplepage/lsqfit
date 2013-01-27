@@ -338,7 +338,7 @@ def fmt_values(outputs, ndecimal=None, ndigit=None):
         ans += "%19s: %-20s\n" % (vk,outputs[vk].fmt(ndecimal))
     return ans
 ##
-def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
+def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndigit=None):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
        
     For each output ``outputs[ko]``, ``fmt_errorbudget`` computes the
@@ -362,13 +362,15 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
     :param percent: Tabulate % errors if ``percent is True``; otherwise
         tabulate the errors themselves.
     :type percent: boolean
+    :param colwidth: Width of each column.
+    :type colwidth: positive integer
     :returns: A table (``str``) containing the error budget. 
         Output variables are labeled by the keys in ``outputs``
         (columns); sources of uncertainty are labeled by the keys in
         ``inputs`` (rows).
     """
     ## collect partial errors ##
-    if ndigit is not None:
+    if ndecimal is None and ndigit is not None:
         ndecimal = ndigit       # legacy name
     err = {}
     for ko in outputs:
@@ -379,8 +381,15 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
             err[ko,ki] = outputs[ko].partialvar(*inputs_ki)**0.5                
     ##
     ## form table ##
-    lfmt = "%19s:"+len(outputs)*("%10."+str(ndecimal)+"f")+"\n"
-    hfmt = "%20s"+len(outputs)*("%10s")+"\n"
+    w = colwidth
+    w0 = w if w > 20 else 20
+    lfmt = (
+        "%" + str(w0 - 1) + "s:" +
+        len(outputs) * ( "%" + str(w) + "." + str(ndecimal) + "f") + "\n"
+        ) 
+    hfmt = (
+        "%" + str(w0) + "s" + len(outputs) * ("%" + str(w) + "s") + "\n"
+        )
     if percent:
         val = numpy.array([abs(outputs[vk].mean) 
                                 for vk in outputs])/100.
@@ -389,11 +398,11 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, ndigit=None):
         val = 1.
         ans = "Partial Errors:\n"
     ans += hfmt % (("",)+tuple(outputs.keys()))
-    ans += (20+len(outputs)*10)*'-'+"\n"
+    ans += (w0 +len(outputs) * w) * '-' + "\n"
     for ck in inputs:
         verr = numpy.array([err[vk,ck] for vk in outputs])/val
         ans += lfmt%((ck,)+tuple(verr))
-    ans += (20+len(outputs)*10)*'-'+"\n"
+    ans += (w0 +len(outputs) * w) * '-' + "\n"
     ans += lfmt%(("total",)+tuple(numpy.array([outputs[vk].sdev 
                                     for vk in outputs])/val))
     ##
