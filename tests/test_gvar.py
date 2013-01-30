@@ -485,21 +485,40 @@ class test_gvar2(unittest.TestCase,ArrayTests):
               inputs=dict(s=s,a=a,d=d,sa=[s,a],sd=[s,d],ad=[a,d],sad=[s,a,d]),
               ndecimal=1)
         out = "\n".join([
-        "Partial % Errors:",
-        "                             z",
-        "------------------------------",
-        "                  a:      20.6",
-        "                  s:       5.7",
-        "                  d:      48.2",
-        "                 ad:      52.5",
-        "                 sa:      21.4",
-        "                 sd:      48.6",
-        "                sad:      52.8",
-        "------------------------------",
-        "              total:      52.8",
-        ""
-        ])
+            "Partial % Errors:",
+            "                             z",
+            "------------------------------",
+            "                  a:      20.6",
+            "                  s:       5.7",
+            "                  d:      48.2",
+            "                 ad:      52.5",
+            "                 sa:      21.4",
+            "                 sd:      48.6",
+            "                sad:      52.8",
+            "------------------------------",
+            "              total:      52.8",
+            ""
+            ])
         self.assertEqual(tmp,out,"fmt_errorbudget output wrong")
+        tmp = fmt_errorbudget(outputs=dict(z=z),
+              inputs=dict(s=s,a=a,d=d,sa=[s,a],sd=[s,d],ad=[a,d],sad=[s,a,d]),
+              ndecimal=1, colwidth=25)
+        out = "\n".join([
+            "Partial % Errors:",
+            "                                                 z",
+            "--------------------------------------------------",
+            "                       a:                     20.6",
+            "                       s:                      5.7",
+            "                       d:                     48.2",
+            "                      ad:                     52.5",
+            "                      sa:                     21.4",
+            "                      sd:                     48.6",
+            "                     sad:                     52.8",
+            "--------------------------------------------------",
+            "                   total:                     52.8",
+            ""
+            ])
+        self.assertEqual(tmp,out,"fmt_errorbudget output wrong (with colwidth)")
         tmp = fmt_values(outputs=dict(s=s,z=z),ndecimal=1)
         out = "\n".join([
         "Values:",

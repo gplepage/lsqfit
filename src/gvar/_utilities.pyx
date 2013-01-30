@@ -370,7 +370,7 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
         ``inputs`` (rows).
     """
     ## collect partial errors ##
-    if ndecimal is None and ndigit is not None:
+    if ndigit is not None:
         ndecimal = ndigit       # legacy name
     err = {}
     for ko in outputs:

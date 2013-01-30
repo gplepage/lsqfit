@@ -486,7 +486,7 @@ The random numbers incorporate any correlations implied by the ``g``\s.
 Two functions that are useful for tabulating results and for analyzing where
 the errors in a |GVar| constructed from other |GVar|\s come from:
 
-.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True)
+.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10)
 
 .. autofunction:: gvar.fmt_values(outputs, ndecimal=None)
 
