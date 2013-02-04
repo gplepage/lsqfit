@@ -1113,24 +1113,13 @@ what ``gv.dataset.avg_data`` does because flag ``bstrap`` is set to ``True``.
 
 Troubleshooting
 ---------------
-:class:`lsqfit.nonlinear_fit` sometimes gives unintelligible error messages 
-such as::
-
-   Traceback (most recent call last):
-     File "<stdin>", line 10, in <module>
-       fit = nonlinear_fit(data=(None, y), prior=prior, fcn=f)
-     File "/Users/xxx/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
-       fit = multifit(p0, nf, self._chiv, **self.fitterargs)
-     File "_utilities.pyx", line 303, in lsqfit._utilities.multifit.__init__ (src/lsqfit/_utilities.c:2668)
-   RuntimeError: Python error in fit function: 33
-
-Such messages come from inside the *gsl* routines that are actually doing
-the fits and are usually due to an error in one of the inputs to the fit 
-(that is, the fit data, the prior, or the fit function). Setting ``debug=True``
-in the argument list of :class:`lsqfit.nonlinear_fit` might result in more 
-intelligible error messages. This option also causes the fitter to check 
-for significant roundoff errors in the matrix inversions of the covariance
-matrices.
+:class:`lsqfit.nonlinear_fit` error messages that come from inside the  *gsl*
+routnines doing the fits are sometimes less than useful. They are usually due
+to errors in one of the inputs to the fit  (that is, the fit data, the prior,
+or the fit function). Setting ``debug=True`` in the argument list of
+:class:`lsqfit.nonlinear_fit` might result in more  intelligible error
+messages. This option also causes the fitter to check  for significant
+roundoff errors in the matrix inversions of the covariance matrices.
 
 Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine

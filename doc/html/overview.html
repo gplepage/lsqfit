@@ -1597,23 +1597,13 @@ what <tt class="docutils literal"><span class="pre">gv.dataset.avg_data</span></
 </div>
 <div class="section" id="troubleshooting">
 <h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> sometimes gives unintelligible error messages
-such as:</p>
-<div class="highlight-python"><pre>Traceback (most recent call last):
-  File "&lt;stdin&gt;", line 10, in &lt;module&gt;
-    fit = nonlinear_fit(data=(None, y), prior=prior, fcn=f)
-  File "/Users/xxx/Library/Python/2.7/lib/python/site-packages/lsqfit/__init__.py", line 240, in __init__
-    fit = multifit(p0, nf, self._chiv, **self.fitterargs)
-  File "_utilities.pyx", line 303, in lsqfit._utilities.multifit.__init__ (src/lsqfit/_utilities.c:2668)
-RuntimeError: Python error in fit function: 33</pre>
-</div>
-<p>Such messages come from inside the <em>gsl</em> routines that are actually doing
-the fits and are usually due to an error in one of the inputs to the fit
-(that is, the fit data, the prior, or the fit function). Setting <tt class="docutils literal"><span class="pre">debug=True</span></tt>
-in the argument list of <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> might result in more
-intelligible error messages. This option also causes the fitter to check
-for significant roundoff errors in the matrix inversions of the covariance
-matrices.</p>
+<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> error messages that come from inside the  <em>gsl</em>
+routnines doing the fits are sometimes less than useful. They are usually due
+to errors in one of the inputs to the fit  (that is, the fit data, the prior,
+or the fit function). Setting <tt class="docutils literal"><span class="pre">debug=True</span></tt> in the argument list of
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> might result in more  intelligible error
+messages. This option also causes the fitter to check  for significant
+roundoff errors in the matrix inversions of the covariance matrices.</p>
 <p>Occasionally <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> appears to go crazy, with gigantic
 <tt class="docutils literal"><span class="pre">chi**2</span></tt>s (<em>e.g.</em>, <tt class="docutils literal"><span class="pre">1e78</span></tt>). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a

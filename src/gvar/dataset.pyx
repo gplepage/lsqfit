@@ -341,8 +341,13 @@ def bootstrap_iter(data, n=None):
             yield data[idx]
         ##
 ##
+
+try:
+    from collections import OrderedDict as _BASE_DICT
+except ImportError:
+    _BASE_DICT = dict
            
-class Dataset(dict):
+class Dataset(_BASE_DICT):
     """ Dictionary for collecting random data.
         
     This dictionary class simplifies the collection of random data. The

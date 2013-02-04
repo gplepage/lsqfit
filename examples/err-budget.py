@@ -25,6 +25,10 @@ DO_SVD = True
 
 SVDCUT = 1e-10 if DO_SVD else None
 
+try:
+    from collections import OrderedDict
+except ImportError:
+    OrderedDict = dict
 import lsqfit
 import numpy as np
 import gvar as gv
@@ -73,10 +77,14 @@ def main():
             p0 = fit.pmean          # starting point for next fit (opt.)
     
     if DO_ERRORBUDGET:
-        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
-                 'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
-        inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y,
-                    'svd':fit.svdcorrection}
+        outputs = OrderedDict([
+            ('E1/E0', E[1]/E[0]), ('E2/E0', E[2]/E[0]),         
+            ('a1/a0', a[1]/a[0]), ('a2/a0', a[2]/a[0])
+            ])
+        inputs = OrderedDict([
+            ('E', fit.prior['E']), ('a', fit.prior['a']),
+            ('y', y), ('svd', fit.svdcorrection)
+            ])
         print(fit.fmt_values(outputs))
         print(fit.fmt_errorbudget(outputs,inputs))
         

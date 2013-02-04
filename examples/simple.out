@@ -8,11 +8,11 @@ Parameters:
 Fit:
         key        y[key]     f(p)[key]
 ---------------------------------------
-        b/a     2.00 (50)     1.78 (30)
     data1 0    1.376 (69)    1.347 (46)
           1     2.01 (24)     2.02 (16)
     data2 0    1.329 (69)    1.347 (46)
           1     1.58 (12)    1.612 (82)
+        b/a     2.00 (50)     1.78 (30)
 
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0

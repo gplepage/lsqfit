@@ -175,8 +175,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
     def test_format(self):
         """ fit.format """
         ## case 1 - y and prior dictionaries ##
-        y = dict(a=gv.gvar(1.5,1), b=gv.gvar(0.8,0.5))
-        prior = dict(p=gv.gvar(0,2))
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
+        prior = gv.BufferDict(p=gv.gvar(0,2))
         def f(p): 
             return dict(a=p['p'], b=p['p'])
         ##

@@ -133,12 +133,15 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
         void *state
     ctypedef struct gsl_multifit_fdfsolver_type:
         int dummy
-    gsl_multifit_fdfsolver* gsl_multifit_fdfsolver_alloc( #)
-                        gsl_multifit_fdfsolver_type * T, int n, int p)
+    gsl_multifit_fdfsolver* gsl_multifit_fdfsolver_alloc(
+        gsl_multifit_fdfsolver_type * T, int n, int p
+        )
                         
-    int gsl_multifit_fdfsolver_set(gsl_multifit_fdfsolver *s, 
-                                    gsl_multifit_function_fdf *fdf,
-                                    gsl_vector *x)
+    int gsl_multifit_fdfsolver_set(
+        gsl_multifit_fdfsolver *s, 
+        gsl_multifit_function_fdf *fdf,
+        gsl_vector *x
+        )
     int gsl_multifit_fdfsolver_iterate(gsl_multifit_fdfsolver *s)
         
     void gsl_multifit_fdfsolver_free(gsl_multifit_fdfsolver *s)
@@ -179,13 +182,17 @@ cdef extern from "gsl/gsl_multimin.h":
         double xize
         void *state
         
-    gsl_multimin_fminimizer * gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_type *T, int n)
+    gsl_multimin_fminimizer * gsl_multimin_fminimizer_alloc(
+        gsl_multimin_fminimizer_type *T, int n
+        )
     
-    int gsl_multimin_fminimizer_set (gsl_multimin_fminimizer * s,
-                     gsl_multimin_function * f,
-                     gsl_vector * x,
-                     gsl_vector * step_size)
-        
+    int gsl_multimin_fminimizer_set (
+        gsl_multimin_fminimizer * s,
+        gsl_multimin_function * f,
+        gsl_vector * x,
+        gsl_vector * step_size
+        )
+
     void gsl_multimin_fminimizer_free(gsl_multimin_fminimizer *s)
     
     char * gsl_multimin_fminimizer_name (gsl_multimin_fminimizer * s)       
@@ -535,7 +542,9 @@ class multiminex(object):
         self.nit = it
         self.error = None
         if it>=maxit and rval==GSL_CONTINUE:
-            self.error = "MultiMinimizer failed to converge in %d iterations" % maxit
+            self.error = (
+                "MultiMinimizer failed to converge in %d iterations" % maxit
+                )
         gsl_vector_free(vx0)
         gsl_vector_free(ss)
         gsl_multimin_fminimizer_free(s)

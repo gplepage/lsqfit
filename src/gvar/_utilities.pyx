@@ -652,7 +652,7 @@ class SVD(object):
             val = val[-svdnum:]
             vec = vec[-svdnum:]
         ##
-        ## impose svdcut on eignevalues ##
+        ## impose svdcut on eigenvalues ##
         if svdcut is None or svdcut==0:
             self.val = val
             self.vec = vec

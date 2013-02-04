@@ -1,5 +1,18 @@
-Version ????
-=============
+Version ?.?.?.? --- ???
+========================
+
+- Works with python3.3 (and numpy >= 1.17 which is necessary for 3.3).  
+  Fixed minor errors in gvar.BufferDict.__str__ and in some of the unittests
+  that showed up with python3.3.
+
+- gvar.dataset.Dataset changed to an OrderedDict from a dict. This mostly
+  doesn't matter. Just about the only non-cosmetic effect concerns what 
+  happens when an svdcut is applied to the output of avg_data --- small
+  differences arise when rows and columns of the covariance matrix are
+  interchanged (roundoff error).
+
+Version 4.2.7.2 --- 2013-01-29
+==============================
 gvar.fmt_errbudget(...) has new parameter to specify column widths. This
 allows for longer names for outputs and inputs.
 

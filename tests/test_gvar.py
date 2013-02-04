@@ -18,6 +18,7 @@ test-gvar.py
 
 import os
 import unittest
+import collections
 import numpy as np
 import random
 import gvar as gv
@@ -481,9 +482,14 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(z.partialvar(a),sum(var(a).flat))
         self.assertEqual(z.partialvar(d),sum(var(d).flat))
         self.assertAlmostEqual(z.partialsdev(s,a,d),z.sdev)
-        tmp = fmt_errorbudget(outputs=dict(z=z),
-              inputs=dict(s=s,a=a,d=d,sa=[s,a],sd=[s,d],ad=[a,d],sad=[s,a,d]),
-              ndecimal=1)
+        tmp = fmt_errorbudget(
+            outputs=dict(z=z),
+            inputs=collections.OrderedDict([
+                ('a', a), ('s', s), ('d', d), 
+                ('ad', [a,d]), ('sa', [s,a]), ('sd', [s,d]), ('sad', [s,a,d])
+                ]),
+            ndecimal=1
+            ) 
         out = "\n".join([
             "Partial % Errors:",
             "                             z",
@@ -500,9 +506,15 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             ""
             ])
         self.assertEqual(tmp,out,"fmt_errorbudget output wrong")
-        tmp = fmt_errorbudget(outputs=dict(z=z),
-              inputs=dict(s=s,a=a,d=d,sa=[s,a],sd=[s,d],ad=[a,d],sad=[s,a,d]),
-              ndecimal=1, colwidth=25)
+        tmp = fmt_errorbudget(
+            outputs=dict(z=z),
+            inputs=collections.OrderedDict([
+                ('a', a), ('s', s), ('d', d), 
+                ('ad', [a,d]), ('sa', [s,a]), ('sd', [s,d]), ('sad', [s,a,d])
+                ]),
+            ndecimal=1, colwidth=25
+            )        
+
         out = "\n".join([
             "Partial % Errors:",
             "                                                 z",
@@ -519,7 +531,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             ""
             ])
         self.assertEqual(tmp,out,"fmt_errorbudget output wrong (with colwidth)")
-        tmp = fmt_values(outputs=dict(s=s,z=z),ndecimal=1)
+        tmp = fmt_values(outputs=collections.OrderedDict([('s',s),('z',z)]),ndecimal=1)
         out = "\n".join([
         "Values:",
         "                  s: 1.0(2.0)            ",

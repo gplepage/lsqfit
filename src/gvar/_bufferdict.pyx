@@ -279,7 +279,13 @@ class BufferDict(collections.MutableMapping):
         return k in self._data
     ##
     def __str__(self):
-        return str(dict(self.items()))
+        ans = "{"
+        for k in self:
+            ans += "%s: %s," % (repr(k), repr(self[k]))
+        if ans[-1] == ',':
+            ans = ans[:-1]
+            ans += "}"
+        return ans
     ##
     def __repr__(self):
         cn = self.__class__.__name__
