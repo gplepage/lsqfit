@@ -251,6 +251,15 @@ class test_gvar1(unittest.TestCase,ArrayTests):
         self.assertTrue(x!=y and not x==y)
         y = gvar(2*x.mean,x.der,x.cov)  # different mean
         self.assertTrue(x!=y and not x==y  )
+        y = gvar(x.mean, 1.)            # cmp with non-GVar
+        self.assertTrue(y != y.mean and not y == y.mean)
+        self.assertTrue(y.mean != y and not y.mean == y)
+        y = gvar(x.mean, 0)
+        self.assertTrue(not y != y.mean and y == y.mean)
+        self.assertTrue(not y.mean != y and y.mean == y)
+        y = gvar(2*x.mean, 0)
+        self.assertTrue(y != x.mean and not y == x.mean)
+        self.assertTrue(x.mean != y and not x.mean == y)
     ##
     def test_neg(self):
         """ -x """

@@ -26,7 +26,7 @@ import lsqfit
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.jsmath']
 # jsmath_path = '/usr/local/share/jsmath/easy/load.js'
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
-extensions = ['sphinx.ext.autodoc','sphinx.ext.pngmath']
+extensions = ['sphinx.ext.autodoc','sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
 pngmath_use_preview = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'lsqfit'
-copyright = u'2009-2012, G. P. Lepage'
+copyright = u'2009-2013, G. P. Lepage'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

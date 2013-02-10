@@ -11,6 +11,14 @@ Version ?.?.?.? --- ???
   differences arise when rows and columns of the covariance matrix are
   interchanged (roundoff error).
 
+- Changed == and != to allow comparisons with non-GVar types; a GVar
+  compares as not equal to a non-GVar unless its mean equals the 
+  non-GVar and its standard deviation is zero. Note that >, <, etc are
+  not defined for GVars since GVars are not unambiguously ordered
+  --- eg, a number drawn from the distribution 100(99) will be 
+  larger than one from 101(1) almost 50% of the time, even though
+  100 < 101.
+
 Version 4.2.7.2 --- 2013-01-29
 ==============================
 gvar.fmt_errbudget(...) has new parameter to specify column widths. This

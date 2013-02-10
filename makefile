@@ -27,11 +27,12 @@ install-gdev :
 	$(PYTHON) gdev-setup.py install --user --record files-gdev.$(PYTHON)
 
 doc-html:
-	rm -rf doc/html; cd doc/source; make html; mv _build/html ..
+	rm -rf doc/html; sphinx-build -b html doc/source doc/html
 
 doc-pdf:
-	cd doc/source; make latex; cd _build/latex;  make all-pdf
-	mv doc/source/_build/latex/lsqfit.pdf doc/lsqfit.pdf
+	rm -rf doc/lsqfit.pdf
+	sphinx-build -b latex doc/source doc/latex
+	cd doc/latex; make lsqfit.pdf; mv lsqfit.pdf ..
 
 doc-all: doc-html doc-pdf
 

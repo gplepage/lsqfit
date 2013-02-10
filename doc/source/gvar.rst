@@ -447,8 +447,11 @@ can be combined in arithmetic expressions with arrays of numbers or of
 |GVar|\s; the results in both cases are arrays of
 |GVar|\s.
         
-Arithmetic operators ``+ - * / ** == != <> += -= *= /=`` are all
-defined. |GVar|\s are not ordered so ``> >= < <=`` are not defined.
+Arithmetic operators ``+ - * / ** == != <> += -= *= /=`` are all defined.
+|GVar|\s are not ordered so ``> >= < <=`` are not defined.  Two |GVar|\s are
+equal only if their means and derivatives are  equal, and their covariance
+matrices the same. A |GVar| ``x`` is defined to equal a non-|GVar| ``y`` only
+if ``x.mean == y`` and ``x.sdev == 0``.
 
 
 Utilities

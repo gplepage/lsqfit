@@ -470,8 +470,11 @@ covariances. Note that the previous <a class="reference internal" href="#gvar.gv
 can be combined in arithmetic expressions with arrays of numbers or of
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s; the results in both cases are arrays of
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
-<p>Arithmetic operators <tt class="docutils literal"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span> <span class="pre">**</span> <span class="pre">==</span> <span class="pre">!=</span> <span class="pre">&lt;&gt;</span> <span class="pre">+=</span> <span class="pre">-=</span> <span class="pre">*=</span> <span class="pre">/=</span></tt> are all
-defined. <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are not ordered so <tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">&gt;=</span> <span class="pre">&lt;</span> <span class="pre">&lt;=</span></tt> are not defined.</p>
+<p>Arithmetic operators <tt class="docutils literal"><span class="pre">+</span> <span class="pre">-</span> <span class="pre">*</span> <span class="pre">/</span> <span class="pre">**</span> <span class="pre">==</span> <span class="pre">!=</span> <span class="pre">&lt;&gt;</span> <span class="pre">+=</span> <span class="pre">-=</span> <span class="pre">*=</span> <span class="pre">/=</span></tt> are all defined.
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are not ordered so <tt class="docutils literal"><span class="pre">&gt;</span> <span class="pre">&gt;=</span> <span class="pre">&lt;</span> <span class="pre">&lt;=</span></tt> are not defined.  Two <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are
+equal only if their means and derivatives are  equal, and their covariance
+matrices the same. A <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> <tt class="docutils literal"><span class="pre">x</span></tt> is defined to equal a non-<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> <tt class="docutils literal"><span class="pre">y</span></tt> only
+if <tt class="docutils literal"><span class="pre">x.mean</span> <span class="pre">==</span> <span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">x.sdev</span> <span class="pre">==</span> <span class="pre">0</span></tt>.</p>
 </div>
 <div class="section" id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
@@ -1446,7 +1449,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2009-2012, G. P. Lepage.
+        &copy; Copyright 2009-2013, G. P. Lepage.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

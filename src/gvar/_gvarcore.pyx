@@ -80,9 +80,15 @@ cdef class GVar:
     ##
     def __richcmp__(xx,yy,op):
         """ only == and != defined """
-        if (op not in [2,3]) or not (isinstance(xx,GVar) 
-                                    and isinstance(yy,GVar)):
+        if (op not in [2,3]):
             raise TypeError("unorderable types")
+        if not (isinstance(xx,GVar) and isinstance(yy,GVar)):
+            if not isinstance(xx, GVar):
+                xx, yy = yy, xx
+            if xx.sdev == 0 and xx.mean == yy:
+                return True if op == 2 else False
+            else:
+                return False if op == 2 else True
         if ((xx.cov is yy.cov) and (xx.mean==yy.mean) 
                 and numpy.all(xx.der==yy.der)):
             return True if op==2 else False
