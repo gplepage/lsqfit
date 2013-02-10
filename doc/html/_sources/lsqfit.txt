@@ -268,6 +268,7 @@ Functions
 
 .. autofunction:: lsqfit.wavg
 
+.. autofunction:: lsqfit.p_transforms
 
 Utility Classes
 ---------------

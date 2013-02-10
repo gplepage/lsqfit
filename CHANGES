@@ -1,9 +1,20 @@
-Version ?.?.?.? --- ???
-========================
+Version 4.3 --- 2013-02-10
+===========================
 
 - Works with python3.3 (and numpy >= 1.17 which is necessary for 3.3).  
   Fixed minor errors in gvar.BufferDict.__str__ and in some of the unittests
   that showed up with python3.3.
+
+- Support for log-normal and "sqrt-normal" prior distributions for fit 
+  function parameters. The idea is to use parameters with names like
+  "log(a)" instead of "a" in the prior, while expressing the fit
+  function in terms of "a": so prior["log(a)"] is 
+  specified in the prior but not prior["a"], while the fit
+  function uses parameter p["a"] but not p["log(a)"]. Parameter 
+  p["a"] has a log-normal distribution because prior["log(a)"] is
+  a gaussian variable. See the section "Positive Parameters" in
+  the overview section of the html documentation, for more 
+  information.
 
 - gvar.dataset.Dataset changed to an OrderedDict from a dict. This mostly
   doesn't matter. Just about the only non-cosmetic effect concerns what 
@@ -11,13 +22,17 @@ Version ?.?.?.? --- ???
   differences arise when rows and columns of the covariance matrix are
   interchanged (roundoff error).
 
-- Changed == and != to allow comparisons with non-GVar types; a GVar
+- Changed == and != for GVars to allow comparisons with non-GVar types; a GVar
   compares as not equal to a non-GVar unless its mean equals the 
   non-GVar and its standard deviation is zero. Note that >, <, etc are
   not defined for GVars since GVars are not unambiguously ordered
   --- eg, a number drawn from the distribution 100(99) will be 
   larger than one from 101(1) almost 50% of the time, even though
   100 < 101.
+
+- Had too many pieces in the version number, so moved to 4.3. A
+  third component, as in 4.3.1, will indicate bug fixes and minor
+  features. There has been a lot added since 4.2 started (see 4.2.2).
 
 Version 4.2.7.2 --- 2013-01-29
 ==============================

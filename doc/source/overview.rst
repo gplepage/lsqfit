@@ -1057,7 +1057,6 @@ fit. It generates a warning if roundoff looks to be a problem. This check
 is done automatically if ``debug=True`` is added to argument list of
 :class:`lsqfit.nonlinear_fit`.
 
-
 Bootstrap Error Analysis
 ------------------------
 Our analysis above assumes that every probability distribution relevant to
@@ -1109,6 +1108,125 @@ In particular, the bootstrap analysis confirms our previous error estimates
 (to within 10-30%, since ``Nbs=40``). When ``Nbs`` is small, it is often
 safer to use the median instead of the mean as the estimator, which is 
 what ``gv.dataset.avg_data`` does because flag ``bstrap`` is set to ``True``. 
+
+
+Positive Parameters
+-------------------
+The priors for |nonlinear_fit| are all gaussian. There are situations,
+however, where other distributions would be desirable. One such case is where
+a parameter  is known to be positive, but is close to zero in value ("close"
+being defined in terms of the *a priori* uncertainty). For such cases we would
+like to use  non-gaussian priors that force positivity --- for example, priors
+that  impose log-normal or exponential distributions on the parameter.
+Ideally the decision to use such a distribution would  be made on a parameter-
+by-parameter basis, when creating the priors, and would have no impact on the
+definition of the fit function itself.
+
+:mod:`lsqfit` provides a decorator, :func:`lsqfit.p_transforms`, for fit
+functions that makes this possible. This decorator only works for fit
+functions that use dictionaries for their parameters. Given a prior ``prior``
+for  a fit, the decorator is used in the following way::
+   
+   @lsqfit.p_transforms(prior, 0, "p")
+   def fitfcn(p):
+      ...
+
+or ::
+
+   @lsqfit.p_transforms(prior, 1, "p")
+   def fitfcn(x, p):
+      ...
+
+if the parameter argument is the second argument of the fit function (see the
+:func:`lsqfit.p_transforms` documentation for more detail). Consider any
+parameter ``p["XX"]`` used in ``fitfcn``. The prior  distribution for that
+parameter can now be turned into a log-normal distribution  by replacing
+``prior["XX"]`` with ``prior["logXX"]`` when defining the prior, thereby
+assigning a gaussian distribution to ``logXX`` rather than to ``XX``.
+Nothing need be changed in the fit function, other than adding the decorator.
+The decorator automatically detects parameters whose keys begin with ``"log"``
+and adds new parameters to the parameter-dictionary for ``fitfcn`` that are
+exponentials of those parameters.
+
+To illustrate consider a simple problem where an experimental quantity ``y`` is
+known to be positive, but experimental errors mean that measured values can
+often be negative:: 
+
+   import gvar as gv
+
+   y = gv.gvar([
+      '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
+      '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)', 
+      '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)', 
+      '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+      ])
+
+We want to know the average value ``a`` of the ``y``\s and so could
+use the following fitting code::
+
+   prior = gv.BufferDict(a=gv.gvar(0.2, 0.2))      # a = avg value of y's
+
+   def fcn(p, N=len(y)):
+      return N * [p['a']]
+
+   fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+   print(fit)
+   print("a =", fit.p["a"].fmt())
+
+where we are assuming *a priori* information that suggests 
+the average is around ``0.2``. The output from this code is::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = -8.4669    itns = 2
+
+   Parameters:
+                 a   0.004 (18)     [ 0.020 (20) ]
+
+   Settings:
+     svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+   a = 0.004(18)
+
+This is not such a useful result since much of the one-sigma range for ``a``
+is negative, and yet we know that ``a`` must be postive.
+
+A better analysis is to use a log-normal distribution for ``a``::
+
+   prior = gv.BufferDict(loga=gv.log(gv.gvar(0.2, 0.2))) # loga not a
+
+   @p_transforms(prior, 0, "p")
+   def fcn(p, N=len(y)):
+      return N * [p['a']]
+
+   fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+   print(fit)
+   print("a =", gv.exp(fit.p["loga"]).fmt())             # exp(loga)
+
+The fit parameter is now ``log a`` rather than ``a`` itself,
+but we are able to use the identical fit function. The result of
+this fit is ::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = -8.558    itns = 12
+
+   Parameters:
+              loga   -4.44 (97)     [ -3.9 (1.0) ]
+
+   Settings:
+     svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+   a = 0.012(11)
+
+which is much more realistic. The *correct* value for ``a`` here is ``0.015``,
+given the method used to generate the ``y``\s.
+
+:func:`lsqfit.p_transforms` also allows parameters to be replaced by their
+square roots as fit parameters --- for example,  define ``prior["sqrt(a)"]``
+rather than ``prior["a"]`` when creating the prior. This again guarantees
+positive  parameters. The prior for ``p["a"]`` is an exponential distribution
+if the mean of ``p["sqrt(a)"]`` is zero. Using ``prior["sqrt(a)"]`` in place
+of ``prior["a"]`` in the example above leads to ``a = 0.010(13)``, which is
+almost identical to the result obtained from the log-normal distribution.
 
 
 Troubleshooting

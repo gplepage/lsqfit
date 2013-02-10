@@ -1025,7 +1025,79 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","not y"],p["not y"].sdev)
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
-    ## 
+    
+    def test_normal(self):
+        " log-normal priors "
+        y = gv.gvar([
+            '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
+            '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)', 
+            '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)', 
+            '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+            ])
+        prior = gv.BufferDict(a = gv.gvar("0.02(2)"))
+        @p_transforms(prior, 0, "p")
+        def fcn(p, N=len(y)):
+            "fit function"
+            return N * [p['a']]
+        fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+        self.assertEqual(fit.p['a'].fmt(), "0.004(18)")
+        self.assertEqual(fcn.__name__, "fcn")
+        self.assertEqual(fcn.__doc__, "fit function")
+
+    def test_lognormal(self):
+        " normal priors "
+        y = gv.gvar([
+            '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
+            '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)', 
+            '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)', 
+            '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+            ])
+        prior = gv.BufferDict(loga = gv.log(gv.gvar("0.02(2)")))
+        @p_transforms(prior, 0, "p")
+        def fcn(p, N=len(y)):
+            "fit function"
+            return N * [p['a']]
+        fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+        self.assertEqual(gv.exp(fit.p['loga']).fmt(), "0.012(11)")
+        self.assertEqual(fcn.__name__, "fcn")
+        self.assertEqual(fcn.__doc__, "fit function")
+
+    def test_sqrtnormal(self):
+        " sqrt-normal priors "
+        y = gv.gvar([
+            '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
+            '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)', 
+            '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)', 
+            '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+            ])
+        prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
+        @p_transforms(prior, 1, "p")
+        def fcn(x, p, N=len(y)):
+            "fit function"
+            return N * [p['a']]
+        fit = nonlinear_fit(prior=prior, data=(None,y), fcn=fcn)
+        self.assertEqual((fit.p['sqrta'] ** 2).fmt(), "0.010(13)")
+        self.assertEqual(fcn.__name__, "fcn")
+        self.assertEqual(fcn.__doc__, "fit function")
+
+    def test_sqrtnormal(self):
+        " sqrt-normal priors "
+        y = gv.gvar([
+            '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
+            '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)', 
+            '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)', 
+            '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+            ])
+        prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
+        @p_transforms(prior, 1, "p")
+        def fcn(xdummy, p, N=len(y)):
+            "fit function"
+            return N * [p['a']]
+        fit = nonlinear_fit(prior=prior, data=(None,y), fcn=fcn)
+        self.assertEqual((fit.p['sqrta'] ** 2).fmt(), "0.010(13)")
+        self.assertEqual(fcn.__name__, "fcn")
+        self.assertEqual(fcn.__doc__, "fit function")
+
     def test_multifit_exceptions(self):
         """ multifit exceptions """
         y = gv.gvar(["1(1)", "2(1)"])

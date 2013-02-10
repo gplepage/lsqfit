@@ -69,6 +69,7 @@ The :mod:`lsqfit` tutorial contains extended explanations and examples.
 # GNU General Public License for more details.
 
 import collections
+import functools
 import warnings
 import numpy
 import math, pickle, time
@@ -673,6 +674,98 @@ class nonlinear_fit(object):
                     yield fit
     ##
 ##
+
+# decorator for fit function allowing log/sqrt-normal distributions
+
+def p_transforms(prior, pindex=0, pkey=None):
+    """ Decorate fit function to allow log/sqrt-normal priors.
+
+    This decorator can be applied to fit functions whose parameters 
+    are stored in a dictionary-like object. It searches 
+    the parameter keys for string-valued keys of the 
+    form ``"log(XXX)"``, ``"logXXX"``, ``"sqrt(XXX)"``, or 
+    ``"sqrtXXX"`` where ``"XXX"`` is an arbitrary string. For each
+    such key it adds a new entry to the parameter dictionary
+    with key ``"XXX"`` where::
+
+        p["XXX"] = exp(p[k])    for k = "log(XXX)" or "logXXX"
+
+        or
+
+        p["XXX"] = p[k] ** 2    for k = "sqrt(XXX)" or "sqrtXXX"
+
+    This means that the fit function can be expressed entirely in 
+    terms of ``p["XXX"]`` even if the actual fit parameter is 
+    the logarithm or square root of that quantity. Since fit 
+    parameters have gaussian/normal priors, ``p["XXX"]`` has 
+    a log-normal or "sqrt-normal" distribution in the first
+    or second cases above, respectively. In either case
+    ``p["XXX"]`` is guaranteed to be postiive. 
+
+    This is a convenience function. It allows for the 
+    rapid replacement of a fit parameter by its 
+    logarithm or square root without having to rewrite the
+    fit function --- only the prior need be changed. The
+    decorator needs the prior, and it needs to be told which
+    argument of the fit function is the parameter dictionary::
+
+        @lsqfit.p_transforms(prior, pindex=1, pkey="p")
+        def fitfcn(x, p):
+            ...
+
+    or ::
+
+        @lsqfit.p_transforms(prior, pindex=0, pkey="p")
+        def fitfcn(p):
+            ...
+
+    :param prior: Prior or other dictionary having the same keys as 
+        the prior.
+    :type prior: dictionary-like
+    :param pindex: Index of the parameters-variable in the argument list 
+        of the fit function. (Default is ``0``.)
+    :type pindex: integer
+    :param pkey: Name of the parameters-variable in the argument keyword
+        dictionary of the fit function. (Default is ``None``.)
+    :type pkey: string
+    """
+    log_keys = []
+    sqrt_keys = []
+    for i in prior.keys():
+        if isinstance(i, str):
+            if i[:3] == 'log':
+                if i[3] == '(' and i[-1] == ')':
+                    j = i[4:-1]
+                else:
+                    j = i[3:]
+                log_keys.append((i, j))
+            elif i[:4] == 'sqrt':
+                if i[4] == '(' and i[-1] == ')':
+                    j = i[5:-1]
+                else:
+                    j = i[4:]
+                sqrt_keys.append((i, j))
+    def f(fn):
+        @functools.wraps(fn)
+        def newfn(*args, **kargs):
+            p = ( 
+                _gvar.BufferDict(args[pindex])
+                if pindex < len(args) else
+                _gvar.BufferDict(kargs[pkey])
+                )
+            for i, j in log_keys:
+                p[j] = _gvar.exp(p[i])
+            for i, j in sqrt_keys:
+                p[j] = p[i] * p[i]
+            if pindex < len(args):
+                args = list(args)
+                args[pindex] = p
+                args = tuple(args)
+            else:
+                kargs[pkey] = p
+            return fn(*args, **kargs)
+        return newfn
+    return f
 
 ## components of nonlinear_fit ##
 def _reformat(p, buf):
