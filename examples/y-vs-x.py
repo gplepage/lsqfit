@@ -61,7 +61,7 @@ def main():
         # eps = gv.gvar(1,1e-300)   # use svdcut to make it independent
         # prior['a'] *= eps
         # y *= eps
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior, 
                                    p0=p0,svdcut=SVDCUT)
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters

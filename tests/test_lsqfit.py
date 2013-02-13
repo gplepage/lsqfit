@@ -1035,7 +1035,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(a = gv.gvar("0.02(2)"))
-        @p_transforms(prior, 0, "p")
+        @transform_p(prior, 0, "p")
         def fcn(p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1053,7 +1053,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(loga = gv.log(gv.gvar("0.02(2)")))
-        @p_transforms(prior, 0, "p")
+        @transform_p(prior, 0, "p")
         def fcn(p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1071,7 +1071,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
-        @p_transforms(prior, 1, "p")
+        @transform_p(prior, 1, "p")
         def fcn(x, p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1089,7 +1089,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
-        @p_transforms(prior, 1, "p")
+        @transform_p(prior, 1, "p")
         def fcn(xdummy, p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1097,6 +1097,28 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual((fit.p['sqrta'] ** 2).fmt(), "0.010(13)")
         self.assertEqual(fcn.__name__, "fcn")
         self.assertEqual(fcn.__doc__, "fit function")
+
+    def test_transform_p(self):
+        " transform_p.XXX "
+        prior = dict(logp=1., a=2.)
+        for x,y in [
+            ("logp", "p"), ("log(p)","p"), ("sqrtp", "p"), ("sqrt(p)", "p")
+            ]:
+            self.assertEqual(transform_p.paramkey(x), y)
+        for prior in [
+            {"logp":2.}, {"log(p)":2.}, {"sqrtp":4.}, {"sqrt(p)":4.}
+            ]:
+            key = list(prior.keys())[0]
+            prior["a"] = 7.
+            self.assertEqual(transform_p.priorkey(prior, "p"), key)
+            nprior = transform_p(prior).transform(prior)
+            self.assertEqual(set(nprior.keys()), set([key, "p", "a"]))
+            self.assertEqual(nprior["a"], prior["a"])
+            self.assertEqual(nprior[key], prior[key])
+            self.assertAlmostEqual(
+                nprior["p"], 
+                gv.exp(prior[key]) if key[:3] == "log" else prior[key] ** 2
+                )
 
     def test_multifit_exceptions(self):
         """ multifit exceptions """

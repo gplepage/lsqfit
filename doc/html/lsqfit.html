@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.3 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.3.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.3',
+        VERSION:     '4.3.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.3 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.3.1 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.3.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -745,43 +745,46 @@ same type and shape as each element of <tt class="docutils literal"><span class=
 
 </dd></dl>
 
-<dl class="function">
-<dt id="lsqfit.p_transforms">
-<tt class="descclassname">lsqfit.</tt><tt class="descname">p_transforms</tt><big>(</big><em>prior</em>, <em>pindex=0</em>, <em>pkey=None</em><big>)</big><a class="headerlink" href="#lsqfit.p_transforms" title="Permalink to this definition">¶</a></dt>
+</div>
+<div class="section" id="utility-classes">
+<h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lsqfit.transform_p">
+<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>prior</em>, <em>pindex=0</em>, <em>pkey=None</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorate fit function to allow log/sqrt-normal priors.</p>
 <p>This decorator can be applied to fit functions whose parameters 
 are stored in a dictionary-like object. It searches 
 the parameter keys for string-valued keys of the 
-form <tt class="docutils literal"><span class="pre">&quot;log(XXX)&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;logXXX&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;sqrt(XXX)&quot;</span></tt>, or 
-<tt class="docutils literal"><span class="pre">&quot;sqrtXXX&quot;</span></tt> where <tt class="docutils literal"><span class="pre">&quot;XXX&quot;</span></tt> is an arbitrary string. For each
+form <tt class="docutils literal"><span class="pre">&quot;log(XX)&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;logXX&quot;</span></tt>, <tt class="docutils literal"><span class="pre">&quot;sqrt(XX)&quot;</span></tt>, or 
+<tt class="docutils literal"><span class="pre">&quot;sqrtXX&quot;</span></tt> where <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> is an arbitrary string. For each
 such key it adds a new entry to the parameter dictionary
-with key <tt class="docutils literal"><span class="pre">&quot;XXX&quot;</span></tt> where:</p>
-<div class="highlight-python"><pre>p["XXX"] = exp(p[k])    for k = "log(XXX)" or "logXXX"
+with key <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> where:</p>
+<div class="highlight-python"><pre>p["XX"] = exp(p[k])    for k = "log(XX)" or "logXX"
 
 or
 
-p["XXX"] = p[k] ** 2    for k = "sqrt(XXX)" or "sqrtXXX"</pre>
+p["XX"] = p[k] ** 2    for k = "sqrt(XX)" or "sqrtXX"</pre>
 </div>
 <p>This means that the fit function can be expressed entirely in 
-terms of <tt class="docutils literal"><span class="pre">p[&quot;XXX&quot;]</span></tt> even if the actual fit parameter is 
+terms of <tt class="docutils literal"><span class="pre">p[&quot;XX&quot;]</span></tt> even if the actual fit parameter is 
 the logarithm or square root of that quantity. Since fit 
-parameters have gaussian/normal priors, <tt class="docutils literal"><span class="pre">p[&quot;XXX&quot;]</span></tt> has 
+parameters have gaussian/normal priors, <tt class="docutils literal"><span class="pre">p[&quot;XX&quot;]</span></tt> has 
 a log-normal or &#8220;sqrt-normal&#8221; distribution in the first
 or second cases above, respectively. In either case
-<tt class="docutils literal"><span class="pre">p[&quot;XXX&quot;]</span></tt> is guaranteed to be postiive.</p>
+<tt class="docutils literal"><span class="pre">p[&quot;XX&quot;]</span></tt> is guaranteed to be postiive.</p>
 <p>This is a convenience function. It allows for the 
 rapid replacement of a fit parameter by its 
 logarithm or square root without having to rewrite the
 fit function &#8212; only the prior need be changed. The
 decorator needs the prior, and it needs to be told which
 argument of the fit function is the parameter dictionary:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.p_transforms</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">pindex</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="s">&quot;p&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">pindex</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="s">&quot;p&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.p_transforms</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">pindex</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="s">&quot;p&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">pindex</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pkey</span><span class="o">=</span><span class="s">&quot;p&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
@@ -791,8 +794,9 @@ argument of the fit function is the parameter dictionary:</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>prior</strong> (<em>dictionary-like</em>) &#8211; Prior or other dictionary having the same keys as 
-the prior.</li>
+<li><strong>prior</strong> (<em>dictionary-like or set</em>) &#8211; Prior or other dictionary having the same keys as 
+the prior. Alternatively could be a set or list of the keys
+(e.g.,  <tt class="docutils literal"><span class="pre">prior</span></tt> could be replaced by <tt class="docutils literal"><span class="pre">prior.keys()</span></tt>).</li>
 <li><strong>pindex</strong> (<em>integer</em>) &#8211; Index of the parameters-variable in the argument list 
 of the fit function. (Default is <tt class="docutils literal"><span class="pre">0</span></tt>.)</li>
 <li><strong>pkey</strong> (<em>string</em>) &#8211; Name of the parameters-variable in the argument keyword
@@ -802,11 +806,33 @@ dictionary of the fit function. (Default is <tt class="docutils literal"><span c
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="lsqfit.transform_p.transform">
+<tt class="descname">transform</tt><big>(</big><em>prior</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create transformed <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
+<p>Create a copy of <tt class="docutils literal"><span class="pre">prior</span></tt> that includes new entries
+for each <tt class="docutils literal"><span class="pre">&quot;logXX&quot;</span></tt>, etc entry corresponding to
+<tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt>. The values in <tt class="docutils literal"><span class="pre">prior</span></tt> can be any type that 
+supports logarithms, exponentials, and arithmetic.</p>
 </dd></dl>
 
-</div>
-<div class="section" id="utility-classes">
-<h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="staticmethod">
+<dt id="lsqfit.transform_p.paramkey">
+<em class="property">static </em><tt class="descname">paramkey</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.paramkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return parameter key corresponding to prior-key <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
+<p>Strip of any <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> prefix.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="lsqfit.transform_p.priorkey">
+<em class="property">static </em><tt class="descname">priorkey</tt><big>(</big><em>prior</em>, <em>k</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.priorkey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return key in <tt class="docutils literal"><span class="pre">prior</span></tt> corresponding to <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
+<p>Adds in <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> as needed to find a key
+in <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="class">
 <dt id="lsqfit.multifit">
 <em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">multifit</tt><big>(</big><em>x0</em>, <em>n</em>, <em>f</em>, <em>reltol=1e-4</em>, <em>abstol=0</em>, <em>maxit=1000</em>, <em>alg='lmsder'</em>, <em>analyzer=None</em><big>)</big><a class="headerlink" href="#lsqfit.multifit" title="Permalink to this definition">¶</a></dt>
@@ -1002,7 +1028,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.3.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

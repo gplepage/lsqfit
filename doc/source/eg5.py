@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-eg3.py - Code for "y has No Error Bars" and "SVD Cuts and Roundoff Error"
+eg5.py - Code for "y has No Error Bars" and "SVD Cuts and Roundoff Error"
 
 Created by Peter Lepage on 2010-01-04.
-Copyright (c) 2010 Cornell University. All rights reserved.
+Copyright (c) 2010-13 G. Peter Lepage. All rights reserved.
 """
 
 USE_SVD = True

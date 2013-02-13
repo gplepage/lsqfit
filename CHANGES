@@ -1,3 +1,11 @@
+Version 4.3.1 --- 2013-02-10
+============================
+
+- Slight refinements to the support for log-normal, etc
+  priors. The decorator name is changed (but the old 
+  name is aliased to the new, to support legacy code 
+  (if there is any)). 
+
 Version 4.3 --- 2013-02-10
 ===========================
 

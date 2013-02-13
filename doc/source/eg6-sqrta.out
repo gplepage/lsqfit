@@ -1,0 +1,10 @@
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.66    logGBF = -8.5242    itns = 11
+
+Parameters:
+          sqrta   0.099 (67)     [ 0.141 (71) ]
+
+Settings:
+  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+a = 0.010(13)

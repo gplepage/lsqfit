@@ -1122,37 +1122,38 @@ Ideally the decision to use such a distribution would  be made on a parameter-
 by-parameter basis, when creating the priors, and would have no impact on the
 definition of the fit function itself.
 
-:mod:`lsqfit` provides a decorator, :func:`lsqfit.p_transforms`, for fit
+:mod:`lsqfit` provides a decorator, :class:`lsqfit.transform_p`, for fit
 functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior ``prior``
-for  a fit, the decorator is used in the following way::
+for  a fit, the decorator is used in the following way: for example, ::
    
-   @lsqfit.p_transforms(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0, "p")
    def fitfcn(p):
       ...
 
-or ::
+when the parameter argument is the first argument of the fit function, or ::
 
-   @lsqfit.p_transforms(prior, 1, "p")
-   def fitfcn(x, p):
+   @lsqfit.transform_p(prior, 1, "param")
+   def fitfcn(x, param):
       ...
 
-if the parameter argument is the second argument of the fit function (see the
-:func:`lsqfit.p_transforms` documentation for more detail). Consider any
+when the parameter argument is the second argument of the fit function (see
+the :class:`lsqfit.transform_p` documentation for more detail). Consider any
 parameter ``p["XX"]`` used in ``fitfcn``. The prior  distribution for that
 parameter can now be turned into a log-normal distribution  by replacing
-``prior["XX"]`` with ``prior["logXX"]`` when defining the prior, thereby
-assigning a gaussian distribution to ``logXX`` rather than to ``XX``.
-Nothing need be changed in the fit function, other than adding the decorator.
-The decorator automatically detects parameters whose keys begin with ``"log"``
-and adds new parameters to the parameter-dictionary for ``fitfcn`` that are
-exponentials of those parameters.
+``prior["XX"]`` with ``prior["logXX"]`` (or ``prior["log(XX)"]``) when
+defining the prior, thereby assigning a gaussian distribution to ``logXX``
+rather than to ``XX``. Nothing need be changed in the fit function, other than
+adding the decorator. The decorator automatically detects parameters whose
+keys begin with ``"log"`` and adds new parameters to the parameter-dictionary
+for ``fitfcn`` that are exponentials of those parameters.
 
 To illustrate consider a simple problem where an experimental quantity ``y`` is
 known to be positive, but experimental errors mean that measured values can
 often be negative:: 
 
    import gvar as gv
+   import lsqfit
 
    y = gv.gvar([
       '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)', 
@@ -1169,23 +1170,14 @@ use the following fitting code::
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
-   fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
    print("a =", fit.p["a"].fmt())
 
 where we are assuming *a priori* information that suggests 
-the average is around ``0.2``. The output from this code is::
+the average is around ``0.2``. The output from this code is:
 
-   Least Square Fit:
-     chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = -8.4669    itns = 2
-
-   Parameters:
-                 a   0.004 (18)     [ 0.020 (20) ]
-
-   Settings:
-     svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-   a = 0.004(18)
+.. literalinclude:: eg6-a.out
 
 This is not such a useful result since much of the one-sigma range for ``a``
 is negative, and yet we know that ``a`` must be postive.
@@ -1194,39 +1186,31 @@ A better analysis is to use a log-normal distribution for ``a``::
 
    prior = gv.BufferDict(loga=gv.log(gv.gvar(0.2, 0.2))) # loga not a
 
-   @p_transforms(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0, "p")
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
-   fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
+   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
    print("a =", gv.exp(fit.p["loga"]).fmt())             # exp(loga)
 
 The fit parameter is now ``log a`` rather than ``a`` itself,
 but we are able to use the identical fit function. The result of
-this fit is ::
+this fit is
 
-   Least Square Fit:
-     chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = -8.558    itns = 12
+.. literalinclude:: eg6-loga.out
 
-   Parameters:
-              loga   -4.44 (97)     [ -3.9 (1.0) ]
-
-   Settings:
-     svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-   a = 0.012(11)
-
-which is much more realistic. The *correct* value for ``a`` here is ``0.015``,
+which is more compelling. The "correct" value for ``a`` here is ``0.015``,
 given the method used to generate the ``y``\s.
 
-:func:`lsqfit.p_transforms` also allows parameters to be replaced by their
+:func:`lsqfit.transform_p` also allows parameters to be replaced by their
 square roots as fit parameters --- for example,  define ``prior["sqrt(a)"]``
-rather than ``prior["a"]`` when creating the prior. This again guarantees
-positive  parameters. The prior for ``p["a"]`` is an exponential distribution
-if the mean of ``p["sqrt(a)"]`` is zero. Using ``prior["sqrt(a)"]`` in place
-of ``prior["a"]`` in the example above leads to ``a = 0.010(13)``, which is
-almost identical to the result obtained from the log-normal distribution.
+(or ``prior["sqrta"]``) rather than ``prior["a"]`` when creating the prior.
+This again guarantees positive  parameters. The prior for ``p["a"]`` is an
+exponential distribution if the mean of ``p["sqrt(a)"]`` is zero. Using
+``prior["sqrt(a)"]`` in place of ``prior["a"]`` in the example above leads to
+``a = 0.010(13)``, which is almost identical to the result obtained from the
+log-normal distribution.
 
 
 Troubleshooting

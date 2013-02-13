@@ -268,10 +268,17 @@ Functions
 
 .. autofunction:: lsqfit.wavg
 
-.. autofunction:: lsqfit.p_transforms
 
 Utility Classes
 ---------------
+.. autoclass:: lsqfit.transform_p
+
+   .. automethod:: transform
+
+   .. automethod:: paramkey
+
+   .. automethod:: priorkey
+
 .. autoclass:: lsqfit.multifit(x0,n,f,reltol=1e-4,abstol=0,maxit=1000,alg='lmsder',analyzer=None)
 
 .. autoclass:: lsqfit.multiminex(x0,f,tol=1e-4,maxit=1000,step=1,alg='nmsimplex2',analyzer=None)

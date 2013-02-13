@@ -677,30 +677,30 @@ class nonlinear_fit(object):
 
 # decorator for fit function allowing log/sqrt-normal distributions
 
-def p_transforms(prior, pindex=0, pkey=None):
+class transform_p(object):
     """ Decorate fit function to allow log/sqrt-normal priors.
 
     This decorator can be applied to fit functions whose parameters 
     are stored in a dictionary-like object. It searches 
     the parameter keys for string-valued keys of the 
-    form ``"log(XXX)"``, ``"logXXX"``, ``"sqrt(XXX)"``, or 
-    ``"sqrtXXX"`` where ``"XXX"`` is an arbitrary string. For each
+    form ``"log(XX)"``, ``"logXX"``, ``"sqrt(XX)"``, or 
+    ``"sqrtXX"`` where ``"XX"`` is an arbitrary string. For each
     such key it adds a new entry to the parameter dictionary
-    with key ``"XXX"`` where::
+    with key ``"XX"`` where::
 
-        p["XXX"] = exp(p[k])    for k = "log(XXX)" or "logXXX"
+        p["XX"] = exp(p[k])    for k = "log(XX)" or "logXX"
 
         or
 
-        p["XXX"] = p[k] ** 2    for k = "sqrt(XXX)" or "sqrtXXX"
+        p["XX"] = p[k] ** 2    for k = "sqrt(XX)" or "sqrtXX"
 
     This means that the fit function can be expressed entirely in 
-    terms of ``p["XXX"]`` even if the actual fit parameter is 
+    terms of ``p["XX"]`` even if the actual fit parameter is 
     the logarithm or square root of that quantity. Since fit 
-    parameters have gaussian/normal priors, ``p["XXX"]`` has 
+    parameters have gaussian/normal priors, ``p["XX"]`` has 
     a log-normal or "sqrt-normal" distribution in the first
     or second cases above, respectively. In either case
-    ``p["XXX"]`` is guaranteed to be postiive. 
+    ``p["XX"]`` is guaranteed to be postiive. 
 
     This is a convenience function. It allows for the 
     rapid replacement of a fit parameter by its 
@@ -709,19 +709,20 @@ def p_transforms(prior, pindex=0, pkey=None):
     decorator needs the prior, and it needs to be told which
     argument of the fit function is the parameter dictionary::
 
-        @lsqfit.p_transforms(prior, pindex=1, pkey="p")
+        @lsqfit.transform_p(prior, pindex=1, pkey="p")
         def fitfcn(x, p):
             ...
 
     or ::
 
-        @lsqfit.p_transforms(prior, pindex=0, pkey="p")
+        @lsqfit.transform_p(prior, pindex=0, pkey="p")
         def fitfcn(p):
             ...
 
     :param prior: Prior or other dictionary having the same keys as 
-        the prior.
-    :type prior: dictionary-like
+        the prior. Alternatively could be a set or list of the keys
+        (e.g.,  ``prior`` could be replaced by ``prior.keys()``).
+    :type prior: dictionary-like or set
     :param pindex: Index of the parameters-variable in the argument list 
         of the fit function. (Default is ``0``.)
     :type pindex: integer
@@ -729,43 +730,96 @@ def p_transforms(prior, pindex=0, pkey=None):
         dictionary of the fit function. (Default is ``None``.)
     :type pkey: string
     """
-    log_keys = []
-    sqrt_keys = []
-    for i in prior.keys():
-        if isinstance(i, str):
-            if i[:3] == 'log':
-                if i[3] == '(' and i[-1] == ')':
-                    j = i[4:-1]
-                else:
-                    j = i[3:]
-                log_keys.append((i, j))
-            elif i[:4] == 'sqrt':
-                if i[4] == '(' and i[-1] == ')':
-                    j = i[5:-1]
-                else:
-                    j = i[4:]
-                sqrt_keys.append((i, j))
-    def f(fn):
-        @functools.wraps(fn)
-        def newfn(*args, **kargs):
+    def __init__(self, prior, pindex=0, pkey=None):
+        self.pindex = pindex
+        self.pkey = pkey
+        self.log_keys = []
+        self.sqrt_keys = []
+        pkeys = prior.keys() if hasattr(prior, "keys") else prior
+        for i in pkeys:
+            if isinstance(i, str):
+                if i[:3] == 'log':
+                    if i[3] == '(' and i[-1] == ')':
+                        j = i[4:-1]
+                    else:
+                        j = i[3:]
+                    self.log_keys.append((i, j))
+                elif i[:4] == 'sqrt':
+                    if i[4] == '(' and i[-1] == ')':
+                        j = i[5:-1]
+                    else:
+                        j = i[4:]
+                    self.sqrt_keys.append((i, j))
+
+    @staticmethod
+    def priorkey(prior, k):
+        """ Return key in ``prior`` corresponding to ``k``. 
+
+        Add in ``"log"`` or ``"sqrt"`` as needed to find a key
+        in ``prior``.
+        """
+        if k in prior:
+            return k
+        for t in ["log{}", "log({})", "sqrt{}", "sqrt({})"]:
+            tk = t.format(str(k))
+            if tk in prior:
+                return tk
+        raise ValueError("unknown prior: " + str(k))
+
+    @staticmethod
+    def paramkey(k):
+        """ Return parameter key corresponding to prior-key ``k``.
+
+        Strip off any ``"log"`` or ``"sqrt"`` prefix.
+        """
+        if isinstance(k, str):
+            if k[:4] == "log(" and k[-1] == ")":
+                return k[4:-1]
+            elif k[:3] == "log":
+                return k[3:]
+            elif k[:5] == "sqrt(" and k[-1] == ")":
+                return k[5:-1]
+            elif k[:4] == "sqrt":
+                return k[4:]
+        return k
+
+    def transform(self, prior):
+        """ Create transformed ``prior``.
+
+        Create a copy of ``prior`` that includes new entries
+        for each ``"logXX"``, etc entry corresponding to
+        ``"XX"``. The values in ``prior`` can be any type that 
+        supports logarithms, exponentials, and arithmetic.
+        """
+        newp = _gvar.BufferDict(prior)
+        for i, j in self.log_keys:
+            newp[j] = _gvar.exp(newp[i])
+        for i, j in self.sqrt_keys:
+            newp[j] = newp[i] * newp[i]
+        return newp
+
+    def __call__(self, f):
+        @functools.wraps(f)
+        def newf(*args, **kargs):
             p = ( 
-                _gvar.BufferDict(args[pindex])
-                if pindex < len(args) else
-                _gvar.BufferDict(kargs[pkey])
+                _gvar.BufferDict(args[self.pindex])
+                if self.pindex < len(args) else
+                _gvar.BufferDict(kargs[self.pkey])
                 )
-            for i, j in log_keys:
+            for i, j in self.log_keys:
                 p[j] = _gvar.exp(p[i])
-            for i, j in sqrt_keys:
+            for i, j in self.sqrt_keys:
                 p[j] = p[i] * p[i]
-            if pindex < len(args):
+            if self.pindex < len(args):
                 args = list(args)
-                args[pindex] = p
+                args[self.pindex] = p
                 args = tuple(args)
             else:
-                kargs[pkey] = p
-            return fn(*args, **kargs)
-        return newfn
-    return f
+                kargs[self.pkey] = p
+            return f(*args, **kargs)
+        return newf
+
+p_transforms = transform_p   # legacy name
 
 ## components of nonlinear_fit ##
 def _reformat(p, buf):
@@ -784,7 +838,6 @@ def _reformat(p, buf):
                 "p, buf size mismatch: %d, %d"%(numpy.size(p), len(buf)))
         ans = numpy.array(buf).reshape(numpy.shape(p))
     return ans
-##
     
 def _unpack_data(data, prior, svdcut, svdnum): 
     """ Unpack data and prior into ``(x, y, prior, fdata)``. 
@@ -826,8 +879,8 @@ def _unpack_data(data, prior, svdcut, svdnum):
         y = _unpack_gvars(y)
     else:
         raise ValueError("data tuple wrong length: "+str(len(data)))
-    ##
-    ## create svd script ##
+
+    # create svd script 
     fdata = dict(svdcorrection={})
         
     def _apply_svd(k, data, fdata=fdata, svdcut=svdcut, svdnum=svdnum):
@@ -840,15 +893,14 @@ def _unpack_data(data, prior, svdcut, svdnum):
         if k == 'prior':
             fdata['logdet_prior'] = _gvar.svd.logdet
         return ans
-    ##
-    ##
+
     if prior is not None:
         ## have prior ##
         if data_is_3tuple or _gvar.uncorrelated(y.flat, prior.flat):
             ## y uncorrelated with prior ##
             y = _apply_svd('y', y)
             prior = _apply_svd('prior', prior)
-            ##
+          
         else:
             ## y correlated with prior ##
             yp = _apply_svd('all', numpy.concatenate((y.flat, prior.flat)))
@@ -860,12 +912,9 @@ def _unpack_data(data, prior, svdcut, svdnum):
             s = _gvar.SVD(invcov[y.size:, y.size:])
             # following has minus sign because s is for the inv of cov:
             fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) for vi in s.val)
-            ##
-        ##
     else:
         ## no prior ##
         y = _apply_svd('y', y)
-        ##
     return x, y, prior, fdata
 ##        
     
