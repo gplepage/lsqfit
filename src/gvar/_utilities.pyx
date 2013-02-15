@@ -151,6 +151,49 @@ def sdev(g):
         buf[i] = gi.sdev
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 ##
+def deriv(g, GVar x):
+    """ Compute first derivatives wrt ``x`` of |GVar|\s in ``g``.
+
+    ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
+    |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
+
+    ``x`` must be a |GVar| created by a call to :func:`gvar.gvar`. (More 
+    precisely, ``x.der`` must have only one nonzero entry.)
+    """
+    cdef unsigned int i, j, ider
+    cdef double xder 
+    cdef GVar gi
+    cdef numpy.ndarray[numpy.double_t,ndim=1] buf
+    xder = 0.0
+    for i in range(x.d.size):
+        if x.d.v[i].v != 0:
+            if xder != 0:
+                raise ValueError("derivative ambiguous -- x is not independent")
+            else:
+                xder = x.d.v[i].v
+                ider = x.d.v[i].i
+    if isinstance(g, GVar):
+        gi = g
+        for j in range(gi.d.size):
+            if gi.d.v[j].i == ider:
+                return gi.d.v[j].v / xder
+        else:
+            return 0.0
+    if hasattr(g, 'keys'):
+        if not isinstance(g, BufferDict):
+            g = BufferDict(g)
+    else:
+        g = numpy.asarray(g)
+    buf = numpy.zeros(g.size, float)
+    for i, gi in enumerate(g.flat):
+        for j in range(gi.d.size):
+            if gi.d.v[j].i == ider:
+                buf[i] = gi.d.v[j].v / xder
+                break
+        else:
+            buf[i] = 0.0
+    return BufferDict(g, buf=buf) if g.shape is None else buf.reshape(g.shape)
+
 def var(g):
     """ Extract variances from :class:`gvar.GVar`\s in ``g``.
         

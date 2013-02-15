@@ -704,6 +704,24 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertTrue(not uncorrelated(b,c))
         self.assertTrue(not uncorrelated(a,b))
     ##
+    def test_deriv(self):
+        global x, y, gvar
+        f = 2 * x ** 2. + 3 * y
+        self.assertEqual(deriv(f, x), 4. * x.mean)
+        self.assertEqual(deriv(f, y), 3.)
+        with self.assertRaises(ValueError):
+            deriv(f, x+y)
+        f = [2 * x + 3 * y, 4 * x]
+        self.assertEqual(deriv(f, x).tolist(), [2., 4.])
+        self.assertEqual(deriv(f, y).tolist(), [3., 0.])
+        with self.assertRaises(ValueError):
+            deriv(f, x+y)
+        f = BufferDict(a=2 * x + 3 * y, b=4 * x)
+        self.assertEqual(deriv(f, x), dict(a=2., b=4.))
+        self.assertEqual(deriv(f, y), dict(a=3., b=0.))
+        with self.assertRaises(ValueError):
+            deriv(f, x+y)
+
     def test_evalcov1(self):
         """ evalcov(array) """
         a,b = gvar([1.,2.],[[64.,4.],[4.,36.]])
