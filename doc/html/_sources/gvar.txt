@@ -475,6 +475,10 @@ matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
 
 .. autofunction:: gvar.uncorrelated(g1, g2)
 
+|GVar|\s contain information about derivatives with respect to the *independent*
+|GVar|\s from which they were constructed. This information can be extracted using:
+
+.. autofunction:: gvar.deriv(g, x)
 
 The following function creates an iterator that generates random arrays
 from the distribution defined by array (or dictionary) ``g`` of |GVar|\s. 
@@ -537,6 +541,11 @@ The fundamental class for representing gaussian variables is:
    .. automethod:: partialvar(*args)
    
    .. automethod:: partialsdev(*args)
+
+   Partial derivatives of the |GVar| with respect to the independent
+   |GVar|\s from which it was constructed are given by:
+
+   .. automethod:: deriv(x)
    
    There are two methods for converting ``self`` into a string, for 
    printing:

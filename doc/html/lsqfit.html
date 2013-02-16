@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.3.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.4 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.3.1',
+        VERSION:     '4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.3.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.4 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.3.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -789,6 +789,8 @@ argument of the fit function is the parameter dictionary:</p>
     <span class="o">...</span>
 </pre></div>
 </div>
+<p>The decorator assigns a copy of itself to the function
+as an attribute: <tt class="docutils literal"><span class="pre">fitfcn.transform_p</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -820,14 +822,14 @@ supports logarithms, exponentials, and arithmetic.</p>
 <dt id="lsqfit.transform_p.paramkey">
 <em class="property">static </em><tt class="descname">paramkey</tt><big>(</big><em>k</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.paramkey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return parameter key corresponding to prior-key <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
-<p>Strip of any <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> prefix.</p>
+<p>Strip off any <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> prefix.</p>
 </dd></dl>
 
 <dl class="staticmethod">
 <dt id="lsqfit.transform_p.priorkey">
 <em class="property">static </em><tt class="descname">priorkey</tt><big>(</big><em>prior</em>, <em>k</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.priorkey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return key in <tt class="docutils literal"><span class="pre">prior</span></tt> corresponding to <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
-<p>Adds in <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> as needed to find a key
+<p>Add in <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> or <tt class="docutils literal"><span class="pre">&quot;sqrt&quot;</span></tt> as needed to find a key
 in <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
 </dd></dl>
 
@@ -1028,7 +1030,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.3.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

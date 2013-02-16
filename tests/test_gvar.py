@@ -711,6 +711,10 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(deriv(f, y), 3.)
         with self.assertRaises(ValueError):
             deriv(f, x+y)
+        self.assertEqual(f.deriv(x), 4. * x.mean)
+        self.assertEqual(f.deriv(y), 3.)
+        with self.assertRaises(ValueError):
+            f.deriv(x+y)
         f = [2 * x + 3 * y, 4 * x]
         self.assertEqual(deriv(f, x).tolist(), [2., 4.])
         self.assertEqual(deriv(f, y).tolist(), [3., 0.])

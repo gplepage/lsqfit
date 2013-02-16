@@ -719,6 +719,9 @@ class transform_p(object):
         def fitfcn(p):
             ...
 
+    The decorator assigns a copy of itself to the function
+    as an attribute: ``fitfcn.transform_p``.
+
     :param prior: Prior or other dictionary having the same keys as 
         the prior. Alternatively could be a set or list of the keys
         (e.g.,  ``prior`` could be replaced by ``prior.keys()``).
@@ -816,6 +819,7 @@ class transform_p(object):
                 args = tuple(args)
             else:
                 kargs[self.pkey] = p
+            newf.transform_p = self
             return f(*args, **kargs)
         return newf
 
@@ -944,7 +948,9 @@ def _unpack_p0(p0, p0file, prior):
             #     p0 = pickle.load(f)
         except (IOError, EOFError):
             if prior is None:
-                raise IOError("Can't read parameters from "+p0)
+                raise IOError(
+                    "No prior and can't read parameters from " + p0file
+                    )
             else:
                 p0 = None
         ##

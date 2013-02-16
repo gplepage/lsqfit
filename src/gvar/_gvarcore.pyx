@@ -53,7 +53,7 @@ except:
     _ARRAY_TYPES = [numpy.ndarray]
    
 
-## GVar ## 
+# GVar 
 cdef class GVar:
     # cdef double v     -- value or mean
     # cdef svec d       -- vector of derivatives
@@ -63,21 +63,21 @@ cdef class GVar:
         self.v = v
         self.d = d
         self.cov = cov
-    ##
+
     cpdef GVar clone(self):
         return GVar(self.v,self.d,self.cov)
-    ##
+
     def __repr__(self):
         # return "construct_gvar(%s,%s,%s)" % (repr(self.mean),repr(self.der),repr(self.cov))
         return str(self)
-    ##
+
     def __str__(self):
         """ Convert to string with format: mean +- std-dev. """
         return "%g +- %g"%(self.mean,self.sdev)
-    ##
+
     def __hash__(self):
         return id(self)
-    ##
+
     def __richcmp__(xx,yy,op):
         """ only == and != defined """
         if (op not in [2,3]):
@@ -94,17 +94,17 @@ cdef class GVar:
             return True if op==2 else False
         else:
             return True if op==3 else False
-    ##
+
     def __call__(self):
         """ Generate random number from ``self``'s distribution."""
         return numpy.random.normal(self.mean,self.sdev)
-    ##
+
     def __neg__(self):
         return GVar(-self.v,self.d.mul(-1.),self.cov)
-    ##
+
     def __pos__(self):
         return self
-    ##
+
     def __add__(xx,yy):
         cdef GVar x,y
         cdef unsigned int i,nx,di,ny
@@ -124,7 +124,7 @@ cdef class GVar:
             return GVar(y.v+xx,y.d,y.cov)
         else: 
             return NotImplemented
-    ##
+
     def __sub__(xx,yy):
         cdef GVar x,y
         if type(yy) in _ARRAY_TYPES:
@@ -143,7 +143,7 @@ cdef class GVar:
             return GVar(xx-y.v,y.d.mul(-1.),y.cov)
         else: 
             return NotImplemented
-    ##
+
     def __mul__(xx,yy):
         cdef GVar x,y
         
@@ -163,7 +163,7 @@ cdef class GVar:
             return GVar(xx*y.v,y.d.mul(xx),y.cov)
         else: 
             return NotImplemented
-    ##
+
     # truediv and div are the same --- 1st is for python3, 2nd for python2
     def __truediv__(xx,yy):
         cdef GVar x,y
@@ -186,7 +186,7 @@ cdef class GVar:
             return GVar(xd/y.v,y.d.mul(-xd/y.v**2),y.cov)
         else: 
             return NotImplemented
-    ##
+
     def __div__(xx,yy):
         cdef GVar x,y
         cdef double xd,yd
@@ -208,7 +208,7 @@ cdef class GVar:
             return GVar(xd/y.v,y.d.mul(-xd/y.v**2),y.cov)
         else: 
             return NotImplemented
-    ##
+
     def __pow__(xx,yy,zz):
         cdef GVar x,y
         cdef double ans,f1,f2,yd,xd
@@ -237,74 +237,106 @@ cdef class GVar:
             return GVar(ans,y.d.mul(f1),y.cov)
         else: 
             return NotImplemented
-    ##
+
     def sin(self):
         return GVar(c_sin(self.v),self.d.mul(c_cos(self.v)),self.cov)
-    ##
+
     def cos(self):
         return GVar(c_cos(self.v),self.d.mul(-c_sin(self.v)),self.cov)
-    ##
+
     def tan(self):
         cdef double ans = c_tan(self.v)
         return GVar(ans,self.d.mul(1+ans*ans),self.cov)
-    ##
+
     def arcsin(self):
         return GVar(c_asin(self.v),self.d.mul(1./(1.-self.v**2)**0.5),self.cov)
-    ##
+
     def asin(self): 
         return self.arcsin()
-    ##
+
     def arccos(self):
         return GVar(c_acos(self.v),self.d.mul(-1./(1.-self.v**2)**0.5),self.cov)
-    ##
+
     def acos(self): 
         return self.arccos()
-    ##
+
     def arctan(self):
         return GVar(c_atan(self.v),self.d.mul(1./(1.+self.v**2)),self.cov)
-    ##
+
     def atan(self):
         return self.arctan()
-    ##
+
     def sinh(self):
         return GVar(c_sinh(self.v),self.d.mul(c_cosh(self.v)),self.cov)
-    ##
+
     def cosh(self):
         return GVar(c_cosh(self.v),self.d.mul(c_sinh(self.v)),self.cov)
-    ##
+
     def tanh(self):
         return GVar(c_tanh(self.v),self.d.mul(1./(c_cosh(self.v)**2)),self.cov)
-    ##
+
     def arcsinh(self):
         return log(self+sqrt(self*self+1.))
-    ##
+
     def asinh(self):
         return self.arcsinh()
-    ##
+
     def arccosh(self):
         return log(self+sqrt(self*self-1.))
-    ##
+
     def acosh(self):
         return self.arccosh()
-    ##
+
     def arctanh(self):
         return log((1.+self)/(1.-self))/2.
-    ##
+
     def atanh(self):
         return self.arctanh()
-    ##
+
     def exp(self):
         cdef double ans
         ans = c_exp(self.v)
         return GVar(ans,self.d.mul(ans),self.cov)
-    ##
+
     def log(self):
         return GVar(c_log(self.v),self.d.mul(1./self.v),self.cov)
-    ##
+    
     def sqrt(self):
         cdef double ans = c_sqrt(self.v)
         return GVar(ans,self.d.mul(0.5/ans),self.cov)
-    ##
+    
+    def deriv(GVar self, GVar x):
+        """ Derivative of ``self`` with respest to *independent* |GVar| ``x``.
+
+        ``x`` must be an *independent* |GVar|, which is a |GVar| created by a 
+        call to :func:`gvar.gvar` (*e.g.*, ``x = gvar.gvar(xmean, xsdev)``) or a 
+        function ``f(x)`` of such a |GVar|. (More precisely, ``x.der`` must have 
+        only one nonzero entry.)
+
+        All |GVar|\s are constructed from a set of independent |GVar|\s. 
+        ``self.deriv(x)`` returns the partial derivative of ``self`` with 
+        respect to independent |GVar| ``x``, holding all of the other 
+        independent |GVar|\s constant.
+
+        :param x: The independent |GVar|.
+        :returns: The derivative of ``self`` with respect to ``x``.
+        """
+        cdef unsigned int i, ider
+        cdef double xder 
+        xder = 0.0
+        for i in range(x.d.size):
+            if x.d.v[i].v != 0:
+                if xder != 0:
+                    raise ValueError("derivative ambiguous -- x is not independent")
+                else:
+                    xder = x.d.v[i].v
+                    ider = x.d.v[i].i
+        for i in range(self.d.size):
+            if self.d.v[i].i == ider:
+                return self.d.v[i].v / xder
+        else:
+            return 0.0
+
     def fmt(self, ndecimal=None, sep='', d=None):
         """ Convert to string with format: ``mean(sdev)``. 
             
@@ -322,18 +354,18 @@ cdef class GVar:
             ndecimal = d            # legacy name
         dv = self.sdev
         v = self.mean
-        ## special cases ##
+        # special cases 
         if dv == float('inf'):
-            ## infinite sdev ##
+            # infinite sdev 
             if ndecimal is not None and ndecimal > 0:
                 ft = "%%.%df" % int(ndecimal)
                 return (ft % v) + ' +- inf'
             else:
                 return str(v) + ' +- inf'
-            ##
+
         if ndecimal is None:
             if dv == 0:
-                ##  simplify if self.sdev == 0 ##
+                #  simplify if self.sdev == 0 
                 if v == 0:
                     return "0(0)"
                 else:
@@ -342,40 +374,40 @@ cdef class GVar:
                         return ans[0] + "(0)e" + ans[1]
                     else:
                         return ans[0] + "(0)"
-                ##
+
             if v == 0 or abs(dv/v) >= 100:
-                ##  set v=0 if self.sdev much larger than |self.mean| ##
+                #  set v=0 if self.sdev much larger than |self.mean| 
                 if dv >= 1e6 or dv < 1e-5:
                     ans = ("%.1e" % dv).split('e')
                     return "0.0("+ans[0]+")e"+ans[1]
                 else:
                     v = 0
-                ##
+
             if abs(v/dv) >= 1e7:
-                ## use +- format if dv very small ##
+                # use +- format if dv very small 
                 return "%g +- %.2g" % (v,dv)
-                ##
+
             if v != 0 and (abs(v) >= 1e6 or abs(v) < 1e-5):
-                ## exponential notation for large |self.mean| ##
+                # exponential notation for large |self.mean| 
                 exponent = numpy.floor(numpy.log10(abs(v)))
                 fac = 10.**exponent
                 mantissa = (self/fac).fmt(ndecimal)
                 exponent = "e" + ("%.0e"%fac).split("e")[-1]
                 return mantissa + exponent
-                ##
-        ##
+
+
         if ndecimal is None:
-            ## compute default number of decimal places ##
+            # compute default number of decimal places 
             ndecimal = int(2-numpy.log10(dv))
             if ndecimal<0:
                 ndecimal = 0
             elif round(dv*10.**ndecimal,0) == 100:
                 ndecimal -= 1
-            ##
+
         if ndecimal is None or ndecimal<0 or ndecimal!=int(ndecimal):
-            ## do not use compact notation ##
+            # do not use compact notation 
             return self.__str__()
-            ##
+
         v = round(v,ndecimal)
         dv = round(dv,ndecimal)
         if dv<1.0 and ndecimal>0:
@@ -385,7 +417,7 @@ cdef class GVar:
         else:
             ft = '%.'+str(ndecimal)+'f%s(%.'+str(ndecimal)+'f)'
             return ft % (v,sep,dv)
-    ##
+
     def partialvar(self,*args):
         """ Compute partial variance due to |GVar|\s in ``args``.
             
@@ -412,8 +444,8 @@ cdef class GVar:
             return 0.0
         dstart = self.d.v[0].i
         dstop = self.d.v[self.d.size-1].i+1
-        ## create a mask = 1 if (cov * args[i].der) component!=0; 0 otherwise ## 
-        ## a) collect all indices referenced in args[i].der ##
+        # create a mask = 1 if (cov * args[i].der) component!=0; 0 otherwise 
+        # a) collect all indices referenced in args[i].der 
         iset = set()
         for a in args:
             if a is None:
@@ -429,14 +461,14 @@ cdef class GVar:
                 else:
                     assert ai.cov is self.cov,"Incompatible |GVar|\s."
                 iset.update(ai.d.indices())
-        ##
-        ## b) collect indices connected to args[i].der indices by self.cov ##
+
+        # b) collect indices connected to args[i].der indices by self.cov 
         cov = self.cov
         jset = set()
         for i in iset:
             jset.update(cov.rowlist[i].indices())
-        ##
-        ## c) build the mask ##
+
+        # c) build the mask 
         dmask = numpy.zeros(dstop-dstart,int)
         for j in sorted(jset):
             if j<dstart:
@@ -445,9 +477,9 @@ cdef class GVar:
                 break
             else:
                 dmask[j-dstart] |= 1
-        ##
-        ##
-        ## create masked derivative vector for self ##
+
+
+        # create masked derivative vector for self 
         md_size = 0
         md_idx = numpy.zeros(dstop-dstart,int)
         md_v = numpy.zeros(dstop-dstart,float)
@@ -460,9 +492,9 @@ cdef class GVar:
                 md_size += 1
         md = svec(md_size)
         md._assign(md_v[:md_size],md_idx[:md_size])
-        ##
+
         return md.dot(self.cov.dot(md))
-    ##
+
     def partialsdev(self,*args): 
         """ Compute partial standard deviation due to |GVar|\s in ``args``.
             
@@ -480,24 +512,24 @@ cdef class GVar:
         """
         ans = self.partialvar(*args)
         return ans**0.5 if ans>0 else -(-ans)**0.5
-    ##
+
     property val:
         """ Mean value. """ 
         def __get__(self):
             return self.v
-        ##
+
     property der:
         """ Array of derivatives with respect to  underlying (original)
         |GVar|\s. 
         """
         def __get__(self):
             return self.d.toarray(len(self.cov))
-        ##
+
     property mean:
         """ Mean value. """
         def __get__(self):
             return self.v
-        ##
+
     property sdev:
         """ Standard deviation. """
         def __get__(self):
@@ -506,13 +538,13 @@ cdef class GVar:
                 return c_sqrt(var)
             else:
                 return -c_sqrt(-var)
-        ##
+
     property var:
         """ Variance. """
         # @cython.boundscheck(False)
         def __get__(self):
             return self.cov.expval(self.d)  
-        ##
+
     def dotder(self,numpy.ndarray[numpy.double_t,ndim=1] v not None):
         """ Return the dot product of ``self.der`` and ``v``. """
         cdef double ans = 0
@@ -520,11 +552,11 @@ cdef class GVar:
         for i in range(self.d.size):
             ans += v[self.d.v[i].i]*self.d.v[i].v
         return ans
-    ## 
-##
 
 
-## GVar factory functions ##
+
+
+# GVar factory functions 
     
 _RE1 = re.compile(r"(.*)\s*[+][-]\s*(.*)")
 _RE2 = re.compile(r"(.*)[e](.*)")
@@ -585,7 +617,7 @@ class GVarFactory:
         else:
             assert isinstance(cov,smat),"cov not type gvar.smat"
             self.cov = cov
-    ##
+
     def __call__(self,*args):
         cdef unsigned int nx,i,nd
         cdef svec der
@@ -596,17 +628,17 @@ class GVarFactory:
         cdef numpy.ndarray[numpy.int_t,ndim=1] d_idx
         
         if len(args)==2:
-            ## (x,xsdev) or (xarray,sdev-array) or (xarray,cov) ##
-            ## unpack arguments and verify types ##
+            # (x,xsdev) or (xarray,sdev-array) or (xarray,cov) 
+            # unpack arguments and verify types 
             try:
                 x = numpy.asarray(args[0],float)
                 xsdev = numpy.asarray(args[1],float)
             except (ValueError,TypeError):
                 raise TypeError(    #):
                         "Arguments must be numbers or arrays of numbers")
-            ##
+
             if len(x.shape)==0:
-                ## single gvar from x and xsdev ##
+                # single gvar from x and xsdev 
                 if len(xsdev.shape)!=0:
                     raise ValueError("x and xsdev different shapes.")
                 idx = self.cov.append_diag(numpy.array([xsdev**2]))
@@ -614,9 +646,9 @@ class GVarFactory:
                 der.v[0].i = idx[0]
                 der.v[0].v = 1.0
                 return GVar(x,der,self.cov)
-                ##
+
             else:
-                ## array of gvars from x and sdev/cov arrays ##
+                # array of gvars from x and sdev/cov arrays 
                 nx = len(x.flat)
                 if x.shape==xsdev.shape:  # x,sdev
                     idx = self.cov.append_diag(xsdev.reshape(nx)**2)
@@ -633,12 +665,12 @@ class GVarFactory:
                     der.v[0].v = 1.0
                     ans.append(GVar(x.flat[i],der,self.cov))
                 return numpy.array(ans).reshape(x.shape)
-                ##
-            ##
+
+
         elif len(args)==1:
             x = args[0]
             if isinstance(x,str):
-                ## case 1: x is a string like "3.72(41)" or "3.2 +- 4" ##
+                # case 1: x is a string like "3.72(41)" or "3.2 +- 4" 
                 x = x.strip()
                 try:
                     # eg: 3.4 +- 0.7e-4
@@ -674,24 +706,24 @@ class GVarFactory:
                     return self(float(a), float(c))
                 except AttributeError:
                     raise ValueError("Poorly formatted string: "+x)
-                ##
+
             elif isinstance(x,GVar):
-                ## case 2: x is a GVar ##
+                # case 2: x is a GVar 
                 return x
-                ##
+
             elif isinstance(x,tuple) and len(x)==2:
-                ## case 3: x = (x,sdev) tuple ##
+                # case 3: x = (x,sdev) tuple 
                 return self(x[0],x[1])
-                ##
+
             elif hasattr(x,'keys'):
-                ## case 4: x is a dictionary ##
+                # case 4: x is a dictionary 
                 ans = BufferDict()
                 for k in x:
                     ans[k] = self(x[k])
                 return ans
-                ##
+
             elif hasattr(x,'__iter__'):
-                ## case 5: x is an array ##
+                # case 5: x is an array 
                 try:
                     xa = numpy.asarray(x)
                 except ValueError:
@@ -699,19 +731,19 @@ class GVarFactory:
                 if xa.size==0:
                     return xa
                 if xa.shape[-1]==2 and xa.dtype!=object and xa.ndim>1:
-                    ## array of tuples? ##
+                    # array of tuples? 
                     xxa = numpy.empty(xa.shape[:-1],object)
                     xxa[:] = x
                     if all(type(xxai)==tuple for xxai in xxa.flat):
                         return self(xa[...,0],xa[...,1])
-                    ##
+
                 return numpy.array([xai if isinstance(xai,GVar) else self(xai) 
                                     for xai in xa.flat]).reshape(xa.shape)
-                ##        
-            else:   ## case 6: a number
+
+            else:   # case 6: a number
                 return self(x,0.0)
         elif len(args)==3:
-            ## (x,der,cov) ##
+            # (x,der,cov) 
             try:
                 x = numpy.asarray(args[0],float)
                 d = numpy.asarray(args[1],float).flatten()
@@ -729,12 +761,12 @@ class GVarFactory:
                 der.v[i].i = d_idx[i]
                 der.v[i].v = d_v[i]
             return GVar(x,der,cov)
-            ##
+
         else:
             raise ValueError("Wrong number of arguments: "+str(len(args)))
-    ## 
-##
+
+
         
-##   
+
 
  

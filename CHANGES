@@ -1,11 +1,14 @@
-Version ????? --- ?????
-=======================
+Version 4.4 --- 2013-02-13
+==========================
 
 - New function gvar.deriv(f, x) computes df/dx where f and x 
   are gvar.GVars, and x is independent (ie, x has only one non-zero
   element in x.der). A ValueError exception is raised when x
   is dependent on other GVars. f can also be an array of GVars
-  or a dictionary of GVars and/or arrays of GVars.
+  or a dictionary of GVars and/or arrays of GVars. GVars also
+  have a method which computes the derivative: f.deriv(x).
+
+- Small code improvements to lsqfit.transform_p. 
 
 Version 4.3.1 --- 2013-02-10
 ============================

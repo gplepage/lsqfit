@@ -157,13 +157,17 @@ def deriv(g, GVar x):
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
 
-    ``x`` must be a |GVar| created by a call to :func:`gvar.gvar`. (More 
-    precisely, ``x.der`` must have only one nonzero entry.)
+    ``x`` must be an *independent* |GVar|, which is a |GVar| created by a 
+    call to :func:`gvar.gvar` (*e.g.*, ``x = gvar.gvar(xmean, xsdev)``) or a 
+    function ``f(x)`` of such a |GVar|. (More precisely, ``x.der`` must have 
+    only one nonzero entry.)
     """
     cdef unsigned int i, j, ider
     cdef double xder 
     cdef GVar gi
     cdef numpy.ndarray[numpy.double_t,ndim=1] buf
+    if isinstance(g, GVar):
+        return g.deriv(x)
     xder = 0.0
     for i in range(x.d.size):
         if x.d.v[i].v != 0:
@@ -172,13 +176,6 @@ def deriv(g, GVar x):
             else:
                 xder = x.d.v[i].v
                 ider = x.d.v[i].i
-    if isinstance(g, GVar):
-        gi = g
-        for j in range(gi.d.size):
-            if gi.d.v[j].i == ider:
-                return gi.d.v[j].v / xder
-        else:
-            return 0.0
     if hasattr(g, 'keys'):
         if not isinstance(g, BufferDict):
             g = BufferDict(g)
