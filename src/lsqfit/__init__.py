@@ -1146,7 +1146,7 @@ def _y_fcn_match(y, f):
                 return False
             if y.isscalar(k):
                 if not f.isscalar(k):
-                    _f_fcn_match.msg = "shape mismatch for key " + str(k)
+                    _y_fcn_match.msg = "shape mismatch for key " + str(k)
                     return False
             elif y[k].shape != f[k].shape:
                 _y_fcn_match.msg = "shape mismatch for key " + str(k)
