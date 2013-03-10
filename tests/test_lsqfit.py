@@ -497,17 +497,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         yg = gv.gvar(['2(1)', '4(6)', '-0.62(1)', '-100(10)'])
         y = gv.gvar(next(gv.raniter(yg)), gv.sdev(yg))
         prior = gv.gvar(gv.mean(yg), 0.5 * gv.sdev(yg))
-        def prob(y, ymean=gv.mean(yg), yvar=gv.var(yg) + gv.var(prior)):
+        ymean = gv.mean(yg)
+        yvar = gv.var(yg) + gv.var(prior)   # variance of posterior y distn
+        def prob(y, ymean=ymean, yvar=yvar):
             " posterior probability distribution "
             return np.prod(
                 np.exp(- (y - ymean) ** 2 / (2 * yvar)) / 
                 (2 * yvar * np.pi) ** 0.5
+                )
+        def chi2(y, ymean=ymean, yvar=yvar):
+            " chi**2 from prob(y) "
+            return np.sum(
+                (y - ymean) ** 2 / yvar 
                 )
         def fcn(p):
             " fit function "
             return p
         fit = nonlinear_fit(data=y, fcn=fcn, prior=prior)
         self.assertAlmostEqual(fit.logGBF, np.log(prob(gv.mean(y))))
+        self.assertAlmostEqual(fit.chi2, chi2(gv.mean(y)))
 
     @unittest.skipIf(FAST,"skipping test_empbayes for speed")
     def test_empbayes(self):
