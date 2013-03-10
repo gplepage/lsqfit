@@ -8,25 +8,25 @@
 .. moduleauthor:: G.P. Lepage <g.p.lepage@cornell.edu>
 
 .. module:: gvar
-   :synopsis: Correlated gaussian random variables.
+   :synopsis: Correlated Gaussian random variables.
 
 Introduction 
 ------------------
-This module provides tools for representing and manipulating gaussian
-random variables numerically. A gaussian variable is a random variable that
-represents a *typical* random number drawn from a particular gaussian (or
+This module provides tools for representing and manipulating Gaussian
+random variables numerically. A Gaussian variable is a random variable that
+represents a *typical* random number drawn from a particular Gaussian (or
 normal) probability distribution; more precisely, it represents the entire
 probability distribution, and not, for example, a *particular* random number
-drawn from that distribution. A given gaussian variable ``x`` is therefore
+drawn from that distribution. A given Gaussian variable ``x`` is therefore
 completely characterized by its mean ``x.mean`` and standard deviation
 ``x.sdev``.
     
-A mathematical function of a gaussian variable can be defined as the
+A mathematical function of a Gaussian variable can be defined as the
 probability distribution of function values obtained by evaluating the
 function for random numbers drawn from the original distribution. The
-distribution of function values is itself approximately gaussian provided the
-standard deviation of the gaussian variable is sufficiently small. Thus we can
-define a function ``f`` of a gaussian variable ``x`` to be a gaussian variable
+distribution of function values is itself approximately Gaussian provided the
+standard deviation of the Gaussian variable is sufficiently small. Thus we can
+define a function ``f`` of a Gaussian variable ``x`` to be a Gaussian variable
 itself, with ::
     
     f(x).mean = f(x.mean)
@@ -37,13 +37,13 @@ which follows from linearizing the ``x`` dependence of ``f(x)`` about point
 ``f'(x)=0``.)
     
 The last formula, together with its multidimensional generalization, leads
-to a full calculus for gaussian random variables that assigns
-gaussian-variable values to arbitrary arithmetic expressions and functions
-involving gaussian variables. This calculus is useful for analyzing the
+to a full calculus for Gaussian random variables that assigns
+Gaussian-variable values to arbitrary arithmetic expressions and functions
+involving Gaussian variables. This calculus is useful for analyzing the
 propagation of statistical and other random errors (provided the standard
 deviations are small enough).
     
-A multidimensional collection ``x[i]`` of gaussian variables is
+A multidimensional collection ``x[i]`` of Gaussian variables is
 characterized by the means ``x[i].mean`` for each variable, together with a
 covariance matrix ``cov[i, j]``. Diagonal elements of ``cov`` specify the
 standard deviations of different variables: ``x[i].sdev = cov[i, i]**0.5``.
@@ -58,7 +58,7 @@ where ``<y>`` denotes the expectation value or mean for a random variable
     
 Creating Gaussian Variables
 ---------------------------
-An object of type |GVar| represents a single gaussian variable. Such an
+An object of type |GVar| represents a single Gaussian variable. Such an
 object can be created for a single variable, with mean ``xmean`` and
 standard deviation ``xsdev`` (both scalars), using::
     
@@ -247,7 +247,7 @@ to generate random numbers from those distributions. For example, in
     >>> print(z())
     1.92649199321
     
-calls to ``z()`` generate random numbers from a gaussian random number 
+calls to ``z()`` generate random numbers from a Gaussian random number 
 generator with mean ``z.mean=2.0`` and standard deviation ``z.sdev=0.5``.
     
 To obtain random arrays from an array ``g`` of |GVar|\s
@@ -289,7 +289,7 @@ layout::
     
 One use for such random number generators is dealing with situations where
 the standard deviations are too large to justify the linearization 
-assumed in defining functions of gaussian variables. Consider, for example,
+assumed in defining functions of Gaussian variables. Consider, for example,
     
     >>> x = gvar.gvar(1., 3.)
     >>> print(cos(x))
@@ -300,7 +300,7 @@ can never be larger than one. To obtain the real mean and standard deviation,
 we generate a large number of random numbers ``xi`` from ``x``, compute 
 ``cos(xi)`` for each, and compute the mean and standard deviation for the
 resulting distribution (or any other statistical quantity, particularly if
-the resulting distribution is not gaussian)::
+the resulting distribution is not Gaussian)::
     
     # estimate mean,sdev from 1000 random x's
     >>> ran_x = numpy.array([x() for in range(1000)]) 
@@ -338,14 +338,14 @@ errors and correlations::
     [[ 0.01   0.005]                            # same covariance matrix
      [ 0.005  0.01 ]]
     
-Such fake data sets are useful for analyzing non-gaussian behavior, for
+Such fake data sets are useful for analyzing non-Gaussian behavior, for
 example, in nonlinear fits.
     
     
 Limitations
 -----------
 The most fundamental limitation of this module is that the calculus of
-gaussian variables that it assumes is only valid when standard deviations
+Gaussian variables that it assumes is only valid when standard deviations
 are small (compared to the distances over which the functions of interest
 change appreciably). One way of dealing with this limitation is described
 above in the section on :ref:`gvar-random-number-generators`.
@@ -456,7 +456,7 @@ if ``x.mean == y`` and ``x.sdev == 0``.
 
 Utilities
 ----------
-The function used to create gaussian variable objects is:
+The function used to create Gaussian variable objects is:
 
 .. autofunction:: gvar.gvar(...)
 
@@ -523,7 +523,7 @@ analysis of a covariance or other symmetric, positive matrix:
    
 Classes
 -------
-The fundamental class for representing gaussian variables is:
+The fundamental class for representing Gaussian variables is:
 
 .. autoclass:: gvar.GVar
    

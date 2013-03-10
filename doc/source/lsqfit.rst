@@ -145,38 +145,51 @@ nonlinear_fit Objects
 
    .. attribute:: chi2
    
-      The ``chi**2`` for the last fit.
+      The minimum ``chi**2`` for the fit. ``fit.chi2 / fit.dof`` is usually
+      of order one in good fits; values much less than one suggest
+      that the actual standard deviations in the input data and/or priors are 
+      smaller than the standard deviations used in the fit.
       
    .. attribute:: cov
    
-      Covariance matrix from fit.
+      Covariance matrix of the best-fit parameters from the fit. 
 
    .. attribute:: dof
    
-      Number of degrees of freedom in fit.
+      Number of degrees of freedom in the fit, which equals the number of 
+      pieces of data being fit when priors are specified for the fit 
+      parameters. Without priors, it is the number of pieces of data minus
+      the number of fit parameters.
       
    .. attribute:: logGBF
    
-      Logarithm of Gaussian Bayes Factor for last fit (larger is better).
-      The exponential of ``fit.logGBF`` is proportional to the
-      Bayesian posterior probability of the fit in a linearized
-      (that is, Gaussian) approximation. Larger values imply larger 
-      posterior probabilities.
+      The logarithm of the probability (density) that one would obtain 
+      the fit data used in the fit by randomly sampling the parameter model 
+      (priors plus fit function) used. This quantity is
+      useful for comparing fits of the same data to different models, 
+      with different priors and/or fit functions. The model with the 
+      largest value of ``fit.logGBF`` is the one prefered by the data. 
+      The exponential of the difference in ``fit.logGBF`` between two models
+      is the ratio of probabilities (Bayes factor) for those models. Differences
+      in ``fit.logGBF`` smaller than 1 are not very significant. Gaussian 
+      statistics are assumed when computing ``fit.logGBF``. 
       
    .. attribute:: p
    
-      Best-fit parameters from last fit. Depending upon what was used for
+      Best-fit parameters from fit. Depending upon what was used for
       the prior (or ``p0``), it is either: a dictionary
       (:class:`gvar.BufferDict`) of |GVar|\s and/or arrays of |GVar|\s; or
-      an array (:class:`numpy.ndarray`) of |GVar|\s.
+      an array (:class:`numpy.ndarray`) of |GVar|\s. ``fit.p`` represents a
+      multi-dimensional Gaussian distribution which, in Bayesian terminology,
+      is the *posterior* probability distribution of the fit parameters.
       
    .. attribute:: pmean
    
-      Means of the best-fit parameters from last fit (dictionary or array).
+      Means of the best-fit parameters from fit (dictionary or array).
       
    .. attribute:: psdev
    
-      Standard deviations of the best-fit parameters from last fit
+      Standard deviations of the best-fit parameters from fit
       (dictionary or array).
       
    .. attribute:: palt
@@ -196,7 +209,9 @@ nonlinear_fit Objects
       
    .. attribute:: Q
    
-      Quality factor for last fit (should be >0.1 for good fits).
+      The probability that the ``chi**2`` from the fit could have been
+      larger, by chance, assuming the best-fit model is correct. Good fits have 
+      ``Q`` values larger than 0.1 or so.
       
    .. attribute:: svdcorrection
       
@@ -268,6 +283,7 @@ Functions
 
 .. autofunction:: lsqfit.wavg
 
+.. autofunction:: lsqfit.gammaQ
 
 Utility Classes
 ---------------

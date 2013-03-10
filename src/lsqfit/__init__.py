@@ -76,12 +76,12 @@ import math, pickle, time
 
 import gvar as _gvar
 
-## add extras and utilities to lsqfit ##
+# add extras and utilities to lsqfit 
 from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import multifit, multiminex, gammaQ
 from ._version import version as __version__
-##
+
 
 _FDATA = collections.namedtuple('_FDATA', ['mean', 'wgt'])
 # Internal data type for nonlinear_fit.unpack_data()
@@ -201,7 +201,7 @@ class nonlinear_fit(object):
     """
     def __init__(self, data=None, fcn=None, prior=None, p0=None, #):
                 svdcut=None, svdnum=None, debug=False, **kargs): 
-        ## capture arguments; initialize parameters ##
+        # capture arguments; initialize parameters 
         self.fitterargs = kargs
         self.svdcut = svdcut if isinstance(svdcut, tuple) else (svdcut, None)
         self.svdnum = svdnum if isinstance(svdnum, tuple) else (svdnum, None)
@@ -214,8 +214,8 @@ class nonlinear_fit(object):
         self._palt = None
         self.debug = debug
         cpu_time = time.clock()
-        ##
-        ## unpack prior,data,fcn,p0 to reconfigure for multifit ## 
+        
+        # unpack prior,data,fcn,p0 to reconfigure for multifit 
         prior = _unpack_gvars(self.prior)
         if (debug and prior is not None and
             not all(isinstance(pri, _gvar.GVar) for pri in prior.flat)):
@@ -230,14 +230,14 @@ class nonlinear_fit(object):
         self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
         flatfcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y, x=self.x)
-        ##
-        ## create fit function chiv for multifit ## 
+        
+        # create fit function chiv for multifit 
         self._chiv = _build_chiv(fdata=fdata, fcn=flatfcn)
         self._chivw = self._chiv.chivw
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
-        ##
-        ## trial run if debugging ##
+        
+        # trial run if debugging 
         if self.debug:
             if self.prior is None:
                 p0gvar = numpy.array([p0i*_gvar.gvar(1, 1) 
@@ -263,8 +263,8 @@ class nonlinear_fit(object):
                     raise RuntimeError( #
                         "Internal error -- len(chivw): (%s, %s)"
                         %(len(vw), nchivw))
-        ##
-        ## do the fit and save results ## 
+        
+        # do the fit and save results
         fit = multifit(p0, nf, self._chiv, **self.fitterargs)
         self.pmean = _reformat(self.p0, fit.x.flat)
         self.error = fit.error
@@ -279,26 +279,29 @@ class nonlinear_fit(object):
         self._palt = None       # lazy evaluation
         self.psdev = _reformat(self.p0, [covii**0.5 
                                for covii in self.cov.diagonal()])
-        ## compute logGBF ## 
-        if 'logdet_prior' not in fdata: 
+        # compute logGBF 
+        if 'logdet_all' not in fdata: 
             self.logGBF = None
         else:
-            logdet_cov = numpy.sum(numpy.log(        #...)
-                                numpy.linalg.svd(self.cov, compute_uv=False)))
-            self.logGBF = 0.5*(-self.chi2+logdet_cov-fdata['logdet_prior'])
-        ##
-        ## archive final parameter values if requested ##
+            def logdet(m):
+                return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
+            logdet_cov = logdet(self.cov)
+            self.logGBF = 0.5*(
+                logdet_cov - fdata['logdet_all'] - self.chi2 -
+                self.dof * numpy.log(2. * numpy.pi)
+                )
+        
+        # archive final parameter values if requested 
         if self.p0file is not None:
             self.dump_pmean(self.p0file)
-        ##
-        ##
+        
         self.time = time.clock()-cpu_time
         if self.debug:
             self.check_roundoff()
-    ##
+    
     def __str__(self): 
         return self.format()
-    ##
+    
     def check_roundoff(self, rtol=0.25, atol=1e-6):
         """ Check for roundoff errors in fit.p.
             
@@ -311,21 +314,25 @@ class nonlinear_fit(object):
         paltsdev = _gvar.sdev(self.palt.flat)
         if not numpy.allclose(psdev, paltsdev, rtol=rtol, atol=atol):
             warnings.warn("Possible roundoff errors in fit.p; try svd cut.")
-    ##
+    
     def _getpalt(self):
         """ Alternate version of ``fit.p``; no correlation with inputs  """
         if self._palt is None:
             self._palt = _reformat(self.pmean,         # 
                                    _gvar.gvar(self.pmean.flat, self.cov))
         return self._palt
-    ##
-    palt = property(_getpalt, doc="""Best-fit parameters using ``self.cov``.
-        Faster than self.p but omits correlations with inputs.""")
+
+    palt = property(
+        _getpalt, 
+        doc="""Best-fit parameters using ``self.cov``.
+        Faster than self.p but omits correlations with inputs."""
+        )
+
     def _getp(self):
         """ Build :class:`gvar.GVar`\s for best-fit parameters. """
         if self._p is not None:
             return self._p
-        ## buf = [y,prior]; D[a,i] = dp[a]/dbuf[i] ##
+        # buf = [y,prior]; D[a,i] = dp[a]/dbuf[i] 
         pmean = self.pmean.flat
         buf = (self.y.flat if self.prior is None else
                 numpy.concatenate((self.y.flat, self.prior.flat)))
@@ -333,20 +340,20 @@ class nonlinear_fit(object):
         for i, chivw_i in enumerate(self._chivw(_gvar.valder(pmean))):
             for a in range(D.shape[0]):
                 D[a, i] = chivw_i.dotder(self.cov[a])
-        ##
-        ## p[a].mean=pmean[a]; p[a].der[j] = sum_i D[a,i]*buf[i].der[j] ##
+        
+        # p[a].mean=pmean[a]; p[a].der[j] = sum_i D[a,i]*buf[i].der[j] 
         p = []
         for a in range(D.shape[0]): # der[a] = sum_i D[a,i]*buf[i].der
             p.append(_gvar.gvar(pmean[a], _gvar.wsum_der(D[a], buf), 
                      buf[0].cov))
         self._p = _reformat(self.p0, p)
         return self._p
-        ##
-    ##
+
     p = property(_getp, doc="Best-fit parameters with correlations.")
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
+
     def format(self, maxline=0, pstyle='v', nline=None): 
         """ Formats fit output details into a string for printing.
                         
@@ -363,7 +370,7 @@ class nonlinear_fit(object):
         :type pstyle: 'vv', 'v', or 'm'
         :returns: String containing detailed information about fit.
         """
-        ## unpack arguments ##
+        # unpack arguments 
         if nline is not None and maxline == 0:
             maxline = nline         # for legacy code (old name)
         if pstyle[:2] == 'vv':
@@ -374,7 +381,7 @@ class nonlinear_fit(object):
             pstyle = 'm'
         else:
             raise ValueError("Invalid pstyle: "+str(pstyle))
-        ##
+        
         def collect(v1, v2, style='v', stride=1):
             """ Collect data from v1 and v2 into table.
                 
@@ -387,7 +394,7 @@ class nonlinear_fit(object):
             ans = []
             width = [0,0,0]
             if v1.shape is None:
-                ## BufferDict ## 
+                # BufferDict 
                 for k in v1:
                     ktag = str(k)
                     if v1.isscalar(k):
@@ -432,9 +439,9 @@ class nonlinear_fit(object):
                                     width[i] = wn
                             ct += 1
                             ktag = ""
-                ##
+                
             else:
-                ## numpy array ## 
+                # numpy array 
                 v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
                     if ct%stride != 0:
@@ -456,11 +463,11 @@ class nonlinear_fit(object):
                         if wn > wo:
                             width[i] = wn
                     ct += 1
-                ##
+                
             collect.width = width
             return ans
-        ##
-        ## build header ##
+        
+        # build header 
         dof = self.dof
         if dof > 0:
             chi2_dof = self.chi2/self.dof
@@ -485,8 +492,8 @@ class nonlinear_fit(object):
         table = table+("    itns = %d\n" % self.nit)
         if maxline < 0:
             return table
-        ##
-        ## create parameter table ##
+        
+        # create parameter table 
         table = table + '\nParameters:\n'
         prior = self.prior
         if prior is None:
@@ -502,15 +509,15 @@ class nonlinear_fit(object):
             max(w2,10), int(max(w2,10)/2) * ' ', max(w3,10))
         for di in data:
             table += fst % tuple(di)
-        ##
-        ## tabulate settings ## 
+        
+        # tabulate settings 
         def svdfmt(x):
             """ Format svd elements. """
             x1 ,x2 = x
             x1 = "%.2g" % x1 if x1 is not None else 'None'
             x2 = "%.2g" % x2 if x2 is not None else 'None'
             return "(" + x1 + "," + x2 + ")"
-        ##
+        
         settings = "\nSettings:\n  svdcut = %s   svdnum = %s" % ( #
             svdfmt(self.svdcut), svdfmt(self.svdnum))
         settings += "    reltol/abstol = %.2g/%.2g\n" % ( #
@@ -519,10 +526,10 @@ class nonlinear_fit(object):
             settings = ""
         if self.alg != "lmsder":
             settings += "  alg = %s\n" % self.alg
-        ##
+        
         if maxline <= 0 or self.data is None:
             return table + settings
-        ## create table comparing fit results to data ## 
+        # create table comparing fit results to data 
         ny = self.y.size
         stride = 1 if maxline >= ny else (int(ny/maxline) + 1)
         f = self.fcn(self.p) if self.x is False else self.fcn(self.x, self.p)
@@ -530,7 +537,7 @@ class nonlinear_fit(object):
         w1,w2,w3 = collect.width
         clabels = ("key","y[key]","f(p)[key]")
         if self.y.shape is not None and self.x is not False and self.x is not None:
-            ## use x[k] to label lines in table? ##
+            # use x[k] to label lines in table? 
             try:
                 x = numpy.array(self.x)
                 xlist = []
@@ -547,7 +554,7 @@ class nonlinear_fit(object):
                 for i,(d1,d2,d3) in enumerate(data):
                     data[i] = (xlist[i],d2,d3)
                 clabels = ("x[k]","y[k]","f(x[k],p)")
-            ##
+            
         w1,w2,w3 = max(9,w1+4), max(9,w2+4), max(9,w3+4)
         table += "\nFit:\n"
         fst = "%%%ds%%%ds%%%ds\n" % (w1, w2, w3)
@@ -555,9 +562,9 @@ class nonlinear_fit(object):
         table += (w1 + w2 + w3) * "-" + "\n"
         for di in data:
             table += fst % tuple(di)
-        ##
+        
         return table + settings
-    ##
+    
     @staticmethod
     def load_parameters(filename):
         """ Load parameters stored in file ``filename``. 
@@ -571,7 +578,7 @@ class nonlinear_fit(object):
         """
         with open(filename,"rb") as f:
             return pickle.load(f)
-    ##
+    
     def dump_p(self, filename):
         """ Dump parameter values (``fit.p``) into file ``filename``.
             
@@ -583,7 +590,7 @@ class nonlinear_fit(object):
         """
         with open(filename, "wb") as f:
             pickle.dump(self.palt, f) # dump as a dict
-    ##
+    
     def dump_pmean(self, filename):
         """ Dump parameter means (``fit.pmean``) into file ``filename``.
             
@@ -600,7 +607,7 @@ class nonlinear_fit(object):
                 pickle.dump(numpy.array(self.pmean), f)
             else:
                 pickle.dump(dict(self.pmean), f) # dump as a dict
-    ##
+    
     def bootstrap_iter(self, n=None, datalist=None):
         """ Iterator that returns bootstrap copies of a fit.
             
@@ -672,11 +679,9 @@ class nonlinear_fit(object):
                     fit = nonlinear_fit(data=datab, prior=next(piter), 
                                         p0=self.pmean, **fargs)
                     yield fit
-    ##
-##
+    
 
 # decorator for fit function allowing log/sqrt-normal distributions
-
 class transform_p(object):
     """ Decorate fit function to allow log/sqrt-normal priors.
 
@@ -825,7 +830,8 @@ class transform_p(object):
 
 p_transforms = transform_p   # legacy name
 
-## components of nonlinear_fit ##
+
+# components of nonlinear_fit 
 def _reformat(p, buf):
     """ Transfer format of ``p`` to data in 1-d array ``buf``. """
     if numpy.ndim(buf) != 1:
@@ -867,7 +873,7 @@ def _unpack_data(data, prior, svdcut, svdnum):
     (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
     the logarithm of the determinant of the prior's covariance matrix.
     """
-    ## unpack data tuple ##
+    # unpack data tuple 
     data_is_3tuple = False
     if not isinstance(data, tuple):
         x = False                   # no x in fit fcn
@@ -896,32 +902,36 @@ def _unpack_data(data, prior, svdcut, svdnum):
         fdata['svdcorrection'][k] = _gvar.svd.correction
         if k == 'prior':
             fdata['logdet_prior'] = _gvar.svd.logdet
+        elif k == 'y':
+            fdata['logdet_y'] = _gvar.svd.logdet
+        elif k == 'all':
+            fdata['logdet_all'] = _gvar.svd.logdet
         return ans
 
     if prior is not None:
-        ## have prior ##
+        # have prior 
         if data_is_3tuple or _gvar.uncorrelated(y.flat, prior.flat):
-            ## y uncorrelated with prior ##
+            # y uncorrelated with prior 
             y = _apply_svd('y', y)
             prior = _apply_svd('prior', prior)
-          
+            fdata['logdet_all'] = fdata['logdet_prior'] + fdata['logdet_y']
         else:
-            ## y correlated with prior ##
+            # y correlated with prior 
             yp = _apply_svd('all', numpy.concatenate((y.flat, prior.flat)))
             y.flat = yp[:y.size]
             prior.flat = yp[y.size:]
-            # compute log(det(cov_pr)) where cov_pr = prior part of cov:
-            invcov = numpy.sum(numpy.outer(wi, wi) 
-                               for wi in _gvar.svd.inv_wgt)
-            s = _gvar.SVD(invcov[y.size:, y.size:])
-            # following has minus sign because s is for the inv of cov:
-            fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) for vi in s.val)
+            # # compute log(det(cov_pr)) where cov_pr = prior part of cov:
+            # invcov = numpy.sum(numpy.outer(wi, wi) 
+            #                    for wi in _gvar.svd.inv_wgt)
+            # s = _gvar.SVD(invcov[y.size:, y.size:])
+            # # following has minus sign because s is for the inv of cov:
+            # fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) for vi in s.val)
+            # fdata['logdet_y'] = fdata['logdet_all'] - fdata['logdet_prior']
     else:
-        ## no prior ##
+        # no prior 
         y = _apply_svd('y', y)
     return x, y, prior, fdata
-##        
-    
+
 def _unpack_gvars(g):
     """ Unpack collection of GVars to BufferDict or numpy array. """
     if g is not None:
@@ -929,8 +939,7 @@ def _unpack_gvars(g):
         if not hasattr(g, 'flat'):
             g = numpy.asarray(g)
     return g
-##  
-    
+
 def _unpack_p0(p0, p0file, prior):
     """ Create proper p0. 
         
@@ -941,7 +950,7 @@ def _unpack_p0(p0, p0file, prior):
     the prior) to be the correct shape.
     """
     if p0file is not None:
-        ## p0 is a filename; read in values ##
+        # p0 is a filename; read in values 
         try:
             p0 = nonlinear_fit.load_parameters(p0file)
             # with open(p0file, "rb") as f:
@@ -952,24 +961,22 @@ def _unpack_p0(p0, p0file, prior):
                     "No prior and can't read parameters from " + p0file
                     )
             else:
-                p0 = None
-        ##
+                p0 = None        
     if p0 is not None:
-        ## repackage as BufferDict or numpy array ##
+        # repackage as BufferDict or numpy array 
         if hasattr(p0, 'keys'):
             p0 = _gvar.BufferDict(p0)
         else:
-            p0 = numpy.array(p0)
-        ##
+            p0 = numpy.array(p0)        
     if prior is not None:
-        ## build new p0 from p0, plus the prior as needed ##
+        # build new p0 from p0, plus the prior as needed 
         pp = _reformat(prior, buf=[x.mean if x.mean != 0.0 
                         else x.mean+0.1*x.sdev for x in prior.flat])
         if p0 is None:
             p0 = pp
         else:
             if pp.shape is not None:
-                ## pp and p0 are arrays ##
+                # pp and p0 are arrays 
                 pp_shape = pp.shape
                 p0_shape = p0.shape
                 if len(pp_shape)!=len(p0_shape):
@@ -981,17 +988,15 @@ def _unpack_p0(p0, p0file, prior):
                     idx.append(slice(0, min(npp, np0)))
                 idx = tuple(idx)    # overlapping slices in each dir
                 pp[idx] = p0[idx]
-                p0 = pp
-                ##
+                p0 = pp                
             else:
-                ## pp and p0 are dicts ##
+                # pp and p0 are dicts 
                 if set(pp.keys()) != set(p0.keys()):
-                    ## mismatch in keys between prior and p0 ## 
+                    # mismatch in keys between prior and p0 
                     raise ValueError("Key mismatch between prior and p0: "
                                      + ' '.join(str(k) for k in 
-                                     set(prior.keys()) ^ set(p0.keys())))
-                    ##   
-                ## adjust p0[k] to be compatible with shape of prior[k] ## 
+                                     set(prior.keys()) ^ set(p0.keys())))                    
+                # adjust p0[k] to be compatible with shape of prior[k] 
                 for k in pp:
                     pp_shape = numpy.shape(pp[k])
                     p0_shape = numpy.shape(p0[k])
@@ -1001,7 +1006,7 @@ def _unpack_p0(p0, p0file, prior):
                     if pp_shape == p0_shape:
                         pp[k] = p0[k]
                     else:
-                        ## find overlap between p0 and pp ##
+                        # find overlap between p0 and pp 
                         pp_shape = pp[k].shape
                         p0_shape = p0[k].shape
                         if len(pp_shape)!=len(p0_shape):
@@ -1010,17 +1015,13 @@ def _unpack_p0(p0, p0file, prior):
                         idx = []
                         for npp, np0 in zip(pp_shape, p0_shape):
                             idx.append(slice(0, min(npp, np0)))
-                        idx = tuple(idx)    # overlapping slices in each dir
-                        ##
+                        idx = tuple(idx)    # overlapping slices in each dir                    
                         pp[k][idx] = p0[k][idx]
                 p0 = pp
-                ##
-                ##
-        ##
     if p0 is None:
         raise ValueError("No starting values for parameters")
     return p0
-##
+
     
 def _unpack_fcn(fcn, p0, y, x):
     """ reconfigure fitting fcn so inputs, outputs = flat arrays; hide x """
@@ -1032,8 +1033,7 @@ def _unpack_fcn(fcn, p0, y, x):
                 if hasattr(ans, 'flat'):
                     return ans.flat
                 else:
-                    return numpy.array(ans).flat
-            ##
+                    return numpy.array(ans).flat            
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
             def nfcn(p, x=x, fcn=fcn, po=po):
@@ -1042,8 +1042,7 @@ def _unpack_fcn(fcn, p0, y, x):
                 if hasattr(ans, 'flat'):
                     return ans.flat
                 else:
-                    return numpy.array(ans).flat
-            ##
+                    return numpy.array(ans).flat            
     else:
         yo = BufferDict(y, buf=y.size*[None])
         if p0.shape is not None:
@@ -1052,8 +1051,7 @@ def _unpack_fcn(fcn, p0, y, x):
                 fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
-                return yo.flat
-            ##
+                return yo.flat            
         else:
             po = BufferDict(p0, buf=numpy.zeros(p0.size, object))
             def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
@@ -1061,39 +1059,36 @@ def _unpack_fcn(fcn, p0, y, x):
                 fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
-                return yo.flat
-            ##
+                return yo.flat            
     return nfcn
-##
+
     
 def _build_chiv(fdata, fcn):
     """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
     if 'all' in fdata:
-        ## y and prior correlated ##
+        # y and prior correlated 
         if fdata['all'].wgt.ndim != 2:
             raise ValueError("fdata['all'].wgt is 1d! dim = "
                              +str(fdata['all'].wgt.ndim))
         def chiv(p, fcn=fcn, fd=fdata['all']):
             delta = numpy.concatenate((fcn(p), p))-fd.mean
             return _util_dot(fd.wgt, delta)
-        ##
+        
         def chivw(p, fcn=fcn, fd=fdata['all']):
             delta = numpy.concatenate((fcn(p), p))-fd.mean
             wgt2 = numpy.sum(numpy.outer(wj, wj) 
                             for wj in reversed(fd.wgt))
             return _util_dot(wgt2, delta)
-        ##
         chiv.nf = len(fdata['all'].wgt)
-        ##
+        
     elif 'prior' in fdata:
-        ## y and prior uncorrelated ##
+        # y and prior uncorrelated 
         def chiv(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
             ans = []
             for d, w in [(fcn(p)-yfd.mean, yfd.wgt), 
                         (p-pfd.mean, pfd.wgt)]:
                 ans.append(_util_dot(w, d) if w.ndim==2 else w*d)
             return numpy.concatenate(tuple(ans))
-        ##
         def chivw(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
             ans = []
             for d, w in [(fcn(p)-yfd.mean, yfd.wgt), 
@@ -1105,16 +1100,13 @@ def _build_chiv(fdata, fcn):
                 else:
                     ans.append(w*w*d)
             return numpy.concatenate(tuple(ans))
-        ##
         chiv.nf = len(fdata['y'].wgt)+len(fdata['prior'].wgt)
-        ##
     else:
-        ## no prior ##
+        # no prior 
         def chiv(p, fcn=fcn, fd=fdata['y']):
             ydelta = fcn(p)-fd.mean
             return (_util_dot(fd.wgt, ydelta) if fd.wgt.ndim==2 
                     else fd.wgt*ydelta)
-        ##
         def chivw(p, fcn=fcn, fd=fdata['y']):
             ydelta = fcn(p)-fd.mean
             if fd.wgt.ndim == 2:
@@ -1122,13 +1114,11 @@ def _build_chiv(fdata, fcn):
                                  for wj in reversed(fd.wgt))
                 return _util_dot(wgt2, ydelta)
             else:
-                return fd.wgt*fd.wgt*ydelta
-        ##
-        chiv.nf = len(fdata['y'].wgt)
-        ##
+                return fd.wgt*fd.wgt*ydelta        
+        chiv.nf = len(fdata['y'].wgt)        
     chiv.chivw = chivw
     return chiv
-##
+
 
 def _y_fcn_match(y, f):
     if hasattr(f,'keys'):
@@ -1151,21 +1141,17 @@ def _y_fcn_match(y, f):
             elif y[k].shape != f[k].shape:
                 _y_fcn_match.msg = "shape mismatch for key " + str(k)
                 return False
-    return True
-##    
-##
+    return True    
 
-## legacy definitions (obsolete) ##
+# legacy definitions (obsolete) 
 class _legacy_constructor:
     def __init__(self,cl,msg):
         self.cl = cl
         self.msg = msg
-    ##
+    
     def __call__(self,*args,**kargs):
         warnings.warn(self.msg, UserWarning, stacklevel=2)
         return self.cl(*args,**kargs)
-    ##
-##
     
 BufferDict = _gvar.BufferDict
 CGPrior = _legacy_constructor(
@@ -1174,7 +1160,7 @@ GPrior = _legacy_constructor(
     _gvar.BufferDict,"GPrior is deprecated; use gvar.BufferDict instead.")   
 LSQFit = _legacy_constructor(
     nonlinear_fit,"LSQFit is deprecated; use lsqfit.nonlinear_fit instead.")
-##
+
 
        
         

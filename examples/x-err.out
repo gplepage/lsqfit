@@ -1,6 +1,6 @@
 ************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 0.64 [15]    Q = 0.84    logGBF = -70.084    itns = 62
+  chi2/dof [dof] = 0.64 [15]    Q = 0.84    logGBF = 198.58    itns = 62
 
 Parameters:
             a 0      0.4026 (40)       [     0.50 (50) ]
@@ -33,7 +33,7 @@ a1/a0 = 1.130(28)   a2/a0 = 2.678(43)
 
 ************************************* nexp = 4
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.48    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.18    itns = 6
 
 Parameters:
             a 0      0.4026 (40)       [     0.50 (50) ]
@@ -68,7 +68,7 @@ a1/a0 = 1.100(52)   a2/a0 = 1.54(67)
 
 ************************************* nexp = 5
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.632    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.03    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]
@@ -105,7 +105,7 @@ a1/a0 = 1.076(70)   a2/a0 = 1.46(60)
 
 ************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.734    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]
@@ -144,7 +144,7 @@ a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
 
 ************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = -69.78    itns = 6
+  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = 198.88    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]

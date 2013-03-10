@@ -61,6 +61,9 @@ def main():
         a = fit.p['a']
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+        # print (E[1]/E[0]).partialsdev(fit.prior['E'])
+        # print (E[1]/E[0]).partialsdev(fit.prior['a'])
+        # print (E[1]/E[0]).partialsdev(fit.y)
         sys.stdout = sys_stdout
         print
     

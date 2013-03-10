@@ -68,9 +68,9 @@
 least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
 <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> because it provides the fitting functions. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> makes
-heavy use of auxiliary module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, which provides tools that
+heavy use of auxiliary module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, which provides tools that
 facilitate the analysis of error propagation, and also the creation of
-complicated multi-dimensional gaussian distributions.</p>
+complicated multi-dimensional Gaussian distributions.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -138,7 +138,7 @@ function for this data is simply the ratio <tt class="docutils literal"><span cl
 a dictionary having the same keys and layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>The output from the code sample above is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = -5.2381    itns = 5
+  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538    itns = 5
 
 Parameters:
               a   0.253 (32)     [  0.50 (50) ]
@@ -234,11 +234,11 @@ the prior or back since both are forms of input information.</p>
 <p>There are several things worth noting from this example:</p>
 <blockquote>
 <div><ul class="simple">
-<li>The input data (<tt class="docutils literal"><span class="pre">y</span></tt>) is expressed in terms of gaussian random
+<li>The input data (<tt class="docutils literal"><span class="pre">y</span></tt>) is expressed in terms of Gaussian random
 variables &#8212; quantities with means and a covariance matrix. These are
 represented by objects of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in the code; module
-<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> has a variety of tools for creating and manipulating
-gaussian random variables.</li>
+<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> has a variety of tools for creating and manipulating
+Gaussian random variables.</li>
 <li>The input data is stored in a dictionary (<tt class="docutils literal"><span class="pre">y</span></tt>) whose values can
 be <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The use of a dictionary allows for
 far greater flexibility than, say, an array. The fit function
@@ -292,7 +292,7 @@ function <tt class="docutils literal"><span class="pre">f(x)</span></tt> of the 
 the <tt class="docutils literal"><span class="pre">x</span></tt>s, and therefore the &#8220;correct&#8221; values for <tt class="docutils literal"><span class="pre">y=f(x)</span></tt>; and 3) add
 random noise to the <tt class="docutils literal"><span class="pre">y</span></tt>s, to simulate measurement errors. Here we will work
 through a simple implementation of this recipe to illustrate how the
-<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module can be used to build complicated gaussian distributions (in
+<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module can be used to build complicated Gaussian distributions (in
 this case for the correlated noise in the <tt class="docutils literal"><span class="pre">y</span></tt>s). A reader eager to fit
 real data can skip this section on first reading.</p>
 <p>For the function <tt class="docutils literal"><span class="pre">f</span></tt> we choose something familiar: a sum of exponentials
@@ -317,9 +317,9 @@ This is simple in Python:</p>
 fit data. We do this by forming <tt class="docutils literal"><span class="pre">y_exact*noise</span></tt> where</p>
 <div class="highlight-python"><pre>noise = 1 + sum_n=0..99 c[n]*(x/x_max)**n,</pre>
 </div>
-<p>Here <tt class="docutils literal"><span class="pre">x_max</span></tt> is the largest <tt class="docutils literal"><span class="pre">x</span></tt> used, and the <tt class="docutils literal"><span class="pre">c[n]</span></tt> are gaussian
+<p>Here <tt class="docutils literal"><span class="pre">x_max</span></tt> is the largest <tt class="docutils literal"><span class="pre">x</span></tt> used, and the <tt class="docutils literal"><span class="pre">c[n]</span></tt> are Gaussian
 random variable with means and standard deviations of order <tt class="docutils literal"><span class="pre">0.01</span></tt>. This
-is easy to implement in Python using the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module:</p>
+is easy to implement in Python using the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>                      <span class="c"># make x, y fit data</span>
@@ -332,7 +332,7 @@ is easy to implement in Python using the <a class="reference internal" href="gva
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </pre></div>
 </div>
-<p>Gaussian variable <tt class="docutils literal"><span class="pre">cr</span></tt> represents a gaussian distribution with mean
+<p>Gaussian variable <tt class="docutils literal"><span class="pre">cr</span></tt> represents a Gaussian distribution with mean
 <tt class="docutils literal"><span class="pre">0.0</span></tt> and width <tt class="docutils literal"><span class="pre">0.01</span></tt>, which we use here as a random number generator:
 <tt class="docutils literal"><span class="pre">cr()</span></tt> is a number drawn randomly from the distribution represented by
 <tt class="docutils literal"><span class="pre">cr</span></tt>:</p>
@@ -344,7 +344,7 @@ is easy to implement in Python using the <a class="reference internal" href="gva
 <span class="go">-0.00731564589737</span>
 </pre></div>
 </div>
-<p>We use <tt class="docutils literal"><span class="pre">cr()</span></tt> to generate mean values for the gaussian distributions
+<p>We use <tt class="docutils literal"><span class="pre">cr()</span></tt> to generate mean values for the Gaussian distributions
 represented by the <tt class="docutils literal"><span class="pre">c[n]</span></tt>s, each of which has width <tt class="docutils literal"><span class="pre">0.01</span></tt>. The resulting
 <tt class="docutils literal"><span class="pre">y</span></tt>s fluctuate around the corresponding values of <tt class="docutils literal"><span class="pre">f_exact(x)</span></tt> and have
 statistical errors:</p>
@@ -367,7 +367,7 @@ if we evaluate the covariance matrix for the <tt class="docutils literal"><span 
 <p>The diagonal elements of the covariance matrix are the variances of the
 individual <tt class="docutils literal"><span class="pre">y</span></tt>s; the off-diagonal elements are a measure of the
 correlations <tt class="docutils literal"><span class="pre">&lt;</span> <span class="pre">(y[i]-&lt;y[i]&gt;)</span> <span class="pre">*</span> <span class="pre">(y[j]-&lt;y[j]&gt;)</span> <span class="pre">&gt;</span></tt>.</p>
-<p>The gaussian variables <tt class="docutils literal"><span class="pre">y[i]</span></tt> together with the numbers <tt class="docutils literal"><span class="pre">x[i]</span></tt> comprise
+<p>The Gaussian variables <tt class="docutils literal"><span class="pre">y[i]</span></tt> together with the numbers <tt class="docutils literal"><span class="pre">x[i]</span></tt> comprise
 our fake data.</p>
 </div>
 <div class="section" id="basic-fits">
@@ -405,7 +405,7 @@ it is important (usually essential) to include it in the fit. This is
 done by designing priors for the fit, which are probability distributions
 for each parameter that describe the <em>a priori</em> uncertainty in that
 parameter. As in the previous section, we use objects of type
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> to describe (gaussian) probability distributions.
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> to describe (Gaussian) probability distributions.
 Let&#8217;s assume that before the fit we suspect that each <tt class="docutils literal"><span class="pre">a[i]</span></tt> is of order
 <tt class="docutils literal"><span class="pre">0.5+-0.5</span></tt>, while <tt class="docutils literal"><span class="pre">E[i]</span></tt> is of order <tt class="docutils literal"><span class="pre">1+i+-0.5</span></tt>. A prior
 that represents this information is built using the following code:</p>
@@ -499,25 +499,25 @@ this code produces the following output, which is reproduced here in some
 detail in order to illustrate a variety of features:</p>
 <div class="highlight-python"><pre>************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 6.4e+02 [15]    Q = 0    logGBF = -4876    itns = 33
+  chi2/dof [dof] = 6.4e+02 [15]    Q = 0    logGBF = -4582    itns = 32
 
 Parameters:
-            a 0   0.01912 (89)      [  0.50 (50) ]
+            a 0   0.01908 (89)      [  0.50 (50) ]
               1    0.0237 (11)      [  0.50 (50) ]
-              2    0.0516 (24)      [  0.50 (50) ]
-            E 0    1.0407 (24)      [  1.00 (50) ]
-              1    2.0648 (24)      [  2.00 (50) ]
-              2    3.7296 (26)      [  3.00 (50) ]
+              2    0.0515 (24)      [  0.50 (50) ]
+            E 0    1.0408 (24)      [  1.00 (50) ]
+              1    2.0650 (24)      [  2.00 (50) ]
+              2    3.7300 (26)      [  3.00 (50) ]
 
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 1.98408 +- 0.0024544   E2/E0 = 3.58385 +- 0.00628162
-a1/a0 = 1.24094 +- 0.000263974   a2/a0 = 2.69693 +- 0.00126443
+E1/E0 = 1.98401 +- 0.0024584   E2/E0 = 3.58363 +- 0.00629216
+a1/a0 = 1.241 +- 0.000263812   a2/a0 = 2.69688 +- 0.00126547
 
 ************************************* nexp = 4
 Least Square Fit:
-  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = -74.426    itns = 291
+  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = 220.04    itns = 334
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -532,12 +532,12 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 2.00178 +- 0.00117831   E2/E0 = 3.07991 +- 0.00919665
-a1/a0 = 1.00941 +- 0.00287022   a2/a0 = 1.23242 +- 0.0128117
+E1/E0 = 2.00178 +- 0.00119872   E2/E0 = 3.07991 +- 0.00919931
+a1/a0 = 1.00941 +- 0.00287243   a2/a0 = 1.23242 +- 0.0128198
 
 ************************************* nexp = 5
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = -73.627    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.84    itns = 6
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -554,12 +554,12 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 2.00132 +- 0.00139785   E2/E0 = 3.06473 +- 0.0238493
-a1/a0 = 1.0075 +- 0.00413287   a2/a0 = 1.18851 +- 0.0629341
+E1/E0 = 2.00132 +- 0.00140927   E2/E0 = 3.06473 +- 0.0238458
+a1/a0 = 1.0075 +- 0.00413375   a2/a0 = 1.18851 +- 0.0629378
 
 ************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = -73.771    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.7    itns = 6
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -578,12 +578,12 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 2.00083 +- 0.00166713   E2/E0 = 3.04921 +- 0.0372569
-a1/a0 = 1.00547 +- 0.00554293   a2/a0 = 1.14579 +- 0.101026
+E1/E0 = 2.00083 +- 0.0016877   E2/E0 = 3.04921 +- 0.0372549
+a1/a0 = 1.00547 +- 0.00554744   a2/a0 = 1.14579 +- 0.101018
 
 ************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.96    logGBF = -73.873    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.96    logGBF = 220.6    itns = 6
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -604,15 +604,15 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 2.00058 +- 0.00179764   E2/E0 = 3.04159 +- 0.0430577
-a1/a0 = 1.00445 +- 0.00620982   a2/a0 = 1.1255 +- 0.116229
+E1/E0 = 2.00058 +- 0.00180439   E2/E0 = 3.04158 +- 0.0430463
+a1/a0 = 1.00445 +- 0.00620956   a2/a0 = 1.1255 +- 0.116212
                                     .                                    
                                     .                                    
                                     .                                    
 
 ************************************* nexp = 19
 Least Square Fit:
-  chi2/dof [dof] = 0.46 [15]    Q = 0.96    logGBF = -73.951    itns = 1
+  chi2/dof [dof] = 0.46 [15]    Q = 0.96    logGBF = 220.52    itns = 1
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -657,8 +657,8 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 2.0004 +- 0.0018858   E2/E0 = 3.0361 +- 0.0466706
-a1/a0 = 1.0037 +- 0.00663103   a2/a0 = 1.11118 +- 0.125291
+E1/E0 = 2.0004 +- 0.00188985   E2/E0 = 3.0361 +- 0.04669
+a1/a0 = 1.0037 +- 0.00664312   a2/a0 = 1.11118 +- 0.125367
 </pre>
 </div>
 <p>There are several things to notice here:</p>
@@ -799,7 +799,7 @@ changing <tt class="docutils literal"><span class="pre">make_data</span></tt> so
     <span class="n">x_xmax</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">noise</span> <span class="o">=</span> <span class="mi">1</span><span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">*</span><span class="n">x_xmax</span><span class="o">**</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="n">noise</span>            <span class="c"># noisy y[i]s</span>
-    <span class="n">xfac</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.00001</span><span class="p">)</span>    <span class="c"># gaussian distrib&#39;n: 1 +- 0.001%</span>
+    <span class="n">xfac</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.00001</span><span class="p">)</span>    <span class="c"># Gaussian distrib&#39;n: 1 +- 0.001%</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xi</span><span class="o">*</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">xfac</span><span class="p">(),</span> <span class="n">xfac</span><span class="o">.</span><span class="n">sdev</span><span class="p">)</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span> <span class="c"># noisy x[i]s</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </pre></div>
@@ -850,7 +850,7 @@ fit parameters <tt class="docutils literal"><span class="pre">p</span></tt> inst
 <p>Running the new code gives, for <tt class="docutils literal"><span class="pre">nexp=6</span></tt> terms:</p>
 <div class="highlight-python"><pre>************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.734    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]
@@ -940,7 +940,7 @@ introduce these correlations:</p>
 obtain the following fit with <tt class="docutils literal"><span class="pre">nexp=7</span></tt> terms:</p>
 <div class="highlight-python"><pre>************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = -66.989    itns = 3
+  chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = 227.48    itns = 3
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]
@@ -961,8 +961,8 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 1.9994 +- 0.0010494   E2/E0 = 2.99988 +- 0.0110833
-a1/a0 = 0.999589 +- 0.00250023   a2/a0 = 1.00503 +- 0.0279927
+E1/E0 = 1.9994 +- 0.00109701   E2/E0 = 2.99988 +- 0.0111014
+a1/a0 = 0.999589 +- 0.00250407   a2/a0 = 1.00503 +- 0.0279969
 </pre>
 </div>
 <p>The results are similar to before for the leading parameters, but
@@ -976,11 +976,12 @@ new information). The correlated prior allows us to merge our <em>a priori</em>
 information about the energy differences with the new information carried
 by the fit data <tt class="docutils literal"><span class="pre">x,</span> <span class="pre">y</span></tt>.</p>
 <p>Note that the Gaussian Bayes Factor (see <tt class="docutils literal"><span class="pre">logGBF</span></tt> in the output) is
-significantly larger with the correlated prior (<tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">-67.0</span></tt>) than it
-was for the uncorrelated prior (<tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">-73.9</span></tt>). If one had been
+significantly larger with the correlated prior (<tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">227.5</span></tt>) than it
+was for the uncorrelated prior (<tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">220.6</span></tt>). If one had been
 uncertain as to which prior was more appropriate, this difference says that
 the data prefers the correlated prior. (More precisely, it says that we
-would be significantly more likely to get this data from a theory with the
+would be <tt class="docutils literal"><span class="pre">exp(227.5-220.6)</span> <span class="pre">=</span> <span class="pre">992</span></tt> times more likely to get this data
+from a theory with the
 correlated prior than from one with the uncorrelated prior.) This
 difference is significant despite the fact that the <tt class="docutils literal"><span class="pre">chi**2</span></tt>s in the two
 cases are almost the same.</p>
@@ -1035,7 +1036,7 @@ different values of <tt class="docutils literal"><span class="pre">z</span></tt>
 It returns the corresponding fit and the value of <tt class="docutils literal"><span class="pre">z</span></tt>.</p>
 <p>This code generates the following output when <tt class="docutils literal"><span class="pre">nexp=7</span></tt>:</p>
 <div class="highlight-python"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = -60.457    itns = 1
+  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = 234.01    itns = 1
 
 Parameters:
             a 0    0.4027 (40)      [ 0.500 (95) ]
@@ -1056,13 +1057,13 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 1.99934 +- 0.00100622   E2/E0 = 3.00156 +- 0.00926136
-a1/a0 = 0.999549 +- 0.00245793   a2/a0 = 1.01104 +- 0.0165249
+E1/E0 = 1.99934 +- 0.00102904   E2/E0 = 3.00156 +- 0.00926834
+a1/a0 = 0.999549 +- 0.00245979   a2/a0 = 1.01104 +- 0.0165269
 prior['a'] = 0.5 +- 0.0950546
 </pre>
 </div>
 <p>Reducing the width of the <tt class="docutils literal"><span class="pre">prior['a']</span></tt>s from <tt class="docutils literal"><span class="pre">0.5</span></tt> to <tt class="docutils literal"><span class="pre">0.1</span></tt> increased
-<tt class="docutils literal"><span class="pre">logGBF</span></tt> from <tt class="docutils literal"><span class="pre">-67.0</span></tt> to <tt class="docutils literal"><span class="pre">-60.5</span></tt>. The error for <tt class="docutils literal"><span class="pre">a2/a0</span></tt> is 40%
+<tt class="docutils literal"><span class="pre">logGBF</span></tt> from <tt class="docutils literal"><span class="pre">227.5</span></tt> to <tt class="docutils literal"><span class="pre">234.1</span></tt>. The error for <tt class="docutils literal"><span class="pre">a2/a0</span></tt> is 40%
 smaller, but the other results are not much affected &#8212; suggesting that the
 details of <tt class="docutils literal"><span class="pre">prior['a']</span></tt> are not all that important, which is confirmed by
 the error budgets generated in the next section. It is not surprising, of
@@ -1086,19 +1087,19 @@ extract such information using <a class="reference internal" href="gvar.html#gva
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="go">1.9994 +- 0.0010494</span>
+<span class="go">1.9994 +- 0.00109701</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]))</span>
-<span class="go">0.000414032342911</span>
+<span class="go">0.000413996147765</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]))</span>
-<span class="go">0.000142408815921</span>
+<span class="go">0.000142291526805</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-<span class="go">0.000953694015457</span>
+<span class="go">0.00100587951374</span>
 </pre></div>
 </div>
-<p>This shows that the total uncertainty in <tt class="docutils literal"><span class="pre">E[1]/E[0]</span></tt>, <tt class="docutils literal"><span class="pre">0.00105</span></tt>, is
+<p>This shows that the total uncertainty in <tt class="docutils literal"><span class="pre">E[1]/E[0]</span></tt>, <tt class="docutils literal"><span class="pre">0.00110</span></tt>, is
 the sum in quadrature of a contribution <tt class="docutils literal"><span class="pre">0.00041</span></tt> due to the priors
 specified by <tt class="docutils literal"><span class="pre">prior['E']</span></tt>, <tt class="docutils literal"><span class="pre">0.00014</span></tt> due to <tt class="docutils literal"><span class="pre">prior['a']</span></tt>, and
-<tt class="docutils literal"><span class="pre">0.00095</span></tt> from the statistical errors in the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
+<tt class="docutils literal"><span class="pre">0.00101</span></tt> from the statistical errors in the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>There are two utility functions for tabulating results and error budgets.
 They require dictionaries of output results and inputs, and use the
 keys from the dictionaries to label columns and rows, respectively, in
@@ -1113,7 +1114,7 @@ an error-budget table:</p>
 <p>This gives the following output:</p>
 <div class="highlight-python"><pre>Values:
               E2/E0: 3.000(11)           
-              E1/E0: 1.9994(10)          
+              E1/E0: 1.9994(11)          
               a2/a0: 1.005(28)           
               a1/a0: 0.9996(25)          
 
@@ -1462,7 +1463,7 @@ precision of the input <tt class="docutils literal"><span class="pre">y</span></
 stability is worth the tradeoff.</p>
 <p>Rerunning our fit with <tt class="docutils literal"><span class="pre">svdcut=1e-12</span></tt> we obtain</p>
 <div class="highlight-python"><pre>Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = -55.494    itns = 3
+  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = 98.864    itns = 3
 
 Parameters:
             a 0    0.4002 (13)      [  0.50 (50) ]
@@ -1498,7 +1499,7 @@ a1/a0 = 1.010(96)   a2/a0 = 1.01(27)
 <p>and consistency has been restored. Note that taking <tt class="docutils literal"><span class="pre">svdcut=-1e-12</span></tt> (with a
 minus sign) causes the problematic modes to be dropped. This is a more
 conventional implementation of <em>svd</em> cuts, but here it results in much less
-precision than using <tt class="docutils literal"><span class="pre">svdcut=1e-12</span></tt> (for example, <tt class="docutils literal"><span class="pre">2.01972</span> <span class="pre">+-</span> <span class="pre">0.115874</span></tt>
+precision than using <tt class="docutils literal"><span class="pre">svdcut=1e-12</span></tt> (for example, <tt class="docutils literal"><span class="pre">2.02(12)</span></tt>
 for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, which is almost four times less precise). Dropping modes is
 equivalent to setting the corresponding variances equal to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal
@@ -1545,10 +1546,10 @@ is done automatically if <tt class="docutils literal"><span class="pre">debug=Tr
 <div class="section" id="bootstrap-error-analysis">
 <h2>Bootstrap Error Analysis<a class="headerlink" href="#bootstrap-error-analysis" title="Permalink to this headline">¶</a></h2>
 <p>Our analysis above assumes that every probability distribution relevant to
-the fit is approximately gaussian. For example, we characterize the input
+the fit is approximately Gaussian. For example, we characterize the input
 data for <tt class="docutils literal"><span class="pre">y</span></tt> by a mean and a covariance matrix obtained from averaging
 many random samples of <tt class="docutils literal"><span class="pre">y</span></tt>. For large sample sizes it is almost certainly
-true that the average values follow a gaussian distribution, but in
+true that the average values follow a Gaussian distribution, but in
 practical applications the sample size could be too small. The <em>statistical
 bootstrap</em> is an analysis tool for dealing with such situations.</p>
 <p>The strategy is to: 1) make a large number of &#8220;bootstrap copies&#8221; of the
@@ -1557,7 +1558,7 @@ characteristic of the underlying randomness in the original data; 2) repeat
 the entire fit analysis for each bootstrap copy of the data, extracting
 fit results from each; and 3) use the variation of the fit results from
 bootstrap copy to bootstrap copy to determine an approximate probability
-distribution (possibly non-gaussian) for the each result.</p>
+distribution (possibly non-Gaussian) for the each result.</p>
 <p>Consider the code from the previous section, where we might reasonably want
 another check on the error estimates for our results. That code can be
 modified to include a bootstrap analysis by adding the following to the end of
@@ -1575,7 +1576,7 @@ the <tt class="docutils literal"><span class="pre">main()</span></tt> subroutine
     <span class="n">outputs</span><span class="p">[</span><span class="s">&#39;a1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="c"># extract &quot;means&quot; and &quot;standard deviations&quot; from the bootstrap output;</span>
 <span class="c"># print using .fmt() to create compact representation of GVars</span>
-<span class="n">outputs</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span><span class="n">bstrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">bstrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s">&#39;Bootstrap results:&#39;</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="s">&#39;E1/E0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmt</span><span class="p">(),</span> <span class="s">&#39;  E2/E1 =&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="s">&#39;E2/E0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmt</span><span class="p">())</span>
 <span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="s">&#39;a1/a0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmt</span><span class="p">(),</span> <span class="s">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">[</span><span class="s">&#39;a2/a0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fmt</span><span class="p">())</span>
@@ -1585,9 +1586,9 @@ the <tt class="docutils literal"><span class="pre">main()</span></tt> subroutine
 <p>The results are consistent with the results obtained directly from the fit
 (when using <tt class="docutils literal"><span class="pre">svdcut=1e-12</span></tt>):</p>
 <div class="highlight-python"><pre>Bootstrap results:
-E1/E0 = 2.005(28)   E2/E1 = 2.99(28)
-a1/a0 = 1.011(85)   a2/a0 = 1.01(39)
-E1 = 1.805(27)   a1 = 0.404(35)
+E1/E0 = 2.008(31)   E2/E1 = 3.01(21)
+a1/a0 = 1.017(84)   a2/a0 = 1.05(33)
+E1 = 1.808(29)   a1 = 0.407(35)
 </pre>
 </div>
 <p>In particular, the bootstrap analysis confirms our previous error estimates
@@ -1597,11 +1598,11 @@ what <tt class="docutils literal"><span class="pre">gv.dataset.avg_data</span></
 </div>
 <div class="section" id="positive-parameters">
 <h2>Positive Parameters<a class="headerlink" href="#positive-parameters" title="Permalink to this headline">¶</a></h2>
-<p>The priors for <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> are all gaussian. There are situations,
+<p>The priors for <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> are all Gaussian. There are situations,
 however, where other distributions would be desirable. One such case is where
 a parameter  is known to be positive, but is close to zero in value (&#8220;close&#8221;
-being defined in terms of the <em>a priori</em> uncertainty). For such cases we would
-like to use  non-gaussian priors that force positivity &#8212; for example, priors
+being defined relative to the <em>a priori</em> uncertainty). For such cases we would
+like to use  non-Gaussian priors that force positivity &#8212; for example, priors
 that  impose log-normal or exponential distributions on the parameter.
 Ideally the decision to use such a distribution would  be made on a parameter-
 by-parameter basis, when creating the priors, and would have no impact on the
@@ -1626,7 +1627,7 @@ the <a class="reference internal" href="lsqfit.html#lsqfit.transform_p" title="l
 parameter <tt class="docutils literal"><span class="pre">p[&quot;XX&quot;]</span></tt> used in <tt class="docutils literal"><span class="pre">fitfcn</span></tt>. The prior  distribution for that
 parameter can now be turned into a log-normal distribution  by replacing
 <tt class="docutils literal"><span class="pre">prior[&quot;XX&quot;]</span></tt> with <tt class="docutils literal"><span class="pre">prior[&quot;logXX&quot;]</span></tt> (or <tt class="docutils literal"><span class="pre">prior[&quot;log(XX)&quot;]</span></tt>) when
-defining the prior, thereby assigning a gaussian distribution to <tt class="docutils literal"><span class="pre">logXX</span></tt>
+defining the prior, thereby assigning a Gaussian distribution to <tt class="docutils literal"><span class="pre">logXX</span></tt>
 rather than to <tt class="docutils literal"><span class="pre">XX</span></tt>. Nothing need be changed in the fit function, other than
 adding the decorator. The decorator automatically detects parameters whose
 keys begin with <tt class="docutils literal"><span class="pre">&quot;log&quot;</span></tt> and adds new parameters to the parameter-dictionary
@@ -1660,7 +1661,7 @@ use the following fitting code:</p>
 <p>where we are assuming <em>a priori</em> information that suggests
 the average is around <tt class="docutils literal"><span class="pre">0.2</span></tt>. The output from this code is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = -8.4669    itns = 2
+  chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = 5.3431    itns = 2
 
 Parameters:
               a   0.004 (18)     [ 0.020 (20) ]
@@ -1689,7 +1690,7 @@ is negative, and yet we know that <tt class="docutils literal"><span class="pre"
 but we are able to use the identical fit function. The result of
 this fit is</p>
 <div class="highlight-python"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = -8.558    itns = 12
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.252    itns = 12
 
 Parameters:
            loga   -4.44 (97)     [ -3.9 (1.0) ]

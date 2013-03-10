@@ -13,7 +13,7 @@ functions of arbitrarily many parameters. The central module is
 :mod:`lsqfit` because it provides the fitting functions. :mod:`lsqfit` makes
 heavy use of auxiliary module :mod:`gvar`, which provides tools that
 facilitate the analysis of error propagation, and also the creation of
-complicated multi-dimensional gaussian distributions.
+complicated multi-dimensional Gaussian distributions.
 
 The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    
@@ -151,11 +151,11 @@ the prior or back since both are forms of input information.
 
 There are several things worth noting from this example:
 
-   * The input data (``y``) is expressed in terms of gaussian random
+   * The input data (``y``) is expressed in terms of Gaussian random
      variables --- quantities with means and a covariance matrix. These are
      represented by objects of type :class:`gvar.GVar` in the code; module
      :mod:`gvar` has a variety of tools for creating and manipulating
-     gaussian random variables.
+     Gaussian random variables.
      
    * The input data is stored in a dictionary (``y``) whose values can
      be |GVar|\s or arrays of |GVar|\s. The use of a dictionary allows for
@@ -216,7 +216,7 @@ function ``f(x)`` of the independent variable ``x``; 2) choose values for
 the ``x``\s, and therefore the "correct" values for ``y=f(x)``; and 3) add
 random noise to the ``y``\s, to simulate measurement errors. Here we will work
 through a simple implementation of this recipe to illustrate how the
-:mod:`gvar` module can be used to build complicated gaussian distributions (in
+:mod:`gvar` module can be used to build complicated Gaussian distributions (in
 this case for the correlated noise in the ``y``\s). A reader eager to fit
 real data can skip this section on first reading.
 
@@ -243,7 +243,7 @@ fit data. We do this by forming ``y_exact*noise`` where ::
 
    noise = 1 + sum_n=0..99 c[n]*(x/x_max)**n,
    
-Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are gaussian
+Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are Gaussian
 random variable with means and standard deviations of order ``0.01``. This
 is easy to implement in Python using the :mod:`gvar` module::
 
@@ -258,7 +258,7 @@ is easy to implement in Python using the :mod:`gvar` module::
        y = f_exact(x)*noise
        return x, y
 
-Gaussian variable ``cr`` represents a gaussian distribution with mean
+Gaussian variable ``cr`` represents a Gaussian distribution with mean
 ``0.0`` and width ``0.01``, which we use here as a random number generator:
 ``cr()`` is a number drawn randomly from the distribution represented by
 ``cr``::
@@ -270,7 +270,7 @@ Gaussian variable ``cr`` represents a gaussian distribution with mean
    >>> print(cr())
    -0.00731564589737
 
-We use ``cr()`` to generate mean values for the gaussian distributions
+We use ``cr()`` to generate mean values for the Gaussian distributions
 represented by the ``c[n]``\s, each of which has width ``0.01``. The resulting
 ``y``\s fluctuate around the corresponding values of ``f_exact(x)`` and have 
 statistical errors::
@@ -294,7 +294,7 @@ The diagonal elements of the covariance matrix are the variances of the
 individual ``y``\s; the off-diagonal elements are a measure of the
 correlations ``< (y[i]-<y[i]>) * (y[j]-<y[j]>) >``.
 
-The gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
+The Gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
 our fake data.
 
 
@@ -337,7 +337,7 @@ it is important (usually essential) to include it in the fit. This is
 done by designing priors for the fit, which are probability distributions 
 for each parameter that describe the *a priori* uncertainty in that 
 parameter. As in the previous section, we use objects of type
-:class:`gvar.GVar` to describe (gaussian) probability distributions.
+:class:`gvar.GVar` to describe (Gaussian) probability distributions.
 Let's assume that before the fit we suspect that each ``a[i]`` is of order
 ``0.5+-0.5``, while ``E[i]`` is of order ``1+i+-0.5``. A prior
 that represents this information is built using the following code::
@@ -579,7 +579,7 @@ changing ``make_data`` so that each ``x`` has a random value within about
        x_xmax = x/max(x)
        noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
        y = f_exact(x)*noise            # noisy y[i]s
-       xfac = gv.gvar(1.0, 0.00001)    # gaussian distrib'n: 1 +- 0.001%
+       xfac = gv.gvar(1.0, 0.00001)    # Gaussian distrib'n: 1 +- 0.001%
        x = np.array([xi*gv.gvar(xfac(), xfac.sdev) for xi in x]) # noisy x[i]s
        return x, y
    
@@ -701,11 +701,12 @@ information about the energy differences with the new information carried
 by the fit data ``x, y``.
 
 Note that the Gaussian Bayes Factor (see ``logGBF`` in the output) is
-significantly larger with the correlated prior (``logGBF = -67.0``) than it
-was for the uncorrelated prior (``logGBF = -73.9``). If one had been
+significantly larger with the correlated prior (``logGBF = 227.5``) than it
+was for the uncorrelated prior (``logGBF = 220.6``). If one had been
 uncertain as to which prior was more appropriate, this difference says that
 the data prefers the correlated prior. (More precisely, it says that we
-would be significantly more likely to get this data from a theory with the
+would be ``exp(227.5-220.6) = 992`` times more likely to get this data 
+from a theory with the
 correlated prior than from one with the uncorrelated prior.) This
 difference is significant despite the fact that the ``chi**2``\s in the two
 cases are almost the same.
@@ -768,7 +769,7 @@ This code generates the following output when ``nexp=7``:
 .. literalinclude:: eg4a.out
 
 Reducing the width of the ``prior['a']``\s from ``0.5`` to ``0.1`` increased
-``logGBF`` from ``-67.0`` to ``-60.5``. The error for ``a2/a0`` is 40%
+``logGBF`` from ``227.5`` to ``234.1``. The error for ``a2/a0`` is 40%
 smaller, but the other results are not much affected --- suggesting that the
 details of ``prior['a']`` are not all that important, which is confirmed by
 the error budgets generated in the next section. It is not surprising, of
@@ -795,18 +796,18 @@ extract such information using :meth:`gvar.GVar.partialsdev` --- for example::
    >>> E = fit.p['E']
    >>> a = fit.p['a']
    >>> print(E[1]/E[0])
-   1.9994 +- 0.0010494
+   1.9994 +- 0.00109701
    >>> print((E[1]/E[0]).partialsdev(fit.prior['E']))
-   0.000414032342911
+   0.000413996147765
    >>> print((E[1]/E[0]).partialsdev(fit.prior['a']))
-   0.000142408815921
+   0.000142291526805
    >>> print((E[1]/E[0]).partialsdev(y))
-   0.000953694015457
+   0.00100587951374
    
-This shows that the total uncertainty in ``E[1]/E[0]``, ``0.00105``, is 
+This shows that the total uncertainty in ``E[1]/E[0]``, ``0.00110``, is 
 the sum in quadrature of a contribution ``0.00041`` due to the priors 
 specified by ``prior['E']``, ``0.00014`` due to ``prior['a']``, and 
-``0.00095`` from the statistical errors in the input data ``y``.
+``0.00101`` from the statistical errors in the input data ``y``.
 
 There are two utility functions for tabulating results and error budgets.
 They require dictionaries of output results and inputs, and use the 
@@ -1025,7 +1026,7 @@ Rerunning our fit with ``svdcut=1e-12`` we obtain
 and consistency has been restored. Note that taking ``svdcut=-1e-12`` (with a
 minus sign) causes the problematic modes to be dropped. This is a more
 conventional implementation of *svd* cuts, but here it results in much less
-precision than using ``svdcut=1e-12`` (for example, ``2.01972 +- 0.115874``
+precision than using ``svdcut=1e-12`` (for example, ``2.02(12)``
 for ``E1/E0``, which is almost four times less precise). Dropping modes is
 equivalent to setting the corresponding variances equal to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal
@@ -1060,10 +1061,10 @@ is done automatically if ``debug=True`` is added to argument list of
 Bootstrap Error Analysis
 ------------------------
 Our analysis above assumes that every probability distribution relevant to
-the fit is approximately gaussian. For example, we characterize the input
+the fit is approximately Gaussian. For example, we characterize the input
 data for ``y`` by a mean and a covariance matrix obtained from averaging
 many random samples of ``y``. For large sample sizes it is almost certainly
-true that the average values follow a gaussian distribution, but in
+true that the average values follow a Gaussian distribution, but in
 practical applications the sample size could be too small. The *statistical
 bootstrap* is an analysis tool for dealing with such situations.
 
@@ -1073,7 +1074,7 @@ characteristic of the underlying randomness in the original data; 2) repeat
 the entire fit analysis for each bootstrap copy of the data, extracting
 fit results from each; and 3) use the variation of the fit results from
 bootstrap copy to bootstrap copy to determine an approximate probability
-distribution (possibly non-gaussian) for the each result.
+distribution (possibly non-Gaussian) for the each result.
    
 Consider the code from the previous section, where we might reasonably want 
 another check on the error estimates for our results. That code can be
@@ -1093,7 +1094,7 @@ the ``main()`` subroutine::
        outputs['a1'].append(a[1])
    # extract "means" and "standard deviations" from the bootstrap output;
    # print using .fmt() to create compact representation of GVars
-   outputs = gv.dataset.avg_data(outputs,bstrap=True)
+   outputs = gv.dataset.avg_data(outputs, bstrap=True)
    print('Bootstrap results:')
    print('E1/E0 =', outputs['E1/E0'].fmt(), '  E2/E1 =', outputs['E2/E0'].fmt())
    print('a1/a0 =', outputs['a1/a0'].fmt(), '  a2/a0 =', outputs['a2/a0'].fmt())
@@ -1112,11 +1113,11 @@ what ``gv.dataset.avg_data`` does because flag ``bstrap`` is set to ``True``.
 
 Positive Parameters
 -------------------
-The priors for |nonlinear_fit| are all gaussian. There are situations,
+The priors for |nonlinear_fit| are all Gaussian. There are situations,
 however, where other distributions would be desirable. One such case is where
 a parameter  is known to be positive, but is close to zero in value ("close"
-being defined in terms of the *a priori* uncertainty). For such cases we would
-like to use  non-gaussian priors that force positivity --- for example, priors
+being defined relative to the *a priori* uncertainty). For such cases we would
+like to use  non-Gaussian priors that force positivity --- for example, priors
 that  impose log-normal or exponential distributions on the parameter.
 Ideally the decision to use such a distribution would  be made on a parameter-
 by-parameter basis, when creating the priors, and would have no impact on the
@@ -1142,7 +1143,7 @@ the :class:`lsqfit.transform_p` documentation for more detail). Consider any
 parameter ``p["XX"]`` used in ``fitfcn``. The prior  distribution for that
 parameter can now be turned into a log-normal distribution  by replacing
 ``prior["XX"]`` with ``prior["logXX"]`` (or ``prior["log(XX)"]``) when
-defining the prior, thereby assigning a gaussian distribution to ``logXX``
+defining the prior, thereby assigning a Gaussian distribution to ``logXX``
 rather than to ``XX``. Nothing need be changed in the fit function, other than
 adding the decorator. The decorator automatically detects parameters whose
 keys begin with ``"log"`` and adds new parameters to the parameter-dictionary

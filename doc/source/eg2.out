@@ -1,6 +1,6 @@
 ************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = -69.734    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]

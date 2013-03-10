@@ -1,5 +1,5 @@
 Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = -55.494    itns = 3
+  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = 98.864    itns = 3
 
 Parameters:
             a 0    0.4002 (13)      [  0.50 (50) ]

@@ -573,7 +573,12 @@ cdef double _c_fs(gsl_vector* vx, void* p):
 
 ## miscellaneous functions ##
 def gammaQ(double a, double x):
-    """ Q(a,x) = 1-P(a,x) """
+    """ Return the incomplete gamma function ``Q(a,x) = 1-P(a,x)``. 
+
+    Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
+    get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees 
+    of freedom even if the model used to construct ``chi2`` is correct.
+    """
     cdef gsl_sf_result_struct res
     cdef int status
     status = gsl_sf_gamma_inc_Q_e(a, x, &res)

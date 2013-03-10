@@ -24,6 +24,13 @@ run:
 	$(PYTHON) err-budget.py > err-budget.tmp
 	- diff -w err-budget.out err-budget.tmp
 
+update-all:
+	$(PYTHON) simple.py > simple.out
+	$(PYTHON) y-vs-x.py > y-vs-x.out
+	$(PYTHON) x-err.py > x-err.out
+	$(PYTHON) p-corr.py > p-corr.out
+	$(PYTHON) err-budget.py > err-budget.out
+
 clean:
 	rm -f *.pyc *.tmp *.p
 

@@ -1,5 +1,5 @@
 Least Square Fit:
-  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = -60.457    itns = 1
+  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = 234.01    itns = 1
 
 Parameters:
             a 0    0.4027 (40)      [ 0.500 (95) ]
@@ -20,6 +20,6 @@ Parameters:
 Settings:
   svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
-E1/E0 = 1.99934 +- 0.00100622   E2/E0 = 3.00156 +- 0.00926136
-a1/a0 = 0.999549 +- 0.00245793   a2/a0 = 1.01104 +- 0.0165249
+E1/E0 = 1.99934 +- 0.00102904   E2/E0 = 3.00156 +- 0.00926834
+a1/a0 = 0.999549 +- 0.00245979   a2/a0 = 1.01104 +- 0.0165269
 prior['a'] = 0.5 +- 0.0950546

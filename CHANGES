@@ -1,3 +1,13 @@
+Version ??? - ???? (not released)
+=================================
+
+- exp(fit.logGBF) is now the Bayesian posterior probability in the 
+  Gaussian limit. It used to be proportional to that probability; the 
+  proportionality factors are now included. This change will have no
+  impact at all in almost all uses of logGBF. Made more for the sake of
+  clarity than utility.
+
+
 Version 4.4 --- 2013-02-13
 ==========================
 

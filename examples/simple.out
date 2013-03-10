@@ -1,5 +1,5 @@
 Least Square Fit:
-  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = -5.2381    itns = 5
+  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538    itns = 5
 
 Parameters:
               a   0.253 (32)     [  0.50 (50) ]

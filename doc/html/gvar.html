@@ -61,23 +61,23 @@
           <div class="body">
             
   <div class="section" id="gvar-gaussian-random-variables">
-<h1><a class="reference internal" href="#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> - Gaussian Random Variables<a class="headerlink" href="#gvar-gaussian-random-variables" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> - Gaussian Random Variables<a class="headerlink" href="#gvar-gaussian-random-variables" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-gvar"></span><div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>This module provides tools for representing and manipulating gaussian
-random variables numerically. A gaussian variable is a random variable that
-represents a <em>typical</em> random number drawn from a particular gaussian (or
+<p>This module provides tools for representing and manipulating Gaussian
+random variables numerically. A Gaussian variable is a random variable that
+represents a <em>typical</em> random number drawn from a particular Gaussian (or
 normal) probability distribution; more precisely, it represents the entire
 probability distribution, and not, for example, a <em>particular</em> random number
-drawn from that distribution. A given gaussian variable <tt class="docutils literal"><span class="pre">x</span></tt> is therefore
+drawn from that distribution. A given Gaussian variable <tt class="docutils literal"><span class="pre">x</span></tt> is therefore
 completely characterized by its mean <tt class="docutils literal"><span class="pre">x.mean</span></tt> and standard deviation
 <tt class="docutils literal"><span class="pre">x.sdev</span></tt>.</p>
-<p>A mathematical function of a gaussian variable can be defined as the
+<p>A mathematical function of a Gaussian variable can be defined as the
 probability distribution of function values obtained by evaluating the
 function for random numbers drawn from the original distribution. The
-distribution of function values is itself approximately gaussian provided the
-standard deviation of the gaussian variable is sufficiently small. Thus we can
-define a function <tt class="docutils literal"><span class="pre">f</span></tt> of a gaussian variable <tt class="docutils literal"><span class="pre">x</span></tt> to be a gaussian variable
+distribution of function values is itself approximately Gaussian provided the
+standard deviation of the Gaussian variable is sufficiently small. Thus we can
+define a function <tt class="docutils literal"><span class="pre">f</span></tt> of a Gaussian variable <tt class="docutils literal"><span class="pre">x</span></tt> to be a Gaussian variable
 itself, with</p>
 <div class="highlight-python"><pre>f(x).mean = f(x.mean)
 f(x).sdev = x.sdev |f'(x.mean)|,</pre>
@@ -86,12 +86,12 @@ f(x).sdev = x.sdev |f'(x.mean)|,</pre>
 <tt class="docutils literal"><span class="pre">x.mean</span></tt>. (This obviously fails at an extremum of <tt class="docutils literal"><span class="pre">f(x)</span></tt>, where
 <tt class="docutils literal"><span class="pre">f'(x)=0</span></tt>.)</p>
 <p>The last formula, together with its multidimensional generalization, leads
-to a full calculus for gaussian random variables that assigns
-gaussian-variable values to arbitrary arithmetic expressions and functions
-involving gaussian variables. This calculus is useful for analyzing the
+to a full calculus for Gaussian random variables that assigns
+Gaussian-variable values to arbitrary arithmetic expressions and functions
+involving Gaussian variables. This calculus is useful for analyzing the
 propagation of statistical and other random errors (provided the standard
 deviations are small enough).</p>
-<p>A multidimensional collection <tt class="docutils literal"><span class="pre">x[i]</span></tt> of gaussian variables is
+<p>A multidimensional collection <tt class="docutils literal"><span class="pre">x[i]</span></tt> of Gaussian variables is
 characterized by the means <tt class="docutils literal"><span class="pre">x[i].mean</span></tt> for each variable, together with a
 covariance matrix <tt class="docutils literal"><span class="pre">cov[i,</span> <span class="pre">j]</span></tt>. Diagonal elements of <tt class="docutils literal"><span class="pre">cov</span></tt> specify the
 standard deviations of different variables: <tt class="docutils literal"><span class="pre">x[i].sdev</span> <span class="pre">=</span> <span class="pre">cov[i,</span> <span class="pre">i]**0.5</span></tt>.
@@ -104,7 +104,7 @@ variables:</p>
 </div>
 <div class="section" id="creating-gaussian-variables">
 <h2>Creating Gaussian Variables<a class="headerlink" href="#creating-gaussian-variables" title="Permalink to this headline">¶</a></h2>
-<p>An object of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> represents a single gaussian variable. Such an
+<p>An object of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> represents a single Gaussian variable. Such an
 object can be created for a single variable, with mean <tt class="docutils literal"><span class="pre">xmean</span></tt> and
 standard deviation <tt class="docutils literal"><span class="pre">xsdev</span></tt> (both scalars), using:</p>
 <div class="highlight-python"><pre>x = gvar.gvar(xmean, xsdev).</pre>
@@ -140,7 +140,7 @@ distributions, especially if there are correlations between different
 variables. Such distributions are represented by collections of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in
 one of two standard formats: 1) <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> type arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (any
 shape); or, more flexibly, 2) Python dictionaries whose values are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or
-arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Most functions in <a class="reference internal" href="#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> that handle multiple
+arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Most functions in <a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> that handle multiple
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s work with either format, and if they return multidimensional results
 do so in the same format as the inputs (that is, arrays or dictionaries). Any
 dictionary is converted internally into a specialized (ordered) dictionary of
@@ -281,7 +281,7 @@ to generate random numbers from those distributions. For example, in</p>
 <span class="go">1.92649199321</span>
 </pre></div>
 </div>
-<p>calls to <tt class="docutils literal"><span class="pre">z()</span></tt> generate random numbers from a gaussian random number
+<p>calls to <tt class="docutils literal"><span class="pre">z()</span></tt> generate random numbers from a Gaussian random number
 generator with mean <tt class="docutils literal"><span class="pre">z.mean=2.0</span></tt> and standard deviation <tt class="docutils literal"><span class="pre">z.sdev=0.5</span></tt>.</p>
 <p>To obtain random arrays from an array <tt class="docutils literal"><span class="pre">g</span></tt> of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
 use <tt class="docutils literal"><span class="pre">giter=gvar.raniter(g)</span></tt> (see <a class="reference internal" href="#gvar.raniter" title="gvar.raniter"><tt class="xref py py-func docutils literal"><span class="pre">gvar.raniter()</span></tt></a>) to create a
@@ -321,7 +321,7 @@ layout:</p>
 </div>
 <p>One use for such random number generators is dealing with situations where
 the standard deviations are too large to justify the linearization
-assumed in defining functions of gaussian variables. Consider, for example,</p>
+assumed in defining functions of Gaussian variables. Consider, for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
 <span class="go">0.540302 +- 2.52441</span>
@@ -332,7 +332,7 @@ can never be larger than one. To obtain the real mean and standard deviation,
 we generate a large number of random numbers <tt class="docutils literal"><span class="pre">xi</span></tt> from <tt class="docutils literal"><span class="pre">x</span></tt>, compute
 <tt class="docutils literal"><span class="pre">cos(xi)</span></tt> for each, and compute the mean and standard deviation for the
 resulting distribution (or any other statistical quantity, particularly if
-the resulting distribution is not gaussian):</p>
+the resulting distribution is not Gaussian):</p>
 <div class="highlight-python"><pre># estimate mean,sdev from 1000 random x's
 &gt;&gt;&gt; ran_x = numpy.array([x() for in range(1000)])
 &gt;&gt;&gt; ran_cos = numpy.cos(ran_x)
@@ -368,13 +368,13 @@ errors and correlations:</p>
 <span class="go"> [ 0.005  0.01 ]]</span>
 </pre></div>
 </div>
-<p>Such fake data sets are useful for analyzing non-gaussian behavior, for
+<p>Such fake data sets are useful for analyzing non-Gaussian behavior, for
 example, in nonlinear fits.</p>
 </div>
 <div class="section" id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this headline">¶</a></h2>
 <p>The most fundamental limitation of this module is that the calculus of
-gaussian variables that it assumes is only valid when standard deviations
+Gaussian variables that it assumes is only valid when standard deviations
 are small (compared to the distances over which the functions of interest
 change appreciably). One way of dealing with this limitation is described
 above in the section on <a class="reference internal" href="#gvar-random-number-generators"><em>Random Number Generators</em></a>.</p>
@@ -478,7 +478,7 @@ if <tt class="docutils literal"><span class="pre">x.mean</span> <span class="pre
 </div>
 <div class="section" id="utilities">
 <h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
-<p>The function used to create gaussian variable objects is:</p>
+<p>The function used to create Gaussian variable objects is:</p>
 <dl class="function">
 <dt id="gvar.gvar">
 <tt class="descclassname">gvar.</tt><tt class="descname">gvar</tt><big>(</big><em>...</em><big>)</big><a class="headerlink" href="#gvar.gvar" title="Permalink to this definition">¶</a></dt>
@@ -708,7 +708,7 @@ equal <tt class="docutils literal"><span class="pre">1</span></tt> before applyi
 <dd><p>Seed random number generators with tuple <tt class="docutils literal"><span class="pre">seed</span></tt>.</p>
 <p>Argument <tt class="docutils literal"><span class="pre">seed</span></tt> is a <tt class="xref py py-class docutils literal"><span class="pre">tuple</span></tt> of integers that is used to seed
 the random number generators used by <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> and  
-<tt class="xref py py-mod docutils literal"><span class="pre">random</span></tt> (and therefore by <a class="reference internal" href="#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>). Reusing 
+<tt class="xref py py-mod docutils literal"><span class="pre">random</span></tt> (and therefore by <a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>). Reusing 
 the same <tt class="docutils literal"><span class="pre">seed</span></tt> results in the same set of random numbers.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -975,7 +975,7 @@ vectors is reversed relative to <tt class="docutils literal"><span class="pre">s
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
-<p>The fundamental class for representing gaussian variables is:</p>
+<p>The fundamental class for representing Gaussian variables is:</p>
 <dl class="class">
 <dt id="gvar.GVar">
 <em class="property">class </em><tt class="descclassname">gvar.</tt><tt class="descname">GVar</tt><a class="headerlink" href="#gvar.GVar" title="Permalink to this definition">¶</a></dt>
@@ -1419,7 +1419,7 @@ decomposition cannot be computed if the input matrix was rescaled
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> makes heavy use of <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> for array manipulations. It
+<p><a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> makes heavy use of <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> for array manipulations. It
 also uses the <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> code for implementing elementary functions
 (<em>e.g.</em>, <tt class="docutils literal"><span class="pre">sin</span></tt>, <tt class="docutils literal"><span class="pre">exp</span></tt> ...) in terms of member functions.</p>
 </div>

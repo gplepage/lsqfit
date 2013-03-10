@@ -323,50 +323,63 @@ and a check for roundoff errors. (Default is <tt class="docutils literal"><span 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.chi2">
 <tt class="descname">chi2</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Permalink to this definition">¶</a></dt>
-<dd><p>The <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the last fit.</p>
+<dd><p>The minimum <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the fit. <tt class="docutils literal"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></tt> is usually
+of order one in good fits; values much less than one suggest
+that the actual standard deviations in the input data and/or priors are
+smaller than the standard deviations used in the fit.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.cov">
 <tt class="descname">cov</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p>Covariance matrix from fit.</p>
+<dd><p>Covariance matrix of the best-fit parameters from the fit.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.dof">
 <tt class="descname">dof</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.dof" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of degrees of freedom in fit.</p>
+<dd><p>Number of degrees of freedom in the fit, which equals the number of
+pieces of data being fit when priors are specified for the fit
+parameters. Without priors, it is the number of pieces of data minus
+the number of fit parameters.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.logGBF">
 <tt class="descname">logGBF</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithm of Gaussian Bayes Factor for last fit (larger is better).
-The exponential of <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> is proportional to the
-Bayesian posterior probability of the fit in a linearized
-(that is, Gaussian) approximation. Larger values imply larger
-posterior probabilities.</p>
+<dd><p>The logarithm of the probability (density) that one would obtain
+the fit data used in the fit by randomly sampling the parameter model
+(priors plus fit function) used. This quantity is
+useful for comparing fits of the same data to different models,
+with different priors and/or fit functions. The model with the
+largest value of <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> is the one prefered by the data.
+The exponential of the difference in <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> between two models
+is the ratio of probabilities (Bayes factor) for those models. Differences
+in <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> smaller than 1 are not very significant. Gaussian
+statistics are assumed when computing <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.p">
 <tt class="descname">p</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Permalink to this definition">¶</a></dt>
-<dd><p>Best-fit parameters from last fit. Depending upon what was used for
+<dd><p>Best-fit parameters from fit. Depending upon what was used for
 the prior (or <tt class="docutils literal"><span class="pre">p0</span></tt>), it is either: a dictionary
 (<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s; or
-an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. <tt class="docutils literal"><span class="pre">fit.p</span></tt> represents a
+multi-dimensional Gaussian distribution which, in Bayesian terminology,
+is the <em>posterior</em> probability distribution of the fit parameters.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.pmean">
 <tt class="descname">pmean</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.pmean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Means of the best-fit parameters from last fit (dictionary or array).</p>
+<dd><p>Means of the best-fit parameters from fit (dictionary or array).</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.psdev">
 <tt class="descname">psdev</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.psdev" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard deviations of the best-fit parameters from last fit
+<dd><p>Standard deviations of the best-fit parameters from fit
 (dictionary or array).</p>
 </dd></dl>
 
@@ -392,7 +405,9 @@ input data&#8217;s covariance matrix is too singular to invert accurately
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.Q">
 <tt class="descname">Q</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quality factor for last fit (should be &gt;0.1 for good fits).</p>
+<dd><p>The probability that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> from the fit could have been
+larger, by chance, assuming the best-fit model is correct. Good fits have
+<tt class="docutils literal"><span class="pre">Q</span></tt> values larger than 0.1 or so.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -745,6 +760,15 @@ same type and shape as each element of <tt class="docutils literal"><span class=
 
 </dd></dl>
 
+<dl class="function">
+<dt id="lsqfit.gammaQ">
+<tt class="descclassname">lsqfit.</tt><tt class="descname">gammaQ</tt><big>(</big><big>)</big><a class="headerlink" href="#lsqfit.gammaQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the incomplete gamma function <tt class="docutils literal"><span class="pre">Q(a,x)</span> <span class="pre">=</span> <span class="pre">1-P(a,x)</span></tt>.</p>
+<p>Note that <tt class="docutils literal"><span class="pre">gammaQ(ndof/2.,</span> <span class="pre">chi2/2.)</span></tt> is the probabilty that one could
+get a <tt class="docutils literal"><span class="pre">chi**2</span></tt> larger than <tt class="docutils literal"><span class="pre">chi2</span></tt> with <tt class="docutils literal"><span class="pre">ndof</span></tt> degrees 
+of freedom even if the model used to construct <tt class="docutils literal"><span class="pre">chi2</span></tt> is correct.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="utility-classes">
 <h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
@@ -973,7 +997,7 @@ The following attributes are available:</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> relies heavily on the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, and <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> modules.
+<p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> relies heavily on the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, and <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> modules.
 Several utility functions are in <tt class="xref py py-mod docutils literal"><span class="pre">lsqfit_util</span></tt>. Also the minimization
 routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 </div>
