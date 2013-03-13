@@ -10,7 +10,7 @@ DO_PLOT = False
 DO_BOOTSTRAP = False
 DO_SVD = False
 
-SVDCUT = 1e-10 if DO_SVD else None
+SVDCUT = 1e-14 if DO_SVD else None
 
 import sys
 import lsqfit
@@ -18,21 +18,26 @@ import numpy as np
 import gvar as gd
 import tee
 
-def f_exact(x):                     # exact f(x)
-    return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
+def f_exact(x, nterm=100):                     # exact f(x)
+    return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(nterm))
 
 def f(x,p):                         # function used to fit x,y data
     a = p['a']                      # array of a[i]s
     E = p['E']                      # array of E[i]s
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
-def make_data():                    # make x,y fit data
+def f1(x,p):                         # function used to fit x,y data
+    a = p['a'][:1]                      # array of a[i]s
+    E = p['E'][:1]                      # array of E[i]s
+    return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
+
+def make_data(nterm=100, eps=0.01):                    # make x,y fit data
     x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-    cr = gd.gvar(0.0,0.01)
-    c = [gd.gvar(cr(),0.01) for n in range(100)]
+    cr = gd.gvar(0.0,eps)
+    c = [gd.gvar(cr(),eps) for n in range(100)]
     x_xmax = x/max(x)
     noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-    y = f_exact(x)*noise            # noisy y[i]s
+    y = f_exact(x, nterm)*noise            # noisy y[i]s
     return x,y
 
 def make_prior(nexp):               # make priors for fit parameters
@@ -48,7 +53,7 @@ def main():
     x,y = make_data()               # make fit data
     p0 = None                       # make larger fits go faster (opt.)
     sys_stdout = sys.stdout
-    for nexp in range(3,9):
+    for nexp in range(3,8):
         prior = make_prior(nexp)
         fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
         if fit.chi2/fit.dof<1.:
@@ -66,7 +71,15 @@ def main():
         # print (E[1]/E[0]).partialsdev(fit.y)
         sys.stdout = sys_stdout
         print
-    
+    # sys.stdout = tee.tee(sys_stdout, open("eg3a.out", "w"))
+    # for i in range(1):
+    #     print '--------------------- fit with %d extra data sets' % (i+1)
+    #     x, y = make_data(1)
+    #     prior = fit.p
+    #     fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f1,prior=prior, svdcut=SVDCUT)
+    #     print fit
+    # sys.stdout = sys_stdout
+
     if DO_BOOTSTRAP:
         Nbs = 10                                     # number of bootstrap copies
         outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[],'a2/a0':[],'E1':[],'a1':[]}   # results

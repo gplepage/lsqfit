@@ -1,0 +1,30 @@
+************************************* nexp = 2
+Least Square Fit:
+  chi2/dof [dof] = 0.52 [15]    Q = 0.93    logGBF = 255.98    itns = 6
+
+Parameters:
+            a 0    0.4018 (40)      [  0.50 (50) ]
+              1    0.4018 (40)      [  0.50 (50) ]
+            E 0   0.90036 (50)      [  1.00 (50) ]
+              1   1.80036 (50)      [  1.90 (50) ]
+
+Settings:
+  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+
+************************************* nexp = 3
+Least Square Fit:
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 244.49    itns = 4
+
+Parameters:
+            a 0    0.4018 (40)      [  0.50 (50) ]
+              1    0.4018 (40)      [  0.50 (50) ]
+              2   5.0(6.1)e-06      [  0.50 (50) ]
+            E 0   0.90035 (50)      [  1.00 (50) ]
+              1   1.80035 (50)      [  1.90 (50) ]
+              2     2.700 (10)      [  2.80 (50) ]
+
+Settings:
+  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+

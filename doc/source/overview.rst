@@ -227,8 +227,8 @@ This is simple in Python::
 
    import numpy as np
    
-   def f_exact(x):
-       return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
+   def f_exact(x, nexp=100):
+       return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(nexp))
    
 For ``x``\s we take ``1,2,3..10,12,14..20``, and exact ``y``\s are then given by
 ``f_exact(x)``::
@@ -249,13 +249,13 @@ is easy to implement in Python using the :mod:`gvar` module::
 
    import gvar as gv
    
-   def make_data():                      # make x, y fit data
+   def make_data(nexp=100, eps=0.01): # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0, 0.01)
-       c = [gv.gvar(cr(), 0.01) for n in range(100)]
+       cr = gv.gvar(0.0, eps)
+       c = [gv.gvar(cr(), eps) for n in range(100)]
        x_xmax = x/max(x)
-       noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-       y = f_exact(x)*noise
+       noise = 1+  sum(c[n] * x_xmax ** n for n in range(100))
+       y = f_exact(x, nexp) * noise
        return x, y
 
 Gaussian variable ``cr`` represents a Gaussian distribution with mean
@@ -302,7 +302,7 @@ our fake data.
 
 Basic Fits
 ----------
-Now that we have fit data, ``x, y = make_data(100)``, we pretend ignorance
+Now that we have fit data, ``x, y = make_data()``, we pretend ignorance
 of the exact functional relationship between ``x`` and ``y`` (*i.e.*,
 ``y=f_exact(x)``). Typically we *do* know the functional form and have some
 *a priori* idea about the parameter values. The point of the fit is to
@@ -320,7 +320,7 @@ our fit::
    def f(x, p):         # function used to fit x, y data
        a = p['a']       # array of a[i]s
        E = p['E']       # array of E[i]s
-       return sum(ai*np.exp(-Ei*x) for ai, Ei in zip(a, E))
+       return sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E))
 
 The fit parameters, ``a[i]`` and ``E[i]``, are stored in a
 dictionary, using labels ``a`` and ``b`` to access them. These parameters
@@ -377,21 +377,21 @@ one, our complete Python program for making fake data and fitting it is::
    import numpy as np
    import gvar as gv
 
-   def f_exact(x):                     # exact f(x)
-       return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
+   def f_exact(x, nexp=100):          # exact f(x)
+       return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(nexp))
 
    def f(x, p):                        # function used to fit x, y data
        a = p['a']                      # array of a[i]s
        E = p['E']                      # array of E[i]s
-       return sum(ai*np.exp(-Ei*x) for ai, Ei in zip(a, E))
+       return sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E))
 
-   def make_data():                    # make x, y fit data
+   def make_data(nexp=100, eps=0.01): # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0, 0.01)
-       c = [gv.gvar(cr(), 0.01) for n in range(100)]
+       cr = gv.gvar(0.0, eps)
+       c = [gv.gvar(cr(), eps) for n in range(100)]
        x_xmax = x/max(x)
-       noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-       y = f_exact(x)*noise
+       noise = 1+ sum(c[n] * x_xmax ** n for n in range(100))
+       y = f_exact(x, nexp) * noise
        return x, y
 
    def make_prior(nexp):               # make priors for fit parameters
@@ -411,10 +411,10 @@ one, our complete Python program for making fake data and fitting it is::
            print(fit)                  # print the fit results
            E = fit.p['E']              # best-fit parameters
            a = fit.p['a']
-           print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
-           print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
+           print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+           print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
            print()
-           if fit.chi2/fit.dof<1.:
+           if fit.chi2 / fit.dof < 1.:
                p0 = fit.pmean          # starting point for next fit (opt.)
 
    if __name__ == '__main__':
@@ -489,10 +489,12 @@ There are several things to notice here:
      parameter, the number of degrees of freedom is always equal to the
      number of ``y``\s, irrespective of how many fit parameters there are.
      
-   * The Gaussian Bayes Factor (or *posterior probability*, whose logarithm is 
+   * The Gaussian Bayes Factor (whose logarithm is 
      ``logGBF`` in the output) is a measure of the likelihood that the actual
-     data being fit could have come from a theory with the prior used in the
-     fit. The larger this number, the more likely it is that prior and data
+     data being fit could have come from a theory with the prior and
+     fit function used in the
+     fit. The larger this number, the more likely it is that prior/fit-function 
+     and data
      could be related. Here it grows dramatically from the first fit
      (``nexp=3``) but then more-or-less stops changing around ``nexp=6``. The
      implication is that this data is much more likely to have come from a
@@ -550,7 +552,7 @@ This particular plot was made using the :mod:`matplotlib` module, with the
 following code added to the end of ``main()`` (outside the loop)::
 
       import pylab as plt   
-      ratio = y/f(x, fit.pmean)
+      ratio = y / f(x, fit.pmean)
       plt.xlim(0, 21)
       plt.xlabel('x')
       plt.ylabel('y/f(x,p)')
@@ -572,15 +574,15 @@ section. First we need to add errors to the ``x``\s, which we do by
 changing ``make_data`` so that each ``x`` has a random value within about 
 ``+-0.001%`` of its original value and an error::
 
-   def make_data():                    # make x, y fit data
+   def make_data(nexp=100, eps=0.01): # make x, y fit data
        x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0, 0.01)
-       c = [gv.gvar(cr(), 0.01) for n in range(100)]
+       cr = gv.gvar(0.0, eps)
+       c = [gv.gvar(cr(), eps) for n in range(100)]
        x_xmax = x/max(x)
-       noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-       y = f_exact(x)*noise            # noisy y[i]s
+       noise = 1+ sum(c[n] * x_xmax ** n for n in range(100))
+       y = f_exact(x, nexp) * noise            # noisy y[i]s
        xfac = gv.gvar(1.0, 0.00001)    # Gaussian distrib'n: 1 +- 0.001%
-       x = np.array([xi*gv.gvar(xfac(), xfac.sdev) for xi in x]) # noisy x[i]s
+       x = np.array([xi * gv.gvar(xfac(), xfac.sdev) for xi in x]) # noisy x[i]s
        return x, y
    
 Here :class:`gvar.GVar` object ``xfac`` is used as a random number
@@ -610,8 +612,8 @@ by ``make_data()``::
            print(fit)                  # print the fit results
            E = fit.p['E']              # best-fit parameters
            a = fit.p['a']
-           print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
-           print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
+           print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+           print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
            print()
            if fit.chi2/fit.dof<1.:
                p0 = fit.pmean          # starting point for next fit (opt.)
@@ -666,7 +668,7 @@ For ``nexp=3``, this implies that ::
 
    >>> print(E)
    [1 +- 0.5 1.9 +- 0.5001 2.8 +- 0.5002]
-   >>> print(E[1]-E[0], E[2]-E[1])
+   >>> print(E[1] - E[0], E[2] - E[1])
    0.9 +- 0.01 0.9 +- 0.01
 
 which shows that each ``E[i]`` separately has an uncertainty of ``+-0.5`` 
@@ -680,7 +682,7 @@ introduce these correlations::
        prior['a'] = [gv.gvar(0.5, 0.5) for i in range(nexp)]
        de = [gv.gvar(0.9, 0.01) for i in range(nexp)]
        de[0] = gv.gvar(1, 0.5)     
-       prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
+       prior['E'] = [sum(de[:    i + 1]) for i in range(nexp)]
        return prior
    
 Running the code as before, but now with the correlated prior in place, we
@@ -722,7 +724,8 @@ correct *a priori* value: we vary the widths and/or central values of the
 priors of interest to maximize ``logGBF``. This leads to complete nonsense if
 it is applied to all the priors, but it is useful for tuning (or testing)
 limited subsets of the priors when other information is unavailable. In effect
-we are using the data to get a feel for what is a reasonable prior.
+we are using the data to get a feel for what is a reasonable prior. This
+procedure for setting priors is called the Empirical Bayes method.
 
 This method is implemented in a driver program ::
     
@@ -744,7 +747,7 @@ adding the following code to the end of ``main()`` subroutine::
 
    def fitargs(z, nexp=nexp, prior=prior, f=f, data=(x, y), p0=p0):
        z = np.exp(z)
-       prior['a'] = [gv.gvar(0.5, 0.5*z[0]) for i in range(nexp)]
+       prior['a'] = [gv.gvar(0.5, 0.5   *   z[0]) for i in range(nexp)]
        return dict(prior=prior, data=data, fcn=f, p0=p0)
    ##
    z0 = [0.0]
@@ -752,8 +755,8 @@ adding the following code to the end of ``main()`` subroutine::
    print(fit)                  # print the optimized fit results
    E = fit.p['E']              # best-fit parameters
    a = fit.p['a']
-   print('E1/E0 =', E[1]/E[0], '  E2/E0 =', E[2]/E[0])
-   print('a1/a0 =', a[1]/a[0], '  a2/a0 =', a[2]/a[0])
+   print('E1/E0 =', E[1]  /  E[0], '  E2/E0 =', E[2]  /  E[0])
+   print('a1/a0 =', a[1]  /  a[0], '  a2/a0 =', a[2]  /  a[0])
    print("prior['a'] =", fit.prior['a'][0])
    print()
 
@@ -777,6 +780,23 @@ course, that the optimal width is ``0.1`` since the mean values for the
 ``fit.p['a']``\s are clustered around ``0.4``, which is ``0.1`` below the mean
 value of the priors ``prior['a']``.
 
+The Bayes factor, ``exp(fit.logGBF)``, is useful for deciding about fit 
+functions as well as priors. Consider the following two fits of the sort 
+discussed in the previous section, one using just two terms in the fit
+function and one using three terms:
+
+.. literalinclude:: eg4GBF.out
+
+Measured by their ``chi**2``\s, the two fits are almost equally good. The
+Bayes factor for the first fit, however, is much larger than that for the 
+second fit. It says that the probability that our fit data comes from an 
+underlying theory with exactly two
+terms is ``exp(255.98 - 244.49) = 97,733`` times larger than the probability
+that it comes from a theory with three terms. In fact, the data comes from
+a theory with only two terms since it was generated using the same code
+as in the previous section but with ``x, y = make_data(2)`` instead of
+``x, y = make_data()`` in the main program.
+
 
 Partial Errors and Error Budgets
 ---------------------------------
@@ -797,11 +817,11 @@ extract such information using :meth:`gvar.GVar.partialsdev` --- for example::
    >>> a = fit.p['a']
    >>> print(E[1]/E[0])
    1.9994 +- 0.00109701
-   >>> print((E[1]/E[0]).partialsdev(fit.prior['E']))
+   >>> print((E[1] / E[0]).partialsdev(fit.prior['E']))
    0.000413996147765
-   >>> print((E[1]/E[0]).partialsdev(fit.prior['a']))
+   >>> print((E[1] / E[0]).partialsdev(fit.prior['a']))
    0.000142291526805
-   >>> print((E[1]/E[0]).partialsdev(y))
+   >>> print((E[1] / E[0]).partialsdev(y))
    0.00100587951374
    
 This shows that the total uncertainty in ``E[1]/E[0]``, ``0.00110``, is 
@@ -814,8 +834,8 @@ They require dictionaries of output results and inputs, and use the
 keys from the dictionaries to label columns and rows, respectively, in
 an error-budget table::
 
-   outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
-            'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
+   outputs = {'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],         
+            'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0]}
    inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
    print(fit.fmt_values(outputs))
    print(fit.fmt_errorbudget(outputs, inputs))
@@ -918,8 +938,8 @@ the first ``nexp`` terms. The remaining part of ``max_prior`` is used to
 correct the exact data, which comes from a new ``make_data``::
 
    def make_data(ymod_prior):          # make x, y fit data
-       x = np.arange(1., 10*0.2+1., 0.2)
-       ymod = f_exact(x)-f(x, ymod_prior)        
+       x = np.arange(1., 10 * 0.2 +  1., 0.2)
+       ymod = f_exact(x) - f(x, ymod_prior)        
        return x, ymod
    
 Running the new code produces the following output, where again ``nexp`` is
@@ -1040,8 +1060,8 @@ the covariance matrix. The *svd* contribution can be obtained from
 ``fit.svdcorrection`` so the full error budget is constructed by the following
 code, ::
 
-   outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
-              'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
+   outputs = {'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],         
+              'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0]}
    inputs = {'E':max_prior['E'], 'a':max_prior['a'], 'svd':fit.svdcorrection}
    print(fit.fmt_values(outputs))
    print(fit.fmt_errorbudget(outputs, inputs))
@@ -1086,10 +1106,10 @@ the ``main()`` subroutine::
    for bsfit in fit.bootstrap_iter(n=Nbs):
        E = bsfit.pmean['E']                     # best-fit parameter values
        a = bsfit.pmean['a']                     #   (ignore errors)
-       outputs['E1/E0'].append(E[1]/E[0])       # accumulate results
-       outputs['E2/E0'].append(E[2]/E[0])
-       outputs['a1/a0'].append(a[1]/a[0])
-       outputs['a2/a0'].append(a[2]/a[0])
+       outputs['E1/E0'].append(E[1] / E[0])       # accumulate results
+       outputs['E2/E0'].append(E[2] / E[0])
+       outputs['a1/a0'].append(a[1] / a[0])
+       outputs['a2/a0'].append(a[2] / a[0])
        outputs['E1'].append(E[1])
        outputs['a1'].append(a[1])
    # extract "means" and "standard deviations" from the bootstrap output;
@@ -1193,9 +1213,9 @@ A better analysis is to use a log-normal distribution for ``a``::
 
    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
-   print("a =", gv.exp(fit.p["loga"]).fmt())             # exp(loga)
+   print("a =", gv.exp(fit.p["loga"]).fmt())    # exp(loga)
 
-The fit parameter is now ``log a`` rather than ``a`` itself,
+The fit parameter is now ``log(a)`` rather than ``a`` itself,
 but we are able to use the identical fit function. The result of
 this fit is
 

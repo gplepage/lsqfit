@@ -6,46 +6,53 @@ eg1.py - Code for "Making Fake Data" and "Basic Fits"
 Created by Peter Lepage on 2010-01-04.
 Copyright (c) 2010 Cornell University. All rights reserved.
 """
-DO_PLOT = True
+DO_PLOT = False
 DO_BOOTSTRAP = False
+SVDCUT = None # 1e-12
 
 import sys
 import tee
 import lsqfit
 import numpy as np
-import gvar as gd
+import gvar as gv
 
-def f_exact(x):                     # exact f(x)
-    return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
+def f_exact(x, nterm=100):                     # exact f(x)
+    return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(nterm))
 
 def f(x,p):                         # function used to fit x,y data
     a = p['a']                      # array of a[i]s
     E = p['E']                      # array of E[i]s
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
-def make_data():                    # make x,y fit data
+def f1(x,p):                         # function used to fit x,y data
+    a = p['a'][:1]                      # array of a[i]s
+    E = p['E'][:1]                      # array of E[i]s
+    return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
+
+def make_data(nterm=100, eps=0.01):                    # make x,y fit data
     x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-    cr = gd.gvar(0.0,0.01)
-    c = [gd.gvar(cr(),0.01) for n in range(100)]
-    x_xmax = x/max(x)
-    noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-    y = f_exact(x)*noise            # noisy y[i]s
+    cr = gv.gvar(0.0, eps)
+    c = [gv.gvar(cr(), eps) for n in range(100)]
+    x_xmax = x / max(x)
+    noise = 1 + sum(c[n] * x_xmax ** n for n in range(100))
+    y = f_exact(x, nterm)*noise            # noisy y[i]s
     return x,y
 
 def make_prior(nexp):               # make priors for fit parameters
-    prior = lsqfit.GPrior()         # Gaussian prior -- dictionary-like
-    prior['a'] = [gd.gvar(0.5,0.5) for i in range(nexp)]
-    prior['E'] = [gd.gvar(i+1,0.5) for i in range(nexp)]
+    prior = gv.BufferDict()         # Gaussian prior -- dictionary-like
+    prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
+    prior['E'] = [gv.gvar(i+1,0.5) for i in range(nexp)]
     return prior
 
 def main():
-    gd.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
+    gv.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
     x,y = make_data()               # make fit data
     p0 = None                       # make larger fits go faster (opt.)
+    sys_stdout = sys.stdout
     sys.stdout = tee.tee(sys.stdout, open("eg1.out","w"))
     for nexp in range(3,20):
         prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0, svdcut=SVDCUT)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
         if nexp in [8, 9, 10]:
@@ -60,7 +67,21 @@ def main():
         a = fit.p['a']
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
-    
+
+    # sys.stdout = tee.tee(sys_stdout, open("eg1a.out", "w"))
+    # newfit = fit
+    # for i in range(1):
+    #     print '\n--------------------- fit with %d extra data sets' % (i+1)
+    #     x, ynew = make_data(1, 0.01)
+    #     prior = newfit.p
+    #     newfit = lsqfit.nonlinear_fit(data=(x,ynew), fcn=f1, prior=prior, svdcut=SVDCUT)
+    #     print newfit
+    # sys.stdout = sys_stdout
+    # def fcn(x, p):
+    #     return f(x, p), f1(x, p)
+    # prior = make_prior(nexp)
+    # fit = lsqfit.nonlinear_fit(data=(x, [y, ynew]), fcn=fcn, prior=prior, p0=newfit.pmean, svdcut=SVDCUT)
+    # print(fit)
     if DO_BOOTSTRAP:
         Nbs = 40                                     # number of bootstrap copies
 
@@ -80,7 +101,7 @@ def main():
 
         # extract means and standard deviations from the bootstrap output
         for k in outputs:
-            outputs[k] = gd.gvar(np.mean(outputs[k]),np.std(outputs[k]))
+            outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
         print 'Bootstrap results:'
         print 'E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0']
         print 'a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0']
@@ -88,11 +109,11 @@ def main():
         
     if DO_PLOT:
         import pylab as plt   
-        ratio = y/f(x,fit.pmean)
+        ratio = y/fit.fcn(x,fit.pmean)
         plt.xlim(0,21)
         plt.xlabel('x')
         plt.ylabel('y/f(x,p)')
-        plt.errorbar(x=x,y=gd.mean(ratio),yerr=gd.sdev(ratio),fmt='ob')
+        plt.errorbar(x=x,y=gv.mean(ratio),yerr=gv.sdev(ratio),fmt='ob')
         plt.plot([0.0,21.0],[1.0,1.0])
         plt.show()
 

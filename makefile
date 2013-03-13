@@ -51,6 +51,9 @@ tests test-all:
 run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
+upload-pypi:
+	python setup.py sdist upload
+
 clean:
 	rm -f -r build __pycache__
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage 
