@@ -200,7 +200,7 @@ class nonlinear_fit(object):
         :class:`lsqfit.multifit`, which does the fitting.
     """
     def __init__(self, data=None, fcn=None, prior=None, p0=None, #):
-                svdcut=None, svdnum=None, debug=False, **kargs): 
+                svdcut=(1e-15, 1e-15), svdnum=None, debug=False, **kargs): 
         # capture arguments; initialize parameters 
         self.fitterargs = kargs
         self.svdcut = svdcut if isinstance(svdcut, tuple) else (svdcut, None)

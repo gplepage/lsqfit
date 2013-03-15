@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.4 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.4.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.4',
+        VERSION:     '4.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.4 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.4.1 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -204,7 +204,7 @@ discarded.</p>
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.nonlinear_fit">
-<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">nonlinear_fit</tt><big>(</big><em>data=None</em>, <em>fcn=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>debug=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">nonlinear_fit</tt><big>(</big><em>data=None</em>, <em>fcn=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>svdcut=(1e-15</em>, <em>1e-15)</em>, <em>svdnum=None</em>, <em>debug=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> fits a (nonlinear) function <tt class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></tt>
 to data <tt class="docutils literal"><span class="pre">y</span></tt> by varying parameters <tt class="docutils literal"><span class="pre">p</span></tt>, and stores the results: for
@@ -347,9 +347,9 @@ the number of fit parameters.</p>
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.logGBF">
 <tt class="descname">logGBF</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Permalink to this definition">¶</a></dt>
-<dd><p>The logarithm of the probability (density) that one would obtain
-the fit data used in the fit by randomly sampling the parameter model
-(priors plus fit function) used. This quantity is
+<dd><p>The logarithm of the probability (density) of obtaining
+the fit data by randomly sampling the parameter model
+(priors plus fit function) used in the fit. This quantity is
 useful for comparing fits of the same data to different models,
 with different priors and/or fit functions. The model with the
 largest value of <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> is the one prefered by the data.
@@ -1054,7 +1054,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

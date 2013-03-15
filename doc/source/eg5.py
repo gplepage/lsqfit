@@ -11,7 +11,7 @@ USE_SVD = True
 DO_BOOTSTRAP = True
 DO_ERRORBUDGET = True
 
-SVDCUT = 1e-12 if USE_SVD else None
+SVDCUT = (1e-15,1e-15) if USE_SVD else 1e-19
 
 import sys
 import tee
@@ -46,7 +46,7 @@ def main():
     max_prior = make_prior(20)      # maximum sized prior
     p0 = None                       # make larger fits go faster (opt.)
     sys_stdout = sys.stdout
-    if not USE_SVD:
+    if USE_SVD:
         sys.stdout = tee.tee(sys_stdout,open("eg5a.out","w"))
     for nexp in range(1,5):
         print '************************************* nexp =',nexp
@@ -57,6 +57,8 @@ def main():
             ymod_prior[k] = max_prior[k][nexp:]
         x,y = make_data(ymod_prior)     # make fit data
         fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=fit_prior,p0=p0,svdcut=SVDCUT,maxit=10000)
+        if nexp==4 and not USE_SVD:
+            sys.stdout = tee.tee(sys_stdout, open("eg5b.out", "w"))
         print fit.format(100)                   # print the fit results
         # if nexp>3:
         #     E = fit.p['E']              # best-fit parameters
@@ -70,11 +72,6 @@ def main():
         print
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
-    if not USE_SVD:
-        sys.stdout = tee.tee(sys_stdout,open("eg5b.out","w"))
-    else:
-        sys.stdout = tee.tee(sys_stdout,open("eg5c.out","w"))
-    print fit.format(100)
     E = fit.p['E']              # best-fit parameters
     a = fit.p['a']
     print 'E1/E0 =',(E[1]/E[0]).fmt(),'  E2/E0 =',(E[2]/E[0]).fmt()

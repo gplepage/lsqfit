@@ -1,5 +1,14 @@
-Version ??? - ???? (not released)
-=================================
+Version 4.4.1 - 2013-03-14
+==========================
+This is a very minor upgrade.
+
+- Set default svdcut=1e-15 instead of None in nonlinear_fit. This cut is
+  very small and so usually has negligible impact in cases where an svdcut is
+  unneeded. It protects against minor roundoff errors that arise relatively
+  frequently, even in fairly simple problems. It also prevents problems from
+  exact zero modes in the data or prior. One might argue that it would be
+  useful to expose these last problems, rather than dealing with them quitely,
+  but dealing with much more common minor roundoff errors seems more important.
 
 - exp(fit.logGBF) is the probability (density) for generating
   the fit data from the input fit model, assuming Gaussian statistics. 
@@ -8,6 +17,8 @@ Version ??? - ???? (not released)
   impact at all on almost all uses of logGBF. Change made more for the sake of
   clarity than utility.
 
+- More documentation, including a tutorial section on chained fits and more 
+  discussion of svd cuts.
 
 Version 4.4 --- 2013-02-13
 ==========================

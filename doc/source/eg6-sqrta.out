@@ -5,6 +5,6 @@ Parameters:
           sqrta   0.099 (67)     [ 0.141 (71) ]
 
 Settings:
-  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
 a = 0.010(13)

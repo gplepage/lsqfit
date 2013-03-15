@@ -52,7 +52,7 @@ def main():
     sys_stdout = sys.stdout
     for nexp in range(3,8):
         prior = make_prior(nexp,x)
-        fit = lsqfit.nonlinear_fit(data=y,fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(data=y,fcn=f,prior=prior,p0=p0) # ,svdcut=SVDCUT)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
         fit.check_roundoff()

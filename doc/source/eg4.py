@@ -61,10 +61,24 @@ def main():
     
     sys_stdout = sys.stdout
     if DO_ERRORBUDGET:
-        print E[1]/E[0]
-        print (E[1]/E[0]).partialsdev(fit.prior['E'])
-        print (E[1]/E[0]).partialsdev(fit.prior['a'])
-        print (E[1]/E[0]).partialsdev(y)
+
+        lines = [
+            "E = fit.p['E']",
+            "a = fit.p['a']",
+            "print(E[1] / E[0])",
+            "print((E[1] / E[0]).partialsdev(fit.prior['E']))",
+            "print((E[1] / E[0]).partialsdev(fit.prior['a']))",
+            "print((E[1] / E[0]).partialsdev(y))"
+            ]
+        sys.stdout = tee.tee(sys_stdout, open("eg4c.out","w"))
+        for line in lines:
+            print ">>>", line
+            if line[:5] == "print":
+                print(eval(line[5:]))
+        # print E[1]/E[0]
+        # print (E[1]/E[0]).partialsdev(fit.prior['E'])
+        # print (E[1]/E[0]).partialsdev(fit.prior['a'])
+        # print (E[1]/E[0]).partialsdev(y)
         outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}

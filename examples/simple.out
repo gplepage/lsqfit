@@ -15,7 +15,7 @@ Fit:
         b/a     2.00 (50)     1.78 (30)
 
 Settings:
-  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
 Values:
                   a: 0.253(32)           

@@ -8,7 +8,7 @@ Copyright (c) 2010 Cornell University. All rights reserved.
 """
 DO_PLOT = False
 DO_BOOTSTRAP = False
-SVDCUT = None # 1e-12
+SVDCUT = (1e-14, 1e-14)
 
 import sys
 import tee
@@ -52,7 +52,7 @@ def main():
     sys.stdout = tee.tee(sys.stdout, open("eg1.out","w"))
     for nexp in range(3,20):
         prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0, svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0) #, svdcut=SVDCUT)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
         if nexp in [8, 9, 10]:
@@ -68,20 +68,31 @@ def main():
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
 
-    # sys.stdout = tee.tee(sys_stdout, open("eg1a.out", "w"))
+    # extra data 1
+    print '\n--------------------- fit with extra information'
+    sys.stdout = tee.tee(sys_stdout, open("eg1a.out", "w"))
+    def ratio(p):
+        return p['a'][1] / p['a'][0]
+    newfit = lsqfit.nonlinear_fit(data=gv.gvar(1,1e-5), fcn=ratio, prior=fit.p)
+    print (newfit)
+
+    # # extra data 2
+    # sys.stdout = tee.tee(sys_stdout, open("eg1b.out", "w"))
     # newfit = fit
     # for i in range(1):
     #     print '\n--------------------- fit with %d extra data sets' % (i+1)
-    #     x, ynew = make_data(1, 0.01)
+    #     x, ynew = make_data()
     #     prior = newfit.p
-    #     newfit = lsqfit.nonlinear_fit(data=(x,ynew), fcn=f1, prior=prior, svdcut=SVDCUT)
+    #     newfit = lsqfit.nonlinear_fit(data=(x,ynew), fcn=f, prior=prior) # , svdcut=SVDCUT)
     #     print newfit
-    # sys.stdout = sys_stdout
+    sys.stdout = sys_stdout
     # def fcn(x, p):
-    #     return f(x, p), f1(x, p)
+    #     return f(x, p), f(x, p)
     # prior = make_prior(nexp)
-    # fit = lsqfit.nonlinear_fit(data=(x, [y, ynew]), fcn=fcn, prior=prior, p0=newfit.pmean, svdcut=SVDCUT)
+    # fit = lsqfit.nonlinear_fit(data=(x, [y, ynew]), fcn=fcn, prior=prior, p0=newfit.pmean) # , svdcut=SVDCUT)
     # print(fit)
+
+
     if DO_BOOTSTRAP:
         Nbs = 40                                     # number of bootstrap copies
 

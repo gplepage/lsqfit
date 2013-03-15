@@ -163,9 +163,9 @@ nonlinear_fit Objects
       
    .. attribute:: logGBF
    
-      The logarithm of the probability (density) that one would obtain 
-      the fit data used in the fit by randomly sampling the parameter model 
-      (priors plus fit function) used. This quantity is
+      The logarithm of the probability (density) of obtaining 
+      the fit data by randomly sampling the parameter model 
+      (priors plus fit function) used in the fit. This quantity is
       useful for comparing fits of the same data to different models, 
       with different priors and/or fit functions. The model with the 
       largest value of ``fit.logGBF`` is the one prefered by the data. 

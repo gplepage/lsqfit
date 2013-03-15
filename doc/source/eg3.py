@@ -10,7 +10,7 @@ DO_PLOT = False
 DO_BOOTSTRAP = False
 DO_SVD = False
 
-SVDCUT = 1e-14 if DO_SVD else None
+SVDCUT = (1e-15,1e-15) if DO_SVD else None
 
 import sys
 import lsqfit
@@ -55,7 +55,7 @@ def main():
     sys_stdout = sys.stdout
     for nexp in range(3,8):
         prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0, svdcut=1e-15) # ,svdcut=SVDCUT)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
         if nexp == 7:
@@ -78,7 +78,7 @@ def main():
     #     prior = fit.p
     #     fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f1,prior=prior, svdcut=SVDCUT)
     #     print fit
-    # sys.stdout = sys_stdout
+    sys.stdout = sys_stdout
 
     if DO_BOOTSTRAP:
         Nbs = 10                                     # number of bootstrap copies

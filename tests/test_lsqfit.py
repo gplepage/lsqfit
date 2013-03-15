@@ -230,7 +230,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def f(x,p):
             return p['p']*x
         ##
-        fit = nonlinear_fit(p0=p0, data=(x,y), fcn=f)
+        fit = nonlinear_fit(p0=p0, data=(x,y), fcn=f, svdcut=(None, None))
         out = "\n".join([ #
             'Least Square Fit (no prior):', 
             '  chi2/dof [dof] = 0.8 [1]    Q = 0.37    logGBF = None    itns = 2', 
