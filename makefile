@@ -54,6 +54,9 @@ run-examples:
 upload-pypi:
 	python setup.py sdist upload
 
+upload-git:
+	git push origin master
+
 clean:
 	rm -f -r build __pycache__
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage 
