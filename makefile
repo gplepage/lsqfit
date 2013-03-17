@@ -34,7 +34,10 @@ doc-pdf:
 	sphinx-build -b latex doc/source doc/latex
 	cd doc/latex; make lsqfit.pdf; mv lsqfit.pdf ..
 
-doc-all: doc-html doc-pdf
+doc-zip:
+	cd doc/html; zip -r doc *; mv doc.zip ../..
+
+doc-all: doc-html doc-pdf doc-zip
 
 sdist:			# source distribution
 	$(PYTHON) setup.py sdist
