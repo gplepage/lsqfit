@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.4.1 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 4.4.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.4.1',
+        VERSION:     '4.4.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.4.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.4.2 documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -870,10 +870,21 @@ and <tt class="docutils literal"><span class="pre">a[1]</span></tt> is strongly 
 is important to include all parameters from the first fit as
 parameters in the new fit in order to capture the impact of the new
 information on parameters correlated with <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>.</p>
-<p>Obviously this process can be extended to further fits in order to incorporate
-more data. The prior for each fit is the best-fit output (<tt class="docutils literal"><span class="pre">fit.p</span></tt>) from
-the previous fit. The output from the chain&#8217;s final fit is the cummulative
-result of all of these fits.</p>
+<p>It would have been easy to change the fit code in the previous section to
+incorporate the new information about <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>. The approach presented
+here is numerically equivalent to that approach
+insofar as the the <tt class="docutils literal"><span class="pre">chi**2</span></tt> function for the
+original fit can be well approximated by a quadratic function
+in the fit parameters &#8212; that is, insofar as
+<tt class="docutils literal"><span class="pre">exp(-chi**2/2)</span></tt> is well approximated
+by a Gaussian distribution in the parameters, the distribution
+specified by the best-fit means and covariance matrix (<tt class="docutils literal"><span class="pre">fit.p</span></tt>).
+This is, of course, a fundamental assumption underlying the
+use of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> in the first place.</p>
+<p>Obviously, we can include further fits in order to incorporate more data. The
+prior for each new fit is the best-fit output (<tt class="docutils literal"><span class="pre">fit.p</span></tt>) from the previous
+fit. The output from the chain&#8217;s final fit is the cummulative  result of all
+of these fits.</p>
 </div>
 <div class="section" id="x-has-error-bars">
 <h2><tt class="docutils literal"><span class="pre">x</span></tt> has Error Bars<a class="headerlink" href="#x-has-error-bars" title="Permalink to this headline">¶</a></h2>
@@ -1968,7 +1979,7 @@ fluctuate together, the prior should be redefined:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

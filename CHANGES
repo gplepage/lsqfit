@@ -1,3 +1,10 @@
+Version 4.4.2 - 2013-03-16
+===========================
+This is another minor upgrade.
+
+- Evaluation of logGBF in nonlinear_fit was having problems (in one user's
+  code, at least) with very large covariance matrices. This is now fixed.
+
 Version 4.4.1 - 2013-03-14
 ==========================
 This is a very minor upgrade.

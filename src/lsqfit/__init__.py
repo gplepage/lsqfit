@@ -284,7 +284,11 @@ class nonlinear_fit(object):
             self.logGBF = None
         else:
             def logdet(m):
-                return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
+                (sign, ans) = numpy.linalg.slogdet(m)
+                if sign < 0:
+                    warnings.warn('det(fit.cov) < 0 --- roundoff errors?')
+                return ans
+                # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
             logdet_cov = logdet(self.cov)
             self.logGBF = 0.5*(
                 logdet_cov - fdata['logdet_all'] - self.chi2 -

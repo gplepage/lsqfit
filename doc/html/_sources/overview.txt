@@ -603,10 +603,22 @@ is important to include all parameters from the first fit as
 parameters in the new fit in order to capture the impact of the new 
 information on parameters correlated with ``a[1]/a[0]``.
 
-Obviously this process can be extended to further fits in order to incorporate
-more data. The prior for each fit is the best-fit output (``fit.p``) from
-the previous fit. The output from the chain's final fit is the cummulative 
-result of all of these fits.
+It would have been easy to change the fit code in the previous section to
+incorporate the new information about ``a[1]/a[0]``. The approach presented
+here is numerically equivalent to that approach 
+insofar as the the ``chi**2`` function for the
+original fit can be well approximated by a quadratic function 
+in the fit parameters --- that is, insofar as 
+``exp(-chi**2/2)`` is well approximated
+by a Gaussian distribution in the parameters, the distribution 
+specified by the best-fit means and covariance matrix (``fit.p``).
+This is, of course, a fundamental assumption underlying the
+use of :mod:`lsqfit` in the first place.
+
+Obviously, we can include further fits in order to incorporate more data. The
+prior for each new fit is the best-fit output (``fit.p``) from the previous
+fit. The output from the chain's final fit is the cummulative  result of all
+of these fits.
 
 
 ``x`` has Error Bars
