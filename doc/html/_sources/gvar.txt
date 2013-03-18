@@ -138,7 +138,7 @@ makes ``x`` and ``y`` |GVar|\s with standard deviations ``sigma_x=0.125`` and
 ``sigma_y=2``, and, in this case, no correlation between ``x`` and ``y``
 (since ``cov[i, j]=0`` when ``i!=j``). If now we set, for example, ::
     
-    >>> f = x+y
+    >>> f = x + y
     >>> print('f =', f)
     f = 10.1 +- 2.0039
     
@@ -152,7 +152,7 @@ where ``cov`` is the original covariance matrix used to define ``x`` and
 20% uncertainties in this example, the ratio ``f/y`` has much smaller
 errors::
     
-    >>> print(f/y)
+    >>> print(f / y)
     1.01 +- 0.012659
     
 This happens, of course, because the errors in ``f`` and ``y`` are highly
@@ -260,7 +260,7 @@ by those random variables (including correlations). For example,
     >>> a = gvar.gvar(1.0, 1.0)
     >>> da = gvar.gvar(0.0, 0.1)
     >>> g = [a, a+da]
-    >>> giter = gvar.raniter(f)
+    >>> giter = gvar.raniter(g)
     >>> print(next(giter))
     [ 1.51874589  1.59987422]
     >>> print(next(giter))

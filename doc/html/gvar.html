@@ -178,7 +178,7 @@ arithmetic expressions can include calls to standard functions including:
 <p>makes <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with standard deviations <tt class="docutils literal"><span class="pre">sigma_x=0.125</span></tt> and
 <tt class="docutils literal"><span class="pre">sigma_y=2</span></tt>, and, in this case, no correlation between <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt>
 (since <tt class="docutils literal"><span class="pre">cov[i,</span> <span class="pre">j]=0</span></tt> when <tt class="docutils literal"><span class="pre">i!=j</span></tt>). If now we set, for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="s">&#39;f =&#39;</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 <span class="go">f = 10.1 +- 2.0039</span>
 </pre></div>
@@ -191,7 +191,7 @@ arithmetic expressions can include calls to standard functions including:
 <tt class="docutils literal"><span class="pre">y</span></tt> (in <tt class="docutils literal"><span class="pre">gvar.gvar</span></tt>). Note that while <tt class="docutils literal"><span class="pre">f</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> separately have
 20% uncertainties in this example, the ratio <tt class="docutils literal"><span class="pre">f/y</span></tt> has much smaller
 errors:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">/</span><span class="n">y</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">f</span> <span class="o">/</span> <span class="n">y</span><span class="p">)</span>
 <span class="go">1.01 +- 0.012659</span>
 </pre></div>
 </div>
@@ -292,7 +292,7 @@ by those random variables (including correlations). For example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">da</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="o">+</span><span class="n">da</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">giter</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">raniter</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">giter</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">raniter</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">giter</span><span class="p">))</span>
 <span class="go">[ 1.51874589  1.59987422]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">giter</span><span class="p">))</span>
