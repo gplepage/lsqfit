@@ -35,8 +35,8 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    def fcn(x, p):             # fit function of x and parameters p
       ans = {}
       for k in ["data1", "data2"]:
-         ans[k] = gv.exp(p['a'] + x[k]*p['b'])
-      ans['b/a'] = p['b']/p['a']
+         ans[k] = gv.exp(p['a'] + x[k] * p['b'])
+      ans['b/a'] = p['b'] / p['a']
       return ans
       
    # do the fit   
@@ -54,16 +54,16 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    import pickle
    pickle.dump(fit.p, open("outputfile.p", "wb"))
 
-This code fits the function ``f(x, a, b)= exp(a+b*x)`` (see ``fcn(x, p)``)
+This code fits the function ``f(x,a,b)= exp(a+b*x)`` (see ``fcn(x,p)``)
 to two sets of data, labeled ``data1`` and ``data2``, by varying parameters
-``a`` and ``b`` until ``f(x["data1"], a, b)`` and ``f(x["data2"], a, b)``
+``a`` and ``b`` until ``f(x["data1"],a,b)`` and ``f(x["data2"],a,b)``
 equal ``y["data1"]`` and ``y["data2"]``, respectively, to within the
 ``y``\s' errors. The means and covariance matrices for the ``y``\s are
 specified in the ``gv.gvar(...)``\s used to create them: for example, ::
    
    >>> print(y["data1"])
    [1.376 +- 0.0685565 2.01 +- 0.236643]
-   >>> print(y["data1"][0].mean,"+-",y["data1"][0].sdev)
+   >>> print(y["data1"][0].mean, "+-", y["data1"][0].sdev)
    1.376 +- 0.068556546004
    >>> print(gv.evalcov(y["data1"]))   # covariance matrix
    [[ 0.0047  0.01  ]
@@ -72,13 +72,13 @@ specified in the ``gv.gvar(...)``\s used to create them: for example, ::
 shows the means, standard deviations and covariance matrix for the data in
 the first data set (``0.0685565`` is the square root of the ``0.0047`` in
 the covariance matrix). The dictionary ``prior`` gives *a priori* estimates
-for the two parameters, ``a`` and ``b``: each is assumed to be ``0.5 +-
-0.5`` before fitting. The parameters ``p[k]`` in the fit function ``fcn(x,
+for the two parameters, ``a`` and ``b``: each is assumed to be ``0.5+-0.5`` 
+before fitting. The parameters ``p[k]`` in the fit function ``fcn(x,
 p)`` are stored in a dictionary having the same keys and layout as
 ``prior``. In addition, there is an extra piece of input data,
-``y["b/a"]``, which indicates that ``b/a`` is ``2.0 +- 0.5``. The fit
+``y["b/a"]``, which indicates that ``b/a`` is ``2.0+-0.5``. The fit
 function for this data is simply the ratio ``b/a`` (represented by
-``p['b']/p['a']`` in fit function ``fcn(x, p)``). The fit function returns
+``p['b']/p['a']`` in fit function ``fcn(x,p)``). The fit function returns
 a dictionary having the same keys and layout as the input data ``y``.
 
 The output from the code sample above is:
@@ -142,9 +142,9 @@ prior rather than ``y``::
    ... as before ...
 
 Here the dependent data ``y`` no longer has an entry for ``b/a``, and neither
-do results from the fit function; but the prior for ``b`` is now ``2 +-
-0.5`` times the prior for ``a``, thereby introducing a correlation that
-limits the ratio ``b/a`` to be ``2 +- 0.5`` in the fit. This code gives almost
+do results from the fit function; but the prior for ``b`` is now ``2+-0.5`` 
+times the prior for ``a``, thereby introducing a correlation that
+limits the ratio ``b/a`` to be ``2+-0.5`` in the fit. This code gives almost
 identical results to the first one --- very slightly less accurate, since
 there is less input data. We can often move information from the ``y`` data to
 the prior or back since both are forms of input information.
@@ -168,11 +168,11 @@ There are several things worth noting from this example:
      otherwise).
      
    * The independent data (``x``) can be anything; it is simply passed 
-     through the fit code to the fit function ``fcn(x, p)``. It can 
+     through the fit code to the fit function ``fcn(x,p)``. It can 
      also be omitted altogether, in which case the fit function 
      depends only upon the parameters: ``fcn(p)``.
       
-   * The fit parameters (``p`` in ``fcn(x, p)``) are also stored in a
+   * The fit parameters (``p`` in ``fcn(x,p)``) are also stored in a
      dictionary whose values are |GVar|\s or arrays of |GVar|\s. Again this
      allows for great flexibility. The layout of the parameter dictionary
      is copied from that of the prior (``prior``). Again ``p`` can be a
@@ -242,7 +242,7 @@ For ``x``\s we take ``1,2,3..10,12,14..20``, and exact ``y``\s are then given by
 Finally we need to add random noise to the ``y_exact``\s to obtain our
 fit data. We do this by forming ``y_exact*noise`` where ::
 
-   noise = 1 + sum_n=0..99 c[n]*(x/x_max)**n,
+   noise = 1 + sum_n=0..99 c[n] * (x / x_max) ** n,
    
 Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are Gaussian
 random variable with means and standard deviations of order ``0.01``. This
@@ -303,7 +303,7 @@ our fake data.
 
 Basic Fits
 ----------
-Now that we have fit data, ``x, y = make_data()``, we pretend ignorance
+Now that we have fit data, ``x,y = make_data()``, we pretend ignorance
 of the exact functional relationship between ``x`` and ``y`` (*i.e.*,
 ``y=f_exact(x)``). Typically we *do* know the functional form and have some
 *a priori* idea about the parameter values. The point of the fit is to
@@ -512,7 +512,12 @@ There are several things to notice here:
      correlations in the statistical errors for different parameters. This
      is obvious in the ratio ``a1/a0``, which would be ``1.004(16)`` if
      there was no statistical correlation between our estimates for ``a1``
-     and ``a0``, but in fact is ``1.004(7)`` in this fit.
+     and ``a0``, but in fact is ``1.004(7)`` in this fit. The (positive)
+     correlation is evident in the covariance matrix::
+
+      >>> print(gv.evalcov([a[0], a[1]]))
+      [[  1.61726195e-05   1.65492001e-05]
+      [  1.65492001e-05   2.41547633e-05]]
       
 Finally we inspect the fit's quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
@@ -540,7 +545,7 @@ output from ``fit.format(100)``\)::
 
 The fit is excellent over the entire eight orders of magnitude. This
 information is presented again in the following plot, which shows the ratio
-``y/f(x, p)``, as a function of ``x``, using the best-fit parameters ``p``.
+``y/f(x,p)``, as a function of ``x``, using the best-fit parameters ``p``.
 The correct result for this ratio, of course, is one. The smooth variation
 in the data --- smooth compared with the size of the statistical-error bars
 --- is an indication of the statistical correlations between individual
@@ -569,7 +574,7 @@ before we do the fit. This knowledge might come from theoretical considerations
 or experiment. Or it might come from another fit. Imagine that we want to add
 new information to that extracted from the fit in the previous section. 
 For example, we might learn from some other source that the ratio of 
-amplitudes ``a[1]/a[0]`` equals ``1 +- 1e-5``. The challenge is to combine 
+amplitudes ``a[1]/a[0]`` equals ``1+-1e-5``. The challenge is to combine 
 this new information with information extracted from the fit above without rerunning
 that fit. (We assume it is not possible to rerun the first fit, because, say, 
 the input data for that fit has been lost or is unavailable.)
@@ -641,7 +646,7 @@ changing ``make_data`` so that each ``x`` has a random value within about
        x_xmax = x/max(x)
        noise = 1+ sum(c[n] * x_xmax ** n for n in range(100))
        y = f_exact(x, nexp) * noise            # noisy y[i]s
-       xfac = gv.gvar(1.0, 0.00001)    # Gaussian distrib'n: 1 +- 0.001%
+       xfac = gv.gvar(1.0, 0.00001)    # Gaussian distrib'n: 1+-0.001%
        x = np.array([xi * gv.gvar(xfac(), xfac.sdev) for xi in x]) # noisy x[i]s
        return x, y
    
@@ -1324,7 +1329,7 @@ Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
 ``chi**2``. One fix is to include *SVD* cuts in the fit by setting, for
-example, ``svdcut=(1e-14, 1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
+example, ``svdcut=(1e-14,1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
 These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.
 
@@ -1337,8 +1342,8 @@ think that ::
    >>> z = gv.gvar(1, 1)
    >>> prior = gv.BufferDict(a=z, b=z)
 
-creates a prior ``1 +- 1`` for each of parameter ``a`` and parameter ``b``.
-Indeed each parameter separately is of order ``1 +- 1``, but in a fit the two
+creates a prior ``1+-1`` for each of parameter ``a`` and parameter ``b``.
+Indeed each parameter separately is of order ``1+-1``, but in a fit the two
 parameters would be forced equal to each other because their priors are both
 set equal to the same :class:`gvar.GVar`, ``z``::
 
@@ -1348,7 +1353,7 @@ set equal to the same :class:`gvar.GVar`, ``z``::
    0 +- 0
 
 That is, while parameters ``a`` and ``b`` fluctuate over a range of 
-``1 +- 1``, they fluctuate together, in exact lock-step. The covariance matrix
+``1+-1``, they fluctuate together, in exact lock-step. The covariance matrix
 for ``a`` and ``b`` must therefore be singular, with a zero mode corresponding
 to the combination ``a-b``; it is all ``1``\s in this case::
 
