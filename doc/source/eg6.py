@@ -47,9 +47,6 @@ for p in [prior, log_prior, sqrt_prior]:
 		fcn = fwrapper(len(y)).f
 	f = nonlinear_fit(prior=p, fcn=fcn, data=(y))
 	print (f)
-	print ("a =", (
-			exp(f.p['loga']) if 'loga' in f.p else 
-			(f.p['sqrta'] ** 2 if 'sqrta' in f.p else f.p['a'])
-			).fmt())
-
+	fp = f.transformed_p
+	print ("a =", f.transformed_p['a'].fmt())
 sys.stdout = stdout

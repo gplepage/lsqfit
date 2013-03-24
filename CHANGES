@@ -1,3 +1,15 @@
+Version 4.4.3 - ?????
+======================
+
+- Improved syntax for @transform_p from lsqfit. The old syntax still works 
+  but the new syntax is simpler: 1) use @transform_p(prior,0) instead
+  of @transform(prior,0,'p'); and 2) fit.transformed_p is the same as 
+  fit.p but augmented with the exponentials of any log-normal terms, etc.
+
+- Rules for initial values p0 in nonlinear_fit are more flexible: p0 can 
+  include keys that are not in prior; these will be ignored (unless prior 
+  is None).
+
 Version 4.4.2 - 2013-03-16
 ===========================
 This is another minor upgrade.

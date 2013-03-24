@@ -1228,14 +1228,14 @@ functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior ``prior``
 for  a fit, the decorator is used in the following way: for example, ::
    
-   @lsqfit.transform_p(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0)
    def fitfcn(p):
       ...
 
 when the parameter argument is the first argument of the fit function, or ::
 
-   @lsqfit.transform_p(prior, 1, "param")
-   def fitfcn(x, param):
+   @lsqfit.transform_p(prior, 1)
+   def fitfcn(x, p):
       ...
 
 when the parameter argument is the second argument of the fit function (see
@@ -1287,17 +1287,19 @@ A better analysis is to use a log-normal distribution for ``a``::
 
    prior = gv.BufferDict(loga=gv.log(gv.gvar(0.2, 0.2))) # loga not a
 
-   @lsqfit.transform_p(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0)
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
-   print("a =", gv.exp(fit.p["loga"]).fmt())    # exp(loga)
+   print("a =", fit.transformed_p["a"].fmt())    # exp(loga)
 
 The fit parameter is now ``log(a)`` rather than ``a`` itself,
-but we are able to use the identical fit function. The result of
-this fit is
+but we are able to use the identical fit function. Here ``fit.transformed_p`` 
+is the same as ``fit.p`` but augmented to include the exponentials of
+any log-normal variables ---, that is ``a`` as well as ``loga``.
+The result of this fit is
 
 .. literalinclude:: eg6-loga.out
 

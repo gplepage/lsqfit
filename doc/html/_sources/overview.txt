@@ -168,7 +168,7 @@ There are several things worth noting from this example:
      otherwise).
      
    * The independent data (``x``) can be anything; it is simply passed 
-     through the fit code to the fit function ``fcn(x, p)``. It can 
+     through the fit code to the fit function ``fcn(x,p)``. It can 
      also be omitted altogether, in which case the fit function 
      depends only upon the parameters: ``fcn(p)``.
       
@@ -1228,14 +1228,14 @@ functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior ``prior``
 for  a fit, the decorator is used in the following way: for example, ::
    
-   @lsqfit.transform_p(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0)
    def fitfcn(p):
       ...
 
 when the parameter argument is the first argument of the fit function, or ::
 
-   @lsqfit.transform_p(prior, 1, "param")
-   def fitfcn(x, param):
+   @lsqfit.transform_p(prior, 1)
+   def fitfcn(x, p):
       ...
 
 when the parameter argument is the second argument of the fit function (see
@@ -1287,7 +1287,7 @@ A better analysis is to use a log-normal distribution for ``a``::
 
    prior = gv.BufferDict(loga=gv.log(gv.gvar(0.2, 0.2))) # loga not a
 
-   @lsqfit.transform_p(prior, 0, "p")
+   @lsqfit.transform_p(prior, 0)
    def fcn(p, N=len(y)):
       return N * [p['a']]
 

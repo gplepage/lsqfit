@@ -70,6 +70,7 @@ The :mod:`lsqfit` tutorial contains extended explanations and examples.
 
 import collections
 import functools
+import inspect
 import warnings
 import numpy
 import math, pickle, time
@@ -165,15 +166,18 @@ class nonlinear_fit(object):
         The default value is ``None``; ``prior`` must be defined if ``p0``
         is ``None``.
     :type prior: dictionary, array, or ``None``
-    :param p0: Starting values for fit parameters in fit. ``p0`` should be a
-        dictionary with the same keys and structure as ``prior`` (or an
-        array of the same shape if ``prior`` is an array). If ``p0`` is a
+    :param p0: Starting values for fit parameters in fit. 
+        :class:`lsqfit.nonlinear_fit` adjusts ``p0`` to make it consistent
+        in shape and structure with ``prior`` when the latter is 
+        specified: elements missing from ``p0`` are filled 
+        in using ``prior``, and elements in 
+        ``p0`` that are not in ``prior`` are discarded. If ``p0`` is a
         string, it is taken as a file name and
         :class:`lsqfit.nonlinear_fit` attempts to read starting values from
         that file; best-fit parameter values are written out to the same
         file after the fit (for priming future fits). If ``p0`` is ``None``
         or the attempt to read the file fails, starting values are
-        extracted from the prior. The default value is ``None``; ``p0``
+        extracted from ``prior``. The default value is ``None``; ``p0``
         must be defined if ``prior`` is ``None``.
     :type p0: dictionary, array, string or ``None``
     :param svdcut: If positive, eigenvalues of the (rescaled) ``y`` 
@@ -276,6 +280,7 @@ class nonlinear_fit(object):
         self.reltol = fit.reltol
         self.alg = fit.alg
         self._p = None          # lazy evaluation
+        self._transformed_p = None # lazy evaluation
         self._palt = None       # lazy evaluation
         self.psdev = _reformat(self.p0, [covii**0.5 
                                for covii in self.cov.diagonal()])
@@ -354,6 +359,19 @@ class nonlinear_fit(object):
         return self._p
 
     p = property(_getp, doc="Best-fit parameters with correlations.")
+    def _gettransformedp(self):
+        """ Return self.fcn.transform_p.transform(self.p) or self.p. """
+        if (
+            hasattr(self.fcn, 'transform_p') and 
+            hasattr(self.fcn.transform_p, 'transform')
+            ):
+            return self.fcn.transform_p.transform(self.p)
+        else:
+            return self.p
+    transformed_p = property(
+        _gettransformedp,
+        doc="Best-fit parameters with correlations, plus transformed variables."
+        )
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
@@ -716,38 +734,53 @@ class transform_p(object):
     logarithm or square root without having to rewrite the
     fit function --- only the prior need be changed. The
     decorator needs the prior, and it needs to be told which
-    argument of the fit function is the parameter dictionary::
+    argument (numbered from 0) of the fit function is the 
+    parameter dictionary, unless the fit function has 
+    only a single argument::
 
-        @lsqfit.transform_p(prior, pindex=1, pkey="p")
+        @lsqfit.transform_p(prior, 1)
         def fitfcn(x, p):
             ...
 
     or ::
 
-        @lsqfit.transform_p(prior, pindex=0, pkey="p")
-        def fitfcn(p):
+        @lsqfit.transform_p(prior, 0)
+        def fitfcn(p, other_arg1, ...):
             ...
+
+    or ::
+
+        @lsqfit.transform_p(prior)
+        def fitfcn(p):
+            ...        
 
     The decorator assigns a copy of itself to the function
     as an attribute: ``fitfcn.transform_p``.
 
     :param prior: Prior or other dictionary having the same keys as 
         the prior. Alternatively could be a set or list of the keys
-        (e.g.,  ``prior`` could be replaced by ``prior.keys()``).
-    :type prior: dictionary-like or set
+        (e.g.,  ``prior`` could be replaced by ``prior.keys()``). In the 
+        second case only those keys beginning with ``'log'`` or ``'sqrt'``
+        need be included; others will be ignored.
+    :type prior: dictionary-like
     :param pindex: Index of the parameters-variable in the argument list 
-        of the fit function. (Default is ``0``.)
-    :type pindex: integer
+        of the fit function. Default value is ``None``; one of 
+        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``)
+        unless the fit function has only a single argument.
+    :type pindex: integer or None
     :param pkey: Name of the parameters-variable in the argument keyword
-        dictionary of the fit function. (Default is ``None``.)
-    :type pkey: string
+        dictionary of the fit function. Default value is ``None``; one of 
+        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``)
+        unless the fit function has only a single argument.
+    :type pkey: string or None
     """
-    def __init__(self, prior, pindex=0, pkey=None):
+    def __init__(self, prior, pindex=None, pkey=None):
         self.pindex = pindex
         self.pkey = pkey
         self.log_keys = []
         self.sqrt_keys = []
-        pkeys = prior.keys() if hasattr(prior, "keys") else prior
+        self.added_keys = []
+        pkeys = prior.keys() if hasattr(prior, "keys") else set(prior)
         for i in pkeys:
             if isinstance(i, str):
                 if i[:3] == 'log':
@@ -756,12 +789,14 @@ class transform_p(object):
                     else:
                         j = i[3:]
                     self.log_keys.append((i, j))
+                    self.added_keys.append(j)
                 elif i[:4] == 'sqrt':
                     if i[4] == '(' and i[-1] == ')':
                         j = i[5:-1]
                     else:
                         j = i[4:]
                     self.sqrt_keys.append((i, j))
+                    self.added_keys.append(j)
 
     @staticmethod
     def priorkey(prior, k):
@@ -795,22 +830,65 @@ class transform_p(object):
                 return k[4:]
         return k
 
-    def transform(self, prior):
-        """ Create transformed ``prior``.
+    def transform(self, p):
+        """ Create transformed ``p``.
 
-        Create a copy of ``prior`` that includes new entries
-        for each ``"logXX"``, etc entry corresponding to
-        ``"XX"``. The values in ``prior`` can be any type that 
+        Create a copy of parameter-dictionary ``p`` 
+        that includes new entries for 
+        each ``"logXX"``, etc entry corresponding to
+        ``"XX"``. The values in ``p`` can be any type that 
         supports logarithms, exponentials, and arithmetic.
         """
-        newp = _gvar.BufferDict(prior)
+        newp = _gvar.BufferDict(p)
         for i, j in self.log_keys:
             newp[j] = _gvar.exp(newp[i])
         for i, j in self.sqrt_keys:
             newp[j] = newp[i] * newp[i]
         return newp
 
+    def untransform(self, p):
+        """ Undo ``self.transform(p)``.
+
+        Reconstruct ``p0`` where ``p == self.transform(p0)``; that
+        is remove entries for keys ``"XX"`` that were added by
+        by :func:`transform_p.transform` (because ``"logXX"`` or 
+        ``"sqrtXX"`` or ... appeared in ``p0``).
+        """
+        newp = _gvar.BufferDict()
+        for i in p:
+            if i not in self.added_keys:
+                newp[i] = p[i]
+        return newp
+
+
     def __call__(self, f):
+        if self.pindex is None and self.pkey is None:
+            fargs = inspect.getargspec(f)[0]
+            if len(fargs) == 1:
+                self.pindex = 0
+                self.pkey = fargs[0]
+            else:
+                raise ValueError('must specify pindex or pkey')
+        if self.pindex is None:
+            try:
+                self.pindex = inspect.getargspec(f)[0].index(self.pkey)
+            except ValueError:
+                raise ValueError('bad pkey: ' + str(self.pkey))
+        elif self.pkey is None:
+            try:
+                self.pkey = inspect.getargspec(f)[0][self.pindex]
+            except IndexError:
+                raise IndexError('bad pindex: ' + str(self.pindex))
+        else:
+            try:
+                tmp = (self.pkey == inspect.getargspec(f)[0][self.pindex])
+                if not tmp:
+                    raise IndexError
+            except IndexError: 
+                raise ValueError(
+                    "bad pindex, pkey: " + str(self.pindex) +
+                    ', ' + str(self.pkey)
+                    )
         @functools.wraps(f)
         def newf(*args, **kargs):
             p = ( 
@@ -951,7 +1029,8 @@ def _unpack_p0(p0, p0file, prior):
     and then, finally, the prior. If the p0 is from the file, it is
     checked against the prior to make sure that all elements have the
     right shape; if not the p0 elements are adjusted (using info from
-    the prior) to be the correct shape.
+    the prior) to be the correct shape. If p0 is a dictionary,
+    keys in p0 that are not in prior are discarded.
     """
     if p0file is not None:
         # p0 is a filename; read in values 
@@ -975,7 +1054,7 @@ def _unpack_p0(p0, p0file, prior):
     if prior is not None:
         # build new p0 from p0, plus the prior as needed 
         pp = _reformat(prior, buf=[x.mean if x.mean != 0.0 
-                        else x.mean+0.1*x.sdev for x in prior.flat])
+                        else x.mean + 0.1 * x.sdev for x in prior.flat])
         if p0 is None:
             p0 = pp
         else:
@@ -995,13 +1074,15 @@ def _unpack_p0(p0, p0file, prior):
                 p0 = pp                
             else:
                 # pp and p0 are dicts 
-                if set(pp.keys()) != set(p0.keys()):
-                    # mismatch in keys between prior and p0 
-                    raise ValueError("Key mismatch between prior and p0: "
-                                     + ' '.join(str(k) for k in 
-                                     set(prior.keys()) ^ set(p0.keys())))                    
+                # if set(pp.keys()) != set(p0.keys()):
+                #     # mismatch in keys between prior and p0 
+                #     raise ValueError("Key mismatch between prior and p0: "
+                #                      + ' '.join(str(k) for k in 
+                #                      set(prior.keys()) ^ set(p0.keys())))                    
                 # adjust p0[k] to be compatible with shape of prior[k] 
                 for k in pp:
+                    if k not in p0:
+                        continue
                     pp_shape = numpy.shape(pp[k])
                     p0_shape = numpy.shape(p0[k])
                     if len(pp_shape)!=len(p0_shape):

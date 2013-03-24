@@ -202,7 +202,15 @@ nonlinear_fit Objects
       give the same errors for each parameter. They differ only when the
       input data's covariance matrix is too singular to invert accurately
       (because of roundoff error), in which case an *svd* cut is advisable.
-      
+   
+   .. attribute:: transformed_p
+
+      Same as ``fit.p`` but augmented to include the transforms of any 
+      log-normal or other parameter implemented using decorator
+      :class:`lsqfit.transform_p`. In the case of a log-normal variable
+      ``fit.p["logXX"]``, for example, ``fit.transformed_p["XX"]`` is 
+      defined equal to ``exp(fit.p["logXX"])``.
+
    .. attribute:: p0
    
       The parameter values used to start the fit.

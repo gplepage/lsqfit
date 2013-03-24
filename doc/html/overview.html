@@ -249,7 +249,7 @@ each key has the same shape as the corresponding value in <tt class="docutils li
 which might be preferable for very simple fits (but usually not
 otherwise).</li>
 <li>The independent data (<tt class="docutils literal"><span class="pre">x</span></tt>) can be anything; it is simply passed
-through the fit code to the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>. It can
+through the fit code to the fit function <tt class="docutils literal"><span class="pre">fcn(x,p)</span></tt>. It can
 also be omitted altogether, in which case the fit function
 depends only upon the parameters: <tt class="docutils literal"><span class="pre">fcn(p)</span></tt>.</li>
 <li>The fit parameters (<tt class="docutils literal"><span class="pre">p</span></tt> in <tt class="docutils literal"><span class="pre">fcn(x,p)</span></tt>) are also stored in a
@@ -1761,14 +1761,14 @@ definition of the fit function itself.</p>
 functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior <tt class="docutils literal"><span class="pre">prior</span></tt>
 for  a fit, the decorator is used in the following way: for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;p&quot;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
 <p>when the parameter argument is the first argument of the fit function, or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;param&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
@@ -1827,7 +1827,7 @@ is negative, and yet we know that <tt class="docutils literal"><span class="pre"
 <p>A better analysis is to use a log-normal distribution for <tt class="docutils literal"><span class="pre">a</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">(</span><span class="n">loga</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)))</span> <span class="c"># loga not a</span>
 
-<span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;p&quot;</span><span class="p">)</span>
+<span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]]</span>
 
