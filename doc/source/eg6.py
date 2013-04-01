@@ -24,7 +24,7 @@ y = gvar(ystr)
 print (ystr[:])
 
 print
-log_prior = BufferDict(loga = log(gvar(0.02, 0.02)))
+log_prior = BufferDict(loga = log(gvar(0.02, 0.02)))  
 sqrt_prior = BufferDict(sqrta = sqrt(gvar(0.02, 0.02)))
 prior = BufferDict(a = gvar(0.02, 0.02))
 
@@ -33,20 +33,19 @@ for p in [prior, log_prior, sqrt_prior]:
 	key = list(p.keys())[0]
 	sys.stdout = open("eg6-{}.out".format(key), "w")
 	if True:
-		@transform_p(p, 0, "p")
+		@transform_p(p, 0)
 		def fcn(p, N=len(y)):
 			return N*[p['a']]
 	else:
 		class fwrapper(object):
 			def __init__(self, N):
 				self.N = N
-			@p_transforms(p, 1, "p")
+			@p_transforms(p, 1)
 			def f(self, p):
 				"hi"
 				return self.N * [p['a']]
 		fcn = fwrapper(len(y)).f
 	f = nonlinear_fit(prior=p, fcn=fcn, data=(y))
 	print (f)
-	fp = f.transformed_p
 	print ("a =", f.transformed_p['a'].fmt())
 sys.stdout = stdout

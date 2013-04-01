@@ -64,8 +64,8 @@ standard deviation ``xsdev`` (both scalars), using::
     
  	x = gvar.gvar(xmean, xsdev).
     
-This function can also be used to convert strings like ``"-72.374(22)"`` or
-``"511.2 +- 0.3"`` into |GVar|\s: for example, ::
+This function can also be used to convert strings like ``'-72.374(22)'`` or
+``'511.2 +- 0.3'`` into |GVar|\s: for example, ::
     
     >>> import gvar
     >>> x = gvar.gvar(3.1415, 0.0002)
@@ -176,10 +176,10 @@ This is easily computed (for the example above)::
 :func:`gvar.gvar` can also be used to convert strings or tuples stored in
 arrays or dictionaries into |GVar|\s: for example, ::
     
-    >>> garray = gvar.gvar(["2(1)", "10+-5", (99, 3), gvar.gvar(0, 2)])
+    >>> garray = gvar.gvar(['2(1)', '10+-5', (99, 3), gvar.gvar(0, 2)])
     >>> print(garray)
     [2 +- 1 10 +- 5 99 +- 3 0 +- 2]
-    >>> gdict = gvar.gvar(dict(a="2(1)", b=["10+-5", (99, 3), gvar.gvar(0, 2)]))
+    >>> gdict = gvar.gvar(dict(a='2(1)', b=['10+-5', (99, 3), gvar.gvar(0, 2)]))
     >>> print(gdict)
     {'a': 2 +- 1, 'b': array([10 +- 5, 99 +- 3, 0 +- 2], dtype=object)}
     
@@ -268,9 +268,9 @@ by those random variables (including correlations). For example,
     >>> print(next(giter))
     [ 0.49840244  0.50643312]
     
-Note how the two random numbers separately vary over the region ``1+-1``
+Note how the two random numbers separately vary over the region 1±1
 (approximately), but the separation between the two is rarely more than
-``0+-0.1``. This is as expected given the strong correlation between ``a``
+0±0.1. This is as expected given the strong correlation between ``a``
 and ``a+da``.
     
 ``gvar.raniter(g)`` also works when ``g`` is a dictionary (or
@@ -318,7 +318,7 @@ This procedure generalizes trivially for multidimensional analyses, using
 arrays or dictionaries with :func:`gvar.raniter`.
     
 Finally note that *bootstrap* copies of |GVar|\s are easily created. A
-bootstrap copy of |GVar| ``x +- dx`` is another |GVar| with the same width but
+bootstrap copy of |GVar| ``x ± dx`` is another |GVar| with the same width but
 where the mean value is replaced by a random number drawn from the original
 distribution. Bootstrap copies of a data set, described by a collection of
 |GVar|\s, can be used as new (fake) data sets having the same statistical
@@ -376,7 +376,7 @@ Here the call to :func:`gvar.evalcov` creates a new covariance matrix for
 ``a`` and ``ada = a+da``, but the matrix does not have enough numerical
 precision to encode the size of ``da``'s variance, which gets set, in
 effect, to zero. The problem arises here for values of ``tiny`` less than
-about ``2e-8`` (with 64-bit floating point numbers --- ``tiny**2`` is what
+about 2e-8 (with 64-bit floating point numbers --- ``tiny**2`` is what
 appears in the covariance matrix).
     
     

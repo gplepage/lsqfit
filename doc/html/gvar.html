@@ -109,8 +109,8 @@ object can be created for a single variable, with mean <tt class="docutils liter
 standard deviation <tt class="docutils literal"><span class="pre">xsdev</span></tt> (both scalars), using:</p>
 <div class="highlight-python"><pre>x = gvar.gvar(xmean, xsdev).</pre>
 </div>
-<p>This function can also be used to convert strings like <tt class="docutils literal"><span class="pre">&quot;-72.374(22)&quot;</span></tt> or
-<tt class="docutils literal"><span class="pre">&quot;511.2</span> <span class="pre">+-</span> <span class="pre">0.3&quot;</span></tt> into <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s: for example,</p>
+<p>This function can also be used to convert strings like <tt class="docutils literal"><span class="pre">'-72.374(22)'</span></tt> or
+<tt class="docutils literal"><span class="pre">'511.2</span> <span class="pre">+-</span> <span class="pre">0.3'</span></tt> into <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">3.1415</span><span class="p">,</span> <span class="mf">0.0002</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -214,10 +214,10 @@ This is easily computed (for the example above):</p>
 </div>
 <p><a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> can also be used to convert strings or tuples stored in
 arrays or dictionaries into <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s: for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">garray</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&quot;2(1)&quot;</span><span class="p">,</span> <span class="s">&quot;10+-5&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">garray</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;2(1)&#39;</span><span class="p">,</span> <span class="s">&#39;10+-5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">garray</span><span class="p">)</span>
 <span class="go">[2 +- 1 10 +- 5 99 +- 3 0 +- 2]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gdict</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s">&quot;2(1)&quot;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;10+-5&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gdict</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s">&#39;2(1)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;10+-5&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">99</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)]))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gdict</span><span class="p">)</span>
 <span class="go">{&#39;a&#39;: 2 +- 1, &#39;b&#39;: array([10 +- 5, 99 +- 3, 0 +- 2], dtype=object)}</span>
 </pre></div>
@@ -301,9 +301,9 @@ by those random variables (including correlations). For example,</p>
 <span class="go">[ 0.49840244  0.50643312]</span>
 </pre></div>
 </div>
-<p>Note how the two random numbers separately vary over the region <tt class="docutils literal"><span class="pre">1+-1</span></tt>
+<p>Note how the two random numbers separately vary over the region 1±1
 (approximately), but the separation between the two is rarely more than
-<tt class="docutils literal"><span class="pre">0+-0.1</span></tt>. This is as expected given the strong correlation between <tt class="docutils literal"><span class="pre">a</span></tt>
+0±0.1. This is as expected given the strong correlation between <tt class="docutils literal"><span class="pre">a</span></tt>
 and <tt class="docutils literal"><span class="pre">a+da</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">gvar.raniter(g)</span></tt> also works when <tt class="docutils literal"><span class="pre">g</span></tt> is a dictionary (or
 <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) whose entries <tt class="docutils literal"><span class="pre">g[k]</span></tt> are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of
@@ -348,7 +348,7 @@ mean = 0.00806276057656   std dev = 0.706357174056</pre>
 <p>This procedure generalizes trivially for multidimensional analyses, using
 arrays or dictionaries with <a class="reference internal" href="#gvar.raniter" title="gvar.raniter"><tt class="xref py py-func docutils literal"><span class="pre">gvar.raniter()</span></tt></a>.</p>
 <p>Finally note that <em>bootstrap</em> copies of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are easily created. A
-bootstrap copy of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> <tt class="docutils literal"><span class="pre">x</span> <span class="pre">+-</span> <span class="pre">dx</span></tt> is another <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> with the same width but
+bootstrap copy of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> <tt class="docutils literal"><span class="pre">x</span> <span class="pre">±</span> <span class="pre">dx</span></tt> is another <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> with the same width but
 where the mean value is replaced by a random number drawn from the original
 distribution. Bootstrap copies of a data set, described by a collection of
 <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, can be used as new (fake) data sets having the same statistical
@@ -404,7 +404,7 @@ example, the following code works as expected:</p>
 <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">ada</span> <span class="pre">=</span> <span class="pre">a+da</span></tt>, but the matrix does not have enough numerical
 precision to encode the size of <tt class="docutils literal"><span class="pre">da</span></tt>&#8216;s variance, which gets set, in
 effect, to zero. The problem arises here for values of <tt class="docutils literal"><span class="pre">tiny</span></tt> less than
-about <tt class="docutils literal"><span class="pre">2e-8</span></tt> (with 64-bit floating point numbers &#8212; <tt class="docutils literal"><span class="pre">tiny**2</span></tt> is what
+about 2e-8 (with 64-bit floating point numbers &#8212; <tt class="docutils literal"><span class="pre">tiny**2</span></tt> is what
 appears in the covariance matrix).</p>
 </div>
 <div class="section" id="implementation-notes-derivatives-optimizations">

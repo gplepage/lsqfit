@@ -1073,7 +1073,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(a = gv.gvar("0.02(2)"))
-        @transform_p(prior, 0)
+        @transform_p(prior.keys(), 0)
         def fcn(p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1092,7 +1092,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(loga = gv.log(gv.gvar("0.02(2)")))
-        @transform_p(prior, 0)
+        @transform_p(prior.keys(), 0)
         def fcn(p, N=len(y)):
             "fit function"
             return N * [p['a']]
@@ -1103,23 +1103,23 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(fcn.__doc__, "fit function")
         self.assertTrue(hasattr(fcn, 'transform_p'))
         with self.assertRaises(IndexError):
-            @transform_p(prior, 10)
+            @transform_p(prior.keys(), 10)
             def fcn(p):
                 return p
         with self.assertRaises(ValueError):
-            @transform_p(prior, pkey='pp')
+            @transform_p(prior.keys(), pkey='pp')
             def fcn(p):
                 return p
         with self.assertRaises(ValueError):
-            @transform_p(prior,0,'pp')
+            @transform_p(prior.keys(),0,'pp')
             def fcn(p):
                 return p
         with self.assertRaises(ValueError):
-            @transform_p(prior,1,'p')
+            @transform_p(prior.keys(),1,'p')
             def fcn(p):
                 return p
         with self.assertRaises(ValueError):
-            @transform_p(prior)
+            @transform_p(prior.keys())
             def fcn(p, otherarg=1):
                 return p
 
@@ -1132,7 +1132,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
         prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
-        @transform_p(prior, 1)
+        @transform_p(prior.keys(), 1)
         def fcn(xdummy, p, N=len(y)):
             "fit function"
             return N * [p['a']]

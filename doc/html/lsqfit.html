@@ -179,13 +179,14 @@ using</p>
 <img class="math" src="_images/math/c1e3de1b9f3757fbbbdb77c54f5dd7cc3bfbc2b8.png" alt="\mathrm{cov}_p = D\cdot\mathrm{cov}_y\cdot D^\mathrm{T}" style="vertical-align: -6px"/>.</p>
 <p>This last formula suggests that</p>
 <div class="math">
-<p><img src="_images/math/298978d583de883fc0f7f2c64ec447ec17855b39.png" alt="\frac{\partial p_a}{\partial y_i} = D_{ai}."/></p>
+<p><img src="_images/math/74afbf1e8b502600c862150afd3bb96e9d14e8ee.png" alt="\frac{\partial \overline{p}_a}{\partial y_i} = D_{ai}."/></p>
 </div><p>This relationship is true in the limit of small errors, as is easily derived
-from the minimum condition for the fit: Differentiating with respect to
+from the minimum condition for the fit, which defines (implicitly)
+<img class="math" src="_images/math/0d40401d5fd5baf0afb237bae989b640095b0821.png" alt="\overline{p}_a(y)" style="vertical-align: -4px"/>: Differentiating with respect to
 <img class="math" src="_images/math/6e6ceb79ebc4bf613298e0144eae25dd73de9be3.png" alt="y_i" style="vertical-align: -4px"/> we obtain</p>
 <div class="math">
-<p><img src="_images/math/28cec25dcd23c97a17434d67bfbc200a64233354.png" alt="(\partial_a \Delta y(p))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
-\frac{\partial\Delta y(p)}{\partial y_i} = 0"/></p>
+<p><img src="_images/math/93a453c2a0ee91b2e07214daf687e8174f82766e.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
+\frac{\partial\Delta y(\overline{p})}{\partial y_i} = 0"/></p>
 </div><p>where we have ignored terms suppressed by a factor of <img class="math" src="_images/math/1264f24cb1dc7c2b4bcb50a78ca07554f7f442cb.png" alt="\Delta y(p)" style="vertical-align: -4px"/>.
 This leads immediately to the relationship above.</p>
 <p>The data&#8217;s covariance matrix <img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
@@ -284,15 +285,18 @@ for all parameters <tt class="docutils literal"><span class="pre">p</span></tt> 
 array) with the same keys and structure (or shape) as <tt class="docutils literal"><span class="pre">prior</span></tt>.
 The default value is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">prior</span></tt> must be defined if <tt class="docutils literal"><span class="pre">p0</span></tt>
 is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>p0</strong> (dictionary, array, string or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Starting values for fit parameters in fit. <tt class="docutils literal"><span class="pre">p0</span></tt> should be a
-dictionary with the same keys and structure as <tt class="docutils literal"><span class="pre">prior</span></tt> (or an
-array of the same shape if <tt class="docutils literal"><span class="pre">prior</span></tt> is an array). If <tt class="docutils literal"><span class="pre">p0</span></tt> is a
+<li><strong>p0</strong> (dictionary, array, string or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Starting values for fit parameters in fit. 
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> adjusts <tt class="docutils literal"><span class="pre">p0</span></tt> to make it consistent
+in shape and structure with <tt class="docutils literal"><span class="pre">prior</span></tt> when the latter is 
+specified: elements missing from <tt class="docutils literal"><span class="pre">p0</span></tt> are filled 
+in using <tt class="docutils literal"><span class="pre">prior</span></tt>, and elements in 
+<tt class="docutils literal"><span class="pre">p0</span></tt> that are not in <tt class="docutils literal"><span class="pre">prior</span></tt> are discarded. If <tt class="docutils literal"><span class="pre">p0</span></tt> is a
 string, it is taken as a file name and
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> attempts to read starting values from
 that file; best-fit parameter values are written out to the same
 file after the fit (for priming future fits). If <tt class="docutils literal"><span class="pre">p0</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt>
 or the attempt to read the file fails, starting values are
-extracted from the prior. The default value is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">p0</span></tt>
+extracted from <tt class="docutils literal"><span class="pre">prior</span></tt>. The default value is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">p0</span></tt>
 must be defined if <tt class="docutils literal"><span class="pre">prior</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
 <li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">float</span></tt> or 2-tuple) &#8211; If positive, eigenvalues of the (rescaled) <tt class="docutils literal"><span class="pre">y</span></tt> 
 covariance matrix that are smaller than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the
@@ -394,6 +398,16 @@ budgets. <tt class="docutils literal"><span class="pre">fit.p</span></tt> and <t
 give the same errors for each parameter. They differ only when the
 input data&#8217;s covariance matrix is too singular to invert accurately
 (because of roundoff error), in which case an <em>svd</em> cut is advisable.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.nonlinear_fit.transformed_p">
+<tt class="descname">transformed_p</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.transformed_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <tt class="docutils literal"><span class="pre">fit.p</span></tt> but augmented to include the transforms of any
+log-normal or other parameter implemented using decorator
+<a class="reference internal" href="#lsqfit.transform_p" title="lsqfit.transform_p"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.transform_p</span></tt></a>. In the case of a log-normal variable
+<tt class="docutils literal"><span class="pre">fit.p['logXX']</span></tt>, for example, <tt class="docutils literal"><span class="pre">fit.transformed_p['XX']</span></tt> is
+defined equal to <tt class="docutils literal"><span class="pre">exp(fit.p['logXX'])</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -774,7 +788,7 @@ of freedom even if the model used to construct <tt class="docutils literal"><spa
 <h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.transform_p">
-<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>prior</em>, <em>pindex=None</em>, <em>pkey=None</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>priorkeys</em>, <em>pindex=None</em>, <em>pkey=None</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorate fit function to allow log/sqrt-normal priors.</p>
 <p>This decorator can be applied to fit functions whose parameters 
 are stored in a dictionary-like object. It searches 
@@ -800,46 +814,45 @@ or second cases above, respectively. In either case
 rapid replacement of a fit parameter by its 
 logarithm or square root without having to rewrite the
 fit function &#8212; only the prior need be changed. The
-decorator needs the prior, and it needs to be told which
+decorator needs the keys from the prior, and it needs to be told which
 argument (numbered from 0) of the fit function is the 
 parameter dictionary, unless the fit function has 
 only a single argument:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">other_arg1</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
 <p>or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="o">...</span>        
 </pre></div>
 </div>
-<p>The decorator assigns a copy of itself to the function
-as an attribute: <tt class="docutils literal"><span class="pre">fitfcn.transform_p</span></tt>.</p>
+<p>A list of the specific keys that need transforming can be used instead
+of the list of all keys (<tt class="docutils literal"><span class="pre">prior.keys()</span></tt>). The decorator assigns a copy 
+of itself to the function as an attribute: <tt class="docutils literal"><span class="pre">fitfcn.transform_p</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>prior</strong> (<em>dictionary-like</em>) &#8211; Prior or other dictionary having the same keys as 
-the prior. Alternatively could be a set or list of the keys
-(e.g.,  <tt class="docutils literal"><span class="pre">prior</span></tt> could be replaced by <tt class="docutils literal"><span class="pre">prior.keys()</span></tt>). In the 
-second case only those keys beginning with <tt class="docutils literal"><span class="pre">'log'</span></tt> or <tt class="docutils literal"><span class="pre">'sqrt'</span></tt>
-need be included; others will be ignored.</li>
-<li><strong>pindex</strong> (<em>integer or None</em>) &#8211; Index of the parameters-variable in the argument list 
+<li><strong>priorkeys</strong> (<em>sequence</em>) &#8211; The keys in the prior that are to be tranformed. 
+Other keys can be in <tt class="docutils literal"><span class="pre">priorkeys</span></tt> provided they do not begin
+with <tt class="docutils literal"><span class="pre">'log'</span></tt> or <tt class="docutils literal"><span class="pre">'sqrt'</span></tt> &#8212; they are ignored.</li>
+<li><strong>pindex</strong> (<em>integer or None</em>) &#8211; Index of the parameters-dictionary in the argument list 
 of the fit function. Default value is <tt class="docutils literal"><span class="pre">None</span></tt>; one of 
-<tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>)
+<tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>),
 unless the fit function has only a single argument.</li>
 <li><strong>pkey</strong> (<em>string or None</em>) &#8211; Name of the parameters-variable in the argument keyword
 dictionary of the fit function. Default value is <tt class="docutils literal"><span class="pre">None</span></tt>; one of 
-<tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>)
+<tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>),
 unless the fit function has only a single argument.</li>
 </ul>
 </td>
@@ -848,12 +861,23 @@ unless the fit function has only a single argument.</li>
 </table>
 <dl class="method">
 <dt id="lsqfit.transform_p.transform">
-<tt class="descname">transform</tt><big>(</big><em>prior</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create transformed <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
-<p>Create a copy of <tt class="docutils literal"><span class="pre">prior</span></tt> that includes new entries
-for each <tt class="docutils literal"><span class="pre">&quot;logXX&quot;</span></tt>, etc entry corresponding to
-<tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt>. The values in <tt class="docutils literal"><span class="pre">prior</span></tt> can be any type that 
+<tt class="descname">transform</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create transformed copy of dictionary <tt class="docutils literal"><span class="pre">p</span></tt>.</p>
+<p>Create a copy of parameter-dictionary <tt class="docutils literal"><span class="pre">p</span></tt> 
+that includes new entries for 
+each <tt class="docutils literal"><span class="pre">&quot;logXX&quot;</span></tt>, etc entry corresponding to
+<tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt>. The values in <tt class="docutils literal"><span class="pre">p</span></tt> can be any type that 
 supports logarithms, exponentials, and arithmetic.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.transform_p.untransform">
+<tt class="descname">untransform</tt><big>(</big><em>p</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p.untransform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Undo <tt class="docutils literal"><span class="pre">self.transform(p)</span></tt>.</p>
+<p>Reconstruct <tt class="docutils literal"><span class="pre">p0</span></tt> where <tt class="docutils literal"><span class="pre">p</span> <span class="pre">==</span> <span class="pre">self.transform(p0)</span></tt>; that
+is remove entries for keys <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> that were added by
+by <a class="reference internal" href="#lsqfit.transform_p.transform" title="lsqfit.transform_p.transform"><tt class="xref py py-func docutils literal"><span class="pre">transform_p.transform()</span></tt></a> (because <tt class="docutils literal"><span class="pre">&quot;logXX&quot;</span></tt> or 
+<tt class="docutils literal"><span class="pre">&quot;sqrtXX&quot;</span></tt> or ... appeared in <tt class="docutils literal"><span class="pre">p0</span></tt>).</p>
 </dd></dl>
 
 <dl class="staticmethod">

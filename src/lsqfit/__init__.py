@@ -361,13 +361,16 @@ class nonlinear_fit(object):
     p = property(_getp, doc="Best-fit parameters with correlations.")
     def _gettransformedp(self):
         """ Return self.fcn.transform_p.transform(self.p) or self.p. """
+        if self._transformed_p is not None:
+            return self._transformed_p
         if (
             hasattr(self.fcn, 'transform_p') and 
             hasattr(self.fcn.transform_p, 'transform')
             ):
-            return self.fcn.transform_p.transform(self.p)
+            self._transformed_p = self.fcn.transform_p.transform(self.p)
         else:
-            return self.p
+            self._transformed_p = self.p
+        return self._transformed_p
     transformed_p = property(
         _gettransformedp,
         doc="Best-fit parameters with correlations, plus transformed variables."
@@ -733,54 +736,55 @@ class transform_p(object):
     rapid replacement of a fit parameter by its 
     logarithm or square root without having to rewrite the
     fit function --- only the prior need be changed. The
-    decorator needs the prior, and it needs to be told which
+    decorator needs the keys from the prior, and it needs to be told which
     argument (numbered from 0) of the fit function is the 
     parameter dictionary, unless the fit function has 
     only a single argument::
 
-        @lsqfit.transform_p(prior, 1)
+        @lsqfit.transform_p(prior.keys(), 1)
         def fitfcn(x, p):
             ...
 
     or ::
 
-        @lsqfit.transform_p(prior, 0)
+        @lsqfit.transform_p(prior.keys(), 0)
         def fitfcn(p, other_arg1, ...):
             ...
 
     or ::
 
-        @lsqfit.transform_p(prior)
+        @lsqfit.transform_p(prior.keys())
         def fitfcn(p):
             ...        
 
-    The decorator assigns a copy of itself to the function
-    as an attribute: ``fitfcn.transform_p``.
+    A list of the specific keys that need transforming can be used instead
+    of the list of all keys (``prior.keys()``). The decorator assigns a copy 
+    of itself to the function as an attribute: ``fitfcn.transform_p``.
 
-    :param prior: Prior or other dictionary having the same keys as 
-        the prior. Alternatively could be a set or list of the keys
-        (e.g.,  ``prior`` could be replaced by ``prior.keys()``). In the 
-        second case only those keys beginning with ``'log'`` or ``'sqrt'``
-        need be included; others will be ignored.
-    :type prior: dictionary-like
-    :param pindex: Index of the parameters-variable in the argument list 
+    :param priorkeys: The keys in the prior that are to be tranformed. 
+        Other keys can be in ``priorkeys`` provided they do not begin
+        with ``'log'`` or ``'sqrt'`` --- they are ignored.
+    :type priorkeys: sequence
+    :param pindex: Index of the parameters-dictionary in the argument list 
         of the fit function. Default value is ``None``; one of 
-        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``)
+        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``),
         unless the fit function has only a single argument.
     :type pindex: integer or None
     :param pkey: Name of the parameters-variable in the argument keyword
         dictionary of the fit function. Default value is ``None``; one of 
-        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``)
+        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``),
         unless the fit function has only a single argument.
     :type pkey: string or None
     """
-    def __init__(self, prior, pindex=None, pkey=None):
+    def __init__(self, priorkeys, pindex=None, pkey=None):
         self.pindex = pindex
         self.pkey = pkey
         self.log_keys = []
         self.sqrt_keys = []
         self.added_keys = []
-        pkeys = prior.keys() if hasattr(prior, "keys") else set(prior)
+        # N.B. Allowing priorkeys to be the prior itself for compatibility 
+        #      with old convention. Migt want to get rid of this someday.
+        pkeys = priorkeys.keys() if hasattr(priorkeys, "keys") else set(priorkeys)
         for i in pkeys:
             if isinstance(i, str):
                 if i[:3] == 'log':
@@ -831,7 +835,7 @@ class transform_p(object):
         return k
 
     def transform(self, p):
-        """ Create transformed ``p``.
+        """ Create transformed copy of dictionary ``p``.
 
         Create a copy of parameter-dictionary ``p`` 
         that includes new entries for 
@@ -906,8 +910,9 @@ class transform_p(object):
                 args = tuple(args)
             else:
                 kargs[self.pkey] = p
-            newf.transform_p = self
+            # newf.transform_p = self
             return f(*args, **kargs)
+        newf.transform_p = self
         return newf
 
 p_transforms = transform_p   # legacy name

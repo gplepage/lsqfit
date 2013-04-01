@@ -109,16 +109,17 @@ This last formula suggests that
 
 .. math::
 
-   \frac{\partial p_a}{\partial y_i} = D_{ai}.
+   \frac{\partial \overline{p}_a}{\partial y_i} = D_{ai}.
    
 This relationship is true in the limit of small errors, as is easily derived
-from the minimum condition for the fit: Differentiating with respect to
+from the minimum condition for the fit, which defines (implicitly) 
+:math:`\overline{p}_a(y)`: Differentiating with respect to
 :math:`y_i` we obtain
 
 .. math::
 
-   (\partial_a \Delta y(p))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
-   \frac{\partial\Delta y(p)}{\partial y_i} = 0
+   (\partial_a \Delta y(\overline{p}))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
+   \frac{\partial\Delta y(\overline{p})}{\partial y_i} = 0
 
 where we have ignored terms suppressed by a factor of :math:`\Delta y(p)`.
 This leads immediately to the relationship above.
@@ -208,8 +209,8 @@ nonlinear_fit Objects
       Same as ``fit.p`` but augmented to include the transforms of any 
       log-normal or other parameter implemented using decorator
       :class:`lsqfit.transform_p`. In the case of a log-normal variable
-      ``fit.p["logXX"]``, for example, ``fit.transformed_p["XX"]`` is 
-      defined equal to ``exp(fit.p["logXX"])``.
+      ``fit.p['logXX']``, for example, ``fit.transformed_p['XX']`` is 
+      defined equal to ``exp(fit.p['logXX'])``.
 
    .. attribute:: p0
    
@@ -298,6 +299,8 @@ Utility Classes
 .. autoclass:: lsqfit.transform_p
 
    .. automethod:: transform
+
+   .. automethod:: untransform
 
    .. automethod:: paramkey
 
