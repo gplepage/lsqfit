@@ -32,5 +32,5 @@ update-all:
 	$(PYTHON) err-budget.py > err-budget.out
 
 clean:
-	rm -f *.pyc *.tmp *.p
+	rm -f *.pyc *.tmp *.p *.prof
 

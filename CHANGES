@@ -1,5 +1,5 @@
-Version 4.4.3 - ?????
-======================
+Version 4.4.3 - 2013-04-06
+==========================
 
 - Improved syntax for @transform_p from lsqfit. The old syntax still works 
   but the new syntax is simpler: 1) use @transform_p(priorkeys,0) instead

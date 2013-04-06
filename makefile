@@ -61,8 +61,9 @@ upload-git:
 	git push origin master
 
 clean:
-	rm -f -r build __pycache__
-	rm -f *.so *.tmp *.pyc *.prof *.c .coverage 
+	rm -f -r build 
+	rm -rf __pycache__
+	rm -f *.so *.tmp *.pyc *.prof *.c .coverage doc.zip
 	rm -f -r dist
 	rm -f src/lsqfit/*.c
 	rm -f src/gvar/*.c

@@ -1307,8 +1307,8 @@ The result from this fit is
 
 .. literalinclude:: eg6-loga.out
 
-which is more compelling. The "correct" value for ``a`` here is 0.015,
-given the method used to generate the ``y``\s.
+which is more compelling. The "correct" value for ``a`` here is 0.015
+(from the method used to generate the ``y``\s).
 
 :func:`lsqfit.transform_p` also allows parameters to be replaced by their
 square roots as fit parameters --- for example,  define ``prior['sqrt(a)']``
