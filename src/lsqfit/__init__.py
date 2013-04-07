@@ -1055,7 +1055,12 @@ def _unpack_p0(p0, p0file, prior):
         if hasattr(p0, 'keys'):
             p0 = _gvar.BufferDict(p0)
         else:
-            p0 = numpy.array(p0)        
+            p0 = numpy.array(p0)
+        if p0.dtype != float:
+            raise ValueError(
+                'p0 must contain elements of type float, not type ' + 
+                str(p0.dtype)
+                )        
     if prior is not None:
         # build new p0 from p0, plus the prior as needed 
         pp = _reformat(prior, buf=[x.mean if x.mean != 0.0 

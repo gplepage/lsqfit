@@ -25,7 +25,7 @@ cdef extern from "math.h":
     double c_acos "acos" (double x)
     double c_atan "atan" (double x)
 
-## utility functions ##
+# utility functions 
 def rebuild(g, corr=0.0, gvar=_gvar.gvar):
     """ Rebuild ``g`` stripping correlations with variables not in ``g``.
         
@@ -62,14 +62,14 @@ def rebuild(g, corr=0.0, gvar=_gvar.gvar):
     cdef unsigned int i,j,ng
     cdef float cr
     if hasattr(g,'keys'):
-        ## g is a dict ##
+        ## g is a dict 
         if not isinstance(g,BufferDict):
             g = BufferDict(g)
         buf = rebuild(g.flat,corr=corr,gvar=gvar)
         return BufferDict(g,buf=buf)
-        ##
+        
     else:
-        ## g is an array ##
+        ## g is an array 
         g = numpy.asarray(g)
         if corr!=0.0:
             ng = g.size
@@ -83,8 +83,8 @@ def rebuild(g, corr=0.0, gvar=_gvar.gvar):
             return gvar(mean(g),gcov.reshape(2*g.shape))
         else:
             return gvar(mean(g),evalcov(g))
-        ##
-##
+        
+
 def mean(g):
     """ Extract means from :class:`gvar.GVar`\s in ``g``.
         
@@ -105,7 +105,7 @@ def mean(g):
     for i,gi in enumerate(g.flat):
         buf[i] = gi.v
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
-##
+
 def fmt(g, ndecimal=None, sep='', d=None):
     """ Format :class:`gvar.GVar`\s in ``g``.
         
@@ -129,7 +129,7 @@ def fmt(g, ndecimal=None, sep='', d=None):
     for i,gi in enumerate(g.flat):
         buf.append(gi.fmt(ndecimal=ndecimal,sep=sep))
     return BufferDict(g,buf=buf) if g.shape is None else numpy.reshape(buf,g.shape)
-##
+
 def sdev(g):
     """ Extract standard deviations from :class:`gvar.GVar`\s in ``g``.
         
@@ -150,7 +150,7 @@ def sdev(g):
     for i,gi in enumerate(g.flat):
         buf[i] = gi.sdev
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
-##
+
 def deriv(g, GVar x):
     """ Compute first derivatives wrt ``x`` of |GVar|\s in ``g``.
 
@@ -211,7 +211,7 @@ def var(g):
     for i,gi in enumerate(g.flat):
         buf[i] = gi.var
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
-##
+
 def uncorrelated(g1,g2):
     """ Return ``True`` if |GVar|\s in ``g1`` uncorrelated with those in ``g2``.
         
@@ -243,7 +243,7 @@ def uncorrelated(g1,g2):
         s0.update(cov.rowlist[i].indices())
     # orthogonal if indices in g1 not connected to indices in g2 by cov
     return s0.isdisjoint(s[1])
-##
+
 def evalcov(g):
     """ Compute covariance matrix for elements of 
     array/dictionary ``g``.
@@ -262,7 +262,7 @@ def evalcov(g):
     cdef svec da,db,row
     cdef smat cov
     if hasattr(g,"keys"):
-        ## convert g to list and call evalcov; repack as double dict ##
+        # convert g to list and call evalcov; repack as double dict 
         if not isinstance(g,BufferDict):
             g = BufferDict(g)
         gcov = evalcov(g.flat)
@@ -271,7 +271,7 @@ def evalcov(g):
             for k2 in g:
                 ansd[k1,k2] = gcov[g.slice(k1),g.slice(k2)]
         return ansd
-        ##
+        
     g = numpy.asarray(g)
     g_shape = g.shape
     g = g.flat
@@ -281,12 +281,12 @@ def evalcov(g):
     nc = len(cov.rowlist)
     covd = []
     if True:
-        rowda = numpy.zeros(nc,float)   ## stores rowlist[i].dot(da)s
+        rowda = numpy.zeros(nc,float)   # stores rowlist[i].dot(da)s
         rowda_empty = numpy.ones(nc,numpy.int8)
         for a in range(ng):
             ga = g[a]
             da = ga.d
-            rowda_empty.fill(True)  ## reset
+            rowda_empty.fill(True)  # reset
             for b in range(a,ng):
                 gb = g[b]
                 db = gb.d
@@ -308,7 +308,7 @@ def evalcov(g):
                 ans[a,b] = ga.d.dot(covd[b])
                 ans[b,a] = ans[a,b]
     return ans.reshape(2*g_shape)
-##
+
 def wsum_der(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
     """ weighted sum of |GVar| derivatives """
     cdef GVar g
@@ -327,7 +327,7 @@ def wsum_der(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
         for i in range(g.d.size):
             ans[g.d.v[i].i] += w*g.d.v[i].v
     return ans 
-##
+
 def wsum_gvar(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
     """ weighted sum of |GVar|\s """
     cdef svec wd
@@ -360,7 +360,7 @@ def wsum_gvar(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
         wd.v[i].i = idx[i]
         wd.v[i].v = der[idx[i]]
     return GVar(wv,wd,cov)
-##
+
 def fmt_values(outputs, ndecimal=None, ndigit=None):
     """ Tabulate :class:`gvar.GVar`\s in ``outputs``. 
         
@@ -377,7 +377,7 @@ def fmt_values(outputs, ndecimal=None, ndigit=None):
     for vk in outputs:
         ans += "%19s: %-20s\n" % (vk,outputs[vk].fmt(ndecimal))
     return ans
-##
+
 def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndigit=None):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
        
@@ -409,7 +409,7 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
         (columns); sources of uncertainty are labeled by the keys in
         ``inputs`` (rows).
     """
-    ## collect partial errors ##
+    # collect partial errors 
     if ndigit is not None:
         ndecimal = ndigit       # legacy name
     err = {}
@@ -419,8 +419,8 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
             if hasattr(inputs_ki,'keys') or not hasattr(inputs_ki,'__iter__'):
                 inputs_ki = [inputs_ki]
             err[ko,ki] = outputs[ko].partialvar(*inputs_ki)**0.5                
-    ##
-    ## form table ##
+    
+    # form table 
     w = colwidth
     w0 = w if w > 20 else 20
     lfmt = (
@@ -445,12 +445,9 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
     ans += (w0 +len(outputs) * w) * '-' + "\n"
     ans += lfmt%(("total",)+tuple(numpy.array([outputs[vk].sdev 
                                     for vk in outputs])/val))
-    ##
     return ans
-##
-##
 
-## bootstrap_iter, raniter, ranseed, svd, valder ##
+# bootstrap_iter, raniter, ranseed, svd, valder 
 def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
     """ Return iterator for bootstrap copies of ``g``. 
         
@@ -507,7 +504,7 @@ def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
             yield buf.reshape(g.shape)
         # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
-## 
+ 
 def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
     """ Return iterator for random samples from distribution ``g``
         
@@ -567,7 +564,7 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
             yield buf.reshape(g.shape)
         # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
-##
+
 def ranseed(seed):
     """ Seed random number generators with tuple ``seed``.
         
@@ -581,7 +578,7 @@ def ranseed(seed):
     """
     seed = tuple(seed)
     numpy.random.seed(seed)
-##   
+   
 class SVD(object):
     """ SVD decomposition of a pos. sym. matrix. 
         
@@ -676,30 +673,28 @@ class SVD(object):
             self.D = None
         vec,val,dummy = numpy.linalg.svd(DmatD) 
         vec = numpy.transpose(vec) # now 1st index labels eigenval
-        ## guarantee that sorted, with smallest val[i] first ##
+        # guarantee that sorted, with smallest val[i] first 
         vec = numpy.array(vec[-1::-1])
         val = numpy.array(val[-1::-1])
         self.kappa = val[0]/val[-1] if val[-1]!=0 else None  # min/max eval
-        self.delta = None
-        ##
-        ## svd cuts ##
+        self.delta = None        
+        # svd cuts 
         if (svdcut is None or svdcut==0.0) and (svdnum is None or svdnum<=0):
             self.val = val
             self.vec = vec
             return
-        ## restrict to svdnum largest eigenvalues ##
+        # restrict to svdnum largest eigenvalues 
         if svdnum is not None and svdnum>0:
             val = val[-svdnum:]
-            vec = vec[-svdnum:]
-        ##
-        ## impose svdcut on eigenvalues ##
+            vec = vec[-svdnum:]        
+        # impose svdcut on eigenvalues 
         if svdcut is None or svdcut==0:
             self.val = val
             self.vec = vec
             return 
         valmin = abs(svdcut)*val[-1]
         if svdcut>0:
-            ## force all eigenvalues >= valmin ##
+            # force all eigenvalues >= valmin 
             dely = None
             for i in range(len(val)): 
                 if val[i]<valmin:
@@ -715,19 +710,17 @@ class SVD(object):
             self.vec = vec
             self.delta = dely if (self.D is None or dely is None) else dely/self.D
             return 
-            ##
+            
         else:
-            ## discard modes with eigenvalues < valmin ##
+            # discard modes with eigenvalues < valmin 
             for i in range(len(val)): 
                 if val[i]>=valmin:
                     break
             self.val = val[i:]
             self.vec = vec[i:]
             return  # val[i:],vec[i:],kappa,None
-            ##
-        ##
-        ##
-    ##
+            
+   
     def decomp(self,n=1):
         """ Vector decomposition of input matrix raised to power ``n``.
             
@@ -756,8 +749,8 @@ class SVD(object):
             for j,valj in enumerate(self.val):
                 w[j] *= Dfac*valj**(n/2.)
         return w
-    ##
-##        
+    
+        
 def valder(v): 
     """ Convert array ``v`` of numbers into an array of |GVar|\s.
         
@@ -785,6 +778,6 @@ def valder(v):
         raise ValueError("Bad input.")
     gv_gvar = _gvar.gvar_factory()
     return gv_gvar(v,numpy.zeros(v.shape,float))
-##
-##
+
+
 

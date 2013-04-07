@@ -26,7 +26,6 @@ except ImportError:
     from io import StringIO as _StringIO
 import gvar as _gvar
 
-## BufferDict ##
 BUFFERDICTDATA = collections.namedtuple('BUFFERDICTDATA',['slice','shape'])
 """ Data type for BufferDict._data[k]. Note shape==None implies a scalar. """
     
@@ -112,13 +111,12 @@ class BufferDict(collections.MutableMapping):
         super(BufferDict, self).__init__()
         self.shape = None
         if len(args)==0:
-            ## kargs are dictionary entries ##
+            # kargs are dictionary entries 
             self._buf = numpy.array([],int)
             self._keys = []
             self._data = {}
             for k in sorted(kargs):
                 self[k] = kargs[k]
-            ##
         else:
             if len(args)==2 and len(kargs)==0:
                 bd,buf = args
@@ -131,7 +129,7 @@ class BufferDict(collections.MutableMapping):
             else:
                 raise ValueError("Bad arguments for BufferDict.")
             if isinstance(bd,BufferDict):
-                ## make copy of BufferDict bd, possibly with new buffer ##
+                # make copy of BufferDict bd, possibly with new buffer 
                 self._keys = copy.copy(bd._keys)
                 self._data = copy.copy(bd._data)
                 self._buf = (numpy.array(bd._buf) if buf is None 
@@ -142,32 +140,28 @@ class BufferDict(collections.MutableMapping):
                 if self._buf.ndim!=1:
                     raise ValueError("buf must be 1-d, not shape = %s"
                                      % (self._buf.shape,))
-                ##
             elif buf is None:
                 self._buf = numpy.array([],int)
                 self._keys = []
                 self._data = {}
-                ## add initial data ## 
+                # add initial data  
                 if hasattr(bd,"keys"):
-                    ## bd a dictionary ##
+                    # bd a dictionary 
                     for k in sorted(bd):
                         self[k] = bd[k]
-                    ##
                 else:
-                    ## bd an array of tuples ##
+                    # bd an array of tuples 
                     if not all([(isinstance(bdi,tuple) 
                                and len(bdi)==2) for bdi in bd]):
                         raise ValueError(
                             "BufferDict argument must be dict or list of 2-tuples.")
                     for ki,vi in bd:
                         self[ki] = vi
-                    ##
-                ##
             else:
                 raise ValueError(
                     "bd must be a BufferDict in BufferDict(bd,buf), not %s"
                                     % str(type(bd)))
-    ##
+    
     def __getstate__(self):
         """ Capture state for pickling when elements are GVars. """
         if len(self._buf)<1:
@@ -184,7 +178,7 @@ class BufferDict(collections.MutableMapping):
         for k in data:
             odict['_data.tuple'][k] = (data[k].slice,data[k].shape)
         return odict
-    ##
+    
     def __setstate__(self,odict):
         """ Restore state when unpickling when elements are GVars. """
         if '_buf.mean' in odict:
@@ -200,7 +194,7 @@ class BufferDict(collections.MutableMapping):
                 odict['_data'][k] = BUFFERDICTDATA(slice=data[k][0],
                                                     shape=data[k][1])
         self.__dict__.update(odict)
-    ##
+    
     def add(self,k,v):
         """ Augment buffer with data ``v``, indexed by key ``k``.
             
@@ -215,7 +209,7 @@ class BufferDict(collections.MutableMapping):
             raise ValueError("Key %s already used." % str(k))
         else:
             self[k] = v
-    ##
+    
     def __getitem__(self,k):
         """ Return piece of buffer corresponding to key ``k``. """
         if k not in self._data:
@@ -225,7 +219,7 @@ class BufferDict(collections.MutableMapping):
         d = self._data[k]
         ans = self._buf[d.slice]
         return ans if d.shape is None else ans.reshape(d.shape)
-    ##
+    
     def __setitem__(self,k,v):
         """ Set piece of buffer corresponding to ``k`` to value ``v``. 
             
@@ -235,17 +229,15 @@ class BufferDict(collections.MutableMapping):
         if k not in self:
             v = numpy.asarray(v)
             if v.shape==():
-                ## add single piece of data ##
+                # add single piece of data 
                 self._data[k] = BUFFERDICTDATA(slice=len(self._buf),shape=None)
                 self._buf = numpy.append(self._buf,v)
-                ##
             else:
-                ## add array ##
+                # add array 
                 n = numpy.size(v)
                 i = len(self._buf)
                 self._data[k] = BUFFERDICTDATA(slice=slice(i,i+n),shape=tuple(v.shape))
                 self._buf = numpy.append(self._buf,v)
-                ##
             self._keys.append(k)
         else:
             d = self._data[k]
@@ -262,22 +254,22 @@ class BufferDict(collections.MutableMapping):
                 except ValueError:
                     raise ValueError("*** Shape mismatch? %s not %s" % 
                                      (str(v.shape),str(d.shape)))
-    ##
+    
     def __delitem__(self,k):
         raise NotImplementedError("Cannot delete items from BufferDict.")
-    ##
+    
     def __len__(self):
         """ Number of keys. """
         return len(self._keys)
-    ##
+    
     def __iter__(self):
         """ Iterator over the keys. """
         return iter(self._keys)
-    ##
+    
     def __contains__(self,k):
         """ True if k is a key in ``self``. """
         return k in self._data
-    ##
+    
     def __str__(self):
         ans = "{"
         for k in self:
@@ -286,26 +278,31 @@ class BufferDict(collections.MutableMapping):
             ans = ans[:-1]
             ans += "}"
         return ans
-    ##
+    
     def __repr__(self):
         cn = self.__class__.__name__
         return cn+"("+repr([k for k in self.items()])+")"
-    ##
+    
     def _getflat(self):
         return self._buf.flat
-    ##
+    
     def _setflat(self,buf):
         """ Assigns buffer with buf if same size. """
         self._buf.flat = buf
-    ##
+    
     flat = property(_getflat,_setflat,doc='Buffer array iterator.')
     def flatten(self):
         """ Copy of buffer array. """
         return numpy.array(self._buf)
-    ##
+    
+    def _getdtype(self):
+        return self._buf.dtype
+
+    dtype = property(_getdtype, doc='Data type of buffer array elements.')
+
     def _getbuf(self):  
         return self._buf
-    ##
+    
     def _setbuf(self,buf):
         """ Replace buffer with ``buf``. 
             
@@ -319,21 +316,21 @@ class BufferDict(collections.MutableMapping):
                 "New buffer wrong type or shape ---\n    %s,%s   not   %s,%s"
                 % (type(buf), numpy.shape(buf), 
                 type(self._buf), self._buf.shape))
-    ##
+    
     buf = property(_getbuf,_setbuf,doc='The buffer array (not a copy).')
     def _getsize(self):
         """ Length of buffer. """
         return len(self._buf)
-    ##
+    
     size = property(_getsize,doc='Size of buffer array.')
     def slice(self,k):
         """ Return slice/index in ``self.flat`` corresponding to key ``k``."""
         return self._data[k].slice
-    ##
+    
     def isscalar(self,k):
         """ Return ``True`` if ``self[k]`` is scalar else ``False``."""
         return self._data[k].shape is None
-    ##
+    
     def dump(self, fobj, use_json=False):
         """ Serialize |BufferDict| in file object ``fobj``.
                     
@@ -363,7 +360,7 @@ class BufferDict(collections.MutableMapping):
             if cov is not None:
                 d['cov'] = cov.tolist()
             json.dump(d, fobj)
-    ##
+    
     def dumps(self, use_json=False):
         """ Serialize |BufferDict| into string.
                     
@@ -378,7 +375,7 @@ class BufferDict(collections.MutableMapping):
         f = _StringIO() if use_json else _BytesIO()
         self.dump(f, use_json=use_json)
         return f.getvalue()
-    ##
+    
     @staticmethod
     def load(fobj, use_json=False):
         """ Load serialized |BufferDict| from file object ``fobj``.
@@ -397,7 +394,7 @@ class BufferDict(collections.MutableMapping):
             if 'cov' in d:
                 ans.buf = _gvar.gvar(ans._buf,d['cov'])
             return ans
-    ##
+    
     @staticmethod
     def loads(s, use_json=False):
         """ Load serialized |BufferDict| from file object ``fobj``.
@@ -407,6 +404,6 @@ class BufferDict(collections.MutableMapping):
         """
         f = _StringIO(s) if use_json else _BytesIO(s)
         return BufferDict.load(f, use_json=use_json)
-##
-##
+
+
 

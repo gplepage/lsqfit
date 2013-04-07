@@ -577,6 +577,8 @@ scalars) that supports Python pickling:
    .. autoattribute:: size
    
    .. autoattribute:: flat
+
+   .. autoattribute:: dtype
    
    .. attribute:: buf
    

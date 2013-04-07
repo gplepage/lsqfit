@@ -596,7 +596,7 @@ def dot(numpy.ndarray[numpy.double_t, ndim=2] w not None, x):
     """
     cdef gvar.GVar g
     cdef gvar.GVar gans, gx
-    cdef unsigned int i, nx
+    cdef unsigned int i, nx, nans
     cdef numpy.ndarray[object, ndim=1] ans
     if not isinstance(x[0], gvar.GVar):
         return numpy.dot(w, x)
