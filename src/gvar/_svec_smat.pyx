@@ -1,5 +1,5 @@
 # Created by Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012 G. Peter Lepage.
+# Copyright (c) 2012-13 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,15 +16,8 @@ import numpy
 cimport numpy
 cimport cython
 
-cdef extern from "stdlib.h":
-    void* malloc(int size)
-    void* realloc(void* p,int size)
-    void free(void* p)
-    int sizeof(double)
-
-cdef extern from "string.h":
-    void* memset(void* mem,int val,int bytes)
-
+from libc.stdlib cimport malloc, realloc, free #, sizeof
+from libc.string cimport memset
 
 cdef class svec:
     """ sparse vector --- for GVar derivatives (only)"""
@@ -85,19 +78,18 @@ cdef class svec:
             
         Assumes that len(v)==len(idx)==self.size and idx sorted 
         """
+        cdef unsigned int i
         for i in range(self.size): 
             self.v[i].v = v[i]
             self.v[i].i = idx[i]
     ##
-    def assign(self,v,idx=None):
+    def assign(self,v,idx):
         """ assign v and idx to self.v[i].v and self.v[i].i """
-        cdef unsigned int nv
+        cdef unsigned int nv, i
         nv = len(v)
         assert nv==len(idx) and nv==self.size,"v,idx length mismatch"
         if nv>0:
             idx,v = zip(*sorted(zip(idx,v)))
-            idx = list(idx)
-            v = list(v)
             for i in range(self.size): 
                 self.v[i].v = v[i]
                 self.v[i].i = idx[i]
@@ -131,6 +123,7 @@ cdef class svec:
         """ Compute a*self + b*v. """
         cdef svec va,vb
         cdef unsigned int ia,ib
+        cdef svec ans
         va = self
         vb = v
         ans = svec(va.size+vb.size)     # could be too big
@@ -190,7 +183,7 @@ cdef class svec:
     cpdef svec mul(svec self,double a):
         """ Compute a*self. """
         cdef unsigned int i
-        ans = svec(self.size)
+        cdef svec ans = svec(self.size)
         for i in range(self.size):
             ans.v[i].i = self.v[i].i
             ans.v[i].v = a*self.v[i].v
@@ -262,31 +255,65 @@ cdef class smat:
         """ Compute dot product self|vv>. """
         cdef numpy.ndarray[numpy.double_t,ndim=1] v
         cdef numpy.ndarray[numpy.int_t,ndim=1] idx
-        cdef unsigned int nr
+        cdef double rowv
+        cdef unsigned int nr, size, i
+        cdef svec row
         nr = len(self.rowlist)
         v = numpy.zeros(nr,float)
         idx = numpy.zeros(nr,int)
         size = 0
-        for i,row in enumerate(self.rowlist):
+        for i in range(nr):
+            row = self.rowlist[i]
             rowv = row.dot(vv)
             if rowv!=0.0:
                 idx[size] = i
                 v[size] = rowv
                 size += 1
         ans = svec(size)
-        ans._assign(v[:size],idx[:size])
+        for i in range(size):
+            ans.v[i].v = v[i]
+            ans.v[i].i = idx[i]
         return ans
     ##   
+    cpdef svec masked_dot(self, svec vv, numpy.ndarray[numpy.int8_t,ndim=1] imask):
+        """ Compute masked dot product self|vv>.
+
+        imask indicates which components to compute and keep in final result;
+        disregard components i where imask[i]==False.
+        """
+        cdef numpy.ndarray[numpy.double_t,ndim=1] v
+        cdef numpy.ndarray[numpy.int_t,ndim=1] idx
+        cdef unsigned int nr, size, i
+        cdef double rowv
+        cdef svec row
+        cdef svec ans
+        nr = len(self.rowlist)
+        v = numpy.zeros(nr,float)
+        idx = numpy.zeros(nr,int)
+        size = 0
+        for i in range(nr):
+            if not imask[i]:
+                continue
+            row = self.rowlist[i]
+            rowv = row.dot(vv)
+            if rowv!=0.0:
+                idx[size] = i
+                v[size] = rowv
+                size += 1
+        ans = svec(size)
+        for i in range(size):
+            ans.v[i].v = v[i]
+            ans.v[i].i = idx[i]    
+        return ans
+
     cpdef numpy.ndarray[numpy.double_t,ndim=2] toarray(self):
         """ Create numpy ndim=2 array version of self. """
         cdef numpy.ndarray[numpy.double_t,ndim=2] ans
         cdef unsigned int nr = len(self.rowlist)
+        cdef unsigned int i
         ans = numpy.zeros((nr,nr),float)
         for i in range(nr):
             row = self.rowlist[i].toarray()
             ans[i][:len(row)] = row
         return ans
     ##
-
-
-

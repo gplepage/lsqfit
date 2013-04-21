@@ -1,3 +1,16 @@
+# Created by Peter Lepage (Cornell University) on 2012-05-31.
+# Copyright (c) 2012-13 G. Peter Lepage.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version (see <http://www.gnu.org/licenses/>).
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
 import gvar as _gvar
 from ._gvarcore import GVar
 from ._gvarcore cimport GVar
@@ -256,10 +269,10 @@ def evalcov(g):
     """
     cdef int a,b,ng,i,j,nc
     cdef numpy.ndarray[numpy.double_t,ndim=2] ans
-    cdef numpy.ndarray[numpy.double_t,ndim=1] rowda
-    cdef numpy.ndarray[numpy.int8_t,ndim=1] rowda_empty
+    cdef numpy.ndarray[object,ndim=1] covd
+    cdef numpy.ndarray[numpy.int8_t,ndim=1] imask
     cdef GVar ga,gb
-    cdef svec da,db,row
+    cdef svec da,db
     cdef smat cov
     if hasattr(g,"keys"):
         # convert g to list and call evalcov; repack as double dict 
@@ -271,7 +284,6 @@ def evalcov(g):
             for k2 in g:
                 ansd[k1,k2] = gcov[g.slice(k1),g.slice(k2)]
         return ansd
-        
     g = numpy.asarray(g)
     g_shape = g.shape
     g = g.flat
@@ -279,35 +291,22 @@ def evalcov(g):
     ans = numpy.zeros((ng,ng),float)
     cov = g[0].cov 
     nc = len(cov.rowlist)
-    covd = []
-    if True:
-        rowda = numpy.zeros(nc,float)   # stores rowlist[i].dot(da)s
-        rowda_empty = numpy.ones(nc,numpy.int8)
-        for a in range(ng):
-            ga = g[a]
-            da = ga.d
-            rowda_empty.fill(True)  # reset
-            for b in range(a,ng):
-                gb = g[b]
-                db = gb.d
-                for i in range(db.size):
-                    j = db.v[i].i
-                    if rowda_empty[j]:   
-                        row = cov.rowlist[j]
-                        rowda_empty[j] = False
-                        rowda[j] = row.dot(da)
-                    ans[a,b] += rowda[j]*db.v[i].v
-                if a!=b:
-                    ans[b,a] = ans[a,b]
-    else:      
-        for a in range(ng):
-            ga = g[a]
-            covd.append(cov.dot(ga.d))
-            ans[a,a] = ga.d.dot(covd[-1])
-            for b in range(a):
-                ans[a,b] = ga.d.dot(covd[b])
-                ans[b,a] = ans[a,b]
+    imask = numpy.zeros(nc, numpy.int8) 
+    for a in range(ng):
+        ga = g[a]
+        da = ga.d
+        for i in range(da.size):
+            imask[da.v[i].i] = True   
+    covd = numpy.zeros(ng, object)
+    for a in range(ng):
+        ga = g[a]
+        covd[a] = cov.masked_dot(ga.d, imask) 
+        ans[a,a] = ga.d.dot(covd[a])
+        for b in range(a):
+            ans[a,b] = ga.d.dot(covd[b])
+            ans[b,a] = ans[a,b]
     return ans.reshape(2*g_shape)
+
 
 def wsum_der(numpy.ndarray[numpy.double_t,ndim=1] wgt,glist):
     """ weighted sum of |GVar| derivatives """

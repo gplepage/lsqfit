@@ -1,4 +1,4 @@
-# Copyright (c) 2012 G. Peter Lepage.
+# Copyright (c) 2012-13 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,5 +36,6 @@ cdef class smat:
     cpdef numpy.ndarray[numpy.int_t,ndim=1] append_diag_m(self,
                                         numpy.ndarray[numpy.double_t,ndim=2])
     cpdef svec dot(self,svec)
+    cpdef svec masked_dot(self, svec vv, numpy.ndarray[numpy.int8_t,ndim=1] imask)
     cpdef double expval(self,svec)
     cpdef numpy.ndarray[numpy.double_t,ndim=2] toarray(self)
