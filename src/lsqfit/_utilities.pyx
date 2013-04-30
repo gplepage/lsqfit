@@ -63,10 +63,10 @@ cdef inline void gsl_matrix_set(gsl_matrix *m, int i, int j, double x):
     m.data[i*m.tda+j] = x
     
 # cdef gsl_matrix* array2matrix(numpy.ndarray[numpy.double_t,ndim=2] a):
-#     cdef unsigned int i1,i2
+#     cdef Py_ssize_t i1,i2
 #     cdef gsl_matrix* m
-#     cdef unsigned int n1 = a.shape[0]
-#     cdef unsigned int n2 = a.shape[1]
+#     cdef Py_ssize_t n1 = a.shape[0]
+#     cdef Py_ssize_t n2 = a.shape[1]
 #     m = gsl_matrix_alloc(n1,n2)
 #     for i1 from 0<=i1<n1:
 #         for i2 from 0<=i2<n2: 
@@ -75,7 +75,7 @@ cdef inline void gsl_matrix_set(gsl_matrix *m, int i, int j, double x):
     
 cdef numpy.ndarray[numpy.double_t, ndim=2] matrix2array(gsl_matrix* m):
     """ copies contents of m into numeric array """
-    cdef unsigned int i1, i2
+    cdef Py_ssize_t i1, i2
     cdef numpy.ndarray[numpy.double_t, ndim=2] ans 
     ans = numpy.zeros((m.size1, m.size2), numpy.double)
     for i1 in range(m.size1): 
@@ -100,8 +100,8 @@ cdef inline double gsl_vector_get(gsl_vector *v, int i):
     return v.data[i*v.stride]
     
 cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t, ndim=1] a):
-    cdef unsigned int i
-    cdef unsigned int n = a.shape[0]
+    cdef Py_ssize_t i
+    cdef Py_ssize_t n = a.shape[0]
     cdef gsl_vector* v = gsl_vector_alloc(n)
     for i from 0<=i<n:   # in range(n):
         gsl_vector_set(v, i, a[i])
@@ -109,7 +109,7 @@ cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t, ndim=1] a):
     
 cdef numpy.ndarray[numpy.double_t, ndim=1] vector2array(gsl_vector* v):
     """ copies contents of v into numeric array """
-    cdef unsigned int i
+    cdef Py_ssize_t i
     cdef numpy.ndarray[numpy.double_t, ndim=1] ans 
     ans = numpy.zeros(v.size, numpy.double)
     for i in range(v.size):
@@ -289,7 +289,7 @@ class multifit(object):
         cdef gsl_multifit_fdfsolver_type *T
         cdef gsl_multifit_fdfsolver *s
         cdef int status, rval
-        cdef unsigned int i, it, p
+        cdef Py_ssize_t i, it, p
         cdef gsl_matrix *covar
         cdef gsl_vector* x0v
         # cdef numpy.ndarray[numpy.double_t, ndim=1] ans
@@ -368,8 +368,8 @@ cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):
     global _p_f, _pyerr
     cdef numpy.ndarray f  
     # can't do numpy.ndarray[object,ndim=1] because might be numbers
-    cdef unsigned int i
-    cdef unsigned int n = vf.size
+    cdef Py_ssize_t i
+    cdef Py_ssize_t n = vf.size
     try:
         f = _p_f(vector2array(vx))
         for i in range(n):
@@ -487,7 +487,7 @@ class multiminex(object):
         cdef gsl_vector* ss = array2vector(numpy.array(dim*[step]))
         cdef gsl_multimin_function fcn
         cdef int i, status, rval
-        cdef unsigned int it
+        cdef Py_ssize_t it
         cdef gsl_multimin_fminimizer* s
         cdef numpy.ndarray[numpy.double_t, ndim=1] x
         cdef double fx
@@ -596,7 +596,7 @@ def dot(numpy.ndarray[numpy.double_t, ndim=2] w not None, x):
     """
     cdef gvar.GVar g
     cdef gvar.GVar gans, gx
-    cdef unsigned int i, nx, nans
+    cdef Py_ssize_t i, nx, nans
     cdef numpy.ndarray[object, ndim=1] ans
     if not isinstance(x[0], gvar.GVar):
         return numpy.dot(w, x)

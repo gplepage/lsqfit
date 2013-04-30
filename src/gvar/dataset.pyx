@@ -441,7 +441,7 @@ class Dataset(_BASE_DICT):
         []
     """
     def __init__(self,*args,**kargs):
-        cdef int binsize
+        cdef Py_ssize_t binsize
         super(Dataset, self).__init__()
         if not args:
             return

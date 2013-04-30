@@ -12,14 +12,14 @@
 
 cimport numpy
 
-cdef struct svec_element:
+cdef packed struct svec_element:
     double v
-    unsigned int i
+    Py_ssize_t i
 
 cdef class svec:
     cdef svec_element * v
     cdef readonly int size
-    cpdef numpy.ndarray[numpy.double_t,ndim=1] toarray(svec,unsigned int msize=?)
+    cpdef numpy.ndarray[numpy.double_t,ndim=1] toarray(svec,Py_ssize_t msize=?)
     cpdef numpy.ndarray[numpy.int_t,ndim=1] indices(svec)
     cpdef _assign(self,numpy.ndarray[numpy.double_t,ndim=1],
                      numpy.ndarray[numpy.int_t,ndim=1])

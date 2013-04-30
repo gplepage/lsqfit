@@ -4,6 +4,8 @@ Version 4.4.4 - ?????
 - Modest optimization for gvar.evalcov. Small optimizaitons for gvar.svec
   and gvar.smat.
 
+- Fixed bug in svec.add (where one or other svec is size=0 svec)
+
 Version 4.4.3 - 2013-04-06
 ==========================
 

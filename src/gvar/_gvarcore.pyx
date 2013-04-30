@@ -107,7 +107,7 @@ cdef class GVar:
 
     def __add__(xx,yy):
         cdef GVar x,y
-        cdef unsigned int i,nx,di,ny
+        cdef Py_ssize_t i,nx,di,ny
         if type(yy) in _ARRAY_TYPES:
             return NotImplemented   # let ndarray handle it
         elif isinstance(xx,GVar):
@@ -321,7 +321,7 @@ cdef class GVar:
         :param x: The independent |GVar|.
         :returns: The derivative of ``self`` with respect to ``x``.
         """
-        cdef unsigned int i, ider
+        cdef Py_ssize_t i, ider
         cdef double xder 
         xder = 0.0
         for i in range(x.d.size):
@@ -438,8 +438,8 @@ cdef class GVar:
         cdef numpy.ndarray[numpy.int_t,ndim=1] dmask
         cdef numpy.ndarray[numpy.int_t,ndim=1] md_idx
         cdef numpy.ndarray[numpy.double_t,ndim=1] md_v
-        cdef unsigned int i,j,md_size
-        cdef unsigned dstart,dstop
+        cdef Py_ssize_t i,j,md_size
+        cdef Py_ssize_t dstart,dstop
         if self.d.size<=0:
             return 0.0
         dstart = self.d.v[0].i
@@ -548,7 +548,7 @@ cdef class GVar:
     def dotder(self,numpy.ndarray[numpy.double_t,ndim=1] v not None):
         """ Return the dot product of ``self.der`` and ``v``. """
         cdef double ans = 0
-        cdef unsigned int i
+        cdef Py_ssize_t i
         for i in range(self.d.size):
             ans += v[self.d.v[i].i]*self.d.v[i].v
         return ans
@@ -619,7 +619,7 @@ class GVarFactory:
             self.cov = cov
 
     def __call__(self,*args):
-        cdef unsigned int nx,i,nd
+        cdef Py_ssize_t nx,i,nd
         cdef svec der
         cdef smat cov
         cdef GVar gd
