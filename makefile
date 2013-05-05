@@ -34,7 +34,7 @@ doc-pdf:
 	sphinx-build -b latex doc/source doc/latex
 	cd doc/latex; make lsqfit.pdf; mv lsqfit.pdf ..
 
-doc-zip, doc.zip:
+doc-zip doc.zip:
 	cd doc/html; zip -r doc *; mv doc.zip ../..
 
 doc-all: doc-html doc-pdf doc-zip
@@ -59,6 +59,7 @@ upload-pypi:
 
 upload-git:
 	make doc-all
+	git commit -a -m "prep for upload"
 	git push origin master
 
 clean:
