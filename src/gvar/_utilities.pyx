@@ -17,6 +17,7 @@ from ._gvarcore cimport GVar
 
 import numpy
 cimport numpy
+import warnings
 
 from ._svec_smat import svec, smat
 from ._svec_smat cimport svec, smat
@@ -307,7 +308,7 @@ def evalcov(g):
             ans[b,a] = ans[a,b]
     return ans.reshape(2*g_shape)
 
-def dissassemble(numpy.ndarray garray):
+def disassemble(numpy.ndarray garray):
     cdef GVar g
     cdef Py_ssize_t i
     cdef numpy.ndarray[object, ndim=1] ans
@@ -694,13 +695,23 @@ class SVD(object):
             DmatD = (DmatD.transpose()*D).transpose()
             self.D = D
         else:
-            DmatD = mat
+            DmatD = numpy.asarray(mat)
             self.D = None
-        vec,val,dummy = numpy.linalg.svd(DmatD) 
-        vec = numpy.transpose(vec) # now 1st index labels eigenval
-        # guarantee that sorted, with smallest val[i] first 
-        vec = numpy.array(vec[-1::-1])
-        val = numpy.array(val[-1::-1])
+        try:
+            vec,val,dummy = numpy.linalg.svd(DmatD) 
+            vec = numpy.transpose(vec) # now 1st index labels eigenval
+            # guarantee that sorted, with smallest val[i] first 
+            vec = numpy.array(vec[-1::-1])
+            val = numpy.array(val[-1::-1])
+        except numpy.linalg.LinAlgError:
+            warnings.warn('numpy.linalg.svd failed; trying numpy.linalg.eigh')
+            val, vec = numpy.linalg.eigh(DmatD)
+            vec = numpy.transpose(vec) # now 1st index labels eigenval
+            # guarantee that sorted, with smallest val[i] first
+            indices = numpy.arange(val.size) # in case val[i]==val[j]
+            val, indices, vec = zip(*sorted(zip(val, indices, vec)))  
+            val = numpy.array(val)
+            vec = numpy.array(vec)
         self.kappa = val[0]/val[-1] if val[-1]!=0 else None  # min/max eval
         self.delta = None        
         # svd cuts 

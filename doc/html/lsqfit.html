@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.4.3 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.4.4 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '4.4.3',
+        URL_ROOT:    './',
+        VERSION:     '4.4.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.4.3 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.4.4 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +46,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -700,24 +699,39 @@ dictionary for <a class="reference internal" href="#lsqfit.nonlinear_fit" title=
 <dl class="function">
 <dt id="lsqfit.wavg">
 <tt class="descclassname">lsqfit.</tt><tt class="descname">wavg</tt><big>(</big><em>xa</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>rescale=True</em>, <em>covfac=None</em><big>)</big><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weighted average of 1d-sequence of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
-<p>The weighted average of several <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s is what one obtains from a 
-least-squares fit of the collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to the one-parameter
-fit function <tt class="docutils literal"><span class="pre">def</span> <span class="pre">f(p):</span> <span class="pre">return</span> <span class="pre">p[0]</span></tt>. The average is the best-fit
-value for <tt class="docutils literal"><span class="pre">p[0]</span></tt>. <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with smaller standard deviations carry
-more weight than those with larger standard deviations. The averages
-computed by <tt class="docutils literal"><span class="pre">wavg</span></tt> take account of correlations between the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+<dd><p>Weighted average of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays/dicts of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+<p>The weighted average of several <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s is what one obtains from
+a  least-squares fit of the collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to the one-
+parameter fit function <tt class="docutils literal"><span class="pre">def</span> <span class="pre">f(p):</span> <span class="pre">return</span> <span class="pre">N</span> <span class="pre">*</span> <span class="pre">[p[0]]</span></tt> where <tt class="docutils literal"><span class="pre">N</span></tt>
+is the number of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The average is the best-fit value for
+<tt class="docutils literal"><span class="pre">p[0]</span></tt>.  <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with smaller standard deviations carry more
+weight than those with larger standard deviations. The averages
+computed by <tt class="docutils literal"><span class="pre">wavg</span></tt> take account of correlations between the
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
 <p>Typical usage is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">x2</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>   <span class="c"># weighted average of x1 and x2</span>
+<span class="n">x3</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>   <span class="c"># weighted average of x1, x2 and x3</span>
 </pre></div>
 </div>
-<p>In this example, <tt class="docutils literal"><span class="pre">x1</span></tt> and <tt class="docutils literal"><span class="pre">x2</span></tt> could be replaced by arrays of 
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, in which case <tt class="docutils literal"><span class="pre">xavg</span></tt> is an array as well: for example,</p>
+<p>The individual <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in this example can be  replaced by
+multidimensional distributions, represented by arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
+or dictionaries of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. For example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
 <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
-<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">])</span>   <span class="c"># xavg[i] is wgtd avg of x1[i] and x2[i]</span>
+<span class="n">x3</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>   
+    <span class="c"># xavg[i] is wgtd avg of x1[i], x2[i], x3[i]</span>
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="n">x3</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
+<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>   
+    <span class="c"># xavg[&#39;a&#39;][i] is wgtd avg of x1[&#39;a&#39;][i], x2[&#39;a&#39;][i], x3[&#39;a&#39;][i]</span>
+    <span class="c"># xavg[&#39;b&#39;] is gtd avg of x1[&#39;b&#39;], x2[&#39;b&#39;], x3[&#39;b&#39;]       </span>
 </pre></div>
 </div>
 <table class="docutils field-list" frame="void" rules="none">
@@ -726,8 +740,9 @@ computed by <tt class="docutils literal"><span class="pre">wavg</span></tt> take
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>xa</strong> &#8211; The <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to be averaged. <tt class="docutils literal"><span class="pre">xa</span></tt> is a one-dimensional
-sequence of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or of arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, all of the same
-shape.</li>
+sequence of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or of arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or of dictionaries 
+containing <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. All <tt class="docutils literal"><span class="pre">xa[i]</span></tt> must
+have the same shape.</li>
 <li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">float</span></tt>) &#8211; If positive, eigenvalues of the <tt class="docutils literal"><span class="pre">xa</span></tt> covariance matrix
 that are smaller than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the maximum eigenvalue 
 are replaced by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the maximum eigenvalue. If 
@@ -770,6 +785,12 @@ same type and shape as each element of <tt class="docutils literal"><span class=
 <dt id="lsqfit.wavg.Q">
 <tt class="descclassname">wavg.</tt><tt class="descname">Q</tt><a class="headerlink" href="#lsqfit.wavg.Q" title="Permalink to this definition">¶</a></dt>
 <dd><p>Quality factor <cite>Q</cite> for fit.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.wavg.time">
+<tt class="descclassname">wavg.</tt><tt class="descname">time</tt><a class="headerlink" href="#lsqfit.wavg.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time required to do average.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1062,7 +1083,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="gvar_dataset.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -1092,12 +1113,12 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.4.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2013, G. P. Lepage.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
     </div>
   </body>
 </html>

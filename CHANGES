@@ -1,10 +1,20 @@
-Version 4.4.4 - ?????
+Version 4.4.4 - 2013-07-07
 ==========================
+
+- gvar.SVD sometimes complains that "SVD failed to converge". This is a 
+  numpy.linalg problem (that might be solved by *not* linking with atlas). 
+  Have introduced a back up routine (numpy.linalg.eigh) that is tried when
+  this error is encountered.
+
+- lsqfit.wavg now accepts a list of dictionaries (containing GVars or 
+  arrays of GVars), as well as lists of GVars or arrays of GVars.
 
 - Modest optimization for gvar.evalcov. Small optimizaitons for gvar.svec
   and gvar.smat.
 
 - Fixed bug in svec.add (where one or other svec is size=0 svec)
+
+- Fixed very minor bug in gvar.gvar() (makes, eg, gvar(array(1.)) work).
 
 Version 4.4.3 - 2013-04-06
 ==========================

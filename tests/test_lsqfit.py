@@ -350,6 +350,18 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(mean(ans),[2.09802,6.09802],rtol=1e-4)
         self.assert_arraysclose(sdev(ans),[0.995037,0.995037],rtol=1e-4)
     ##
+    def test_wavg_dict(self):
+        """ wavg of dicts """
+        ans = wavg([dict(a=gvar(2.1,1.),  b=[gvar(2.1,1.),4+gvar(2.1,1.)], c=2+gvar(2.1,1.)),
+                    dict(a=gvar(1.9,10.), b=[gvar(1.9,10.),4+gvar(1.9,10.)]),
+                    dict(c=2+gvar(1.9,10.))])
+        self.assert_arraysclose(mean(ans['b']),[2.09802,6.09802],rtol=1e-4)
+        self.assert_arraysclose(sdev(ans['b']),[0.995037,0.995037],rtol=1e-4)
+        self.assertAlmostEqual(ans['a'].mean, 2.09802, places=4)
+        self.assertAlmostEqual(ans['a'].sdev, 0.995037, places=4)
+        self.assertAlmostEqual(ans['c'].mean, 4.09802, places=4)
+        self.assertAlmostEqual(ans['c'].sdev, 0.995037, places=4)
+
     def test_noprior(self):
         """ fit without prior """
         def avg(x): # compute of avg of sequence

@@ -730,7 +730,7 @@ class GVarFactory:
                     xa = numpy.asarray(x,object)
                 if xa.size==0:
                     return xa
-                if xa.shape[-1]==2 and xa.dtype!=object and xa.ndim>1:
+                if xa.shape != () and xa.shape[-1]==2 and xa.dtype!=object and xa.ndim>1:
                     # array of tuples? 
                     xxa = numpy.empty(xa.shape[:-1],object)
                     xxa[:] = x
