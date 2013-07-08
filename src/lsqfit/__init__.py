@@ -415,14 +415,24 @@ class nonlinear_fit(object):
             and v2, while label is assembled from the key/index of the
             entry.
             """
+            def nstar(v1, v2):
+                sdev = max(v1.sdev, v2.sdev)
+                nstar = int(abs(v1.mean - v2.mean) / sdev)
+                if nstar > 5:
+                    nstar = 5
+                elif nstar < 1:
+                    nstar = 0
+                return '  ' + nstar * '*'
             ct = 0
             ans = []
             width = [0,0,0]
+            stars = []
             if v1.shape is None:
                 # BufferDict 
                 for k in v1:
                     ktag = str(k)
                     if v1.isscalar(k):
+                        stars.append(nstar(v1[k], v2[k]))
                         if ct%stride != 0:
                             ct += 1
                             continue
@@ -444,6 +454,7 @@ class nonlinear_fit(object):
                     else:
                         ktag = ktag + " "
                         for i in numpy.ndindex(v1[k].shape):
+                            stars.append(nstar(v1[k][i], v2[k][i]))
                             if ct%stride != 0:
                                 ct += 1
                                 continue
@@ -469,6 +480,7 @@ class nonlinear_fit(object):
                 # numpy array 
                 v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
+                    stars.append(nstar(v1[k], v2[k]))
                     if ct%stride != 0:
                         ct += 1
                         continue
@@ -490,6 +502,7 @@ class nonlinear_fit(object):
                     ct += 1
                 
             collect.width = width
+            collect.stars = stars
             return ans
         
         # build header 
@@ -529,11 +542,11 @@ class nonlinear_fit(object):
                 prior = self.p0 + _gvar.gvar(0,float('inf'))
         data = collect(self.palt,prior,style=pstyle,stride=1)
         w1,w2,w3 = collect.width
-        fst = "%%%ds%s%%%ds%s[ %%%ds ]\n" % ( #
+        fst = "%%%ds%s%%%ds%s[ %%%ds ]" % ( #
             max(w1,15), 3 * ' ', 
             max(w2,10), int(max(w2,10)/2) * ' ', max(w3,10))
-        for di in data:
-            table += fst % tuple(di)
+        for di,stars in zip(data, collect.stars):
+            table += (fst % tuple(di)) + stars + '\n'
         
         # tabulate settings 
         def svdfmt(x):
@@ -585,8 +598,8 @@ class nonlinear_fit(object):
         fst = "%%%ds%%%ds%%%ds\n" % (w1, w2, w3)
         table += fst % clabels
         table += (w1 + w2 + w3) * "-" + "\n"
-        for di in data:
-            table += fst % tuple(di)
+        for di, stars in zip(data, collect.stars):
+            table += fst[:-1] % tuple(di) + stars + '\n'
         
         return table + settings
     

@@ -443,9 +443,15 @@ There are several things to notice here:
      essentially no change when further exponentials are added.
    
    * The best-fit values for each parameter are listed for each of the
-     fits, together with the prior values (in parentheses, on the right).
+     fits, together with the prior values (in brackets, on the right).
      Values for each ``a[i]`` and ``E[i]`` are listed in order, starting at
-     the points indicated by the labels ``a`` and ``E``.
+     the points indicated by the labels ``a`` and ``E``. Asterisks are
+     printed at the end of the line if the mean best-fit value differs from 
+     the prior's mean by more than one standard deviation; the number
+     of asterisks, up to a maximum of 5, indicates how many standard 
+     deviations the difference is. Differences of one or two standard
+     deviations are not uncommon; larger differences could indicate a 
+     problem with the prior or the fit.
      
      Once the fit converges, the best-fit values for the various parameters
      agree well --- that is to within their errors, approximately --- with
@@ -518,7 +524,7 @@ There are several things to notice here:
       >>> print(gv.evalcov([a[0], a[1]]))
       [[  1.61726195e-05   1.65492001e-05]
       [  1.65492001e-05   2.41547633e-05]]
-      
+
 Finally we inspect the fit's quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
