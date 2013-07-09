@@ -23,7 +23,7 @@ variables including:
     
     - ``var(g)`` --- extract variances
 
-    - ``chi2(x, g)`` --- ``chi**2`` of deviate ``x`` relative to distribution ``g``
+    - ``chi2(g1, g2)`` --- ``chi**2`` of ``g1-g2``.
     
     - ``evalcov(g)`` --- compute covariance matrix
     
@@ -119,66 +119,96 @@ def asgvar(x):
         return gvar(x)
 ##
 
-def chi2(x, g):
-    """ Compute chi**2 of ``x`` relative to distribution ``g``. 
+def chi2(g1, g2):
+    """ Compute chi**2 of ``g1 - g2``. 
 
-    Tests whether deviate ``x`` is likely to have come from Gaussian 
-    distribution ``g``. The probability is high if ::
+    ``chi**2`` is a measure of whether the multi-dimensional 
+    Gaussian distributions ``g1`` and ``g2`` (dictionaries or arrays) 
+    agree with each other --- that is, do their means agree 
+    within errors for corresponding elements. The probability is high 
+    if ::
 
         chi2(x, g) / chi2.dof
 
-    is of order 1 or smaller. ``chi2.Q`` is the proba
+    is of order 1 or smaller.
+
+    Usually ``g1`` and ``g2`` are dictionaries with the same keys,
+    where ``g1[k]`` and ``g2[k]`` are |GVar|\s or arrays of 
+    |GVar|\s having the same shape. Alternatively ``g1`` and ``g2``
+    can be |GVar|\s, or arrays of |GVar|\s having the same shape. 
+    
+    One of ``g1`` or ``g2`` can contain numbers instead of |GVar|\s,
+    in which case ``chi**2`` is a measure of the likelihood that 
+    the numbers came from the distribution specified by the other 
+    argument. Also one or the other of ``g1`` or ``g2``
+    can contain a subset of the variables in the other, that is, 
+    only a subset of the keys or array elements of the other. 
 
     The input parameters are:
 
-    :param x: Random deviate(s).
-    :type x: number or array of numbers, or dictionary of these
-    :param g: Gaussian distribution.
-    :type g: |GVar| or array of |GVar|\s, or dictionary of these
+    :param g1: number or |GVar|, or an array or dictionary of numbers or
+        |GVar|\s.
+    :param g2: number or |GVar|, or an array or dictionary of numbers or
+        |GVar|\s.
 
     The return value is the ``chi**2``. Extra data is stored in 
     ``chi2`` itself:
 
     .. attribute:: chi2.dof
 
-        Number of degrees of freedom (equals the number of numbers
-        in ``x``).
+        Number of degrees of freedom (that is, the number of variables
+        compared).
 
     .. attribute:: chi2.Q
 
         The probability that the ``chi**2`` could have been larger, 
-        by chance, assuming that ``x`` is a deviate from 
-        distribution ``g``. Values smaller than 0.1 or so suggest
-        that ``x`` is not a deviate from ``g``. Also 
-        called the *p-value*.
+        by chance, even if ``g1`` and ``g2`` agree. 
+        Values smaller than 0.1 or so suggest that they do not
+        agree. Also called the *p-value*.
 
     """
-    if isinstance(g, GVar):
-        ans = (x - g.mean) ** 2 / g.var
-        chi2.dof = 1
+    if hasattr(g1, 'keys') and hasattr(g2, 'keys'):
+        # g1 and g2 are dictionaries
+        g1 = BufferDict(g1)
+        g2 = BufferDict(g2)
+        if g2.size < g1.size:
+            # make sure g1 is smaller
+            g1, g2 = g2, g1
+        chi2.dof = g1.size
+        if chi2.dof == 0:
+            chi2.Q = 0
+            return 0.0
+        ans = 0.0
+        for k in g1.keys():
+            g1k = g1[k]
+            g2k = g2[k]
+            g1k_shape = numpy.shape(g1k)
+            if len(g1k_shape) == 0:
+                diff = g1k - g2k
+                ans += diff.mean ** 2 / diff.var
+            else:
+                for i in numpy.ndindex(g1k_shape):
+                    diff = g1k[i] - g2k[i]
+                    ans += diff.mean ** 2 / diff.var
+    elif not hasattr(g1, 'keys') and not hasattr(g2, 'keys'):
+        # g1 and g2 are arrays or scalars
+        g1 = numpy.asarray(g1)
+        g2 = numpy.asarray(g2)
+        # g1 and g2 are arrays
+        chi2.dof = g1.size
+        if chi2.dof == 0:
+            chi2.Q = 0
+            return 0.0
+        ans = 0.0
+        for i in numpy.ndindex(g1.shape):
+            diff = g1[i] - g2[i]
+            ans += diff.mean ** 2 / diff.var
     else:
-        if hasattr(x, 'keys') and hasattr(g, 'keys'):
-            x = BufferDict(x)
-            g = BufferDict(g)
-            chi2.dof = 0
-            ans = 0.0
-            for k in x.keys():
-                xk = x[k]
-                gk = g[k]
-                chi2.dof += numpy.size(xk)
-                xk_shape = numpy.shape(xk)
-                if len(xk_shape) == 0:
-                    ans += (xk - gk.mean) ** 2 / gk.var
-                else:
-                    for i in numpy.ndindex(xk_shape):
-                        ans += (xk[i] - gk[i].mean) ** 2 / gk[i].var
-        elif not hasattr(x, 'keys') and not hasattr(g, 'keys'):
-            x = numpy.asarray(x)
-            g = numpy.asarray(g)
-            ans = sum((x.flat - mean(g.flat)) ** 2 / var(g.flat))
-            chi2.dof = x.size        
-        else:
-            raise ValueError('mismatch between x and g')
+        # g1 and g2 are something else
+        raise ValueError(
+            'cannot compute chi**2 for types ' + str(type(g1)) + ' ' +
+            str(type(g2))
+            )
     chi2.Q = gammaQ(chi2.dof/2., ans/2.)
     return ans
 
