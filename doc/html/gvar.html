@@ -541,8 +541,9 @@ above).</p>
 <p><tt class="docutils literal"><span class="pre">gvar.gvar</span></tt> is actually an object of type <tt class="xref py py-class docutils literal"><span class="pre">gvar.GVarFactory</span></tt>.</p>
 </dd></dl>
 
-<p>Means, standard deviations, variances, formatted strings, and covariance
-matrices can be extracted from arrays (or dictionaries) of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s using:</p>
+<p>Means, standard deviations, variances, formatted strings, covariance
+matrices and correlation/comparison information can be extracted from arrays
+(or dictionaries) of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s using:</p>
 <dl class="function">
 <dt id="gvar.mean">
 <tt class="descclassname">gvar.</tt><tt class="descname">mean</tt><big>(</big><em>g</em><big>)</big><a class="headerlink" href="#gvar.mean" title="Permalink to this definition">¶</a></dt>
@@ -595,6 +596,45 @@ If <tt class="docutils literal"><span class="pre">g</span></tt> is a dictionary 
 <dd><p>Return <tt class="docutils literal"><span class="pre">True</span></tt> if <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">g1</span></tt> uncorrelated with those in <tt class="docutils literal"><span class="pre">g2</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> can be <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or dictionaries
 containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="gvar.chi2">
+<tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute chi**2 of <tt class="docutils literal"><span class="pre">g1</span> <span class="pre">-</span> <span class="pre">g2</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of whether the multi-dimensional 
+Gaussian distributions <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> (dictionaries or arrays) 
+agree with each other &#8212; that is, do their means agree 
+within errors for corresponding elements. The probability is high 
+if <tt class="docutils literal"><span class="pre">chi2(g1,g2)/chi2.dof</span></tt> is of order 1 or smaller.</p>
+<p>Usually <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> are dictionaries with the same keys,
+where <tt class="docutils literal"><span class="pre">g1[k]</span></tt> and <tt class="docutils literal"><span class="pre">g2[k]</span></tt> are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s having the same shape. Alternatively <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt>
+can be <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s having the same shape.</p>
+<p>One of <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> can contain numbers instead of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s,
+in which case <tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of the likelihood that 
+the numbers came from the distribution specified by the other 
+argument. Also <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> need not have exactly the same
+layout: one or the other can have keys or array elements that 
+are a subset of what the other has.</p>
+<p>The return value is the <tt class="docutils literal"><span class="pre">chi**2</span></tt>. Extra data is stored in 
+<tt class="docutils literal"><span class="pre">chi2</span></tt> itself:</p>
+<dl class="attribute">
+<dt id="gvar.chi2.dof">
+<tt class="descclassname">chi2.</tt><tt class="descname">dof</tt><a class="headerlink" href="#gvar.chi2.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of degrees of freedom (that is, the number of variables
+compared).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.chi2.Q">
+<tt class="descclassname">chi2.</tt><tt class="descname">Q</tt><a class="headerlink" href="#gvar.chi2.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>The probability that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> could have been larger, 
+by chance, even if <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> agree. 
+Values smaller than 0.1 or so suggest that they do not
+agree. Also called the <em>p-value</em>.</p>
+</dd></dl>
+
 </dd></dl>
 
 <p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s contain information about derivatives with respect to the <em>independent</em>

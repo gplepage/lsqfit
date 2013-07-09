@@ -956,6 +956,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(evalcov(c),evalcov(b)    )
     
     def test_chi2(self):
+        """ chi2(g1, g2) """
         g = gvar([1., 2.], [1., 2.])
         x = [2., 4.]
         self.assertAlmostEqual(chi2(x,g), 2.)

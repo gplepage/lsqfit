@@ -126,11 +126,7 @@ def chi2(g1, g2):
     Gaussian distributions ``g1`` and ``g2`` (dictionaries or arrays) 
     agree with each other --- that is, do their means agree 
     within errors for corresponding elements. The probability is high 
-    if ::
-
-        chi2(x, g) / chi2.dof
-
-    is of order 1 or smaller.
+    if ``chi2(g1,g2)/chi2.dof`` is of order 1 or smaller.
 
     Usually ``g1`` and ``g2`` are dictionaries with the same keys,
     where ``g1[k]`` and ``g2[k]`` are |GVar|\s or arrays of 
@@ -140,16 +136,9 @@ def chi2(g1, g2):
     One of ``g1`` or ``g2`` can contain numbers instead of |GVar|\s,
     in which case ``chi**2`` is a measure of the likelihood that 
     the numbers came from the distribution specified by the other 
-    argument. Also one or the other of ``g1`` or ``g2``
-    can contain a subset of the variables in the other, that is, 
-    only a subset of the keys or array elements of the other. 
-
-    The input parameters are:
-
-    :param g1: number or |GVar|, or an array or dictionary of numbers or
-        |GVar|\s.
-    :param g2: number or |GVar|, or an array or dictionary of numbers or
-        |GVar|\s.
+    argument. Also ``g1`` or ``g2`` need not have exactly the same
+    layout: one or the other can have keys or array elements that 
+    are a subset of what the other has.
 
     The return value is the ``chi**2``. Extra data is stored in 
     ``chi2`` itself:

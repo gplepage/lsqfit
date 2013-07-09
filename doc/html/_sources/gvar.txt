@@ -460,8 +460,9 @@ The function used to create Gaussian variable objects is:
 
 .. autofunction:: gvar.gvar(...)
 
-Means, standard deviations, variances, formatted strings, and covariance
-matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
+Means, standard deviations, variances, formatted strings, covariance
+matrices and correlation/comparison information can be extracted from arrays 
+(or dictionaries) of |GVar|\s using:
 
 .. autofunction:: gvar.mean(g)
 
@@ -474,6 +475,8 @@ matrices can be extracted from arrays (or dictionaries) of |GVar|\s using:
 .. autofunction:: gvar.evalcov(g)
 
 .. autofunction:: gvar.uncorrelated(g1, g2)
+
+.. autofunction:: gvar.chi2(g1, g2)
 
 |GVar|\s contain information about derivatives with respect to the *independent*
 |GVar|\s from which they were constructed. This information can be extracted using:
