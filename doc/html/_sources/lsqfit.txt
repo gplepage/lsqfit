@@ -220,7 +220,8 @@ nonlinear_fit Objects
    
       The probability that the ``chi**2`` from the fit could have been
       larger, by chance, assuming the best-fit model is correct. Good fits have 
-      ``Q`` values larger than 0.1 or so.
+      ``Q`` values larger than 0.1 or so. Also called the *p-value* of
+      the fit.
       
    .. attribute:: svdcorrection
       

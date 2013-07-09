@@ -420,7 +420,8 @@ defined equal to <tt class="docutils literal"><span class="pre">exp(fit.p['logXX
 <tt class="descname">Q</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Permalink to this definition">¶</a></dt>
 <dd><p>The probability that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> from the fit could have been
 larger, by chance, assuming the best-fit model is correct. Good fits have
-<tt class="docutils literal"><span class="pre">Q</span></tt> values larger than 0.1 or so.</p>
+<tt class="docutils literal"><span class="pre">Q</span></tt> values larger than 0.1 or so. Also called the <em>p-value</em> of
+the fit.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -784,7 +785,12 @@ same type and shape as each element of <tt class="docutils literal"><span class=
 <dl class="attribute">
 <dt id="lsqfit.wavg.Q">
 <tt class="descclassname">wavg.</tt><tt class="descname">Q</tt><a class="headerlink" href="#lsqfit.wavg.Q" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quality factor <cite>Q</cite> for fit.</p>
+<dd><p>The probability that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> could have been larger, 
+by chance, assuming that the data are all Gaussain and consistent
+with each other. Values smaller than 0.1 or suggest that the 
+data are not Gaussian or are inconsistent with each other. Also 
+called the <em>p-value</em>.</p>
+<p>Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit.</p>
 </dd></dl>
 
 <dl class="attribute">
