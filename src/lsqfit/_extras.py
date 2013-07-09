@@ -18,7 +18,8 @@ import gvar
 import lsqfit
 import time
 import collections
-from ._utilities import multiminex, gammaQ
+from ._utilities import multiminex
+from gvar import gammaQ
 
 
 def empbayes_fit(z0, fitargs, **minargs): 
@@ -143,7 +144,13 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
         
     .. attribute:: wavg.Q
         
-        Quality factor `Q` for fit.
+        The probability that the ``chi**2`` could have been larger, 
+        by chance, assuming that the data are all Gaussain and consistent
+        with each other. Values smaller than 0.1 or suggest that the 
+        data are not Gaussian or are inconsistent with each other. Also 
+        called the *p-value*.
+
+        Quality factor `Q` (or *p-value*) for fit.
 
     .. attribute:: wavg.time
 

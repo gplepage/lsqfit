@@ -954,7 +954,22 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         c = np.array([c[0],c[1]])
         self.assert_arraysequal(c[0].der,b[0].der[:-1])
         self.assert_arraysclose(evalcov(c),evalcov(b)    )
-    ##
+    
+    def test_chi2(self):
+        g = gvar([1., 2.], [1., 2.])
+        x = [2., 4.]
+        self.assertAlmostEqual(chi2(x,g), 2.)
+        self.assertEqual(chi2.dof, 2)
+        self.assertAlmostEqual(chi2.Q, 0.36787944)
+        g = dict(a=gvar(1,1), b=[gvar(2,2), gvar(3,3), gvar(4,4)], c=gvar(5,5))
+        x = dict(a=2., b=[4., 6.])
+        self.assertAlmostEqual(chi2(x,g), 3.)
+        self.assertEqual(chi2.dof, 3)
+        self.assertAlmostEqual(chi2.Q, 0.3916252)
+        self.assertAlmostEqual(chi2(2., gvar(1,1)), 1.)
+        self.assertEqual(chi2.dof, 1)
+        self.assertAlmostEqual(chi2.Q, 0.31731051)
+
     def test_corr(self):
         """ rebuild (corr!=0) """
         a = gvar([1.,2.],[3.,4.])

@@ -24,6 +24,20 @@ from ._svec_smat cimport svec, smat
 
 from ._bufferdict import BufferDict
 
+cdef extern from "gsl/gsl_errno.h":
+    void* gsl_set_error_handler_off()
+    char* gsl_strerror(int errno)
+    int GSL_SUCCESS
+    int GSL_CONTINUE
+    int GSL_EFAILED
+    int GSL_EBADFUNC
+
+cdef extern from "gsl/gsl_sf.h":
+    struct gsl_sf_result_struct:
+        double val
+        double err
+    int gsl_sf_gamma_inc_Q_e (double a, double x, gsl_sf_result_struct* res)
+
 cdef extern from "math.h":
     double c_pow "pow" (double x,double y)
     double c_sin "sin" (double x)
@@ -563,7 +577,7 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
         ignore if set to ``None`` or negative.
     :type svdnum: ``None`` or positive ``int``
     :param rescale: Covariance matrix is rescaled so that diagonal elements
-        equal ``1`` if ``rescale=True``.
+        equal ``1`` before applying *svd* cuts if ``rescale=True``.
     :type rescale: bool
     :returns: An iterator that returns random arrays or dictionaries
         with the same shape as ``g`` drawn from the gaussian distribution 
@@ -814,6 +828,21 @@ def valder(v):
         raise ValueError("Bad input.")
     gv_gvar = _gvar.gvar_factory()
     return gv_gvar(v,numpy.zeros(v.shape,float))
+
+
+## miscellaneous functions ##
+def gammaQ(double a, double x):
+    """ Return the incomplete gamma function ``Q(a,x) = 1-P(a,x)``. 
+
+    Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
+    get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees 
+    of freedom even if the model used to construct ``chi2`` is correct.
+    """
+    cdef gsl_sf_result_struct res
+    cdef int status
+    status = gsl_sf_gamma_inc_Q_e(a, x, &res)
+    assert status==GSL_SUCCESS, status
+    return res.val
 
 
 

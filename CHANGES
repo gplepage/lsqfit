@@ -8,6 +8,11 @@ Version 4.4.4+ - not released yet
   and the fit differ by more than 1 standard deviation. These are 
   meant to draw attention to potential problems.
 
+- New function: gvar.chi2(x, g) computes the chi**2 of x relative to
+  distribution g. Typically x is a dictionary containing numbers or arrays of
+  numbers, and g is a dictionary containing GVars or arrays of GVars.
+  This tests the likelihood that x comes from distribution g.
+
 Version 4.4.4 - 2013-07-07
 ==========================
 
