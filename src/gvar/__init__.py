@@ -119,8 +119,8 @@ def asgvar(x):
         return gvar(x)
 ##
 
-def chi2(g1, g2):
-    """ Compute chi**2 of ``g1 - g2``. 
+def chi2(g1, g2, svdcut=1e-15, svdnum=None):
+    """ Compute chi**2 of ``g1-g2``. 
 
     ``chi**2`` is a measure of whether the multi-dimensional 
     Gaussian distributions ``g1`` and ``g2`` (dictionaries or arrays) 
@@ -139,6 +139,12 @@ def chi2(g1, g2):
     argument. Also ``g1`` or ``g2`` need not have exactly the same
     layout: one or the other can have keys or array elements that 
     are a subset of what the other has.
+
+    ``chi**2`` is computed from the inverse of the covariance matrix
+    of ``g1-g2``. The matrix inversion can be sensitive to roundoff 
+    errors. In such cases, *SVD* cuts can be applied by setting
+    parameters ``svdcut`` and ``svdnum``. See the documentation 
+    for :class:`gvar.SVD` for information about these parameters.
 
     The return value is the ``chi**2``. Extra data is stored in 
     ``chi2`` itself:
@@ -160,6 +166,7 @@ def chi2(g1, g2):
         # g1 and g2 are dictionaries
         g1 = BufferDict(g1)
         g2 = BufferDict(g2)
+        diff = BufferDict()
         if g2.size < g1.size:
             # make sure g1 is smaller
             g1, g2 = g2, g1
@@ -167,37 +174,38 @@ def chi2(g1, g2):
         if chi2.dof == 0:
             chi2.Q = 0
             return 0.0
-        ans = 0.0
         for k in g1.keys():
             g1k = g1[k]
             g2k = g2[k]
             g1k_shape = numpy.shape(g1k)
+            diff[k] = numpy.zeros(g1k_shape, object)
             if len(g1k_shape) == 0:
-                diff = g1k - g2k
-                ans += diff.mean ** 2 / diff.var
+                diff[k] = g1k - g2k
             else:
                 for i in numpy.ndindex(g1k_shape):
-                    diff = g1k[i] - g2k[i]
-                    ans += diff.mean ** 2 / diff.var
+                    diff[k][i] = g1k[i] - g2k[i]
+        diff = diff.buf
     elif not hasattr(g1, 'keys') and not hasattr(g2, 'keys'):
         # g1 and g2 are arrays or scalars
         g1 = numpy.asarray(g1)
         g2 = numpy.asarray(g2)
+        diff = numpy.zeros(g1.shape, object)
         # g1 and g2 are arrays
         chi2.dof = g1.size
         if chi2.dof == 0:
             chi2.Q = 0
             return 0.0
-        ans = 0.0
         for i in numpy.ndindex(g1.shape):
-            diff = g1[i] - g2[i]
-            ans += diff.mean ** 2 / diff.var
+            diff[i] = g1[i] - g2[i]
+        diff = diff.flat
     else:
         # g1 and g2 are something else
         raise ValueError(
             'cannot compute chi**2 for types ' + str(type(g1)) + ' ' +
             str(type(g2))
             )
+    s = SVD(evalcov(diff), svdcut=svdcut, svdnum=svdnum, rescale=True)
+    ans = numpy.sum(numpy.dot(s.decomp(-1), mean(diff))**2)
     chi2.Q = gammaQ(chi2.dof/2., ans/2.)
     return ans
 
