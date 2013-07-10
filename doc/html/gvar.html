@@ -601,7 +601,7 @@ containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt
 <dl class="function">
 <dt id="gvar.chi2">
 <tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute chi**2 of <tt class="docutils literal"><span class="pre">g1</span> <span class="pre">-</span> <span class="pre">g2</span></tt>.</p>
+<dd><p>Compute chi**2 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of whether the multi-dimensional 
 Gaussian distributions <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> (dictionaries or arrays) 
 agree with each other &#8212; that is, do their means agree 
@@ -617,6 +617,11 @@ the numbers came from the distribution specified by the other
 argument. Also <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> need not have exactly the same
 layout: one or the other can have keys or array elements that 
 are a subset of what the other has.</p>
+<p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is computed from the inverse of the covariance matrix
+of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>. The matrix inversion can be sensitive to roundoff 
+errors. In such cases, <em>SVD</em> cuts can be applied by setting
+parameters <tt class="docutils literal"><span class="pre">svdcut</span></tt> and <tt class="docutils literal"><span class="pre">svdnum</span></tt>. See the documentation 
+for <a class="reference internal" href="#gvar.SVD" title="gvar.SVD"><tt class="xref py py-class docutils literal"><span class="pre">gvar.SVD</span></tt></a> for information about these parameters.</p>
 <p>The return value is the <tt class="docutils literal"><span class="pre">chi**2</span></tt>. Extra data is stored in 
 <tt class="docutils literal"><span class="pre">chi2</span></tt> itself:</p>
 <dl class="attribute">
