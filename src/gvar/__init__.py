@@ -119,7 +119,7 @@ def asgvar(x):
         return gvar(x)
 ##
 
-def chi2(g1, g2, svdcut=1e-15, svdnum=None):
+def chi2(g1, g2, svdcut=1e-15, svdnum=None, nocorr=False):
     """ Compute chi**2 of ``g1-g2``. 
 
     ``chi**2`` is a measure of whether the multi-dimensional 
@@ -162,6 +162,8 @@ def chi2(g1, g2, svdcut=1e-15, svdnum=None):
         agree. Also called the *p-value*.
 
     """
+    # leaving nocorr (turn off correlations) undocumented because I
+    #   suspect I will remove it
     if hasattr(g1, 'keys') and hasattr(g2, 'keys'):
         # g1 and g2 are dictionaries
         g1 = BufferDict(g1)
@@ -204,8 +206,16 @@ def chi2(g1, g2, svdcut=1e-15, svdnum=None):
             'cannot compute chi**2 for types ' + str(type(g1)) + ' ' +
             str(type(g2))
             )
-    s = SVD(evalcov(diff), svdcut=svdcut, svdnum=svdnum, rescale=True)
-    ans = numpy.sum(numpy.dot(s.decomp(-1), mean(diff))**2)
+    if nocorr:
+        # ignore correlations
+        ans = numpy.sum(mean(diff) ** 2 / var(diff))
+        chi2.dof = len(diff)
+        chi2.s = None
+    else:
+        s = SVD(evalcov(diff), svdcut=svdcut, svdnum=svdnum, rescale=True)
+        ans = numpy.sum(numpy.dot(s.decomp(-1), mean(diff))**2)
+        chi2.s = s
+        chi2.dof = len(s.val)
     chi2.Q = gammaQ(chi2.dof/2., ans/2.)
     return ans
 

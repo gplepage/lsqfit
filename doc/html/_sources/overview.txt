@@ -206,6 +206,182 @@ statement if using Python 2; or add ::
 
 at the start of your file. 
 
+.. Another Example: Priors and Marginalization
+.. -------------------------------------------
+.. Consider a problem where we have five pieces of uncorrelated data for a 
+.. function ``y(x)``::
+
+                 
+..             x[i]       y(x[i])
+..             ----------------------
+..             0.1        0.5351 (54)
+..             0.3        0.6762 (67)
+..             0.5        0.9227 (91)
+..             0.7        1.3803(131)
+..             0.95       4.0145(399)
+
+.. We know that ``y(x)`` has a Taylor expansion in ``x``::
+
+..    y(x) = sum_n=0...inf p[n] x**n
+
+.. The challenge is to extract a reliable estimate for ``y(0)=p[0]`` from the
+.. data --- that is, how do we extrapolate the data to ``x=0``.
+
+.. One approach that is certainly wrong is truncate the expansion of
+.. ``y(x)`` after five terms, because there are only five pieces of data. 
+.. That gives the following fit:
+
+.. This fit was generated using the following code::
+
+..    import numpy as np
+..    import gvar as gv
+..    import lsqfit
+
+..    # fit data
+..    y = gv.gvar([
+..       '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
+..       ])
+..    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+
+..    def f(x, p):                  # fit function
+..       return sum(pn * x ** n for n, pn in enumerate(p))
+
+..    p0 = np.ones(5.)              # starting value for chi**2 minimization
+..    fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
+..    print fit.format(maxline=5)
+
+.. Note that here the function ``gv.gvar`` converts the strings 
+.. ``'0.5351(54)'``, *etc.* into |GVar|\s. Running the code gives the 
+.. following output::
+
+..    Least Square Fit (no prior):
+..      chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
+
+..    Parameters:
+..                  0    0.742 (39)     [ 1.0 +- inf ]  
+..                  1    -3.86 (59)     [ 1.0 +- inf ]  
+..                  2    21.5 (2.4)     [ 1.0 +- inf ]  
+..                  3   -39.1 (3.7)     [ 1.0 +- inf ]  
+..                  4    25.8 (1.9)     [ 1.0 +- inf ]  
+
+..    Fit:
+..         x[k]           y[k]      f(x[k],p)
+..    ---------------------------------------
+..          0.1    0.5351 (54)    0.5351 (54)  
+..          0.3    0.6762 (67)    0.6762 (67)  
+..          0.5    0.9227 (91)    0.9227 (91)  
+..          0.7     1.380 (13)     1.380 (13)  
+..         0.95     4.014 (40)     4.014 (40)  
+
+.. This is a perfect fit in that the fit function agrees exactly with 
+.. the means of the data; the ``chi**2`` for the fit is zero. The fit 
+.. gives a fairly precise answer for ``p[0]``
+.. (``0.74(4)``), but the curve looks oddly stiff. Also some of the 
+.. best-fit values for the coefficients are quite 
+.. large (*e.g.*, ``p[3]= -39(4)``), perhaps unreasonably large.
+
+.. The problem with the fit is that there is no reason to neglect 
+.. terms in the expansion of ``y(x)`` with ``n>4``. Whether or not
+.. extra terms are important depends entirely on how large we 
+.. expect the coefficients ``p[n]`` for ``n>4`` to be. The extrapolation
+.. problem is impossible without some idea of the size of these
+.. parameters; we need extra information.
+
+.. In this case that extra information is obviously connected to questions
+.. of convergence of the Taylor expansion we are using to model ``y(x)``.
+.. Let's assume we know, from previous work, that the ``p[n]`` are of
+.. order one. Then we would need to keep at least 91 terms in the 
+.. Taylor expansion if we wanted the terms we dropped to be small compared
+.. with the 1% data errors at ``x=0.95``. So a possible fitting function
+.. would be::
+
+..    y(x; N) = sum_0..N p[n] x**n  
+
+.. with ``N=90``. 
+
+.. Fitting a 91-parameter formula to five pieces of data is also impossible.
+.. Here, however, we have extra (*prior*) information: each coefficient is order
+.. one, which we make specific by saying that they equal ``0(1)``. So we are 
+.. fitting 91+5 pieces of data with 91 parameters. 
+
+.. The prior information is introduced into the code as a prior for the fit:
+
+..    import numpy as np
+..    import gvar as gv
+..    import lsqfit
+
+..    # fit data
+..    y = gv.gvar([
+..       '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
+..       ])
+..    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+
+..    def f(x, p):                     # fit function
+..       return sum(pn * x ** n for n, pn in enumerate(p))
+
+..    prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
+..    fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
+..    print fit.format(maxline=5)
+
+.. Note that a starting value ``p0`` is not needed when a prior is specified. 
+.. This code also gives an excellent fit, with a ``chi**2`` per degree of 
+.. freedom of ``0.35``:
+
+   
+.. The fit code output is::
+
+..    Least Square Fit:
+..      chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+
+..    Parameters:
+..                  0   0.489 (17)     [  0.0 (1.0) ]  
+..                  1    0.40 (20)     [  0.0 (1.0) ]  
+..                  2    0.60 (64)     [  0.0 (1.0) ]  
+..                  3    0.44 (80)     [  0.0 (1.0) ]  
+..                  4    0.28 (87)     [  0.0 (1.0) ]  
+..                  5    0.19 (87)     [  0.0 (1.0) ]  
+..                  6    0.16 (90)     [  0.0 (1.0) ]  
+..                  7    0.16 (93)     [  0.0 (1.0) ]  
+..                  8    0.17 (95)     [  0.0 (1.0) ]  
+..                  9    0.18 (96)     [  0.0 (1.0) ]  
+..                 10    0.19 (97)     [  0.0 (1.0) ]  
+..                 11    0.19 (97)     [  0.0 (1.0) ]  
+..                 12    0.19 (97)     [  0.0 (1.0) ]  
+..                 13    0.19 (97)     [  0.0 (1.0) ]  
+..                 14    0.18 (97)     [  0.0 (1.0) ]  
+..                 15    0.18 (97)     [  0.0 (1.0) ]  
+..                   .
+..                   .
+..                   .
+..                 88    0.0 (1.0)     [  0.0 (1.0) ]  
+..                 89    0.0 (1.0)     [  0.0 (1.0) ]  
+..                 90    0.0 (1.0)     [  0.0 (1.0) ]  
+
+..    Fit:
+..         x[k]           y[k]      f(x[k],p)
+..    ---------------------------------------
+..          0.1    0.5351 (54)    0.5349 (54)  
+..          0.3    0.6762 (67)    0.6768 (65)  
+..          0.5    0.9227 (91)    0.9219 (87)  
+..          0.7     1.380 (13)     1.381 (13)  
+..         0.95     4.014 (40)     4.014 (40)  
+
+..    Settings:
+..      svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+.. This is a much more plausible analysis and gives an extrapolated value of
+.. ``p[0]=0.489 (17)``. The original data points were created using 
+.. a Taylor expansion with random coefficients of order one, but with ``p[0]``
+.. set equal to ``0.5``. So this fit to the five data points (plus 91 *a priori*
+.. values for the ``p[n]`` with ``n<91``) is giving the correct result. 
+.. Increasing the number of terms further would have no effect since the last
+.. terms added are having no impact, and so end up equal to the prior value --- 
+.. the fit data are not sufficiently precise to add new information about these
+.. parameters. 
+
+.. There is a second, equivalent way of fitting this data that illustrates the
+.. idea of *marginalization.*
+
 .. _making-fake-data:
 
 Making Fake Data
@@ -293,7 +469,9 @@ if we evaluate the covariance matrix for the ``y``\s::
 
 The diagonal elements of the covariance matrix are the variances of the
 individual ``y``\s; the off-diagonal elements are a measure of the
-correlations ``< (y[i]-<y[i]>) * (y[j]-<y[j]>) >``.
+correlations::
+
+   < (y[i]-<y[i]>) * (y[j]-<y[j]>) >.
 
 The Gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
 our fake data.
@@ -1214,7 +1392,8 @@ The results are consistent with the results obtained directly from the fit
 In particular, the bootstrap analysis confirms our previous error estimates
 (to within 10-30%, since ``Nbs=40``). When ``Nbs`` is small, it is often
 safer to use the median instead of the mean as the estimator, which is 
-what ``gv.dataset.avg_data`` does because flag ``bstrap`` is set to ``True``. 
+what ``gv.dataset.avg_data`` does here since flag ``bstrap`` is set 
+to ``True``. 
 
 
 Positive Parameters

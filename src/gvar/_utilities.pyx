@@ -684,7 +684,12 @@ class SVD(object):
         ``rescale==True``. The matrix diagonalized is ``D M D`` where ``M``
         is the input matrix. ``D`` is stored as a one-dimensional vector of
         diagonal elements. ``D`` is ``None`` if ``rescale==False``.
-        
+    
+    ..  attribute:: nmod
+
+        The first ``nmod`` eigenvalues in ``self.val`` were modified by
+        the *SVD* cut (equals 0 unless ``svdcut > 0``).
+
     ..  attribute:: kappa 
         
         Ratio of the smallest to the largest eigenvector in the 
@@ -718,7 +723,7 @@ class SVD(object):
             vec = numpy.array(vec[-1::-1])
             val = numpy.array(val[-1::-1])
         except numpy.linalg.LinAlgError:
-            warnings.warn('numpy.linalg.svd failed; trying numpy.linalg.eigh')
+            # warnings.warn('numpy.linalg.svd failed; trying numpy.linalg.eigh')
             val, vec = numpy.linalg.eigh(DmatD)
             vec = numpy.transpose(vec) # now 1st index labels eigenval
             # guarantee that sorted, with smallest val[i] first
@@ -727,7 +732,8 @@ class SVD(object):
             val = numpy.array(val)
             vec = numpy.array(vec)
         self.kappa = val[0]/val[-1] if val[-1]!=0 else None  # min/max eval
-        self.delta = None        
+        self.delta = None 
+        self.nmod = 0       
         # svd cuts 
         if (svdcut is None or svdcut==0.0) and (svdnum is None or svdnum<=0):
             self.val = val
@@ -748,6 +754,7 @@ class SVD(object):
             dely = None
             for i in range(len(val)): 
                 if val[i]<valmin:
+                    self.nmod += 1
                     if compute_delta:
                         if dely is None:
                             dely = vec[i]*_gvar.gvar(0.0,(valmin-val[i])**0.5)

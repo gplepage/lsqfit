@@ -135,11 +135,17 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(mean.var,sum((vi-2.)**2 
                                for vi in [1,2,3])/9.)
         #
+        mean = avg_data([1,2,3], noerror=True)
+        self.assertAlmostEqual(mean, 2.0)
+        #
         mean = avg_data([[1],[2],[3]])
         self.assertAlmostEqual(mean[0].mean,2.0)
         self.assertAlmostEqual(mean[0].var,sum((vi-2.)**2 
                                for vi in [1,2,3])/9.)
-        #
+        
+        mean = avg_data([[1],[2],[3]], noerror=True)
+        self.assertAlmostEqual(mean[0], 2.0)
+
         mean = avg_data([1,2,3],spread=True)
         self.assertAlmostEqual(mean.mean,2.0)
         self.assertAlmostEqual(mean.var,sum((vi-2.)**2 
@@ -179,6 +185,16 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(mean['s'].var,1.0)
         self.assertEqual(mean['v'].shape,(2,))
         self.assert_gvclose(mean['v'],[gvar(2,1),gvar(2,1)])
+
+        mean = avg_data(data, median=True, noerror=True)
+        self.assertAlmostEqual(mean['s'],2.0)
+        self.assertEqual(mean['v'].shape,(2,))
+        self.assert_arraysclose(mean['v'], [2,2])
+
+        mean = avg_data(data, noerror=True)
+        self.assertAlmostEqual(mean['s'],2.0)
+        self.assertEqual(mean['v'].shape,(2,))
+        self.assert_arraysclose(mean['v'], [2,2])
     ##
     def test_autocorr(self):
         """ dataset.autocorr """
@@ -330,6 +346,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         os.remove(fin[1])
     ##  
     def test_dataset_toarray(self):
+        """ Dataset.toarray """
         data = Dataset()
         data.extend(s=[1,2],v=[[1,2],[2,3]])
         data = data.toarray()
@@ -376,6 +393,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(ndata['b'],[10,20])
     ##
     def test_dataset_arrayzip(self):
+        """ Dataset.arrayzip """
         data = Dataset()
         data.extend(a=[1,2,3], b=[10,20,30])
         a = data.arrayzip([['a'], ['b']])

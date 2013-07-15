@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.4.4+ documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 4.5b documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.4.4+',
+        VERSION:     '4.5b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.4.4+ documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5b documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.4+ documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -366,7 +366,9 @@ if we evaluate the covariance matrix for the <tt class="docutils literal"><span 
 </div>
 <p>The diagonal elements of the covariance matrix are the variances of the
 individual <tt class="docutils literal"><span class="pre">y</span></tt>s; the off-diagonal elements are a measure of the
-correlations <tt class="docutils literal"><span class="pre">&lt;</span> <span class="pre">(y[i]-&lt;y[i]&gt;)</span> <span class="pre">*</span> <span class="pre">(y[j]-&lt;y[j]&gt;)</span> <span class="pre">&gt;</span></tt>.</p>
+correlations:</p>
+<div class="highlight-python"><pre>&lt; (y[i]-&lt;y[i]&gt;) * (y[j]-&lt;y[j]&gt;) &gt;.</pre>
+</div>
 <p>The Gaussian variables <tt class="docutils literal"><span class="pre">y[i]</span></tt> together with the numbers <tt class="docutils literal"><span class="pre">x[i]</span></tt> comprise
 our fake data.</p>
 </div>
@@ -1749,7 +1751,8 @@ E1 = 1.799(16)   a1 = 0.398(23)
 <p>In particular, the bootstrap analysis confirms our previous error estimates
 (to within 10-30%, since <tt class="docutils literal"><span class="pre">Nbs=40</span></tt>). When <tt class="docutils literal"><span class="pre">Nbs</span></tt> is small, it is often
 safer to use the median instead of the mean as the estimator, which is
-what <tt class="docutils literal"><span class="pre">gv.dataset.avg_data</span></tt> does because flag <tt class="docutils literal"><span class="pre">bstrap</span></tt> is set to <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
+what <tt class="docutils literal"><span class="pre">gv.dataset.avg_data</span></tt> does here since flag <tt class="docutils literal"><span class="pre">bstrap</span></tt> is set
+to <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
 </div>
 <div class="section" id="positive-parameters">
 <h2>Positive Parameters<a class="headerlink" href="#positive-parameters" title="Permalink to this headline">¶</a></h2>
@@ -1995,7 +1998,7 @@ fluctuate together, the prior should be redefined:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.4+ documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

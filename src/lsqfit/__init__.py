@@ -647,7 +647,91 @@ class nonlinear_fit(object):
             else:
                 pickle.dump(dict(self.pmean), f) # dump as a dict
     
-    def bootstrap_iter(self, n=None, datalist=None):
+    def simulated_fit_iter(self, n, pexact=None, **kargs):
+        """ Iterator that returns simulation copies of a fit.
+
+        Fit reliability can be tested using simulated data which
+        replaces the mean values in ``self.y`` with random numbers
+        drawn from a distribution with mean ``self.fcn(pexact)`` 
+        and the covariance matrix of ``self.y``. Simulated
+        data is very similar to the original fit data, ``self.y``, 
+        but corresponds to a world where the correct values for
+        the parameters (*i.e.*, averaged over many simulated data
+        sets) are given by ``pexact``. ``pexact`` is usually taken
+        equal to ``fit.pmean``.
+
+        Each iteration of the iterator creates new simulated data,
+        with different random numbers and fits it, returning the 
+        the :class:`lsqfit.nonlinear_fit` that results.
+        Typical usage is::
+
+            ...
+            fit = nonlinear_fit(...)
+            ...
+            for sfit in fit.simulated_fit_iter(n=5):
+                ... verify that sfit.p agrees with fit.pmean within errors ...
+
+        Only a few iterations are needed to get a sense of the fit's 
+        reliability since we know the correct answer in each case 
+        (``pexact``, equal to ``fit.pmean`` in this example). The simulated
+        fit's output results should agree with ``pexact`` within 
+        (the simulated fit's) errors.
+
+        Simulated fits can also be used to correct for biases in the fit's 
+        output parameters or functions of them, should non-Gaussian behavior 
+        arise. This is possible, again, because we know the correct value for 
+        every parameter before we do the fit. Simulated fits provide 
+        a fast alternative to a traditional bootstrap analysis.
+
+        :param n: Maximum number of iterations.
+        :type n: positive integer
+        :param pexact: Fit-parameter values for the underlying distribution
+            used to generate simulated data; replaced by ``self.pmean`` if 
+            is ``None`` (default).
+        :type pexact: ``None`` or array or dictionary of numbers
+        :returns: An iterator that returns :class:`lsqfit.nonlinear_fit`\s
+            for different simulated data.
+
+        Note that additional keywords can be added to overwrite keyword 
+        arguments in :class:`lsqfit.nonlinear_fit``
+        """
+        pexact = self.pmean if pexact is None else pexact
+        fargs = dict(
+            fcn=self.fcn, svdcut=self.svdcut, svdnum=self.svdnum,
+            prior=self.prior, p0=pexact
+            )
+        fargs.update(self.fitterargs)
+        fargs.update(kargs)
+        for yb in self.simulated_data_iter(
+            n, pexact=pexact, svdcut=fargs['svdcut'], svdnum=fargs['svdnum']
+            ):
+            fit = nonlinear_fit(data=(self.x, yb), **fargs)
+            fit.pexact = pexact
+            yield fit
+
+    def simulated_data_iter(self, n, pexact=None, svdcut=None, svdnum=None):
+        pexact = self.pmean if pexact is None else pexact
+        svdcut = self.svdcut[0] if svdcut is None else svdcut
+        svdnum = self.svdnum[0] if svdnum is None else svdnum
+        if isinstance(svdcut, tuple):
+            svdcut = svdcut[0]
+        if isinstance(svdnum, tuple):
+            svdnum = svdnum[0] 
+        f = self.fcn(pexact) if self.x is False else self.fcn(self.x, pexact)
+        if isinstance(self.y, _gvar.BufferDict):
+            # y,f dictionaries; fresh copy of y, reorder f
+            y = _gvar.BufferDict(self.y)
+            tmp_f = _gvar.BufferDict([(k, f[k]) for k in y])
+            y.buf += tmp_f.buf - _gvar.mean(y.buf)
+        else:
+            # y,f arrays; fresh copy of y
+            y = numpy.array(self.y)
+            y += numpy.asarray(f) - _gvar.mean(y) 
+        return _gvar.bootstrap_iter(y, n, svdcut=1e-15)        
+
+    simulate_iter = simulated_fit_iter
+
+    def bootstrapped_fit_iter(self, n=None, datalist=None):
         """ Iterator that returns bootstrap copies of a fit.
             
         A bootstrap analysis involves three steps: 1) make a large number
@@ -671,7 +755,7 @@ class nonlinear_fit(object):
             ...
             fit = lsqfit.nonlinear_fit(...)
             ...
-            for bsfit in fit.bootstrap_iter(n=100, datalist=datalist):
+            for bsfit in fit.bootstrapped_fit_iter(n=100, datalist=datalist):
                 ... analyze fit parameters in bsfit.pmean ...
             
                         
@@ -718,7 +802,8 @@ class nonlinear_fit(object):
                     fit = nonlinear_fit(data=datab, prior=next(piter), 
                                         p0=self.pmean, **fargs)
                     yield fit
-    
+
+    bootstrap_iter = bootstrapped_fit_iter
 
 # decorator for fit function allowing log/sqrt-normal distributions
 class transform_p(object):

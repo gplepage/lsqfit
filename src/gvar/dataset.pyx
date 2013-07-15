@@ -5,11 +5,13 @@ import re
 
 ## tools for random data: Dataset, avg_data, bin_data ## 
  
-def _vec_median(v, spread=False):
+def _vec_median(v, spread=False, noerror=False):
     """ estimate the median, with errors, of data in 1-d vector ``v``. 
         
     If ``spread==True``, the error on the median is replaced by the spread
     of the data (which is larger by ``sqrt(len(v))``).
+
+    If ``noerror==True``, error estimates on the median are omitted.
     """
     nv = len(v)
     v = sorted(v)
@@ -17,11 +19,15 @@ def _vec_median(v, spread=False):
         im = int(nv/2)
         di = int(0.341344746*nv)
         median = 0.5*(v[im-1]+v[im])
+        if noerror:
+            return median
         sdev = max(v[im+di]-median,median-v[im-di-1])
     else:
         im = int((nv-1)/2)
         di = int(0.341344746*nv+0.5)
         median = v[im]
+        if noerror:
+            return median
         sdev = max(v[im+di]-median,median-v[im-di])
     if not spread:
         sdev = sdev/nv**0.5
@@ -73,7 +79,7 @@ def bin_data(data, binsize=2):
     ##
 ##
         
-def avg_data(data, median=False, spread=False, bstrap=False):
+def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
     """ Average random data to estimate mean.
         
     ``data`` is a list of random numbers or random arrays, or a dictionary
@@ -108,7 +114,7 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     some lists are shorter than others, the longer lists are truncated to 
     the same length as the shortest list (discarding data samples).
         
-    There are three optional arguments. If argument ``spread=True`` each
+    There are four optional arguments. If argument ``spread=True`` each
     standard deviation in the results refers to the spread in the data, not
     the uncertainty in the estimate of the mean. The former is ``sqrt(N)``
     larger where ``N`` is the number of random numbers (or arrays) being
@@ -137,6 +143,10 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     overrides any explicit setting for these keyword arguments. This is the
     typical choice for analyzing bootstrap data --- hence its name. The
     default value is ``bstrap=False``.
+
+    The final option is to omit the error estimates on the averages, which 
+    is triggered by setting ``noerror=True``. Just the mean values are 
+    returned. The default value is ``noerror=False``.
     """
     if bstrap:
         median = True
@@ -148,16 +158,19 @@ def avg_data(data, median=False, spread=False, bstrap=False):
         newdata = []                    # data repacked as a list of arrays
         samplesize = min([len(data[k]) for k in data])
         if samplesize<=0:
-            raise ValueError(   #
-                "Largest consistent sample size is zero --- no data.")
+            raise ValueError(  
+                "Largest consistent sample size is zero --- no data."
+                )
         bd = _gvar.BufferDict()
         for k in data:
             data_k = numpy.asarray(data[k][:samplesize])
             bd[k] = data_k[0]
             newdata.append(data_k.reshape(samplesize,-1))
         newdata = numpy.concatenate(tuple(newdata),axis=1)
-        return _gvar.BufferDict(        #
-            bd, avg_data(newdata, median=median, spread=spread))
+        return _gvar.BufferDict(       
+            bd, 
+            buf=avg_data(newdata, median=median, spread=spread, noerror=noerror)
+            )
         ##
     ## data is list ## 
     if len(data) == 0:
@@ -172,13 +185,15 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     if median:
         ## use median and spread ## 
         if len(data.shape)==1:
-            return _vec_median(data,spread=spread)
+            return _vec_median(data,spread=spread, noerror=noerror)
         else:
             tdata = data.transpose()
             tans = numpy.empty(data.shape[1:],object).transpose()
             for ij in numpy.ndindex(tans.shape):
-                tans[ij] = _vec_median(tdata[ij],spread=spread)
+                tans[ij] = _vec_median(tdata[ij],spread=spread, noerror=noerror)
             ans = tans.transpose()
+            if noerror:
+                return ans
             cov = numpy.cov(data.reshape(data.shape[0],ans.size),
                             rowvar=False,bias=True)
             if ans.size==1:                 # rescale std devs
@@ -191,6 +206,8 @@ def avg_data(data, median=False, spread=False, bstrap=False):
     else:
         ## use mean and standard deviation ##
         means = data.mean(axis=0)
+        if noerror:
+            return means
         norm = 1.0 if spread else float(len(data))
         if len(data)>=2:
             cov = numpy.cov(data.reshape(data.shape[0],means.size),

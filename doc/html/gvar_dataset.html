@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.4.4+ documentation</title>
+    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.5b documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.4.4+',
+        VERSION:     '4.5b',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.4.4+ documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5b documentation" href="index.html" />
     <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
     <link rel="prev" title="gvar - Gaussian Random Variables" href="gvar.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.4+ documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -223,7 +223,7 @@ assuming that the lists of random numbers/arrays for the different
 corresponding to the first elements in all other lists, and so on. If
 some lists are shorter than others, the longer lists are truncated to 
 the same length as the shortest list (discarding data samples).</p>
-<p>There are three optional arguments. If argument <tt class="docutils literal"><span class="pre">spread=True</span></tt> each
+<p>There are four optional arguments. If argument <tt class="docutils literal"><span class="pre">spread=True</span></tt> each
 standard deviation in the results refers to the spread in the data, not
 the uncertainty in the estimate of the mean. The former is <tt class="docutils literal"><span class="pre">sqrt(N)</span></tt>
 larger where <tt class="docutils literal"><span class="pre">N</span></tt> is the number of random numbers (or arrays) being
@@ -250,6 +250,9 @@ shorthand for setting <tt class="docutils literal"><span class="pre">median=True
 overrides any explicit setting for these keyword arguments. This is the
 typical choice for analyzing bootstrap data &#8212; hence its name. The
 default value is <tt class="docutils literal"><span class="pre">bstrap=False</span></tt>.</p>
+<p>The final option is to omit the error estimates on the averages, which 
+is triggered by setting <tt class="docutils literal"><span class="pre">noerror=True</span></tt>. Just the mean values are 
+returned. The default value is <tt class="docutils literal"><span class="pre">noerror=False</span></tt>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -644,7 +647,7 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.4.4+ documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
