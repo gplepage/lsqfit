@@ -2135,7 +2135,7 @@ data &#8212; that is, the challenge is to extrapolate the data to <tt class="doc
 <p>One approach that is certainly wrong is to truncate the expansion of
 <tt class="docutils literal"><span class="pre">y(x)</span></tt> after five terms, because there are only five pieces of data.
 That gives the following fit:</p>
-<a class="reference internal image-reference" href="_images/appendix.1.png"><img alt="_images/appendix.1.png" src="_images/appendix.1.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/appendix_1.png"><img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" /></a>
 <p>This fit was generated using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -2225,7 +2225,7 @@ actually fitting 91+5 pieces of data with 91 parameters.</p>
 <p>Note that a starting value <tt class="docutils literal"><span class="pre">p0</span></tt> is not needed when a prior is specified.
 This code also gives an excellent fit, with a <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of
 freedom of <tt class="docutils literal"><span class="pre">0.35</span></tt>:</p>
-<a class="reference internal image-reference" href="_images/appendix.2.png"><img alt="_images/appendix.2.png" src="_images/appendix.2.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
 <p>The fit code output is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
   chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
@@ -2386,7 +2386,7 @@ in this way has no effect if the fit function is linear in that parameter.
 Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
 effectively linear). The fit here is:</p>
-<a class="reference internal image-reference" href="_images/appendix.3.png"><img alt="_images/appendix.3.png" src="_images/appendix.3.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/appendix_3.png"><img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" /></a>
 <p>The constant is consistent with all of the data in <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
 even at <tt class="docutils literal"><span class="pre">x[i]=0.95</span></tt>, because <tt class="docutils literal"><span class="pre">ymod[i]</span></tt> has much larger errors for
 larger <tt class="docutils literal"><span class="pre">x[i]</span></tt> because of the correction terms.</p>

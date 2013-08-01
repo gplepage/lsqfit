@@ -1504,7 +1504,7 @@ One approach that is certainly wrong is to truncate the expansion of
 ``y(x)`` after five terms, because there are only five pieces of data. 
 That gives the following fit:
 
-.. image:: appendix.1.*
+.. image:: appendix_1.*
    :width: 80%
 
 This fit was generated using the following code::
@@ -1603,7 +1603,7 @@ Note that a starting value ``p0`` is not needed when a prior is specified.
 This code also gives an excellent fit, with a ``chi**2`` per degree of 
 freedom of ``0.35``:
 
-.. image:: appendix.2.*
+.. image:: appendix_2.*
    :width: 80%
    
 The fit code output is::
@@ -1776,7 +1776,7 @@ Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are 
 effectively linear). The fit here is:
 
-.. image:: appendix.3.*
+.. image:: appendix_3.*
    :width: 80%
 
 The constant is consistent with all of the data in ``ymod[i]``, 
