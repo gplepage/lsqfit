@@ -1076,6 +1076,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
     
+    def test_fit_iter(self):
+        " fit.simulated_fit_iter "
+        y = gv.gvar(['2.1(1.2)', '1.7(5.2)', '2.2(3)', '3.2(1.5)', '1.9(2)'])
+        y[1:] = (y[1:] + y[:1]) / 2.
+        def fcn(p):
+            return len(y) * [p[0]]
+        prior = [gv.gvar(2,1)]
+        for svdcut in [None, 5e-1]:
+            fit = nonlinear_fit(data=y, fcn=fcn, prior=prior, svdcut=svdcut)
+            means = []
+            N = 100
+            for sfit in fit.simulated_fit_iter(N):
+                means.append(sfit.p[0].mean)
+            self.assertAlmostEqual(fit.p[0].sdev, sfit.p[0].sdev)
+            self.assertLess(
+                abs(np.average(means) - fit.p[0].mean), 
+                5 * fit.p[0].sdev / N ** 0.5
+                )
+
     def test_normal(self):
         " log-normal priors "
         y = gv.gvar([

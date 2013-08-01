@@ -104,7 +104,11 @@ class nonlinear_fit(object):
     fit are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
     ``fit.time``, respectively. Results for individual parameters in
     ``fit.p`` are of type |GVar|, and therefore carry information about
-    errors and correlations with other parameters.
+    errors and correlations with other parameters. The fit data and prior 
+    can be recovered using ``fit.x`` (equals ``False`` if there is no ``x``),
+    ``fit.y``, and ``fit.prior``; the data and prior are corrected for the
+    *svd* cut, if there is one (that is, their covariance matrices have been 
+    modified in accordance with the *svd* cut).
         
     :param data: Data to be fit by :class:`lsqfit.nonlinear_fit`. It can 
         have any of the following formats:
@@ -214,14 +218,13 @@ class nonlinear_fit(object):
         self.p0file = p0 if isinstance(p0, str) else None
         self.p0 = p0 if self.p0file is None else None
         self.fcn = fcn
-        self.prior = prior
         self._p = None
         self._palt = None
         self.debug = debug
         cpu_time = time.clock()
         
         # unpack prior,data,fcn,p0 to reconfigure for multifit 
-        prior = _unpack_gvars(self.prior)
+        prior = _unpack_gvars(prior)
         if (debug and prior is not None and
             not all(isinstance(pri, _gvar.GVar) for pri in prior.flat)):
             raise TypeError("Priors must be GVars.")
@@ -652,8 +655,8 @@ class nonlinear_fit(object):
 
         Fit reliability can be tested using simulated data which
         replaces the mean values in ``self.y`` with random numbers
-        drawn from a distribution with mean ``self.fcn(pexact)`` 
-        and the covariance matrix of ``self.y``. Simulated
+        drawn from a distribution whose mean equals ``self.fcn(pexact)`` 
+        and whose covariance matrix is the same as ``self.y``'s. Simulated
         data is very similar to the original fit data, ``self.y``, 
         but corresponds to a world where the correct values for
         the parameters (*i.e.*, averaged over many simulated data
@@ -662,29 +665,30 @@ class nonlinear_fit(object):
 
         Each iteration of the iterator creates new simulated data,
         with different random numbers and fits it, returning the 
-        the :class:`lsqfit.nonlinear_fit` that results.
+        the :class:`lsqfit.nonlinear_fit` that results. The simulated
+        data has the same covariance matrix as ``fit.y``.
         Typical usage is::
 
             ...
             fit = nonlinear_fit(...)
             ...
-            for sfit in fit.simulated_fit_iter(n=5):
+            for sfit in fit.simulated_fit_iter(n=3):
                 ... verify that sfit.p agrees with fit.pmean within errors ...
 
         Only a few iterations are needed to get a sense of the fit's 
         reliability since we know the correct answer in each case 
         (``pexact``, equal to ``fit.pmean`` in this example). The simulated
         fit's output results should agree with ``pexact`` within 
-        (the simulated fit's) errors.
+        the simulated fit's errors.
 
         Simulated fits can also be used to correct for biases in the fit's 
         output parameters or functions of them, should non-Gaussian behavior 
         arise. This is possible, again, because we know the correct value for 
         every parameter before we do the fit. Simulated fits provide 
-        a fast alternative to a traditional bootstrap analysis.
+        a faster alternative to a traditional bootstrap analysis.
 
-        :param n: Maximum number of iterations.
-        :type n: positive integer
+        :param n: Maximum number of iterations (equals infinity if ``None``).
+        :type n: integer or ``None``
         :param pexact: Fit-parameter values for the underlying distribution
             used to generate simulated data; replaced by ``self.pmean`` if 
             is ``None`` (default).
@@ -693,30 +697,42 @@ class nonlinear_fit(object):
             for different simulated data.
 
         Note that additional keywords can be added to overwrite keyword 
-        arguments in :class:`lsqfit.nonlinear_fit``
+        arguments in :class:`lsqfit.nonlinear_fit`.
         """
         pexact = self.pmean if pexact is None else pexact
+        # Note: don't need svdcut/svdnum since these are built into the data_iter
         fargs = dict(
-            fcn=self.fcn, svdcut=self.svdcut, svdnum=self.svdnum,
-            prior=self.prior, p0=pexact
+            fcn=self.fcn, svdcut=None, svdnum=None, prior=self.prior, p0=pexact
             )
         fargs.update(self.fitterargs)
         fargs.update(kargs)
-        for yb in self.simulated_data_iter(
-            n, pexact=pexact, svdcut=fargs['svdcut'], svdnum=fargs['svdnum']
-            ):
+        for yb in self._simulated_data_iter(n, pexact=pexact):
             fit = nonlinear_fit(data=(self.x, yb), **fargs)
             fit.pexact = pexact
             yield fit
 
-    def simulated_data_iter(self, n, pexact=None, svdcut=None, svdnum=None):
+    def _simulated_data_iter(self, n, pexact=None):
+        """ Iterator that returns simulated data based upon a fit's data.
+
+        Simulated data is generated from a fit's data ``fit.y`` by
+        replacing the mean values in that data with random numbers
+        drawn from a distribution whose mean is ``self.fcn(pexact)`` 
+        and whose covariance matrix is the same as that of ``self.y``. 
+        Each iteration of the iterator returns new simulated data,
+        with different random numbers for the means and a covariance
+        matrix equal to that of ``self.y``. This iterator is used by
+        ``self.simulated_fit_iter``.
+
+        :param n: Maximum number of iterations (equals infinity if ``None``).
+        :type n: integer or ``None``
+        :param pexact: Fit-parameter values for the underlying distribution
+            used to generate simulated data; replaced by ``self.pmean`` if 
+            is ``None`` (default).
+        :type pexact: ``None`` or array or dictionary of numbers
+        :returns: An iterator that returns :class:`lsqfit.nonlinear_fit`\s
+            for different simulated data.
+        """
         pexact = self.pmean if pexact is None else pexact
-        svdcut = self.svdcut[0] if svdcut is None else svdcut
-        svdnum = self.svdnum[0] if svdnum is None else svdnum
-        if isinstance(svdcut, tuple):
-            svdcut = svdcut[0]
-        if isinstance(svdnum, tuple):
-            svdnum = svdnum[0] 
         f = self.fcn(pexact) if self.x is False else self.fcn(self.x, pexact)
         if isinstance(self.y, _gvar.BufferDict):
             # y,f dictionaries; fresh copy of y, reorder f
@@ -727,7 +743,7 @@ class nonlinear_fit(object):
             # y,f arrays; fresh copy of y
             y = numpy.array(self.y)
             y += numpy.asarray(f) - _gvar.mean(y) 
-        return _gvar.bootstrap_iter(y, n, svdcut=1e-15)        
+        return _gvar.bootstrap_iter(y, n)        
 
     simulate_iter = simulated_fit_iter
 

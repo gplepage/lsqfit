@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.5b documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.5 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.5b',
+        VERSION:     '4.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.5b documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -614,9 +614,11 @@ can be <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt cla
 <p>One of <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> can contain numbers instead of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s,
 in which case <tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of the likelihood that 
 the numbers came from the distribution specified by the other 
-argument. Also <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> need not have exactly the same
-layout: one or the other can have keys or array elements that 
-are a subset of what the other has.</p>
+argument.</p>
+<p>One or the other of <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="docutils literal"><span class="pre">g2</span></tt> can be missing keys, or missing
+elements from arrays. Only the parts of <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> that 
+overlap are used. Also setting <tt class="docutils literal"><span class="pre">g2=None</span></tt> is equivalent to replacing its 
+elements by zeros.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is computed from the inverse of the covariance matrix
 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>. The matrix inversion can be sensitive to roundoff 
 errors. In such cases, <em>SVD</em> cuts can be applied by setting
@@ -754,11 +756,17 @@ equal <tt class="docutils literal"><span class="pre">1</span></tt> before applyi
 the random number generators used by <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> and  
 <tt class="xref py py-mod docutils literal"><span class="pre">random</span></tt> (and therefore by <a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>). Reusing 
 the same <tt class="docutils literal"><span class="pre">seed</span></tt> results in the same set of random numbers.</p>
+<p><tt class="docutils literal"><span class="pre">ranseed</span></tt> generates its own seed when called without an argument
+or with <tt class="docutils literal"><span class="pre">seed=None</span></tt>. This seed is stored in <tt class="docutils literal"><span class="pre">ranseed.seed</span></tt> and 
+also returned by the function. The seed can be used to regenerate
+the same set of random numbers at a later time.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> (<em>tuple</em>) &#8211; A tuple of integers.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seed</strong> (<em>tuple or None</em>) &#8211; A tuple of integers. Generates a random tuple if <tt class="docutils literal"><span class="pre">None</span></tt>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The seed.</td>
 </tr>
 </tbody>
 </table>
@@ -1542,7 +1550,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

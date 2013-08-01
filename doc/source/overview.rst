@@ -196,7 +196,9 @@ What follows is a brief tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
 As above, code for the examples is specified completely and so can be copied
 into a file, and run as is. It can also be modified, allowing for
-experimentation.
+experimentation. At the very end, in an appendix, there is 
+a very simple pedagogical example that illustrates the nature of priors
+and demonstrates some of the simpler techniques supported by :mod:`lsqfit`.
 
 *About Printing:* The examples in this tutorial use the ``print`` function
 as it is used in Python 3. Drop the outermost parenthesis in each ``print``
@@ -206,181 +208,6 @@ statement if using Python 2; or add ::
 
 at the start of your file. 
 
-.. Another Example: Priors and Marginalization
-.. -------------------------------------------
-.. Consider a problem where we have five pieces of uncorrelated data for a 
-.. function ``y(x)``::
-
-                 
-..             x[i]       y(x[i])
-..             ----------------------
-..             0.1        0.5351 (54)
-..             0.3        0.6762 (67)
-..             0.5        0.9227 (91)
-..             0.7        1.3803(131)
-..             0.95       4.0145(399)
-
-.. We know that ``y(x)`` has a Taylor expansion in ``x``::
-
-..    y(x) = sum_n=0...inf p[n] x**n
-
-.. The challenge is to extract a reliable estimate for ``y(0)=p[0]`` from the
-.. data --- that is, how do we extrapolate the data to ``x=0``.
-
-.. One approach that is certainly wrong is truncate the expansion of
-.. ``y(x)`` after five terms, because there are only five pieces of data. 
-.. That gives the following fit:
-
-.. This fit was generated using the following code::
-
-..    import numpy as np
-..    import gvar as gv
-..    import lsqfit
-
-..    # fit data
-..    y = gv.gvar([
-..       '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
-..       ])
-..    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
-
-..    def f(x, p):                  # fit function
-..       return sum(pn * x ** n for n, pn in enumerate(p))
-
-..    p0 = np.ones(5.)              # starting value for chi**2 minimization
-..    fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
-..    print fit.format(maxline=5)
-
-.. Note that here the function ``gv.gvar`` converts the strings 
-.. ``'0.5351(54)'``, *etc.* into |GVar|\s. Running the code gives the 
-.. following output::
-
-..    Least Square Fit (no prior):
-..      chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
-
-..    Parameters:
-..                  0    0.742 (39)     [ 1.0 +- inf ]  
-..                  1    -3.86 (59)     [ 1.0 +- inf ]  
-..                  2    21.5 (2.4)     [ 1.0 +- inf ]  
-..                  3   -39.1 (3.7)     [ 1.0 +- inf ]  
-..                  4    25.8 (1.9)     [ 1.0 +- inf ]  
-
-..    Fit:
-..         x[k]           y[k]      f(x[k],p)
-..    ---------------------------------------
-..          0.1    0.5351 (54)    0.5351 (54)  
-..          0.3    0.6762 (67)    0.6762 (67)  
-..          0.5    0.9227 (91)    0.9227 (91)  
-..          0.7     1.380 (13)     1.380 (13)  
-..         0.95     4.014 (40)     4.014 (40)  
-
-.. This is a perfect fit in that the fit function agrees exactly with 
-.. the means of the data; the ``chi**2`` for the fit is zero. The fit 
-.. gives a fairly precise answer for ``p[0]``
-.. (``0.74(4)``), but the curve looks oddly stiff. Also some of the 
-.. best-fit values for the coefficients are quite 
-.. large (*e.g.*, ``p[3]= -39(4)``), perhaps unreasonably large.
-
-.. The problem with the fit is that there is no reason to neglect 
-.. terms in the expansion of ``y(x)`` with ``n>4``. Whether or not
-.. extra terms are important depends entirely on how large we 
-.. expect the coefficients ``p[n]`` for ``n>4`` to be. The extrapolation
-.. problem is impossible without some idea of the size of these
-.. parameters; we need extra information.
-
-.. In this case that extra information is obviously connected to questions
-.. of convergence of the Taylor expansion we are using to model ``y(x)``.
-.. Let's assume we know, from previous work, that the ``p[n]`` are of
-.. order one. Then we would need to keep at least 91 terms in the 
-.. Taylor expansion if we wanted the terms we dropped to be small compared
-.. with the 1% data errors at ``x=0.95``. So a possible fitting function
-.. would be::
-
-..    y(x; N) = sum_0..N p[n] x**n  
-
-.. with ``N=90``. 
-
-.. Fitting a 91-parameter formula to five pieces of data is also impossible.
-.. Here, however, we have extra (*prior*) information: each coefficient is order
-.. one, which we make specific by saying that they equal ``0(1)``. So we are 
-.. fitting 91+5 pieces of data with 91 parameters. 
-
-.. The prior information is introduced into the code as a prior for the fit:
-
-..    import numpy as np
-..    import gvar as gv
-..    import lsqfit
-
-..    # fit data
-..    y = gv.gvar([
-..       '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
-..       ])
-..    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
-
-..    def f(x, p):                     # fit function
-..       return sum(pn * x ** n for n, pn in enumerate(p))
-
-..    prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
-..    fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
-..    print fit.format(maxline=5)
-
-.. Note that a starting value ``p0`` is not needed when a prior is specified. 
-.. This code also gives an excellent fit, with a ``chi**2`` per degree of 
-.. freedom of ``0.35``:
-
-   
-.. The fit code output is::
-
-..    Least Square Fit:
-..      chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
-
-..    Parameters:
-..                  0   0.489 (17)     [  0.0 (1.0) ]  
-..                  1    0.40 (20)     [  0.0 (1.0) ]  
-..                  2    0.60 (64)     [  0.0 (1.0) ]  
-..                  3    0.44 (80)     [  0.0 (1.0) ]  
-..                  4    0.28 (87)     [  0.0 (1.0) ]  
-..                  5    0.19 (87)     [  0.0 (1.0) ]  
-..                  6    0.16 (90)     [  0.0 (1.0) ]  
-..                  7    0.16 (93)     [  0.0 (1.0) ]  
-..                  8    0.17 (95)     [  0.0 (1.0) ]  
-..                  9    0.18 (96)     [  0.0 (1.0) ]  
-..                 10    0.19 (97)     [  0.0 (1.0) ]  
-..                 11    0.19 (97)     [  0.0 (1.0) ]  
-..                 12    0.19 (97)     [  0.0 (1.0) ]  
-..                 13    0.19 (97)     [  0.0 (1.0) ]  
-..                 14    0.18 (97)     [  0.0 (1.0) ]  
-..                 15    0.18 (97)     [  0.0 (1.0) ]  
-..                   .
-..                   .
-..                   .
-..                 88    0.0 (1.0)     [  0.0 (1.0) ]  
-..                 89    0.0 (1.0)     [  0.0 (1.0) ]  
-..                 90    0.0 (1.0)     [  0.0 (1.0) ]  
-
-..    Fit:
-..         x[k]           y[k]      f(x[k],p)
-..    ---------------------------------------
-..          0.1    0.5351 (54)    0.5349 (54)  
-..          0.3    0.6762 (67)    0.6768 (65)  
-..          0.5    0.9227 (91)    0.9219 (87)  
-..          0.7     1.380 (13)     1.381 (13)  
-..         0.95     4.014 (40)     4.014 (40)  
-
-..    Settings:
-..      svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-.. This is a much more plausible analysis and gives an extrapolated value of
-.. ``p[0]=0.489 (17)``. The original data points were created using 
-.. a Taylor expansion with random coefficients of order one, but with ``p[0]``
-.. set equal to ``0.5``. So this fit to the five data points (plus 91 *a priori*
-.. values for the ``p[n]`` with ``n<91``) is giving the correct result. 
-.. Increasing the number of terms further would have no effect since the last
-.. terms added are having no impact, and so end up equal to the prior value --- 
-.. the fit data are not sufficiently precise to add new information about these
-.. parameters. 
-
-.. There is a second, equivalent way of fitting this data that illustrates the
-.. idea of *marginalization.*
 
 .. _making-fake-data:
 
@@ -1395,6 +1222,93 @@ safer to use the median instead of the mean as the estimator, which is
 what ``gv.dataset.avg_data`` does here since flag ``bstrap`` is set 
 to ``True``. 
 
+Testing Fits with Simulated Data
+--------------------------------
+Ideally we would test a fitting protocol by doing fits of data similar to 
+our actual fit but where we know the correct values for the fit parameters 
+ahead of the fit. The :class:`lsqfit.nonlinear_fit` iterator ``simulated_fit_iter``
+creates any number of such simulations of the original fit. Returning
+again to the fits in the section on :ref:`correlated-parameters`, we 
+can add three fit simulations to the end of the ``main`` program::
+
+   def main():
+       gv.ranseed([2009, 2010, 2011, 2012]) # initialize random numbers (opt.)
+       x, y = make_data()              # make fit data
+       p0 = None                       # make larger fits go faster (opt.)
+       for nexp in range(3, 20):
+           print('************************************* nexp =', nexp)
+           prior = make_prior(nexp)
+           fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior, p0=p0)
+           print(fit)                  # print the fit results
+           E = fit.p['E']              # best-fit parameters
+           a = fit.p['a']
+           print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+           print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
+           print()
+           if fit.chi2 / fit.dof < 1.:
+               p0 = fit.pmean          # starting point for next fit (opt.)
+ 
+       # 3 fit simulations based upon last fit
+       for sfit in fit.simulated_fit_iter(3):
+           print(sfit)
+           sE = sfit.p['E']             # best-fit parameters (simulation)
+           sa = sfit.p['a']
+           E = sfit.pexact['E']         # correct results for parameters
+           a = sfit.pexact['a']
+           print('E1/E0 =', sE[1] / sE[0], '  E2/E0 =', sE[2] / sE[0])
+           print('a1/a0 =', sa[1] / sa[0], '  a2/a0 =', sa[2] / sa[0])
+           print('\nSimulated Fit Values - Exact Values:')
+           print(
+               'E1/E0:', (sE[1] / sE[0]) - (E[1] / E[0]), 
+               '  E2/E0:', (sE[2] / sE[0]) - (E[2] / E[0])
+               )
+           print(
+               'a1/a0:', (sa[1] / sa[0]) - (a[1] / a[0]), 
+               '  a2/a0:', (sa[2] / sa[0]) - (a[2] / a[0])
+               )
+
+           # compute chi**2 comparing selected fit results to exact results
+           sim_results = [sE[0], sE[1], sa[0], sa[1]]
+           exact_results = [E[0], E[1], a[0], a[1]]
+           chi2 = gv.chi2(sim_results, exact_results)
+           print(
+               '\nParameter chi2/dof [dof] = %.2f' % (chi2 / gv.chi2.dof), 
+               '[%d]' % gv.chi2.dof, 
+               '  Q = %.1f' % gv.chi2.Q
+               )
+
+The fit data for each of the three simulations is the same as the original fit 
+data except that the means have been adjusted (randomly) so the the correct values 
+for the fit parameters are in each case equal to ``pexact=fit.pmean``. 
+Simulation fit results will typically differ from the correct values by 
+an amount of order a standard deviation. With  sufficiently accurate data,
+the results from a large number 
+of simulations will be distributed in Gaussians centered on the correct 
+values (``pexact``), with widths that equal the standard deviations 
+given by the fit (``fit.psdev``). (With less accurate data, the 
+distributions may become non-Gaussian, and the interpretation of fit
+results more complicated.)
+
+In the present example, the output from the three simulations is:
+
+.. literalinclude:: eg4d.out
+
+The simulations show that the fit values usually agree with the correct
+values to within a standard deviation or so (the correct results here are 
+the mean values from the last fit discussed in :ref:`correlated-parameters`).
+Furthermore the error estimates
+for each parameter are reproduced by the simulations. We also compute 
+the ``chi**2`` for the difference between the leading fit parameters and
+the exact values. This checks parameter values, standard deviations, and correlations.
+The results are reasonable for four degrees of freedom. Here the first simulation
+shows results that are off by a third of a standard deviation on average, but
+this is not so unusual --- the ``Q=0.1`` indicates that it happens 10% of the time.
+
+More thorough testing is possible: for example, one could run many simulations
+(100?) to verify that the distribution of (simulation) fit results is Gaussian,
+centered around ``pexact``. This is overkill in most 
+situations, however. The three simulations above are enough to reassure 
+us that the original fit estimates, including errors, are reliable. 
 
 Positive Parameters
 -------------------
@@ -1564,6 +1478,325 @@ fluctuate together, the prior should be redefined::
 
 where now each parameter has its own :class:`gvar.GVar`.   
    
+
+Appendix: A Simple Pedagogical Example
+-------------------------------------------
+Consider a problem where we have five pieces of uncorrelated data for a 
+function ``y(x)``::
+
+                 
+            x[i]       y(x[i])
+            ----------------------
+            0.1        0.5351 (54)
+            0.3        0.6762 (67)
+            0.5        0.9227 (91)
+            0.7        1.3803(131)
+            0.95       4.0145(399)
+
+We know that ``y(x)`` has a Taylor expansion in ``x``::
+
+   y(x) = sum_n=0...inf p[n] x**n
+
+The challenge is to extract a reliable estimate for ``y(0)=p[0]`` from the
+data --- that is, the challenge is to extrapolate the data to ``x=0``.
+
+One approach that is certainly wrong is to truncate the expansion of
+``y(x)`` after five terms, because there are only five pieces of data. 
+That gives the following fit:
+
+.. image:: appendix.1.*
+   :width: 80%
+
+This fit was generated using the following code::
+
+   import numpy as np
+   import gvar as gv
+   import lsqfit
+
+   # fit data
+   y = gv.gvar([
+      '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
+      ])
+   x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+
+   def f(x, p):                  # fit function
+      return sum(pn * x ** n for n, pn in enumerate(p))
+
+   p0 = np.ones(5.)              # starting value for chi**2 minimization
+   fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
+   print(fit.format(maxline=5))
+
+Note that here the function ``gv.gvar`` converts the strings 
+``'0.5351(54)'``, *etc.* into |GVar|\s. Running the code gives the 
+following output::
+
+   Least Square Fit (no prior):
+     chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
+
+   Parameters:
+                 0    0.742 (39)     [ 1.0 +- inf ]  
+                 1    -3.86 (59)     [ 1.0 +- inf ]  
+                 2    21.5 (2.4)     [ 1.0 +- inf ]  
+                 3   -39.1 (3.7)     [ 1.0 +- inf ]  
+                 4    25.8 (1.9)     [ 1.0 +- inf ]  
+
+   Fit:
+        x[k]           y[k]      f(x[k],p)
+   ---------------------------------------
+         0.1    0.5351 (54)    0.5351 (54)  
+         0.3    0.6762 (67)    0.6762 (67)  
+         0.5    0.9227 (91)    0.9227 (91)  
+         0.7     1.380 (13)     1.380 (13)  
+        0.95     4.014 (40)     4.014 (40)  
+
+This is a perfect fit in that the fit function agrees exactly with 
+the data; the ``chi**2`` for the fit is zero. The 5-parameter fit 
+gives a fairly precise answer for ``p[0]``
+(``0.74(4)``), but the curve looks oddly stiff. Also some of the 
+best-fit values for the coefficients are quite 
+large (*e.g.*, ``p[3]= -39(4)``), perhaps unreasonably large.
+
+The problem with a 5-parameter fit is that there is no reason to neglect 
+terms in the expansion of ``y(x)`` with ``n>4``. Whether or not
+extra terms are important depends entirely on how large we 
+expect the coefficients ``p[n]`` for ``n>4`` to be. The extrapolation
+problem is impossible without some idea of the size of these
+parameters; we need extra information.
+
+In this case that extra information is obviously connected to questions
+of convergence of the Taylor expansion we are using to model ``y(x)``.
+Let's assume we know, from previous work, that the ``p[n]`` are of
+order one. Then we would need to keep at least 91 terms in the 
+Taylor expansion if we wanted the terms we dropped to be small compared
+with the 1% data errors at ``x=0.95``. So a possible fitting function
+would be::
+
+   y(x; N) = sum_n=0..N p[n] x**n  
+
+with ``N=90``. 
+
+Fitting a 91-parameter formula to five pieces of data is also impossible.
+Here, however, we have extra (*prior*) information: each coefficient is order
+one, which we make specific by saying that they equal ``0(1)``. So we are 
+actually fitting 91+5 pieces of data with 91 parameters. 
+
+The prior information is introduced into the fit as a *prior*::
+
+   import numpy as np
+   import gvar as gv
+   import lsqfit
+
+   # fit data
+   y = gv.gvar([
+      '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
+      ])
+   x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+
+   def f(x, p):                     # fit function
+      return sum(pn * x ** n for n, pn in enumerate(p))
+
+   prior = gv.gvar(91 * ['0(1)'])   # 91-parameter prior for the fit
+   fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
+   print(fit.format(maxline=5))
+
+Note that a starting value ``p0`` is not needed when a prior is specified. 
+This code also gives an excellent fit, with a ``chi**2`` per degree of 
+freedom of ``0.35``:
+
+.. image:: appendix.2.*
+   :width: 80%
+   
+The fit code output is::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+
+   Parameters:
+                 0   0.489 (17)     [  0.0 (1.0) ]  
+                 1    0.40 (20)     [  0.0 (1.0) ]  
+                 2    0.60 (64)     [  0.0 (1.0) ]  
+                 3    0.44 (80)     [  0.0 (1.0) ]  
+                 4    0.28 (87)     [  0.0 (1.0) ]  
+                 5    0.19 (87)     [  0.0 (1.0) ]  
+                 6    0.16 (90)     [  0.0 (1.0) ]  
+                 7    0.16 (93)     [  0.0 (1.0) ]  
+                 8    0.17 (95)     [  0.0 (1.0) ]  
+                 9    0.18 (96)     [  0.0 (1.0) ]  
+                10    0.19 (97)     [  0.0 (1.0) ]  
+                11    0.19 (97)     [  0.0 (1.0) ]  
+                12    0.19 (97)     [  0.0 (1.0) ]  
+                13    0.19 (97)     [  0.0 (1.0) ]  
+                14    0.18 (97)     [  0.0 (1.0) ]  
+                15    0.18 (97)     [  0.0 (1.0) ]  
+                  .
+                  .
+                  .
+                88    0.0 (1.0)     [  0.0 (1.0) ]  
+                89    0.0 (1.0)     [  0.0 (1.0) ]  
+                90    0.0 (1.0)     [  0.0 (1.0) ]  
+
+   Fit:
+        x[k]           y[k]      f(x[k],p)
+   ---------------------------------------
+         0.1    0.5351 (54)    0.5349 (54)  
+         0.3    0.6762 (67)    0.6768 (65)  
+         0.5    0.9227 (91)    0.9219 (87)  
+         0.7     1.380 (13)     1.381 (13)  
+        0.95     4.014 (40)     4.014 (40)  
+
+   Settings:
+     svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+This is a much more plausible fit than than the 5-parameter fit, and gives an
+extrapolated value of ``p[0]=0.489(17)``. The original data points were
+created using  a Taylor expansion with random coefficients, but
+with ``p[0]`` set equal to ``0.5``. So this fit to the five data points (plus
+91 *a priori* values for the ``p[n]`` with ``n<91``) gives the correct
+result.  Increasing the number of terms further would have no effect since the
+last terms added are having no impact, and so end up equal to the prior value
+---  the fit data are not sufficiently precise to add new information about
+these parameters.
+
+We can check our priors for this fit by re-doing the fit with broader and 
+narrower priors. Setting ``prior = gv.gvar(91 * ['0(3)'])`` gives an excellent
+fit, ::
+
+  Least Square Fit:
+    chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993    itns = 2
+
+  Parameters:
+                0   0.490 (33)     [  0.0 (3.0) ]  
+                1    0.38 (48)     [  0.0 (3.0) ]  
+                2    0.6 (1.8)     [  0.0 (3.0) ]  
+                ... 
+
+but with a very small ``chi2/dof`` and somewhat larger errors on the best-fit
+estimates for the parameters. The logarithm of the (Gaussian) Bayes Factor,
+``logGBF``, can be used to compare fits with different priors. It is the 
+logarithm of the probability that our data would come from parameters
+generated at random using the prior. The exponential of ``logGBF`` is 
+more than 100 times larger with the original priors of ``0(1)`` than with  
+priors of ``0(3)``. This says that our data is more than 100 times more 
+likely to come from a world with parameters of order one than from one with 
+parameters of order three. Put another way it says that
+the size of the fluctuations in the data 
+are more consistent with coefficients of order one than with coefficients of 
+order three. The ``logGBF`` values argue for the original prior.
+
+Narrower priors, ``prior = gv.gvar(91 * ['0.0(3)'])``, give a poor fit, 
+and also a less optimal ``logGBF``::
+
+  Least Square Fit:
+    chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058    itns = 2
+
+  Parameters:
+                0   0.484 (11)     [  0.00 (30) ]  *
+                1   0.454 (98)     [  0.00 (30) ]  *
+                2    0.50 (23)     [  0.00 (30) ]  *
+                ...
+
+The priors are responsible for about half of the final error in our best
+estimate of ``p[0]`` (with priors of ``0(1)``); the rest comes from the
+uncertainty in the data. This can be  established by creating an error budget,
+::
+
+    inputs = dict(prior=prior, y=y)
+    outputs = dict(p0=fit.p[0])
+    print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
+
+which creates the following table::
+
+  Partial % Errors:
+                              p0
+  ------------------------------
+                    y:      2.67
+                prior:      2.23
+  ------------------------------
+                total:      3.48
+
+
+There is a second, equivalent way of fitting this data that illustrates the
+idea of *marginalization.* We really only care about parameter ``p[0]`` in 
+our fit. This suggests that we remove ``n>0`` terms from the data *before*
+we do the fit::
+
+  ymod[i] = y[i] - sum_n=1...inf prior[n] * x[i] ** n
+
+Before the fit, our best estimate for the parameters is from the priors. We
+use these to create an estimate for the correction to each data point
+coming from ``n>0`` terms in ``y(x)``. This new data, ``ymod[i]`` should be fit with 
+a new fitting function, ``ymod(x) = p[0]`` --- that is, it should be fit
+to a constant, independent of ``x[i]``. The last three lines of the code
+above are easily modified to implement this idea::
+
+   import numpy as np
+   import gvar as gv
+   import lsqfit
+
+   # fit data
+   y = gv.gvar([
+      '0.5351(54)', '0.6762(67)', '0.9227(91)', '1.3803(131)', '4.0145(399)'
+      ])
+   x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+
+   def f(x, p):                     # fit function
+      return sum(pn * x ** n for n, pn in enumerate(p))
+
+   prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
+   priormod = prior[:1]                       # restrict fit to p[0]
+   ymod = y - (f(x, prior) - f(x, priormod))  # correct y
+   fit = lsqfit.nonlinear_fit(data=(x, ymod), prior=priormod, fcn=f)
+   print(fit.format(maxline=5))
+
+Running this code give::
+
+  Least Square Fit (input data correlated with prior):
+    chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+
+  Parameters:
+                0   0.489 (17)     [  0.0 (1.0) ]  
+
+  Fit:
+       x[k]         y[k]     f(x[k],p)
+  ------------------------------------
+        0.1    0.54 (10)    0.489 (17)  
+        0.3    0.68 (31)    0.489 (17)  
+        0.5    0.92 (58)    0.489 (17)  
+        0.7    1.38 (98)    0.489 (17)  
+       0.95    4.0 (3.0)    0.489 (17)  *
+
+  Settings:
+    svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+
+Remarkably this one-parameter fit gives results for ``p[0]`` that are identical (to 
+machine precision) to our 91-parameter fit above. The 90 parameters for
+``n>0`` are said to have been *marginalized* in this fit. Marginalizing a parameter
+in this way has no effect if the fit function is linear in that parameter. 
+Marginalization has almost no effect for nonlinear fits as well, 
+provided the fit data have small errors (in which case the parameters are 
+effectively linear). The fit here is:
+
+.. image:: appendix.3.*
+   :width: 80%
+
+The constant is consistent with all of the data in ``ymod[i]``, 
+even at ``x[i]=0.95``, because ``ymod[i]`` has much larger errors for
+larger ``x[i]`` because of the correction terms.
+
+Fitting to a constant is equivalent to doing a weighted average of the 
+data plus the prior, so our fit can be replaced by an average::
+
+   lsqfit.wavg(list(ymod) + list(priormod))
+
+This again gives ``0.489(17)`` for our final result. 
+Note that the central value for this average is below the central 
+values for every data point in ``ymod[i]``. This is a consequence of large
+positive correlations introduced into ``ymod`` when we remove the
+``n>0`` terms. These correlations are captured automatically in our code,
+and are essential --- removing the correlations between different 
+``ymod``s results in a final answer, ``0.564(97)``, which has much 
+larger errors.
+
 
 
 

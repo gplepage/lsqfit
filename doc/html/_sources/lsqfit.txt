@@ -266,8 +266,9 @@ nonlinear_fit Objects
       depending upon the input.
 
    Additional methods are provided for printing out detailed information
-   about the fit, doing bootstrap analyses of the fit errors, dumping (for
-   later use) and loading parameter values, and checking for roundoff
+   about the fit, testing fits with simulated data, 
+   doing bootstrap analyses of the fit errors, 
+   dumping (for later use) and loading parameter values, and checking for roundoff
    errors in the final error estimates:
 
    .. automethod:: format(maxline=0, pstyle='v')
@@ -275,7 +276,9 @@ nonlinear_fit Objects
    .. automethod:: fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True)
    
    .. automethod:: fmt_values(outputs, ndecimal=None)
-      
+   
+   .. automethod:: simulated_fit_iter(n=None, pexact=None, **kargs)
+
    .. automethod:: bootstrap_iter(n=None, datalist=None)
    
    .. automethod:: dump_p(filename)

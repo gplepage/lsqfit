@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.5b documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.5 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.5b',
+        VERSION:     '4.5',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.5b documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -219,7 +219,11 @@ Bayes Factor, the number of iterations, and the cpu time needed for the
 fit are in <tt class="docutils literal"><span class="pre">fit.chi2</span></tt>, <tt class="docutils literal"><span class="pre">fit.dof</span></tt>, <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt>, <tt class="docutils literal"><span class="pre">fit.nit</span></tt>, and
 <tt class="docutils literal"><span class="pre">fit.time</span></tt>, respectively. Results for individual parameters in
 <tt class="docutils literal"><span class="pre">fit.p</span></tt> are of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, and therefore carry information about
-errors and correlations with other parameters.</p>
+errors and correlations with other parameters. The fit data and prior 
+can be recovered using <tt class="docutils literal"><span class="pre">fit.x</span></tt> (equals <tt class="docutils literal"><span class="pre">False</span></tt> if there is no <tt class="docutils literal"><span class="pre">x</span></tt>),
+<tt class="docutils literal"><span class="pre">fit.y</span></tt>, and <tt class="docutils literal"><span class="pre">fit.prior</span></tt>; the data and prior are corrected for the
+<em>svd</em> cut, if there is one (that is, their covariance matrices have been 
+modified in accordance with the <em>svd</em> cut).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -476,8 +480,9 @@ depending upon the input.</p>
 </dd></dl>
 
 <p>Additional methods are provided for printing out detailed information
-about the fit, doing bootstrap analyses of the fit errors, dumping (for
-later use) and loading parameter values, and checking for roundoff
+about the fit, testing fits with simulated data,
+doing bootstrap analyses of the fit errors,
+dumping (for later use) and loading parameter values, and checking for roundoff
 errors in the final error estimates:</p>
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.format">
@@ -569,6 +574,63 @@ in <tt class="docutils literal"><span class="pre">outputs</span></tt>.</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.simulated_fit_iter">
+<tt class="descname">simulated_fit_iter</tt><big>(</big><em>n=None</em>, <em>pexact=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator that returns simulation copies of a fit.</p>
+<p>Fit reliability can be tested using simulated data which
+replaces the mean values in <tt class="docutils literal"><span class="pre">self.y</span></tt> with random numbers
+drawn from a distribution whose mean equals <tt class="docutils literal"><span class="pre">self.fcn(pexact)</span></tt> 
+and whose covariance matrix is the same as <tt class="docutils literal"><span class="pre">self.y</span></tt>&#8216;s. Simulated
+data is very similar to the original fit data, <tt class="docutils literal"><span class="pre">self.y</span></tt>, 
+but corresponds to a world where the correct values for
+the parameters (<em>i.e.</em>, averaged over many simulated data
+sets) are given by <tt class="docutils literal"><span class="pre">pexact</span></tt>. <tt class="docutils literal"><span class="pre">pexact</span></tt> is usually taken
+equal to <tt class="docutils literal"><span class="pre">fit.pmean</span></tt>.</p>
+<p>Each iteration of the iterator creates new simulated data,
+with different random numbers and fits it, returning the 
+the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> that results. The simulated
+data has the same covariance matrix as <tt class="docutils literal"><span class="pre">fit.y</span></tt>.
+Typical usage is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="o">...</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="o">...</span> <span class="n">verify</span> <span class="n">that</span> <span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="n">agrees</span> <span class="k">with</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span> <span class="n">within</span> <span class="n">errors</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Only a few iterations are needed to get a sense of the fit&#8217;s 
+reliability since we know the correct answer in each case 
+(<tt class="docutils literal"><span class="pre">pexact</span></tt>, equal to <tt class="docutils literal"><span class="pre">fit.pmean</span></tt> in this example). The simulated
+fit&#8217;s output results should agree with <tt class="docutils literal"><span class="pre">pexact</span></tt> within 
+the simulated fit&#8217;s errors.</p>
+<p>Simulated fits can also be used to correct for biases in the fit&#8217;s 
+output parameters or functions of them, should non-Gaussian behavior 
+arise. This is possible, again, because we know the correct value for 
+every parameter before we do the fit. Simulated fits provide 
+a faster alternative to a traditional bootstrap analysis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (integer or <tt class="docutils literal"><span class="pre">None</span></tt>) &#8211; Maximum number of iterations (equals infinity if <tt class="docutils literal"><span class="pre">None</span></tt>).</li>
+<li><strong>pexact</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or array or dictionary of numbers) &#8211; Fit-parameter values for the underlying distribution
+used to generate simulated data; replaced by <tt class="docutils literal"><span class="pre">self.pmean</span></tt> if 
+is <tt class="docutils literal"><span class="pre">None</span></tt> (default).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An iterator that returns <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>s
+for different simulated data.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Note that additional keywords can be added to overwrite keyword 
+arguments in <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1119,7 +1181,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5b documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

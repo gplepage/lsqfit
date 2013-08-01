@@ -605,19 +605,19 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
         # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
 
-def ranseed(seed):
-    """ Seed random number generators with tuple ``seed``.
+# def ranseed(seed):
+#     """ Seed random number generators with tuple ``seed``.
         
-    Argument ``seed`` is a :class:`tuple` of integers that is used to seed
-    the random number generators used by :mod:`numpy` and  
-    :mod:`random` (and therefore by :mod:`gvar`). Reusing 
-    the same ``seed`` results in the same set of random numbers.
+#     Argument ``seed`` is a :class:`tuple` of integers that is used to seed
+#     the random number generators used by :mod:`numpy` and  
+#     :mod:`random` (and therefore by :mod:`gvar`). Reusing 
+#     the same ``seed`` results in the same set of random numbers.
         
-    :param seed: A tuple of integers.
-    :type seed: tuple
-    """
-    seed = tuple(seed)
-    numpy.random.seed(seed)
+#     :param seed: A tuple of integers.
+#     :type seed: tuple
+#     """
+#     seed = tuple(seed)
+#     numpy.random.seed(seed)
    
 class SVD(object):
     """ SVD decomposition of a pos. sym. matrix. 

@@ -63,6 +63,7 @@ variables including:
 # GNU General Public License for more details.
 
 import numpy
+import sys
 
 from ._gvarcore import *
 gvar = GVarFactory()            # order matters for this statement
@@ -74,6 +75,30 @@ from ._utilities import *
 from . import dataset
 
 _GDEV_LIST = []
+
+def ranseed(seed=None):
+    """ Seed random number generators with tuple ``seed``.
+        
+    Argument ``seed`` is a :class:`tuple` of integers that is used to seed
+    the random number generators used by :mod:`numpy` and  
+    :mod:`random` (and therefore by :mod:`gvar`). Reusing 
+    the same ``seed`` results in the same set of random numbers.
+
+    ``ranseed`` generates its own seed when called without an argument
+    or with ``seed=None``. This seed is stored in ``ranseed.seed`` and 
+    also returned by the function. The seed can be used to regenerate
+    the same set of random numbers at a later time.
+        
+    :param seed: A tuple of integers. Generates a random tuple if ``None``.
+    :type seed: tuple or None
+    :returns: The seed.
+    """
+    if seed is None:
+        seed = numpy.random.randint(1, sys.maxint, size=3)
+    seed = tuple(seed)
+    numpy.random.seed(seed)
+    ranseed.seed = seed
+    return seed
     
 def switch_gvar(cov=None):
     """ Switch :func:`gvar.gvar` to new :class:`gvar.GVarFactory`.
@@ -119,7 +144,7 @@ def asgvar(x):
         return gvar(x)
 ##
 
-def chi2(g1, g2, svdcut=1e-15, svdnum=None, nocorr=False):
+def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False):
     """ Compute chi**2 of ``g1-g2``. 
 
     ``chi**2`` is a measure of whether the multi-dimensional 
@@ -136,9 +161,12 @@ def chi2(g1, g2, svdcut=1e-15, svdnum=None, nocorr=False):
     One of ``g1`` or ``g2`` can contain numbers instead of |GVar|\s,
     in which case ``chi**2`` is a measure of the likelihood that 
     the numbers came from the distribution specified by the other 
-    argument. Also ``g1`` or ``g2`` need not have exactly the same
-    layout: one or the other can have keys or array elements that 
-    are a subset of what the other has.
+    argument. 
+
+    One or the other of ``g1`` or ``g2`` can be missing keys, or missing
+    elements from arrays. Only the parts of ``g1`` and ``g2`` that 
+    overlap are used. Also setting ``g2=None`` is equivalent to replacing its 
+    elements by zeros.
 
     ``chi**2`` is computed from the inverse of the covariance matrix
     of ``g1-g2``. The matrix inversion can be sensitive to roundoff 
@@ -164,48 +192,52 @@ def chi2(g1, g2, svdcut=1e-15, svdnum=None, nocorr=False):
     """
     # leaving nocorr (turn off correlations) undocumented because I
     #   suspect I will remove it
-    if hasattr(g1, 'keys') and hasattr(g2, 'keys'):
+    if g2 is None:
+        diff = BufferDict(g1).buf if hasattr(g1, 'keys') else numpy.asarray(g1).flatten()
+    elif hasattr(g1, 'keys') and hasattr(g2, 'keys'):
         # g1 and g2 are dictionaries
         g1 = BufferDict(g1)
         g2 = BufferDict(g2)
         diff = BufferDict()
-        if g2.size < g1.size:
-            # make sure g1 is smaller
-            g1, g2 = g2, g1
-        chi2.dof = g1.size
-        if chi2.dof == 0:
-            chi2.Q = 0
-            return 0.0
-        for k in g1.keys():
+        keys = set(g1.keys())
+        keys = keys.intersection(g2.keys())
+        for k in keys:
             g1k = g1[k]
             g2k = g2[k]
-            g1k_shape = numpy.shape(g1k)
-            diff[k] = numpy.zeros(g1k_shape, object)
-            if len(g1k_shape) == 0:
+            shape = tuple(
+                [min(s1,s2) for s1, s2 in zip(numpy.shape(g1k), numpy.shape(g2k))]
+                )
+            diff[k] = numpy.zeros(shape, object)
+            if len(shape) == 0:
                 diff[k] = g1k - g2k
             else:
-                for i in numpy.ndindex(g1k_shape):
+                for i in numpy.ndindex(shape):
                     diff[k][i] = g1k[i] - g2k[i]
         diff = diff.buf
     elif not hasattr(g1, 'keys') and not hasattr(g2, 'keys'):
         # g1 and g2 are arrays or scalars
         g1 = numpy.asarray(g1)
         g2 = numpy.asarray(g2)
-        diff = numpy.zeros(g1.shape, object)
-        # g1 and g2 are arrays
-        chi2.dof = g1.size
-        if chi2.dof == 0:
-            chi2.Q = 0
-            return 0.0
-        for i in numpy.ndindex(g1.shape):
-            diff[i] = g1[i] - g2[i]
-        diff = diff.flat
+        shape = tuple(
+            [min(s1,s2) for s1, s2 in zip(numpy.shape(g1), numpy.shape(g2))]
+            )
+        diff = numpy.zeros(shape, object)
+        if len(shape) == 0:
+            diff = numpy.array(g1 - g2)
+        else:
+            for i in numpy.ndindex(shape):
+                diff[i] = g1[i] - g2[i]
+        diff = diff.flatten()
     else:
         # g1 and g2 are something else
         raise ValueError(
             'cannot compute chi**2 for types ' + str(type(g1)) + ' ' +
             str(type(g2))
             )
+    chi2.dof = diff.size
+    if chi2.dof == 0:
+        chi2.Q = 0
+        return 0.0    
     if nocorr:
         # ignore correlations
         ans = numpy.sum(mean(diff) ** 2 / var(diff))
