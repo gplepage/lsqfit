@@ -2275,7 +2275,7 @@ result.  Increasing the number of terms further would have no effect since the
 last terms added are having no impact, and so end up equal to the prior value
 &#8212;  the fit data are not sufficiently precise to add new information about
 these parameters.</p>
-<p>We can check our priors for this fit by re-doing the fit with broader and
+<p>We can test our priors for this fit by re-doing the fit with broader and
 narrower priors. Setting <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(3)'])</span></tt> gives an excellent
 fit,</p>
 <div class="highlight-python"><pre>Least Square Fit:
@@ -2310,15 +2310,16 @@ Parameters:
               2    0.50 (23)     [  0.00 (30) ]  *
               ...</pre>
 </div>
-<p>The priors are responsible for about half of the final error in our estimate
-of <tt class="docutils literal"><span class="pre">p[0]</span></tt>; the rest comes from the uncertainty in the data. This can be
-established by creating an error budget,</p>
+<p>The priors are responsible for about half of the final error in our best
+estimate of <tt class="docutils literal"><span class="pre">p[0]</span></tt> (with priors of <tt class="docutils literal"><span class="pre">0(1)</span></tt>); the rest comes from the
+uncertainty in the data. This can be  established by creating an error budget
+using the code</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">p0</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">print</span> <span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>which creates the following table:</p>
+<p>which prints the following table:</p>
 <div class="highlight-python"><pre>Partial % Errors:
                             p0
 ------------------------------
@@ -2335,7 +2336,7 @@ we do the fit:</p>
 </div>
 <p>Before the fit, our best estimate for the parameters is from the priors. We
 use these to create an estimate for the correction to each data point
-coming from <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms in <tt class="docutils literal"><span class="pre">y(x)</span></tt>. This new data, <tt class="docutils literal"><span class="pre">ymod[i]</span></tt> should be fit with
+coming from <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms in <tt class="docutils literal"><span class="pre">y(x)</span></tt>. This new data, <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>, should be fit with
 a new fitting function, <tt class="docutils literal"><span class="pre">ymod(x)</span> <span class="pre">=</span> <span class="pre">p[0]</span></tt> &#8212; that is, it should be fit
 to a constant, independent of <tt class="docutils literal"><span class="pre">x[i]</span></tt>. The last three lines of the code
 above are easily modified to implement this idea:</p>
@@ -2400,7 +2401,7 @@ values for every data point in <tt class="docutils literal"><span class="pre">ym
 positive correlations introduced into <tt class="docutils literal"><span class="pre">ymod</span></tt> when we remove the
 <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms. These correlations are captured automatically in our code,
 and are essential &#8212; removing the correlations between different
-<tt class="docutils literal"><span class="pre">ymod``s</span> <span class="pre">results</span> <span class="pre">in</span> <span class="pre">a</span> <span class="pre">final</span> <span class="pre">answer,</span> <span class="pre">``0.564(97)</span></tt>, which has much
+<tt class="docutils literal"><span class="pre">ymod</span></tt>s results in a final answer, <tt class="docutils literal"><span class="pre">0.564(97)</span></tt>, which has much
 larger errors.</p>
 </div>
 </div>

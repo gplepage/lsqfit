@@ -1657,7 +1657,7 @@ last terms added are having no impact, and so end up equal to the prior value
 ---  the fit data are not sufficiently precise to add new information about
 these parameters.
 
-We can check our priors for this fit by re-doing the fit with broader and 
+We can test our priors for this fit by re-doing the fit with broader and 
 narrower priors. Setting ``prior = gv.gvar(91 * ['0(3)'])`` gives an excellent
 fit, ::
 
@@ -1695,15 +1695,16 @@ and also a less optimal ``logGBF``::
                 2    0.50 (23)     [  0.00 (30) ]  *
                 ...
 
-The priors are responsible for about half of the final error in our estimate
-of ``p[0]``; the rest comes from the uncertainty in the data. This can be 
-established by creating an error budget, ::
+The priors are responsible for about half of the final error in our best
+estimate of ``p[0]`` (with priors of ``0(1)``); the rest comes from the
+uncertainty in the data. This can be  established by creating an error budget
+using the code ::
 
     inputs = dict(prior=prior, y=y)
     outputs = dict(p0=fit.p[0])
-    print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
+    print(gv.fmt_errorbudget(inputs=inputs, outputs=outputs))
 
-which creates the following table::
+which prints the following table::
 
   Partial % Errors:
                               p0
@@ -1723,7 +1724,7 @@ we do the fit::
 
 Before the fit, our best estimate for the parameters is from the priors. We
 use these to create an estimate for the correction to each data point
-coming from ``n>0`` terms in ``y(x)``. This new data, ``ymod[i]`` should be fit with 
+coming from ``n>0`` terms in ``y(x)``. This new data, ``ymod[i]``, should be fit with 
 a new fitting function, ``ymod(x) = p[0]`` --- that is, it should be fit
 to a constant, independent of ``x[i]``. The last three lines of the code
 above are easily modified to implement this idea::
@@ -1793,7 +1794,7 @@ values for every data point in ``ymod[i]``. This is a consequence of large
 positive correlations introduced into ``ymod`` when we remove the
 ``n>0`` terms. These correlations are captured automatically in our code,
 and are essential --- removing the correlations between different 
-``ymod``s results in a final answer, ``0.564(97)``, which has much 
+``ymod``\s results in a final answer, ``0.564(97)``, which has much 
 larger errors.
 
 
