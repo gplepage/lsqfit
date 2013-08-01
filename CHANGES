@@ -11,7 +11,9 @@ Version 4.5 - 2013-07-31
   be obtained from a fit of the simulated data --- that is, the
   results of the fit to simulated data should agree with pexact 
   to within errors. Knowing the correct answers for the fit 
-  parameters ahead of a fit allows for very realistic testing. 
+  parameters ahead of a fit allows for very realistic testing. See
+  the documentation in the Tutorial section on Testing Fits with
+  Simulated Data for more information.
 
 - nonlinear_fit.format() now adds 1 to 5 stars at the end of any 
   parameter line where the parameter and the prior differ by more
@@ -30,13 +32,18 @@ Version 4.5 - 2013-07-31
   Setting noerror=True causes avg_data to compute averages but not 
   the errors in those averages.
 
-- gvar.randseed() called without an argument generates its own random 
+- gvar.ranseed() called without an argument generates its own random 
   seed to reinitialize the numpy random number generates. The seed is 
   returned by the subroutine and can be used to recover the random 
-  number stream in later work. The seed is also stored in gvar.randseed.seed.
+  number stream in later work. The seed is also stored in gvar.ranseed.seed.
+  The idea is to use gv.ranseed() at the start of a code and print out
+  gvar.ranseed.seed so that the seed can, if desired, be used to recreate
+  the same random numbers in a later run. The key here is the 'if desired';
+  usually you might not care to recreate a run unless something unusual 
+  happens.
 
 - The tutorial in the documentation has a new section (at the end) 
-  with a pedagogical discussion of fit strategies.
+  with a pedagogical discussion of simple fit strategies.
 
 Version 4.4.4 - 2013-07-07
 ==========================
