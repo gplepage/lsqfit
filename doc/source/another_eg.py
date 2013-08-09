@@ -22,10 +22,10 @@ def main():
 		fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
 		print fit.format(maxline=5)
 		make_plot(x, y, fit)
-	if True:
+	if False:
 		prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
 		fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
-		print fit.format(maxline=5)
+		print fit.format(maxline=10)
 		make_plot(x, y, fit)
 		inputs = gv.BufferDict(prior=prior)
 		for xi, yi in zip(x, y):
@@ -33,7 +33,7 @@ def main():
 		inputs = dict(prior=prior, y=y)
 		outputs = dict(p0=fit.p[0])
 		print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
-	if False:
+	if True:
 		prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
 		ymod = y - (f(x, prior) - f(x, prior[:1]))
 		priormod = prior[:1]
@@ -52,8 +52,13 @@ def main():
 		fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 		print fit.format(maxline=5)
 	if False:
-		for sfit in fit.simulated_fit_iter(5):
-			print sfit.format(maxline=-1), sfit.p[0] / sfit.pexact[0]
+		sp0 = []
+		q = []
+		for sfit in fit.simulated_fit_iter(20000):
+			# print sfit.format(maxline=-1), sfit.p[0] - sfit.pexact[0]
+			sp0.append(sfit.pmean[0])
+			q.append(sfit.Q)
+		print(np.average(sp0), np.std(sp0), np.average(q))
 
 def make_plot(x, y, fit, ylabel='y(x)'):
 	plt.errorbar(x, gv.mean(y), gv.sdev(y), fmt='bo')

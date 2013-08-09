@@ -244,11 +244,14 @@ def uncorrelated(g1,g2):
     """ Return ``True`` if |GVar|\s in ``g1`` uncorrelated with those in ``g2``.
         
     ``g1`` and ``g2`` can be |GVar|\s, arrays of |GVar|\s, or dictionaries
-    containing |GVar|\s or arrays of |GVar|\s.
+    containing |GVar|\s or arrays of |GVar|\s. Returns ``True`` if either
+    of ``g1`` or ``g2`` is ``None``.
     """
     cdef GVar g
     cdef smat cov
     cdef Py_ssize_t i
+    if g1 is None or g2 is None:
+        return True
     # collect indices from g1 and g2 separately
     s = [set(),set()]
     for i,gi in enumerate([g1,g2]):

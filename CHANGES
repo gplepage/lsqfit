@@ -1,3 +1,14 @@
+Version 4.5.1 - 2013-07-31
+==========================
+
+- polishing/minor fixes for nonlinear_fit.simulated_fit_iter. Also now has 
+  a bootstrap option.
+
+- copy.copy and copy.deepcopy now work with GVars.
+
+- very minor fix to gvar.uncorrelated
+
+
 Version 4.5 - 2013-07-31
 ========================
 

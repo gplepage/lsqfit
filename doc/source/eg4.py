@@ -17,12 +17,6 @@ import lsqfit
 import numpy as np
 import gvar as gv
 import tee
-
-class ClassName(object):
-    """docstring for ClassName"""
-    def __init__(self, arg):
-        super(ClassName, self).__init__()
-        self.arg = arg
         
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
@@ -42,7 +36,7 @@ def make_data():                    # make x,y fit data
     return x,y
 
 def make_prior(nexp):               # make priors for fit parameters
-    prior = lsqfit.GPrior()         # Gaussian prior -- dictionary-like
+    prior = dict()         # Gaussian prior -- dictionary-like
     prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
     de = [gv.gvar(0.9,0.01) for i in range(nexp)]
     de[0] = gv.gvar(1,0.5)     
@@ -65,7 +59,6 @@ def main():
         print
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
-    
     sys_stdout = sys.stdout
     if DO_ERRORBUDGET:
 

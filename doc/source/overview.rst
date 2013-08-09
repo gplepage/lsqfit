@@ -622,7 +622,7 @@ information on parameters correlated with ``a[1]/a[0]``.
 It would have been easy to change the fit code in the previous section to
 incorporate the new information about ``a[1]/a[0]``. The approach presented
 here is numerically equivalent to that approach 
-insofar as the the ``chi**2`` function for the
+insofar as the ``chi**2`` function for the
 original fit can be well approximated by a quadratic function 
 in the fit parameters --- that is, insofar as 
 ``exp(-chi**2/2)`` is well approximated
@@ -1278,7 +1278,7 @@ can add three fit simulations to the end of the ``main`` program::
                )
 
 The fit data for each of the three simulations is the same as the original fit 
-data except that the means have been adjusted (randomly) so the the correct values 
+data except that the means have been adjusted (randomly) so the correct values 
 for the fit parameters are in each case equal to ``pexact=fit.pmean``. 
 Simulation fit results will typically differ from the correct values by 
 an amount of order a standard deviation. With  sufficiently accurate data,
@@ -1296,8 +1296,8 @@ In the present example, the output from the three simulations is:
 The simulations show that the fit values usually agree with the correct
 values to within a standard deviation or so (the correct results here are 
 the mean values from the last fit discussed in :ref:`correlated-parameters`).
-Furthermore the error estimates
-for each parameter are reproduced by the simulations. We also compute 
+Furthermore the error estimates for each parameter from 
+the original fit are reproduced by the simulations. We also compute 
 the ``chi**2`` for the difference between the leading fit parameters and
 the exact values. This checks parameter values, standard deviations, and correlations.
 The results are reasonable for four degrees of freedom. Here the first simulation
@@ -1495,7 +1495,7 @@ function ``y(x)``::
 
 We know that ``y(x)`` has a Taylor expansion in ``x``::
 
-   y(x) = sum_n=0...inf p[n] x**n
+   y(x) = sum_n=0..inf p[n] x**n
 
 The challenge is to extract a reliable estimate for ``y(0)=p[0]`` from the
 data --- that is, the challenge is to extrapolate the data to ``x=0``.
@@ -1519,7 +1519,8 @@ This fit was generated using the following code::
       ])
    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
 
-   def f(x, p):                  # fit function
+   # fit function
+   def f(x, p):                  
       return sum(pn * x ** n for n, pn in enumerate(p))
 
    p0 = np.ones(5.)              # starting value for chi**2 minimization
@@ -1549,7 +1550,7 @@ following output::
          0.7     1.380 (13)     1.380 (13)  
         0.95     4.014 (40)     4.014 (40)  
 
-This is a perfect fit in that the fit function agrees exactly with 
+This is a "perfect" fit in that the fit function agrees exactly with 
 the data; the ``chi**2`` for the fit is zero. The 5-parameter fit 
 gives a fairly precise answer for ``p[0]``
 (``0.74(4)``), but the curve looks oddly stiff. Also some of the 
@@ -1592,10 +1593,13 @@ The prior information is introduced into the fit as a *prior*::
       ])
    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
 
-   def f(x, p):                     # fit function
+   # fit function
+   def f(x, p):                     
       return sum(pn * x ** n for n, pn in enumerate(p))
 
-   prior = gv.gvar(91 * ['0(1)'])   # 91-parameter prior for the fit
+   # 91-parameter prior for the fit
+   prior = gv.gvar(91 * ['0(1)'])  
+
    fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
    print(fit.format(maxline=5))
 
@@ -1739,12 +1743,17 @@ above are easily modified to implement this idea::
       ])
    x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
 
-   def f(x, p):                     # fit function
+   # fit function
+   def f(x, p):                     
       return sum(pn * x ** n for n, pn in enumerate(p))
 
-   prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
+   # prior for the fit
+   prior = gv.gvar(91 * ['0(1)'])   
+
+   # marginalize all but one parameter (p[0])
    priormod = prior[:1]                       # restrict fit to p[0]
    ymod = y - (f(x, prior) - f(x, priormod))  # correct y
+   
    fit = lsqfit.nonlinear_fit(data=(x, ymod), prior=priormod, fcn=f)
    print(fit.format(maxline=5))
 

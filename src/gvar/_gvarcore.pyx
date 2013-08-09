@@ -67,6 +67,12 @@ cdef class GVar:
     cpdef GVar clone(self):
         return GVar(self.v,self.d,self.cov)
 
+    def __deepcopy__(self, *args):
+        return self
+
+    def __copy__(self):
+        return self
+        
     def __repr__(self):
         # return "construct_gvar(%s,%s,%s)" % (repr(self.mean),repr(self.der),repr(self.cov))
         return str(self)

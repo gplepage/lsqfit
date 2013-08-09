@@ -73,7 +73,7 @@ import functools
 import inspect
 import warnings
 import numpy
-import math, pickle, time
+import math, pickle, time, copy
 
 import gvar as _gvar
 
@@ -650,7 +650,7 @@ class nonlinear_fit(object):
             else:
                 pickle.dump(dict(self.pmean), f) # dump as a dict
     
-    def simulated_fit_iter(self, n, pexact=None, **kargs):
+    def simulated_fit_iter(self, n, pexact=None, bootstrap=False, **kargs):
         """ Iterator that returns simulation copies of a fit.
 
         Fit reliability can be tested using simulated data which
@@ -664,7 +664,7 @@ class nonlinear_fit(object):
         equal to ``fit.pmean``.
 
         Each iteration of the iterator creates new simulated data,
-        with different random numbers and fits it, returning the 
+        with different random numbers, and fits it, returning the 
         the :class:`lsqfit.nonlinear_fit` that results. The simulated
         data has the same covariance matrix as ``fit.y``.
         Typical usage is::
@@ -673,19 +673,51 @@ class nonlinear_fit(object):
             fit = nonlinear_fit(...)
             ...
             for sfit in fit.simulated_fit_iter(n=3):
-                ... verify that sfit.p agrees with fit.pmean within errors ...
+                ... verify that sfit.p agrees with pexact=fit.pmean within errors ...
 
         Only a few iterations are needed to get a sense of the fit's 
-        reliability since we know the correct answer in each case 
-        (``pexact``, equal to ``fit.pmean`` in this example). The simulated
-        fit's output results should agree with ``pexact`` within 
-        the simulated fit's errors.
+        reliability since we know the correct answer in each case. The 
+        simulated fit's output results should agree with ``pexact`` 
+        (``=fit.pmean`` here) within the simulated fit's errors.
 
-        Simulated fits can also be used to correct for biases in the fit's 
+        Simulated fits can also be used to estimate biases in the fit's 
         output parameters or functions of them, should non-Gaussian behavior 
         arise. This is possible, again, because we know the correct value for 
-        every parameter before we do the fit. Simulated fits provide 
-        a faster alternative to a traditional bootstrap analysis.
+        every parameter before we do the fit. Again only a few iterations
+        may be needed for reliable estimates.
+
+        The (possibly non-Gaussian) probability distributions for parameters,
+        or functions of them, can be explored in more detail by setting option
+        ``bootstrap=True`` and collecting results from a large number of 
+        simulated fits. With ``bootstrap=True``, the means of the priors are 
+        also varied from fit to fit, as in a bootstrap simulation; the new 
+        prior means are chosen at random from the prior distribution. 
+        Variations in the best-fit parameters (or functions of them) 
+        from fit to fit define the probability distributions for those 
+        quantities. For example, one would use the following code to 
+        analyze the distribution of function ``g(p)`` of the fit parameters::
+
+            fit = nonlinear_fit(...)
+
+            ...
+
+            glist = []
+            for sfit in fit.simulated_fit_iter(n=100, bootstrap=True):
+                glist.append(g(sfit.pmean))
+            
+            ... analyze samples glist[i] from g(p) distribution ...
+
+        This code generates ``n=100`` samples ``glist[i]`` from the 
+        probability distribution of ``g(p)``. If everything is Gaussian,
+        the mean and standard deviation of ``glist[i]`` should agree 
+        with ``g(fit.p).mean`` and ``g(fit.p).sdev``.
+
+        The only difference between simulated fits with ``bootstrap=True``
+        and ``bootstrap=False`` (the default) is that the prior means are
+        varied. It is essential that they be varied in a bootstrap analysis
+        since one wants to capture the impact of the priors on the final 
+        distributions, but it is not necessary and probably not desirable
+        when simply testing a fit's reliability. 
 
         :param n: Maximum number of iterations (equals infinity if ``None``).
         :type n: integer or ``None``
@@ -693,6 +725,9 @@ class nonlinear_fit(object):
             used to generate simulated data; replaced by ``self.pmean`` if 
             is ``None`` (default).
         :type pexact: ``None`` or array or dictionary of numbers
+        :param bootstrap: Vary prior means if ``True``; otherwise vary only
+            the means in ``self.y`` (default).
+        :type bootstrap: bool
         :returns: An iterator that returns :class:`lsqfit.nonlinear_fit`\s
             for different simulated data.
 
@@ -701,17 +736,17 @@ class nonlinear_fit(object):
         """
         pexact = self.pmean if pexact is None else pexact
         # Note: don't need svdcut/svdnum since these are built into the data_iter
-        fargs = dict(
-            fcn=self.fcn, svdcut=None, svdnum=None, prior=self.prior, p0=pexact
-            )
+        fargs = dict(fcn=self.fcn, svdcut=None, svdnum=None, p0=pexact)
         fargs.update(self.fitterargs)
         fargs.update(kargs)
-        for yb in self._simulated_data_iter(n, pexact=pexact):
-            fit = nonlinear_fit(data=(self.x, yb), **fargs)
+        for ysim, priorsim in self._simulated_data_iter(
+            n, pexact=pexact, bootstrap=bootstrap
+            ):
+            fit = nonlinear_fit(data=(self.x, ysim), prior=priorsim, **fargs)
             fit.pexact = pexact
             yield fit
 
-    def _simulated_data_iter(self, n, pexact=None):
+    def _simulated_data_iter(self, n, pexact=None, bootstrap=True):
         """ Iterator that returns simulated data based upon a fit's data.
 
         Simulated data is generated from a fit's data ``fit.y`` by
@@ -729,21 +764,35 @@ class nonlinear_fit(object):
             used to generate simulated data; replaced by ``self.pmean`` if 
             is ``None`` (default).
         :type pexact: ``None`` or array or dictionary of numbers
-        :returns: An iterator that returns :class:`lsqfit.nonlinear_fit`\s
-            for different simulated data.
+        :param bootstrap: Vary prior means if ``True``; otherwise vary only
+            the means in ``self.y`` (default).
+        :type bootstrap: bool
+        :returns: An iterator that returns a 2-tuple containing simulated
+            versions of self.y and self.prior: ``(ysim, priorsim)``.
         """
         pexact = self.pmean if pexact is None else pexact
         f = self.fcn(pexact) if self.x is False else self.fcn(self.x, pexact)
-        if isinstance(self.y, _gvar.BufferDict):
+        y = copy.deepcopy(self.y)
+        if isinstance(y, _gvar.BufferDict):
             # y,f dictionaries; fresh copy of y, reorder f
-            y = _gvar.BufferDict(self.y)
             tmp_f = _gvar.BufferDict([(k, f[k]) for k in y])
             y.buf += tmp_f.buf - _gvar.mean(y.buf)
         else:
             # y,f arrays; fresh copy of y
-            y = numpy.array(self.y)
             y += numpy.asarray(f) - _gvar.mean(y) 
-        return _gvar.bootstrap_iter(y, n)        
+        prior = copy.deepcopy(self.prior)
+        if prior is None or not bootstrap:
+            yiter = _gvar.bootstrap_iter(y, n)
+            for ysim in _gvar.bootstrap_iter(y, n):
+                yield ysim, prior
+        else:
+            yp = numpy.empty(y.size + prior.size, object) 
+            yp[:y.size] = y.flat
+            yp[y.size:] = prior.flat
+            for ypsim in _gvar.bootstrap_iter(yp, n):
+                y.flat = ypsim[:y.size]
+                prior.flat = ypsim[y.size:]
+                yield y, prior  
 
     simulate_iter = simulated_fit_iter
 
@@ -751,13 +800,15 @@ class nonlinear_fit(object):
         """ Iterator that returns bootstrap copies of a fit.
             
         A bootstrap analysis involves three steps: 1) make a large number
-        of "bootstrap copies" of the original input data that differ from
-        each other by random amounts characteristic of the underlying
+        of "bootstrap copies" of the original input data and prior that differ
+        from each other by random amounts characteristic of the underlying
         randomness in the original data; 2) repeat the entire fit analysis
         for each bootstrap copy of the data, extracting fit results from
         each; and 3) use the variation of the fit results from bootstrap
         copy to bootstrap copy to determine an approximate probability
-        distribution (possibly non-gaussian) for the each result.
+        distribution (possibly non-gaussian) for the fit parameters and/or
+        functions of them: the results from each bootstrap fit are samples 
+        from that distribution. 
             
         Bootstrap copies of the data for step 2 are provided in
         ``datalist``. If ``datalist`` is ``None``, they are generated
@@ -766,14 +817,26 @@ class nonlinear_fit(object):
         copies considered is specified by ``n`` (``None`` implies no
         limit).
             
-        Typical usage is::
+        Variations in the best-fit parameters (or functions of them) 
+        from bootstrap fit to bootstrap fit define the probability 
+        distributions for those quantities. For example, one could use the 
+        following code to analyze the distribution of function ``g(p)`` 
+        of the fit parameters::
+
+            fit = nonlinear_fit(...)
             
             ...
-            fit = lsqfit.nonlinear_fit(...)
-            ...
-            for bsfit in fit.bootstrapped_fit_iter(n=100, datalist=datalist):
-                ... analyze fit parameters in bsfit.pmean ...
-            
+
+            glist = []
+            for sfit in fit.bootstrapped_fit_iter(n=100, datalist=datalist, bootstrap=True):
+                glist.append(g(sfit.pmean))
+
+            ... analyze samples glist[i] from g(p) distribution ...
+
+        This code generates ``n=100`` samples ``glist[i]`` from the 
+        probability distribution of ``g(p)``. If everything is Gaussian,
+        the mean and standard deviation of ``glist[i]`` should agree 
+        with ``g(fit.p).mean`` and ``g(fit.p).sdev``.            
                         
         :param n: Maximum number of iterations if ``n`` is not ``None``;
             otherwise there is no maximum.

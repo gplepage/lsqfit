@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -6,15 +7,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.5 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 4.5.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '4.5',
+        URL_ROOT:    '',
+        VERSION:     '4.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.5 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5.1 documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +51,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -787,7 +788,7 @@ The correct result for this ratio, of course, is one. The smooth variation
 in the data &#8212; smooth compared with the size of the statistical-error bars
 &#8212; is an indication of the statistical correlations between individual
 <tt class="docutils literal"><span class="pre">y</span></tt>s.</p>
-<a class="reference internal image-reference" href="_images/fig1.png"><img alt="_images/fig1.png" src="_images/fig1.png" style="width: 80%;" /></a>
+<img alt="_images/fig1.png" src="_images/fig1.png" style="width: 80%;" />
 <p>This particular plot was made using the <tt class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></tt> module, with the
 following code added to the end of <tt class="docutils literal"><span class="pre">main()</span></tt> (outside the loop):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -888,7 +889,7 @@ information on parameters correlated with <tt class="docutils literal"><span cla
 <p>It would have been easy to change the fit code in the previous section to
 incorporate the new information about <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>. The approach presented
 here is numerically equivalent to that approach
-insofar as the the <tt class="docutils literal"><span class="pre">chi**2</span></tt> function for the
+insofar as the <tt class="docutils literal"><span class="pre">chi**2</span></tt> function for the
 original fit can be well approximated by a quadratic function
 in the fit parameters &#8212; that is, insofar as
 <tt class="docutils literal"><span class="pre">exp(-chi**2/2)</span></tt> is well approximated
@@ -1812,7 +1813,7 @@ can add three fit simulations to the end of the <tt class="docutils literal"><sp
 </pre></div>
 </div>
 <p>The fit data for each of the three simulations is the same as the original fit
-data except that the means have been adjusted (randomly) so the the correct values
+data except that the means have been adjusted (randomly) so the correct values
 for the fit parameters are in each case equal to <tt class="docutils literal"><span class="pre">pexact=fit.pmean</span></tt>.
 Simulation fit results will typically differ from the correct values by
 an amount of order a standard deviation. With  sufficiently accurate data,
@@ -1924,8 +1925,8 @@ Parameter chi2/dof [dof] = 0.14 [4]   Q = 1.0
 <p>The simulations show that the fit values usually agree with the correct
 values to within a standard deviation or so (the correct results here are
 the mean values from the last fit discussed in <a class="reference internal" href="#correlated-parameters"><em>Correlated Parameters; Gaussian Bayes Factor</em></a>).
-Furthermore the error estimates
-for each parameter are reproduced by the simulations. We also compute
+Furthermore the error estimates for each parameter from
+the original fit are reproduced by the simulations. We also compute
 the <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the difference between the leading fit parameters and
 the exact values. This checks parameter values, standard deviations, and correlations.
 The results are reasonable for four degrees of freedom. Here the first simulation
@@ -2128,14 +2129,14 @@ function <tt class="docutils literal"><span class="pre">y(x)</span></tt>:</p>
 0.95       4.0145(399)</pre>
 </div>
 <p>We know that <tt class="docutils literal"><span class="pre">y(x)</span></tt> has a Taylor expansion in <tt class="docutils literal"><span class="pre">x</span></tt>:</p>
-<div class="highlight-python"><pre>y(x) = sum_n=0...inf p[n] x**n</pre>
+<div class="highlight-python"><pre>y(x) = sum_n=0..inf p[n] x**n</pre>
 </div>
 <p>The challenge is to extract a reliable estimate for <tt class="docutils literal"><span class="pre">y(0)=p[0]</span></tt> from the
 data &#8212; that is, the challenge is to extrapolate the data to <tt class="docutils literal"><span class="pre">x=0</span></tt>.</p>
 <p>One approach that is certainly wrong is to truncate the expansion of
 <tt class="docutils literal"><span class="pre">y(x)</span></tt> after five terms, because there are only five pieces of data.
 That gives the following fit:</p>
-<a class="reference internal image-reference" href="_images/appendix_1.png"><img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" /></a>
+<img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" />
 <p>This fit was generated using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -2147,7 +2148,8 @@ That gives the following fit:</p>
    <span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
 
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>                  <span class="c"># fit function</span>
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 
 <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mf">5.</span><span class="p">)</span>              <span class="c"># starting value for chi**2 minimization</span>
@@ -2177,7 +2179,7 @@ Fit:
       0.7     1.380 (13)     1.380 (13)
      0.95     4.014 (40)     4.014 (40)</pre>
 </div>
-<p>This is a perfect fit in that the fit function agrees exactly with
+<p>This is a &#8220;perfect&#8221; fit in that the fit function agrees exactly with
 the data; the <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the fit is zero. The 5-parameter fit
 gives a fairly precise answer for <tt class="docutils literal"><span class="pre">p[0]</span></tt>
 (<tt class="docutils literal"><span class="pre">0.74(4)</span></tt>), but the curve looks oddly stiff. Also some of the
@@ -2214,10 +2216,13 @@ actually fitting 91+5 pieces of data with 91 parameters.</p>
    <span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
 
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>                     <span class="c"># fit function</span>
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 
-<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>   <span class="c"># 91-parameter prior for the fit</span>
+<span class="c"># 91-parameter prior for the fit</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
+
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
 </pre></div>
@@ -2225,7 +2230,7 @@ actually fitting 91+5 pieces of data with 91 parameters.</p>
 <p>Note that a starting value <tt class="docutils literal"><span class="pre">p0</span></tt> is not needed when a prior is specified.
 This code also gives an excellent fit, with a <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of
 freedom of <tt class="docutils literal"><span class="pre">0.35</span></tt>:</p>
-<a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
+<img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" />
 <p>The fit code output is:</p>
 <div class="highlight-python"><pre>Least Square Fit:
   chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
@@ -2350,12 +2355,17 @@ above are easily modified to implement this idea:</p>
    <span class="p">])</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
 
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>                     <span class="c"># fit function</span>
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 
-<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>   <span class="c"># prior for the fit</span>
+<span class="c"># prior for the fit</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
+
+<span class="c"># marginalize all but one parameter (p[0])</span>
 <span class="n">priormod</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>                       <span class="c"># restrict fit to p[0]</span>
 <span class="n">ymod</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prior</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">priormod</span><span class="p">))</span>  <span class="c"># correct y</span>
+
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">priormod</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
 </pre></div>
@@ -2386,7 +2396,7 @@ in this way has no effect if the fit function is linear in that parameter.
 Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
 effectively linear). The fit here is:</p>
-<a class="reference internal image-reference" href="_images/appendix_3.png"><img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" /></a>
+<img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" />
 <p>The constant is consistent with all of the data in <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
 even at <tt class="docutils literal"><span class="pre">x[i]=0.95</span></tt>, because <tt class="docutils literal"><span class="pre">ymod[i]</span></tt> has much larger errors for
 larger <tt class="docutils literal"><span class="pre">x[i]</span></tt> because of the correction terms.</p>
@@ -2439,7 +2449,7 @@ larger errors.</p>
                         title="previous chapter">lsqfit Documentation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gvar.html"
-                        title="next chapter"><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a></p>
+                        title="next chapter"><tt class="docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -2472,12 +2482,12 @@ larger errors.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2013, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

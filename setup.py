@@ -22,7 +22,7 @@ from Cython.Distutils import build_ext
 from distutils.command.build_py import build_py
 import numpy
 
-LSQFIT_VERSION = '4.5'
+LSQFIT_VERSION = '4.5.1'
 
 # create lsqfit/version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -64,7 +64,7 @@ setup(name='lsqfit',
     package_dir=package_dir,
     ext_modules=ext_modules,
     cmdclass={'build_ext':build_ext,'build_py':build_py},
-    requires=["cython (>=0.14)","numpy (>=1.0)"],
+    requires=["cython (>=0.17)","numpy (>=1.7)"],
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',

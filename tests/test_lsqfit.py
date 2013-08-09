@@ -405,7 +405,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                                         dataycov,rtol=1e-4)
             self.assert_gvclose(fit.p**2,datay,1e-4)
     ##
-    @unittest.skipIf(FAST,"skipping test_bootstrap for speed")
+    # @unittest.skipIf(FAST,"skipping test_bootstrap for speed")
     def test_bootstrap(self):
         """ bootstrap_iter """
         ## data and priors ## 
@@ -532,37 +532,26 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
     @unittest.skipIf(FAST,"skipping test_empbayes for speed")
     def test_empbayes(self):
         """ empbayes fit """
-        ## data ##
-        def y0(mean,sdev=0.25,ny=8):
-            ans = np.array([(gvar(mean(),sdev) if sdev>0 else mean())
-                            for i in range(ny+1)])
-            return (ans[:-1]+ans[1:])/2.
-        ##
-        ysdev = 0.25
-        ymean = 4.0
-        ny = 30*4         # larger ny means end result closer to fac
-        fac = 100.      # pushes starting point away from answer
-        y = y0(gvar(ymean,ysdev),sdev=ysdev,ny=ny)
-        ##
-        p2r = gvar(ymean,ysdev)
-        p2mean = np.array([p2r() for i in range(ny)])
-        def fitargs(x):
-            p2 = p2mean + [gvar(0,np.exp(x[0])*ysdev/fac) for i in range(ny)]
-            # p2 = (p2[:-1]+p2[1:])/2
-            p = p2**0.5
-            return dict(prior=np.array(p),data=(None,y),
-                        fcn=(lambda xx,p : np.array(p**2)))
-        ##
-        x0 = np.array([0.01])
+        y = gv.gvar([
+            '0.5351(54)', '0.6762(67)', '0.9227(91)', 
+            '1.3803(131)', '4.0145(399)'
+            ])
+        x = np.array([0.1, 0.3, 0.5, 0.7, 0.95])
+        def f(x, p):                  # fit function
+            return sum(pn * x ** n for n, pn in enumerate(p))
+        def fitargs(z):
+            prior = gv.gvar(91 * ['0 +- %g' % np.exp(z[0])])
+            return dict(data=(x, y), prior=prior, fcn=f)
         if PRINT_FIT:
-            def analyzer(x,f,it):
-                print("%3d  %.3f  ->  %.4f" % (it,np.exp(x)[0],f))
+            def analyzer(z,f,it):
+                print("%3d  %.8f  ->  %.8f" % (it, np.exp(z[0]), f))
             ##
         else:
             analyzer = None
-        fit,x = empbayes_fit(x0,fitargs,analyzer=analyzer,tol=1e-5)
-        # print('empbayes -- np.exp(x[0]),fac:',np.exp(x[0]),fac)
-        self.assertAlmostEqual(np.exp(x[0]),fac,delta=fac*0.35)
+        z0 = np.log([5.])
+        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        self.assertAlmostEqual(np.exp(z[0]), 0.6012, places=2)
+        # know correct answer from the process for creating the data
      
     def test_unpack_data(self):
         """ lsqfit._unpack_data """
@@ -1090,10 +1079,19 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             for sfit in fit.simulated_fit_iter(N):
                 means.append(sfit.p[0].mean)
             self.assertAlmostEqual(fit.p[0].sdev, sfit.p[0].sdev)
+            self.assertEqual(prior[0], sfit.prior[0])
             self.assertLess(
                 abs(np.average(means) - fit.p[0].mean), 
                 5 * fit.p[0].sdev / N ** 0.5
                 )
+        N = 100
+        prior_means = []
+        for sfit in fit.simulated_fit_iter(N, bootstrap=True):
+            prior_means.append(sfit.prior[0].mean)
+        prior_mean = np.average(prior_means)
+        prior_sdev = np.std(prior_means)
+        self.assertLess(abs(prior_mean-prior[0].mean), 5 * prior[0].sdev)
+        self.assertLess(abs(prior_sdev/prior[0].sdev - 1), 5./N ** 0.5)
 
     def test_normal(self):
         " log-normal priors "
