@@ -70,27 +70,13 @@ This function can also be used to convert strings like ``'-72.374(22)'`` or
     >>> import gvar
     >>> x = gvar.gvar(3.1415, 0.0002)
     >>> print(x)
-    3.1415 +- 0.0002
+    3.14150(20)
     >>> x = gvar.gvar("3.1415(2)")
     >>> print(x)
-    3.1415 +- 0.0002
-      
-This |GVar| can be converted to a more compact string using the
-:meth:`GVar.fmt` method: for example, ::
-    
-    >>> print(x.fmt(4))
-    3.1415(2)
-    >>> print(x.fmt(5))
     3.14150(20)
-    >>> print(x.fmt())
-    3.14150(20)
-    
-where the argument is the number of decimal places retained. (Omit the 
-argument and ``fmt()`` will adjust the number of decimal places 
-automatically to display the error to two significant figures.)
     
 Function ``gvar.asgvar(x)`` returns x if it is a |GVar|; 
-otherwise it returns ``gvar(x)``.
+otherwise it returns ``gvar.gvar(x)``.
     
 |GVar|\s are far more interesting when used to describe multidimensional
 distributions, especially if there are correlations between different
@@ -132,7 +118,7 @@ As an example, ::
     
     >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.], [0., 4.]])
     >>> print('x =', x, '   y =', y)
-    x = 0.1 +- 0.125    y = 10 +- 2
+    x = 0.10(13)    y = 10.0(2.0)
     
 makes ``x`` and ``y`` |GVar|\s with standard deviations ``sigma_x=0.125`` and
 ``sigma_y=2``, and, in this case, no correlation between ``x`` and ``y``
@@ -140,7 +126,7 @@ makes ``x`` and ``y`` |GVar|\s with standard deviations ``sigma_x=0.125`` and
     
     >>> f = x + y
     >>> print('f =', f)
-    f = 10.1 +- 2.0039
+    f = 10.1(2.0)
     
 then ``f`` is a |GVar| with ::
     
@@ -153,7 +139,7 @@ where ``cov`` is the original covariance matrix used to define ``x`` and
 errors::
     
     >>> print(f / y)
-    1.01 +- 0.012659
+    1.010(13)
     
 This happens, of course, because the errors in ``f`` and ``y`` are highly
 correlated (since the error in ``f`` comes mostly from ``y``).
@@ -178,10 +164,10 @@ arrays or dictionaries into |GVar|\s: for example, ::
     
     >>> garray = gvar.gvar(['2(1)', '10+-5', (99, 3), gvar.gvar(0, 2)])
     >>> print(garray)
-    [2 +- 1 10 +- 5 99 +- 3 0 +- 2]
+    [2.0(1.0) 10.0(5.0) 99.0(3.0) 0.0(2.0)]
     >>> gdict = gvar.gvar(dict(a='2(1)', b=['10+-5', (99, 3), gvar.gvar(0, 2)]))
     >>> print(gdict)
-    {'a': 2 +- 1, 'b': array([10 +- 5, 99 +- 3, 0 +- 2], dtype=object)}
+    {'a': 2.0(1.0),'b': array([10.0(5.0), 99.0(3.0), 0.0(2.0)], dtype=object)}
     
 If the covariance matrix in ``gvar.gvar`` is diagonal, it can be replaced
 by an array of standard deviations (square roots of diagonal entries in
@@ -189,7 +175,7 @@ by an array of standard deviations (square roots of diagonal entries in
     
     >>> x, y = gvar.gvar([0.1, 10.], [0.125, 2.])
     >>> print('x =', x, '   y =', y)
-    x = 0.1 +- 0.125    y = 10 +- 2
+    x = 0.10(13)    y = 10.0(2.0)
     
     
 Computing Covariance Matrices
@@ -215,7 +201,14 @@ Using the example from the previous section, the code
      [ 0.015625  4.        4.015625]]
     
 confirms that ``x`` and ``y`` are uncorrelated with each other, but strongly
-correlated with ``f``.
+correlated with ``f``. The correlation matrix can be readily obtained as 
+well::
+
+    >>> print(gvar.evalcorr([x, y, f]))
+    [[ 1.          0.          0.06237829]
+     [ 0.          1.          0.99805258]
+     [ 0.06237829  0.99805258  1.        ]]
+
     
 It is often convenient to group related |GVar|\s together in a dictionary
 rather than an array since dictionaries are far more flexible. ``gvar.evalcov`` 
@@ -280,7 +273,7 @@ layout::
     
     >>> g = dict(a=gvar.gvar(0, 1), b=[gvar.gvar(0, 100), gvar.gvar(10, 1e-3)])
     >>> print(g)
-    {'a': 0 +- 1, 'b': [0 +- 100, 10 +- 0.001]}
+    {'a': 0.0(1.0), 'b': [0(100), 10.0000(10)]}
     >>> giter = gvar.raniter(g)
     >>> print(next(giter))
     {'a': -0.88986130981173306, 'b': array([-67.02994213,   9.99973707])}
@@ -293,7 +286,7 @@ assumed in defining functions of Gaussian variables. Consider, for example,
     
     >>> x = gvar.gvar(1., 3.)
     >>> print(cos(x))
-    0.540302 +- 2.52441
+    0.5(2.5)
     
 The standard deviation for ``cos(x)`` is obviously wrong since ``cos(x)``
 can never be larger than one. To obtain the real mean and standard deviation,
@@ -326,14 +319,14 @@ errors and correlations::
     
     >>> g = gvar.gvar([1.1, 0.8], [[0.01, 0.005], [0.005, 0.01]])
     >>> print(g)
-    [1.1 +- 0.1 0.8 +- 0.1]
+    [1.10(10) 0.80(10)]
     >>> print(gvar.evalcov(g))                  # print covariance matrix
     [[ 0.01   0.005]
      [ 0.005  0.01 ]]
     >>> gbs_iter = gvar.bootstrap_iter(g)
     >>> gbs = next(gbs_iter)                    # bootstrap copy of f
     >>> print(gbs)
-    [1.13881 +- 0.1 0.896066 +- 0.1]            # different means
+    [1.14(10) 0.90(10)]                         # different means
     >>> print(gvar.evalcov(gbs))
     [[ 0.01   0.005]                            # same covariance matrix
      [ 0.005  0.01 ]]
@@ -360,7 +353,7 @@ example, the following code works as expected::
     >>> da = gvar(tiny, tiny)
     >>> a, ada = gvar([a.mean, (a+da).mean], evalcov([a, a+da])) # = a,a+da
     >>> print(ada-a)   # should be da again
-    0.0001 +- 0.0001
+    0.00010(10)
     
 Reducing ``tiny``, however, leads to problems::
     
@@ -370,7 +363,7 @@ Reducing ``tiny``, however, leads to problems::
     >>> da = gvar(tiny, tiny)
     >>> a, ada = gvar([a.mean, (a+da).mean], evalcov([a, a+da])) # = a, a+da
     >>> print(ada-a)   # should be da again
-    1e-8 +- 0
+    1(0)e-08
     
 Here the call to :func:`gvar.evalcov` creates a new covariance matrix for
 ``a`` and ``ada = a+da``, but the matrix does not have enough numerical
@@ -453,6 +446,19 @@ equal only if their means and derivatives are  equal, and their covariance
 matrices the same. A |GVar| ``x`` is defined to equal a non-|GVar| ``y`` only
 if ``x.mean == y`` and ``x.sdev == 0``.
 
+The operators ``>`` and ``<`` are also defined. These allow |GVar|\s to be
+ordered, which sometimes simplifies algorithm design. |GVar| ``x`` is 
+defined to be greater than |GVar| ``y`` if ``x.mean > y.mean``. Similarly 
+|GVar| ``x`` is defined to be greater than a number ``y`` if ``x.mean > y``.
+This definition is inconsistent with the definitions of ``==`` and ``!=`` 
+in that, for example, ``not (x>y or x<y)`` is *not* equivalent to ``x==y``. 
+Logically ``x>y`` for |GVar|\s should evaluate to a boolean-valued 
+random variable, but such variables are beyond the scope of this module.
+The operators ``>`` and ``<`` are included only because they facilitate
+algorithmic design. Operators ``>=`` and ``<=`` are *not* defined 
+for |GVar|\s.
+
+
 
 Utilities
 ----------
@@ -474,9 +480,13 @@ matrices and correlation/comparison information can be extracted from arrays
 
 .. autofunction:: gvar.evalcov(g)
 
+.. autofunction:: gvar.evalcorr(g)
+
 .. autofunction:: gvar.uncorrelated(g1, g2)
 
 .. autofunction:: gvar.chi2(g1, g2)
+
+.. autofunction:: gvar.fmt_chi2(f)
 
 |GVar|\s contain information about derivatives with respect to the *independent*
 |GVar|\s from which they were constructed. This information can be extracted using:

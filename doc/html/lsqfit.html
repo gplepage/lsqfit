@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.5.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.5.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.5.1',
+        VERSION:     '4.5.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5.2 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -116,9 +116,9 @@ instead of a dictionary.</p>
 fitting input data <img class="math" src="_images/math/6e6ceb79ebc4bf613298e0144eae25dd73de9be3.png" alt="y_i" style="vertical-align: -4px"/> with functions <img class="math" src="_images/math/cba4e0e3438f94bd51f45a2b7eb9e1696209e5a9.png" alt="f_i(p)" style="vertical-align: -4px"/> by adjusting
 fit parameters <img class="math" src="_images/math/b1c35b1f3a048397767b86d920f8c4a22adbea61.png" alt="p_a" style="vertical-align: -4px"/> to minimize</p>
 <div class="math">
-<p><img src="_images/math/cf49b9489554c8672b722df69948af0b5a2086af.png" alt="\chi^2 &amp;\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
+<p><img src="_images/math/a356f2bbf418ac8896b9b00d5c8f461ed2f4881d.png" alt="\chi^2 &amp;\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
 \Delta y(p)_j  \\
-&amp;\equiv \Delta y(p)\cdot \mathrm{cov}_y^{-1}\cdot
+&amp;\equiv (\Delta y(p))^\mathrm{T}\cdot \mathrm{cov}_y^{-1}\cdot
 \Delta y(p)"/></p>
 </div><p>where <img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is the covariance matrix for the input data
 and</p>
@@ -145,7 +145,7 @@ obtained (approximately) from</p>
 </div><p>Consequently the variance for any function <img class="math" src="_images/math/d505b6bbd2d7d4ba0d8cd2fe55409bdcc0ba0d9a.png" alt="g(\overline p)" style="vertical-align: -4px"/> of the
 best-fit parameters is given by (approximately)</p>
 <div class="math">
-<p><img src="_images/math/9fe899bc67fee8a44b60c9e11391106510804e7b.png" alt="\sigma^2_{g} = \partial g(\overline p) \cdot
+<p><img src="_images/math/e102238def74f10eed3ea51f4fd8f5fa23fbee8c.png" alt="\sigma^2_{g} = (\partial g(\overline p))^\mathrm{T} \cdot
 \mathrm{cov}_p \cdot \partial g(\overline p)"/></p>
 </div><p>The definition of the covariance matrix implies that it and any variance
 <img class="math" src="_images/math/55842b916cc7909358e26096f908ccdf64fd3c9e.png" alt="\sigma^2_g" style="vertical-align: -8px"/> derived from it depend linearly (approximately) on the
@@ -1228,7 +1228,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

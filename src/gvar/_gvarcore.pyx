@@ -73,13 +73,78 @@ cdef class GVar:
     def __copy__(self):
         return self
         
-    def __repr__(self):
-        # return "construct_gvar(%s,%s,%s)" % (repr(self.mean),repr(self.der),repr(self.cov))
-        return str(self)
-
     def __str__(self):
-        """ Convert to string with format: mean +- std-dev. """
-        return "%g +- %g"%(self.mean,self.sdev)
+        """ Return string representation of ``self``.
+
+        The representation is designed to show at least
+        one digit of the mean and two digits of the standard deviation. 
+        For cases where mean and standard deviation are not 
+        too different in magnitude, the representation is of the
+        form ``'mean(sdev)'``. When this is not possible, the string
+        has the form ``'mean +- sdev'``.
+        """
+        def ndec(x, offset=2):
+            ans = offset - numpy.log10(x)
+            ans = int(ans)
+            if ans > 0 and x * 10. ** ans >= [0.5, 9.5, 99.5][offset]:
+                ans -= 1
+            return 0 if ans < 0 else ans
+        dv = abs(self.sdev)
+        v = self.mean
+        
+        # special cases 
+        if dv == float('inf'):
+            return '%g +- inf' % v
+        elif v == 0 and (dv >= 1e5 or dv < 1e-4):
+            if dv == 0:
+                return '0(0)'
+            else:
+                ans = ("%.1e" % dv).split('e')
+                return "0.0(" + ans[0] + ")e" + ans[1]
+        elif v == 0:
+            if dv >= 9.95:
+                return '0(%.0f)' % dv
+            elif dv >= 0.995:
+                return '0.0(%.1f)' % dv
+            else:
+                ndecimal = ndec(dv)
+                return '%.*f(%.0f)' % (ndecimal, v, dv * 10. ** ndecimal)
+        elif dv == 0:
+            ans = ('%g' % v).split('e')
+            if len(ans) == 2:
+                return ans[0] + "(0)e" + ans[1]
+            else:
+                return ans[0] + "(0)"
+        elif dv < 1e-6 * abs(v) or dv > 1e4 * abs(v):
+            return '%g +- %.2g' % (v, dv)
+        elif abs(v) >= 1e6 or abs(v) < 1e-5:
+            # exponential notation for large |self.mean| 
+            exponent = numpy.floor(numpy.log10(abs(v)))
+            fac = 10.**exponent
+            mantissa = str(self/fac)
+            exponent = "e" + ("%.0e" % fac).split("e")[-1]
+            return mantissa + exponent
+
+        # normal cases
+        if dv >= 9.95:
+            if abs(v) >= 9.5:
+                return '%.0f(%.0f)' % (v, dv)
+            else:
+                ndecimal = ndec(abs(v), offset=1)
+                return '%.*f(%.*f)' % (ndecimal, v, ndecimal, dv)
+        if dv >= 0.995:
+            if abs(v) >= 0.95:
+                return '%.1f(%.1f)' % (v, dv)
+            else:
+                ndecimal = ndec(abs(v), offset=1)
+                return '%.*f(%.*f)' % (ndecimal, v, ndecimal, dv)
+        else:
+            ndecimal = max(ndec(abs(v), offset=1), ndec(dv))
+            return '%.*f(%.0f)' % (ndecimal, v, dv * 10. ** ndecimal)
+
+    def __repr__(self):
+        """ Same as ``str(self)``. """
+        return self.__str__()
 
     def __hash__(self):
         return id(self)
@@ -87,7 +152,21 @@ cdef class GVar:
     def __richcmp__(xx,yy,op):
         """ only == and != defined """
         if (op not in [2,3]):
-            raise TypeError("unorderable types")
+            # raise TypeError("unorderable types")
+            if isinstance(xx, GVar):
+                xx = xx.mean
+            if isinstance(yy, GVar):
+                yy = yy.mean
+            if op == 0:
+                return xx < yy
+            elif op == 4:
+                return xx > yy
+            # elif op == 1:
+            #     return xx <= yy
+            # elif op == 5:
+            #     return xx >= yy
+            else:
+                raise TypeError(">= and <= undefined for GVars")
         if not (isinstance(xx,GVar) and isinstance(yy,GVar)):
             if not isinstance(xx, GVar):
                 xx, yy = yy, xx
@@ -355,74 +434,43 @@ cdef class GVar:
         ``0``; this will display at least two digits of error. Very large
         or very small numbers are written with exponential notation when
         ``ndecimal`` is ``None``.
+
+        Setting ``ndecimal < 0`` returns ``mean +- sdev``.
         """
         if d is not None:
             ndecimal = d            # legacy name
-        dv = self.sdev
+        if ndecimal is None:
+            ans = str(self)
+            if sep != '':
+                if 'e' not in ans:
+                    ans = ans.split('(')
+                    if len(ans) > 1:
+                        ans = ans[0] + sep + '(' + ans[1]
+                    else:
+                        ans = ans[0]
+            return ans
+
+        dv = abs(self.sdev)
         v = self.mean
-        # special cases 
+
         if dv == float('inf'):
             # infinite sdev 
-            if ndecimal is not None and ndecimal > 0:
+            if ndecimal > 0:
                 ft = "%%.%df" % int(ndecimal)
                 return (ft % v) + ' +- inf'
             else:
                 return str(v) + ' +- inf'
 
-        if ndecimal is None:
-            if dv == 0:
-                #  simplify if self.sdev == 0 
-                if v == 0:
-                    return "0(0)"
-                else:
-                    ans = ("%g" % v).split('e')
-                    if len(ans) == 2:
-                        return ans[0] + "(0)e" + ans[1]
-                    else:
-                        return ans[0] + "(0)"
-
-            if v == 0 or abs(dv/v) >= 100:
-                #  set v=0 if self.sdev much larger than |self.mean| 
-                if dv >= 1e6 or dv < 1e-5:
-                    ans = ("%.1e" % dv).split('e')
-                    return "0.0("+ans[0]+")e"+ans[1]
-                else:
-                    v = 0
-
-            if abs(v/dv) >= 1e7:
-                # use +- format if dv very small 
-                return "%g +- %.2g" % (v,dv)
-
-            if v != 0 and (abs(v) >= 1e6 or abs(v) < 1e-5):
-                # exponential notation for large |self.mean| 
-                exponent = numpy.floor(numpy.log10(abs(v)))
-                fac = 10.**exponent
-                mantissa = (self/fac).fmt(ndecimal)
-                exponent = "e" + ("%.0e"%fac).split("e")[-1]
-                return mantissa + exponent
-
-
-        if ndecimal is None:
-            # compute default number of decimal places 
-            ndecimal = int(2-numpy.log10(dv))
-            if ndecimal<0:
-                ndecimal = 0
-            elif round(dv*10.**ndecimal,0) == 100:
-                ndecimal -= 1
-
-        if ndecimal is None or ndecimal<0 or ndecimal!=int(ndecimal):
+        if ndecimal<0 or ndecimal != int(ndecimal):
             # do not use compact notation 
-            return self.__str__()
+            return "%g +- %g" % (v,dv)
 
-        v = round(v,ndecimal)
-        dv = round(dv,ndecimal)
         if dv<1.0 and ndecimal>0:
-            ft =  '%.'+str(ndecimal)+'f%s(%d)'
-            dv = round(dv*10.**ndecimal,0)
-            return ft % (v,sep,int(dv))
+            ft =  '%.' + str(ndecimal) + 'f%s(%.0f)'
+            return ft % (v, sep, dv * 10. ** ndecimal)
         else:
-            ft = '%.'+str(ndecimal)+'f%s(%.'+str(ndecimal)+'f)'
-            return ft % (v,sep,dv)
+            ft = '%.' + str(ndecimal) + 'f%s(%.' + str(ndecimal) + 'f)'
+            return ft % (v, sep, dv)
 
     def partialvar(self,*args):
         """ Compute partial variance due to |GVar|\s in ``args``.

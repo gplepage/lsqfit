@@ -75,6 +75,8 @@ def main():
         return p['a'][1] / p['a'][0]
     newfit = lsqfit.nonlinear_fit(data=gv.gvar(1,1e-5), fcn=ratio, prior=fit.p)
     print (newfit)
+    # print(newfit.p['a'][1] / newfit.p['a'][0])
+    # print(fit.p['a'][1] / fit.p['a'][0])
 
     # # extra data 2
     # sys.stdout = tee.tee(sys_stdout, open("eg1b.out", "w"))

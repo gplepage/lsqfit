@@ -275,6 +275,31 @@ def uncorrelated(g1,g2):
     # orthogonal if indices in g1 not connected to indices in g2 by cov
     return s0.isdisjoint(s[1])
 
+def evalcorr(g):
+    """ Compute correlation matrix for elements of 
+    array/dictionary ``g``.
+        
+    If ``g`` is an array of |GVar|\s, ``evalcorr`` returns the
+    correlation matrix as an array with shape ``g.shape+g.shape``.
+    If ``g`` is a dictionary whose values are |GVar|\s or arrays of 
+    |GVar|\s, the result is a doubly-indexed dictionary where 
+    ``corr[k1,k2]`` is the correlation for ``g[k1]`` and ``g[k2]``.
+
+    The correlation matrix is related to the covariance matrix by::
+
+        corr[i,j] = cov[i,j] / (cov[i,i] * cov[j,j]) ** 0.5
+    """
+    cov = evalcov(g)
+    if hasattr(cov, 'keys'):
+        ans = BufferDict(cov)
+        for i,j in ans:
+            ans[i, j] /= (cov[i, i] * cov[j, j]) ** 0.5
+    else:
+        ans = numpy.array(cov)
+        for i, j in numpy.ndindex(cov.shape):
+            ans[i, j] /= (cov[i, i] * cov[j, j]) ** 0.5
+    return ans
+   
 def evalcov(g):
     """ Compute covariance matrix for elements of 
     array/dictionary ``g``.

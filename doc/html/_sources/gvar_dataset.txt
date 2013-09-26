@@ -18,11 +18,11 @@ Introduction
 random samples from arbitrary distributions. The random samples are
 represented by lists of numbers or arrays, where each number/array is a new
 sample from the underlying distribution. For example, six samples from a
-one-dimensional gaussian distribution (``1+-1``) might look like ::
+one-dimensional gaussian distribution, 1±1, might look like ::
     
     >>> random_numbers = [1.739, 2.682, 2.493, -0.460, 0.603, 0.800]
     
-while six samples from a two-dimensional distribution (``[1+-1, 2+-1]``)
+while six samples from a two-dimensional distribution, [1±1, 2±1],
 might be ::
     
     >>> random_arrays = [[ 0.494, 2.734], [ 0.172, 1.400], [ 1.571, 1.304], 
@@ -43,14 +43,14 @@ underlying distribution. This is done using :func:`gvar.dataset.avg_data`:
 for example, ::
     
     >>> print(avg_data(random_numbers))
-    1.3095 +- 0.452117
+    1.31(45)
     
 indicates that ``1.31(45)`` is our best guess, based only upon the samples in
 ``random_numbers``, for the mean of the distribution from which those samples
 were drawn. Similarly ::
     
     >>> print(avg_data(random_arrays))
-    [0.946667 +- 0.217418 1.66817 +- 0.251002]  
+    [0.95(22) 1.67(25)]
       
 indicates that the means for the two-dimensional distribution behind
 ``random_arrays`` are ``[0.95(22), 1.67(25)]``. :func:`avg_data` can also
@@ -58,8 +58,7 @@ be applied to a dictionary whose values are lists of numbers/arrays: for
 example, ::
     
     >>> print(avg_data(random_dict))
-    {'a': array([0.946667 +- 0.217418, 1.66817 +- 0.251002], dtype=object), 
-     'n': 1.3095 +- 0.452117}
+    {'a': array([0.95(22), 1.67(25)], dtype=object),'n': 1.31(45)}
     
 Class |Dataset| can be used to assemble dictionaries containing
 random samples. For example, imagine that the random samples above were
@@ -88,7 +87,7 @@ a dictionary, essentially identical to the ``data`` dictionary above, using::
     >>> print(data['a'])
     [array([ 0.494, 2.734]), array([ 0.172, 1.400]), array([ 1.571, 1.304]) ... ]
     >>> print(avg_data(data['n']))
-    1.3095 +- 0.452117
+    1.31(45)
     
 The brackets and commas can be omitted in the input file for one-dimensional
 arrays: for example, ``datafile`` (above) could equivalently be written ::

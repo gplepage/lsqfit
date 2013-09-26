@@ -97,11 +97,11 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
     |GVar|\s, or a dictionary of |GVar|\s and/or arrays of |GVar|\s::
         
         >>> print(avg_data(random_numbers))
-        1.31 +- 0.203169
+        1.31(20)
         >>> print(avg_data(random_arrays))
-        [11.3333 +- 1.13521 107.95 +- 12.936]
+        [11.3(1.1) 108(13)]
         >>> print(avg_data(random_dict))
-        {'n': 1.31 +- 0.203169, 'a': array([11.3333 +- 1.13521, 107.95 +- 12.936], dtype=object)}
+        {'a': array([11.3(1.1), 108(13)], dtype=object),'n': 1.31(20)}
         
     The arrays in ``random_arrays`` are one dimensional; in general, they
     can have any shape.
@@ -121,11 +121,11 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
     averaged::
         
         >>> print(avg_data(random_numbers,spread=True))
-        1.31 +- 0.497661
+        1.31(50)
         >>> print(avg_data(random_numbers))
-        1.31 +- 0.203169
-        >>> >>> print((0.497661/0.203169)**2)   # should be 6
-        6.00001491255
+        1.31(20)
+        >>> print((0.50 / 0.20) ** 2)   # should be (about) 6
+        6.25
         
     This is useful, for example, when averaging bootstrap data. The default
     value is ``spread=False``.

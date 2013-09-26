@@ -62,7 +62,7 @@ equal ``y['data1']`` and ``y['data2']``, respectively, to within the
 specified in the ``gv.gvar(...)``\s used to create them: for example, ::
    
    >>> print(y['data1'])
-   [1.376 +- 0.0685565 2.01 +- 0.236643]
+   [1.376(69) 2.01(24)]
    >>> print(y['data1'][0].mean, "+-", y['data1'][0].sdev)
    1.376 +- 0.068556546004
    >>> print(gv.evalcov(y['data1']))   # covariance matrix
@@ -104,11 +104,11 @@ using :mod:`pickle` again::
    >>> import pickle
    >>> p = pickle.load(open('outputfile.p', 'rb'))
    >>> print(p['a'])
-   0.252798 +- 0.0323152
+   0.253(32)
    >>> print(p['b'])
-   0.448762 +- 0.0647224
+   0.449(65)
    >>> print(p['b']/p['a'])
-   1.77518 +- 0.298185
+   1.78(30)
    
 The recovered parameters are :class:`gvar.GVar`\s, with their full covariance
 matrix intact. (:mod:`pickle` works here because the variables in ``fit.p``
@@ -208,7 +208,6 @@ statement if using Python 2; or add ::
 
 at the start of your file. 
 
-
 .. _making-fake-data:
 
 Making Fake Data
@@ -268,7 +267,7 @@ Gaussian variable ``cr`` represents a Gaussian distribution with mean
 ``cr``::
 
    >>> print(cr)
-   0 +- 0.01
+   0.000(10)
    >>> print(cr())
    0.00452180208286
    >>> print(cr())
@@ -280,9 +279,9 @@ represented by the ``c[n]``\s, each of which has width 0.01. The resulting
 statistical errors::
 
    >>> print(y)
-   [0.275179 +- 0.0027439 0.0795054 +- 0.000796125 ... ]
+   [0.2752(27) 0.07951(80) ... ]
    >>> print(y-f_exact(x))
-   [0.00113215 +- 0.0027439 0.000291951 +- 0.000796125 ... ]
+   [0.0011(27) 0.00029(80) ... ]
    
 Different ``y``\s are also correlated (by construction), which becomes clear
 if we evaluate the covariance matrix for the ``y``\s::
@@ -362,9 +361,9 @@ therefore the number of ``a``\s and ``E``\s). With ``nexp=3``, for example,
 one would then have::
 
    >>> print(prior['a'])
-   [0.5 +- 0.5 0.5 +- 0.5 0.5 +- 0.5]
+   [0.50(50) 0.50(50) 0.50(50)]
    >>> print(prior['E'])
-   [1 +- 0.5 2 +- 0.5 3 +- 0.5]
+   [1.00(50), 2.00(50), 3.00(50)]
 
 We use dictionary-like class :class:`gvar.BufferDict` for the prior because it
 allows us to save the prior if we wish (using Python's :mod:`pickle` module).
@@ -508,9 +507,9 @@ There are several things to notice here:
      fit. The larger this number, the more likely it is that prior/fit-function 
      and data
      could be related. Here it grows dramatically from the first fit
-     (``nexp=3``) but then more-or-less stops changing around ``nexp=6``. The
+     (``nexp=3``) but then more-or-less stops changing around ``nexp=5``. The
      implication is that this data is much more likely to have come from a
-     theory with ``nexp>=6`` than with ``nexp=3`` (which we know to be the
+     theory with ``nexp>=5`` than with ``nexp=3`` (which we know to be the
      actual case).
      
    * In the code, results for each fit are captured in a Python object
@@ -610,8 +609,9 @@ The result of the new fit (to one piece of new data) is:
 .. literalinclude:: eg1a.out
 
 Parameters ``a[0]`` and ``E[0]`` are essentially unchanged by the new 
-information, but ``a[i]`` and ``E[i]`` are much more precise for ``i=2`` 
-and ``i=3``. It might seem odd that ``E[1]``, for example, is changed at 
+information, but ``a[i]`` and ``E[i]`` are more precise for ``i=2`` 
+and ``i=3``, as is ``a[1]/a[0]``, of course. 
+It might seem odd that ``E[1]``, for example, is changed at 
 all, since the fit function, ``ratio(p)``, makes no mention of it. This 
 is not surprising, however, since ``ratio(p)`` does depend up ``a[1]``,
 and ``a[1]`` is strongly correlated with ``E[1]`` through the prior. It
@@ -743,9 +743,9 @@ inefficiently) in a single line of Python::
 For ``nexp=3``, this implies that ::
 
    >>> print(E)
-   [1 +- 0.5 1.9 +- 0.5001 2.8 +- 0.5002]
+   [1.00(50) 1.90(50) 2.80(50)] 
    >>> print(E[1] - E[0], E[2] - E[1])
-   0.9 +- 0.01 0.9 +- 0.01
+   0.900(10) 0.900(10)
 
 which shows that each ``E[i]`` separately has an uncertainty of ±0.5 
 (approximately) but that differences are specified to within ±0.01.
@@ -1453,9 +1453,9 @@ parameters would be forced equal to each other because their priors are both
 set equal to the same :class:`gvar.GVar`, ``z``::
 
    >>> print(prior['a'], prior['b'])
-   1 +- 1 1 +- 1
+   1.0(1.0) 1.0(1.0)
    >>> print(prior['a']-prior['b'])
-   0 +- 0
+   0(0)
 
 That is, while parameters ``a`` and ``b`` fluctuate over a range of 
 1±1, they fluctuate together, in exact lock-step. The covariance matrix
@@ -1502,7 +1502,8 @@ data --- that is, the challenge is to extrapolate the data to ``x=0``.
 
 One approach that is certainly wrong is to truncate the expansion of
 ``y(x)`` after five terms, because there are only five pieces of data. 
-That gives the following fit:
+That gives the following fit, where the gray band shows the 1-sigma 
+uncertainty in the fit function evaluated with the best-fit parameters:
 
 .. image:: appendix_1.*
    :width: 80%
@@ -1605,7 +1606,8 @@ The prior information is introduced into the fit as a *prior*::
 
 Note that a starting value ``p0`` is not needed when a prior is specified. 
 This code also gives an excellent fit, with a ``chi**2`` per degree of 
-freedom of ``0.35``:
+freedom of ``0.35`` (note that the data point at ``x=0.95`` is off the chart,
+but agrees with the fit to within its 1% errors):
 
 .. image:: appendix_2.*
    :width: 80%

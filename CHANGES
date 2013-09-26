@@ -1,4 +1,31 @@
-Version 4.5.1 - 2013-07-31
+Version 4.5.2 - 2013-09-26
+==========================
+
+- str(x) and repr(x) for GVar x both now return strings using the 
+  '2.31(10)' format rather than the older '2.31 +- 0.1'.
+  The old format is still supported on input, but it will 
+  no longer appear in (default) printing. Use x.fmt(-1) to obtain the old
+  format.
+
+- Added gv.evalcorr(g) which calculates the correlation matrix of the 
+  GVars in g.
+
+- gv.chi2 has a new option (fmt=True) that causes it to return a string
+  (describing the chi**2) rather than the numerical value of chi**2.
+
+- Operators > and < are now defined for gvar.GVars. This allows algorithms
+  to order GVars, which is occasionally useful. The ordering is based upon
+  the mean values. Operators >= and <= are still *not* defined, because of 
+  incompatibilities with == and !=, which look not just at mean values but
+  also at all the dependencies. These incompatibilities suggest that one
+  shouldn't define > and < either, except that there are times when it is
+  quite useful to be able to order a numerical data type for algorithmic
+  reasons. The setup here is a compromise (kludge?).
+
+- Fixed very minor bug in lsqfit.nonlinear_fit.format().
+
+
+Version 4.5.1 - 2013-08-13
 ==========================
 
 - polishing/minor fixes for nonlinear_fit.simulated_fit_iter. Also now has 

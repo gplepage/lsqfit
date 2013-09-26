@@ -21,7 +21,7 @@ fit parameters :math:`p_a` to minimize
 
    \chi^2 &\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
    \Delta y(p)_j  \\
-   &\equiv \Delta y(p)\cdot \mathrm{cov}_y^{-1}\cdot
+   &\equiv (\Delta y(p))^\mathrm{T}\cdot \mathrm{cov}_y^{-1}\cdot
    \Delta y(p)
    
 where :math:`\mathrm{cov}_y` is the covariance matrix for the input data
@@ -61,7 +61,7 @@ best-fit parameters is given by (approximately)
 
 .. math::
    
-   \sigma^2_{g} = \partial g(\overline p) \cdot 
+   \sigma^2_{g} = (\partial g(\overline p))^\mathrm{T} \cdot 
    \mathrm{cov}_p \cdot \partial g(\overline p)
 
 The definition of the covariance matrix implies that it and any variance

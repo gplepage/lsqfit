@@ -236,7 +236,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '  chi2/dof [dof] = 0.8 [1]    Q = 0.37    logGBF = None    itns = 2', 
             '', 
             'Parameters:', 
-            '              p    1.09 (19)     [ 0.0 +- inf ]  ', 
+            '              p    1.09 (19)     [   0 +- inf ]  ', 
             '', 
             'Fit:', 
             '     x[k]         y[k]    f(x[k],p)', 

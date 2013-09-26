@@ -1,7 +1,7 @@
 >>> E = fit.p['E']
 >>> a = fit.p['a']
 >>> print(E[1] / E[0])
-1.9994 +- 0.00106276
+1.9994(11)
 >>> print((E[1] / E[0]).partialsdev(fit.prior['E']))
 0.000419219538523
 >>> print((E[1] / E[0]).partialsdev(fit.prior['a']))

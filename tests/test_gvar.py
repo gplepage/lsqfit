@@ -225,7 +225,7 @@ class test_gvar1(unittest.TestCase,ArrayTests):
     def test_str(self):
         """ str(x) """
         global x,xmean,xsdev,gvar
-        self.assertEqual(str(x),str(x.mean)+' +- '+str(x.sdev))
+        self.assertEqual(str(x), x.fmt())
     ##
     def test_call(self):
         """ x() """
@@ -239,7 +239,7 @@ class test_gvar1(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(std,(1-1./n)**0.5*xsdev,delta=fac*x.sdev/(2*n)**0.5)
     ##
     def test_cmp(self):
-        """ x==y x!=y """
+        """ x==y x!=y x>y x<y"""
         global x,xmean,xsdev,gvar
         y = gvar(x)                     # y.der == x.der
         self.assertTrue(y==x and not x!=y)
@@ -260,6 +260,8 @@ class test_gvar1(unittest.TestCase,ArrayTests):
         y = gvar(2*x.mean, 0)
         self.assertTrue(y != x.mean and not y == x.mean)
         self.assertTrue(x.mean != y and not x.mean == y)
+        self.assertTrue(gvar(1.,1.) > gvar(-1.,10.))
+        self.assertTrue(gvar(1.,1.) < gvar(1.01,10.))
     ##
     def test_neg(self):
         """ -x """
@@ -424,7 +426,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     ##
     def test_fmt(self):
         """ x.fmt """
-        self.assertEqual(x.fmt(None),x.fmt(2) )
+        self.assertEqual(x.fmt(None), x.fmt(2))
         self.assertEqual(x.fmt(3),"%.3f(%d)"%(x.mean,round(x.sdev*1000)))
         self.assertEqual(y.fmt(3),"%.3f(%.3f)"%(y.mean,round(y.sdev,3)))
         self.assertEqual(gvar(".1234(341)").fmt(), "0.123(34)")
@@ -438,11 +440,11 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(gvar("-10.2(1.3)").fmt(), "-10.2(1.3)")
         self.assertEqual(gvar("10(1.3)").fmt(0),"10(1)")
         self.assertEqual(gvar("1e-9 +- 1.23e-12").fmt(), "1.0000(12)e-09")
-        self.assertEqual(gvar("1e-9 +- 1.23e-6").fmt(), "0.0(1.2)e-06")
+        self.assertEqual(gvar("1e-9 +- 1.23e-6").fmt(), '1(1230)e-09')
         self.assertEqual(gvar("1e+9 +- 1.23e+6").fmt(), "1.0000(12)e+09")
         self.assertEqual(gvar("1e-9 +- 0").fmt(), "1(0)e-09")
         self.assertEqual(gvar("0(0)").fmt(), "0(0)")
-        self.assertEqual(gvar("1e-9 +- 0.129").fmt(), "0.00(13)")
+        self.assertEqual(gvar("1e-9 +- 0.129").fmt(), '1e-09 +- 0.13')
         self.assertEqual(gvar("1.23(4)e-9").fmt(), "1.230(40)e-09")
         self.assertEqual(gvar("1.23 +- 1.23e-12").fmt(), "1.23 +- 1.2e-12")
         self.assertEqual(gvar("1.23 +- 1.23e-6").fmt(), "1.2300000(12)")
@@ -451,7 +453,39 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(gvar("10.23 +- 1e-10").fmt(), str(10.23) + " +- 1e-10")
         self.assertEqual(gvar("10.23(5.1)").fmt(), "10.2(5.1)")
         self.assertEqual(gvar("10.23(5.1)").fmt(-1),"10.23 +- 5.1")
-    ##
+        self.assertEqual(gvar(0.021, 0.18).fmt(), '0.02(18)')
+        self.assertEqual(gvar(0.18, 0.021).fmt(), '0.180(21)')
+        # boundary cases
+        self.assertEqual(gvar(0.096, 9).fmt(), '0.1(9.0)')
+        self.assertEqual(gvar(0.094, 9).fmt(), '0.09(9.00)')
+        self.assertEqual(gvar(0.96, 9).fmt(), '1.0(9.0)')
+        self.assertEqual(gvar(0.94, 9).fmt(), '0.9(9.0)')
+        self.assertEqual(gvar(-0.96, 9).fmt(), '-1.0(9.0)')
+        self.assertEqual(gvar(-0.94, 9).fmt(), '-0.9(9.0)')
+        self.assertEqual(gvar(9.6, 90).fmt(), '10(90)')
+        self.assertEqual(gvar(9.4, 90).fmt(), '9(90)')
+        self.assertEqual(gvar(99.6, 91).fmt(), '100(91)')
+        self.assertEqual(gvar(99.4, 91).fmt(), '99(91)')
+        self.assertEqual(gvar(0.1, 0.0996).fmt(), '0.10(10)')
+        self.assertEqual(gvar(0.1, 0.0994).fmt(), '0.100(99)')
+        self.assertEqual(gvar(0.1, 0.994).fmt(), '0.10(99)')
+        self.assertEqual(gvar(0.1, 0.996).fmt(), '0.1(1.0)')
+        self.assertEqual(gvar(12.3, 9.96).fmt(), '12(10)')
+        self.assertEqual(gvar(12.3, 9.94).fmt(), '12.3(9.9)')
+        # 0 +- stuff
+        self.assertEqual(gvar(0, 0).fmt(), '0(0)')
+        self.assertEqual(gvar(0, 99.6).fmt(), '0(100)')
+        self.assertEqual(gvar(0, 99.4).fmt(), '0(99)')
+        self.assertEqual(gvar(0, 9.96).fmt(), '0(10)')
+        self.assertEqual(gvar(0, 9.94).fmt(), '0.0(9.9)')
+        self.assertEqual(gvar(0, 0.996).fmt(), '0.0(1.0)')
+        self.assertEqual(gvar(0, 0.994).fmt(), '0.00(99)')
+        self.assertEqual(gvar(0, 1e5).fmt(), '0.0(1.0)e+05')
+        self.assertEqual(gvar(0, 1e4).fmt(), '0(10000)')
+        self.assertEqual(gvar(0, 1e-5).fmt(), '0.0(1.0)e-05')
+        self.assertEqual(gvar(0, 1e-4).fmt(), '0.00000(10)')
+
+
     def test_fmt2(self):
         """ fmt(x) """
         g1 = gvar(1.5,0.5)
@@ -725,6 +759,12 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(deriv(f, y), dict(a=3., b=0.))
         with self.assertRaises(ValueError):
             deriv(f, x+y)
+
+    def test_evalcorr(self):
+        " evalcorr(array) "
+        a, b = gvar([1., 2.], [[64., 4.], [4., 16.]])
+        c = evalcorr([a, b])
+        self.assert_arraysequal(c, [[1., 1/8.], [1/8., 1.]])
 
     def test_evalcov1(self):
         """ evalcov(array) """

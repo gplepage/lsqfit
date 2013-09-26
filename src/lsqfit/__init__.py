@@ -444,8 +444,8 @@ class nonlinear_fit(object):
                             v1fmt = v1[k].fmt(sep=' ')
                             v2fmt = v2[k].fmt(sep=' ')
                         else:
-                            v1fmt = str(v1[k])
-                            v2fmt = str(v2[k])
+                            v1fmt = v1[k].fmt(-1)
+                            v2fmt = v2[k].fmt(-1)
                         if style == 'm' and v1fmt == v2fmt:
                             ct += 1
                             continue
@@ -467,8 +467,8 @@ class nonlinear_fit(object):
                                 v1fmt = v1[k][i].fmt(sep=' ')
                                 v2fmt = v2[k][i].fmt(sep=' ')
                             else:
-                                v1fmt = str(v1[k][i])
-                                v2fmt = str(v2[k][i])
+                                v1fmt = v1[k][i].fmt(-1)
+                                v2fmt = v2[k][i].fmt(-1)
                             if style == 'm' and v1fmt == v2fmt:
                                 ct += 1
                                 continue
@@ -493,8 +493,8 @@ class nonlinear_fit(object):
                         v1fmt = v1[k].fmt(sep=' ')
                         v2fmt = v2[k].fmt(sep=' ')
                     else:
-                        v1fmt = str(v1[k])
-                        v2fmt = str(v2[k])
+                        v1fmt = v1[k].fmt(-1)
+                        v2fmt = v2[k].fmt(-1)
                     if style == 'm' and v1fmt == v2fmt:
                         ct += 1
                         continue
@@ -575,6 +575,10 @@ class nonlinear_fit(object):
         ny = self.y.size
         stride = 1 if maxline >= ny else (int(ny/maxline) + 1)
         f = self.fcn(self.p) if self.x is False else self.fcn(self.x, self.p)
+        if hasattr(f, 'keys'):
+            f = _gvar.BufferDict(f)
+        else:
+            f = numpy.array(f)
         data = collect(self.y, f, style='v', stride=stride)
         w1,w2,w3 = collect.width
         clabels = ("key","y[key]","f(p)[key]")

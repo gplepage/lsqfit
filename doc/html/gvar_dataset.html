@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.5.1 documentation</title>
+    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.5.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.5.1',
+        VERSION:     '4.5.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.5.2 documentation" href="index.html" />
     <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
     <link rel="prev" title="gvar - Gaussian Random Variables" href="gvar.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +51,7 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -68,11 +68,11 @@
 random samples from arbitrary distributions. The random samples are
 represented by lists of numbers or arrays, where each number/array is a new
 sample from the underlying distribution. For example, six samples from a
-one-dimensional gaussian distribution (<tt class="docutils literal"><span class="pre">1+-1</span></tt>) might look like</p>
+one-dimensional gaussian distribution, 1±1, might look like</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.739</span><span class="p">,</span> <span class="mf">2.682</span><span class="p">,</span> <span class="mf">2.493</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.460</span><span class="p">,</span> <span class="mf">0.603</span><span class="p">,</span> <span class="mf">0.800</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>while six samples from a two-dimensional distribution (<tt class="docutils literal"><span class="pre">[1+-1,</span> <span class="pre">2+-1]</span></tt>)
+<p>while six samples from a two-dimensional distribution, [1±1, 2±1],
 might be</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_arrays</span> <span class="o">=</span> <span class="p">[[</span> <span class="mf">0.494</span><span class="p">,</span> <span class="mf">2.734</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.172</span><span class="p">,</span> <span class="mf">1.400</span><span class="p">],</span> <span class="p">[</span> <span class="mf">1.571</span><span class="p">,</span> <span class="mf">1.304</span><span class="p">],</span>
 <span class="gp">... </span>                 <span class="p">[</span> <span class="mf">1.532</span><span class="p">,</span> <span class="mf">1.510</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.669</span><span class="p">,</span> <span class="mf">0.873</span><span class="p">],</span> <span class="p">[</span> <span class="mf">1.242</span><span class="p">,</span> <span class="mf">2.188</span><span class="p">]]</span>
@@ -91,14 +91,14 @@ other.</p>
 underlying distribution. This is done using <a class="reference internal" href="#gvar.dataset.avg_data" title="gvar.dataset.avg_data"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></tt></a>:
 for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">))</span>
-<span class="go">1.3095 +- 0.452117</span>
+<span class="go">1.31(45)</span>
 </pre></div>
 </div>
 <p>indicates that <tt class="docutils literal"><span class="pre">1.31(45)</span></tt> is our best guess, based only upon the samples in
 <tt class="docutils literal"><span class="pre">random_numbers</span></tt>, for the mean of the distribution from which those samples
 were drawn. Similarly</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_arrays</span><span class="p">))</span>
-<span class="go">[0.946667 +- 0.217418 1.66817 +- 0.251002]</span>
+<span class="go">[0.95(22) 1.67(25)]</span>
 </pre></div>
 </div>
 <p>indicates that the means for the two-dimensional distribution behind
@@ -106,8 +106,7 @@ were drawn. Similarly</p>
 be applied to a dictionary whose values are lists of numbers/arrays: for
 example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_dict</span><span class="p">))</span>
-<span class="go">{&#39;a&#39;: array([0.946667 +- 0.217418, 1.66817 +- 0.251002], dtype=object),</span>
-<span class="go"> &#39;n&#39;: 1.3095 +- 0.452117}</span>
+<span class="go">{&#39;a&#39;: array([0.95(22), 1.67(25)], dtype=object),&#39;n&#39;: 1.31(45)}</span>
 </pre></div>
 </div>
 <p>Class <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></tt></a> can be used to assemble dictionaries containing
@@ -135,7 +134,7 @@ a dictionary, essentially identical to the <tt class="docutils literal"><span cl
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">])</span>
 <span class="go">[array([ 0.494, 2.734]), array([ 0.172, 1.400]), array([ 1.571, 1.304]) ... ]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;n&#39;</span><span class="p">]))</span>
-<span class="go">1.3095 +- 0.452117</span>
+<span class="go">1.31(45)</span>
 </pre></div>
 </div>
 <p>The brackets and commas can be omitted in the input file for one-dimensional
@@ -208,11 +207,11 @@ numbers/arrays are drawn, together with the uncertainties in those
 estimates. The results are returned as a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> or an array of
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or a dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">))</span>
-<span class="go">1.31 +- 0.203169</span>
+<span class="go">1.31(20)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_arrays</span><span class="p">))</span>
-<span class="go">[11.3333 +- 1.13521 107.95 +- 12.936]</span>
+<span class="go">[11.3(1.1) 108(13)]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_dict</span><span class="p">))</span>
-<span class="go">{&#39;n&#39;: 1.31 +- 0.203169, &#39;a&#39;: array([11.3333 +- 1.13521, 107.95 +- 12.936], dtype=object)}</span>
+<span class="go">{&#39;a&#39;: array([11.3(1.1), 108(13)], dtype=object),&#39;n&#39;: 1.31(20)}</span>
 </pre></div>
 </div>
 <p>The arrays in <tt class="docutils literal"><span class="pre">random_arrays</span></tt> are one dimensional; in general, they
@@ -230,11 +229,11 @@ the uncertainty in the estimate of the mean. The former is <tt class="docutils l
 larger where <tt class="docutils literal"><span class="pre">N</span></tt> is the number of random numbers (or arrays) being
 averaged:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">,</span><span class="n">spread</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
-<span class="go">1.31 +- 0.497661</span>
+<span class="go">1.31(50)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">))</span>
-<span class="go">1.31 +- 0.203169</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">&gt;&gt;&gt;</span> <span class="k">print</span><span class="p">((</span><span class="mf">0.497661</span><span class="o">/</span><span class="mf">0.203169</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>   <span class="c"># should be 6</span>
-<span class="go">6.00001491255</span>
+<span class="go">1.31(20)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="mf">0.50</span> <span class="o">/</span> <span class="mf">0.20</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>   <span class="c"># should be (about) 6</span>
+<span class="go">6.25</span>
 </pre></div>
 </div>
 <p>This is useful, for example, when averaging bootstrap data. The default
@@ -648,7 +647,7 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.5.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -26,6 +26,8 @@ variables including:
     - ``chi2(g1, g2)`` --- ``chi**2`` of ``g1-g2``.
     
     - ``evalcov(g)`` --- compute covariance matrix
+
+    - ``evalcorr(g)`` --- compute correlation matrix
     
     - ``fmt_values(g)`` --- create table of values for printing
     
@@ -74,7 +76,7 @@ from ._utilities import *
 
 from . import dataset
 
-_GDEV_LIST = []
+_GVAR_LIST = []
 
 def ranseed(seed=None):
     """ Seed random number generators with tuple ``seed``.
@@ -106,7 +108,7 @@ def switch_gvar(cov=None):
     :returns: New :func:`gvar.gvar`.
     """
     global gvar
-    _GDEV_LIST.append(gvar)
+    _GVAR_LIST.append(gvar)
     gvar = GVarFactory(cov)
     return gvar
 ##
@@ -118,7 +120,7 @@ def restore_gvar():
     """
     global gvar
     try:
-        gvar = _GDEV_LIST.pop()
+        gvar = _GVAR_LIST.pop()
     except IndexError:
         raise RuntimeError("no previous gvar")
     return gvar
@@ -144,7 +146,7 @@ def asgvar(x):
         return gvar(x)
 ##
 
-def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False):
+def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False, fmt=False):
     """ Compute chi**2 of ``g1-g2``. 
 
     ``chi**2`` is a measure of whether the multi-dimensional 
@@ -189,6 +191,9 @@ def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False):
         Values smaller than 0.1 or so suggest that they do not
         agree. Also called the *p-value*.
 
+    If argument ``fmt==True``, then a string is returned containing the
+    ``chi**2`` per degree of freedom, the number of degrees of freedom, and
+    ``Q``.
     """
     # leaving nocorr (turn off correlations) undocumented because I
     #   suspect I will remove it
@@ -249,7 +254,15 @@ def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False):
         chi2.s = s
         chi2.dof = len(s.val)
     chi2.Q = gammaQ(chi2.dof/2., ans/2.)
-    return ans
+    chi2.chi2 = ans
+    return ans if fmt == False else fmt_chi2(chi2)
+
+def fmt_chi2(f):
+    """ Return string containing ``chi**2/dof``, ``dof`` and ``Q`` from ``f``.
+
+    Assumes ``f`` has attributes ``chi2``, ``dof`` and ``Q``.
+    """
+    return "chi2/dof = %.2g [%d]   Q = %.2g" % (f.chi2 / f.dof, f.dof, f.Q)
 
 def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     """ Apply svd cuts to collection of |GVar|\s in ``g``. 
