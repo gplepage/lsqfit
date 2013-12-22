@@ -1,3 +1,29 @@
+Version 4.5.3 - 2013-12-22
+===========================
+
+- Fixed bug in gvar._gvarcore that caused problems on win64 systems.
+
+- GVar's __cinit__ has been changed to an __init__, which makes derivation
+  from GVar possible. GVar also has new property: g.internaldata. 
+  This allows simplifies derivation from GVar --- see, for example, 
+  class WAvg in lsqfit._extras.py. Finally a cython declaration file,
+  gvar.pxd, is installed for the benefit of other cython modules: 
+  cimport gvar gives the module access to the internal definitions of 
+  cython extension types GVar, svec and smat. 
+
+- lsqfit.wavg (weighted averages) now returns a variable 
+  of type WAvg which is a class derived from GVar (with all of 
+  its functionality) but with added attributes: chi2,
+  dof, and Q which are the chi2, dof, Q from the wavg. In the past these were
+  read off the function itself (eg, wavg.Q) but this is nonintuitive. 
+  Now ans = lsqfit.wavg(list_of_GVars) is a GVar with the extra 
+  attributes (ans.chi2, ans.dof, ans.Q). lsqfit.wavg still has attributes
+  chi2, Q etc to help with legacy code. Also this is useful if the average
+  is over a list of arrays or dictionaries (ie, a multidimensional random
+  variable). In this case the individual GVars in the result have chi2s, etc
+  as described above, while lsqfit.wavg has the chi2 for the entire set (ie,
+  the sum of the chi2s for all the components).
+
 Version 4.5.2 - 2013-09-26
 ==========================
 

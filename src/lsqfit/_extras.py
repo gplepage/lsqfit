@@ -66,7 +66,18 @@ def empbayes_fit(z0, fitargs, **minargs):
         args['p0'] = save['lastp0']
     return lsqfit.nonlinear_fit(**args), z
 ##
-    
+
+class WAvg(gvar.GVar):
+    """ Result from weighted average :func:`lsqfit.wavg`. 
+
+    :class:`WAvg` objects are |GVar|\s but 
+    """
+    def __init__(self, avg, chi2, dof, Q):
+       super(WAvg, self).__init__(*avg.internaldata)
+       self.chi2 = chi2
+       self.dof = dof
+       self.Q = Q
+
 def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
         
@@ -233,6 +244,7 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
             sum_invcov = numpy.sum(invcov, axis=1)
             ans = numpy.dot(sum_invcov, xa)/sum(sum_invcov)
             chi2 = numpy.dot((xa-ans), numpy.dot(invcov, (xa-ans))).mean
+        ans = WAvg(ans, chi2, dof, gammaQ(dof/2., chi2/2.))
         ##
     wavg.chi2 = chi2 
     wavg.dof = dof

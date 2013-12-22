@@ -59,7 +59,7 @@ cdef class GVar:
     # cdef svec d       -- vector of derivatives
     # cdef readonly smat cov    -- covariance matrix
     
-    def __cinit__(self,double v,svec d,smat cov):
+    def __init__(self,double v,svec d,smat cov):
         self.v = v
         self.d = d
         self.cov = cov
@@ -599,6 +599,11 @@ cdef class GVar:
         def __get__(self):
             return self.cov.expval(self.d)  
 
+    property internaldata:
+        """ Data contained in |GVar| """
+        def __get__(self):
+            return self.v, self.d, self.cov
+
     def dotder(self,numpy.ndarray[numpy.double_t,ndim=1] v not None):
         """ Return the dot product of ``self.der`` and ``v``. """
         cdef double ans = 0
@@ -679,7 +684,7 @@ class GVarFactory:
         cdef GVar gd
         cdef numpy.ndarray[numpy.double_t,ndim=1] d
         cdef numpy.ndarray[numpy.double_t,ndim=1] d_v
-        cdef numpy.ndarray[numpy.int_t,ndim=1] d_idx
+        cdef numpy.ndarray[numpy.intp_t,ndim=1] d_idx
         
         if len(args)==2:
             # (x,xsdev) or (xarray,sdev-array) or (xarray,cov) 

@@ -7,7 +7,7 @@ import pylab as plt
 import collections
 
 def f(x, p):                  # fit function
-  return sum(pn * x ** n for n, pn in enumerate(p))
+  return sum(pn * (x) ** n for n, pn in enumerate(p))
 
 def main():
 	sys_stdout = sys.stdout
@@ -22,8 +22,9 @@ def main():
 		fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
 		print fit.format(maxline=5)
 		make_plot(x, y, fit)
-	if False:
-		prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
+	if True:
+		N = 91
+		prior = gv.gvar(N * ['0(1)'])   # prior for the fit
 		fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 		print fit.format(maxline=10)
 		make_plot(x, y, fit)
@@ -33,7 +34,7 @@ def main():
 		inputs = dict(prior=prior, y=y)
 		outputs = dict(p0=fit.p[0])
 		print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
-	if True:
+	if False:
 		prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
 		ymod = y - (f(x, prior) - f(x, prior[:1]))
 		priormod = prior[:1]

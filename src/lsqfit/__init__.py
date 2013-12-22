@@ -78,7 +78,7 @@ import math, pickle, time, copy
 import gvar as _gvar
 
 # add extras and utilities to lsqfit 
-from ._extras import empbayes_fit, wavg
+from ._extras import empbayes_fit, wavg, WAvg
 from ._utilities import dot as _util_dot
 from ._utilities import multifit, multiminex
 from gvar import gammaQ

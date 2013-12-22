@@ -12,7 +12,7 @@ To install:
 
 	c. The cython python package - provides a variant of python that 
 		compiles into C code that can itself be compiled and is faster (but
-        less flexible) than ordinary python. Versions earlier than 0.16
+        less flexible) than ordinary python. Versions earlier than 0.17
 		may not work. 
 		(http://www.cython.org/)
 				

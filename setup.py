@@ -22,7 +22,7 @@ from Cython.Distutils import build_ext
 from distutils.command.build_py import build_py
 import numpy
 
-LSQFIT_VERSION = '4.5.2'
+LSQFIT_VERSION = '4.5.3'
 
 # create lsqfit/version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -54,6 +54,7 @@ ext_modules = [     #
 # packages
 packages = ["gvar","lsqfit"]
 package_dir = {"lsqfit":"src/lsqfit", "gvar":"src/gvar"}
+package_data = {"gvar":['../gvar.pxd']}
 
 setup(name='lsqfit',
     version=LSQFIT_VERSION,
@@ -62,6 +63,7 @@ setup(name='lsqfit',
     author_email='g.p.lepage@cornell.edu',
     packages=packages,
     package_dir=package_dir,
+    package_data=package_data,
     ext_modules=ext_modules,
     cmdclass={'build_ext':build_ext,'build_py':build_py},
     requires=["cython (>=0.17)","numpy (>=1.7)"],
