@@ -679,7 +679,7 @@ class GVarFactory:
         cdef GVar gd
         cdef numpy.ndarray[numpy.double_t,ndim=1] d
         cdef numpy.ndarray[numpy.double_t,ndim=1] d_v
-        cdef numpy.ndarray[numpy.int_t,ndim=1] d_idx
+        cdef numpy.ndarray[numpy.intp_t,ndim=1] d_idx
         
         if len(args)==2:
             # (x,xsdev) or (xarray,sdev-array) or (xarray,cov) 
