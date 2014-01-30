@@ -1,3 +1,28 @@
+Version 4.6 - 2014-01-30
+========================
+The main change here is an upgrade to gvar.wavg.
+
+- Somewhat incompatible change in gvar.wavg: When averaging arrays or dicts,
+  wavg used to ignore correlations between different elements of the 
+  array or dict. The new wavg takes account of all correlations between 
+  different pieces of input data. wavg returns a GVar if averaging 
+  a list of GVars, a numpy array of GVars if averaging a list of arrays
+  of GVars, and a Bufferdict of GVars or arrays of GVars if averaging
+  a list of dicts. In each case the return value has extra attributes:
+  chi2, dof, Q, time, fit. The function itself also has these attributes, 
+  coming from the last fit.
+
+- gvar.mean(g) now returns g unchanged if g contains objects of type
+  other than GVar. This is useful for writing functions that must work
+  with either GVars or floats as arguments: gvar.mean can be used to 
+  strip the sdev off of GVars where it isn't needed or wanted.
+
+- New function gvar.asbufferdict(g) converts dictionary g to a 
+  BufferDict unless it already is one, in which case it returns g.
+  The keys in the final result can be restricted by adding a 
+  a list of keys as a second argument: gvar.asbufferdict(g, keylist).
+
+
 Version 4.5.3 - 2013-12-22
 ===========================
 
@@ -466,7 +491,7 @@ The bigger changes include:
 
 
 # Created by G. Peter Lepage (Cornell University) on 2012-04-29.
-# Copyright (c) 2008-2013 G. Peter Lepage. 
+# Copyright (c) 2008-2014 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

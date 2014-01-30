@@ -1,5 +1,5 @@
 # Created by Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012-13 G. Peter Lepage.
+# Copyright (c) 2012-14 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,24 +19,26 @@ import numpy
 cimport numpy
 import warnings
 
+from libc.math cimport  log, exp, lgamma
+
 from ._svec_smat import svec, smat
 from ._svec_smat cimport svec, smat
 
 from ._bufferdict import BufferDict
 
-cdef extern from "gsl/gsl_errno.h":
-    void* gsl_set_error_handler_off()
-    char* gsl_strerror(int errno)
-    int GSL_SUCCESS
-    int GSL_CONTINUE
-    int GSL_EFAILED
-    int GSL_EBADFUNC
+# cdef extern from "gsl/gsl_errno.h":
+#     void* gsl_set_error_handler_off()
+#     char* gsl_strerror(int errno)
+#     int GSL_SUCCESS
+#     int GSL_CONTINUE
+#     int GSL_EFAILED
+#     int GSL_EBADFUNC
 
-cdef extern from "gsl/gsl_sf.h":
-    struct gsl_sf_result_struct:
-        double val
-        double err
-    int gsl_sf_gamma_inc_Q_e (double a, double x, gsl_sf_result_struct* res)
+# cdef extern from "gsl/gsl_sf.h":
+#     struct gsl_sf_result_struct:
+#         double val
+#         double err
+#     int gsl_sf_gamma_inc_Q_e (double a, double x, gsl_sf_result_struct* res)
 
 cdef extern from "math.h":
     double c_pow "pow" (double x,double y)
@@ -118,6 +120,9 @@ def mean(g):
         
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
+
+    ``g`` is returned unchanged if it contains something other than
+    |GVar|\s.
     """
     cdef Py_ssize_t i
     cdef GVar gi
@@ -130,8 +135,11 @@ def mean(g):
     else:
         g = numpy.asarray(g)
     buf = numpy.zeros(g.size,float)
-    for i,gi in enumerate(g.flat):
-        buf[i] = gi.v
+    try:
+        for i,gi in enumerate(g.flat):
+            buf[i] = gi.v
+    except TypeError:
+        return g
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 
 def fmt(g, ndecimal=None, sep='', d=None):
@@ -865,19 +873,111 @@ def valder(v):
     return gv_gvar(v,numpy.zeros(v.shape,float))
 
 
-## miscellaneous functions ##
-def gammaQ(double a, double x):
-    """ Return the incomplete gamma function ``Q(a,x) = 1-P(a,x)``. 
+# ## miscellaneous functions ##
+# def gammaQ(double a, double x):
+#     """ Return the incomplete gamma function ``Q(a,x) = 1-P(a,x)``. Y
 
-    Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
-    get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees 
-    of freedom even if the model used to construct ``chi2`` is correct.
+#     Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
+#     get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees 
+#     of freedom even if the model used to construct ``chi2`` is correct.
+#     """
+#     cdef gsl_sf_result_struct res
+#     cdef int status
+#     status = gsl_sf_gamma_inc_Q_e(a, x, &res)
+#     assert status==GSL_SUCCESS, status
+#     return res.val
+
+# following are substitues for GSL's routine if gsl is not present (via lsqfit)
+cdef double gammaP_ser(double a, double x, double rtol, int itmax):
+    """ Power series expansion for P(a, x) (for x < a+1).
+
+    P(a, x) = 1/Gamma(a) * \int_0^x dt exp(-t) t ** (a-1) = 1 - Q(a, x)
     """
-    cdef gsl_sf_result_struct res
-    cdef int status
-    status = gsl_sf_gamma_inc_Q_e(a, x, &res)
-    assert status==GSL_SUCCESS, status
-    return res.val
+    cdef int n
+    cdef double ans, term 
+    if x == 0:
+        return 0.
+    ans = 0.
+    term = 1. / x
+    for n in range(itmax):
+        term *= x / float(a + n)
+        ans += term
+        if abs(term) < rtol * abs(ans):
+            break
+    else:
+        warnings.warn(
+            'gammaP convergence not complete -- want: %.3g << %.3g' 
+            % (abs(term), rtol * abs(ans))
+            )
+    log_ans = log(ans) - x + a * log(x) - lgamma(a)
+    return exp(log_ans)
 
+cdef double gammaQ_cf(double a, double x, double rtol, int itmax):
+    """ Continuing fraction expansion for Q(a, x) (for x > a+1).
+
+    Q(a, x) = 1/Gamma(a) * \int_x^\infty dt exp(-t) t ** (a-1) = 1 - P(a, x)
+    Uses Lentz's algorithm for continued fractions.
+    """
+    cdef double tiny = 1e-30 
+    cdef double den, Cj, Dj, fj
+    cdef int j
+    den = x + 1. - a
+    if abs(den) < tiny:
+        den = tiny
+    Cj = x + 1. - a + 1. / tiny
+    Dj = 1 / den 
+    fj = Cj * Dj * tiny
+    for j in range(1, itmax):
+        aj = - j * (j - a) 
+        bj = x + 2 * j + 1. - a
+        Dj = bj + aj * Dj
+        if abs(Dj) < tiny:
+            Dj = tiny
+        Dj = 1. / Dj
+        Cj = bj + aj / Cj
+        if abs(Cj) < tiny:
+            Cj = tiny
+        fac = Cj * Dj
+        fj = fac * fj
+        if abs(fac-1) < rtol:
+            break
+    else:
+        warnings.warn(
+            'gammaQ convergence not complete -- want: %.3g << %.3g' 
+            % (abs(fac-1), rtol)
+            )
+    return exp(log(fj) - x + a * log(x) - lgamma(a))
+
+def gammaQ(double a, double x, double rtol=1e-5, int itmax=10000):
+    """ Complement of normalized incomplete gamma function, Q(a,x).
+
+    Q(a, x) = 1/Gamma(a) * \int_x^\infty dt exp(-t) t ** (a-1) = 1 - P(a, x)
+    """
+    if x < 0 or a < 0:
+        raise ValueError('negative argument: %g, %g' % (a, x))
+    if x == 0:
+        return 1.
+    elif a == 0:
+        return 0.
+    if x < a + 1.:
+        return 1. - gammaP_ser(a, x, rtol=rtol, itmax=itmax)
+    else:
+        return gammaQ_cf(a, x, rtol=rtol, itmax=itmax)
+
+def gammaP(double a, double x, double rtol=1e-5, itmax=10000):
+    """ Normalized incomplete gamma function, P(a,x). 
+
+    P(a, x) = 1/Gamma(a) * \int_0^x dt exp(-t) t ** (a-1) = 1 - Q(a, x)
+    """
+    if x < 0 or a < 0:
+        raise ValueError('negative argument: %g, %g' % (a, x))
+    if x == 0:
+        return 0.
+    elif a == 0:
+        return 1.
+    if x < a + 1.:
+        return gammaP_ser(a, x, rtol=rtol, itmax=itmax)
+    else:
+        return 1. - gammaQ_cf(a, x, rtol=rtol, itmax=itmax)
 
 

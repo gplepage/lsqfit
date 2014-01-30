@@ -1,5 +1,5 @@
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012-14 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -406,4 +406,20 @@ class BufferDict(collections.MutableMapping):
         return BufferDict.load(f, use_json=use_json)
 
 
+def asbufferdict(g, keylist=None):
+    """ Convert ``g`` to a BufferDict, keeping only ``g[k]`` for ``k in keylist``.
+
+    ``asbufferdict(g)`` will return ``g`` if it is already a 
+    :class:`gvar.BufferDict`; otherwise it will convert the dictionary-like 
+    object into a :class:`gvar.BufferDict`. If ``keylist`` is not ``None``, 
+    only objects ``g[k]`` for which ``k in keylist`` are kept.
+    """
+    if isinstance(g, BufferDict) and keylist is None:
+        return g 
+    if keylist is None:
+        return BufferDict(g)
+    ans = BufferDict()
+    for k in keylist:
+        ans[k] = g[k]
+    return ans
 

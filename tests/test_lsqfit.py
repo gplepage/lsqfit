@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012-2013 G. Peter Lepage. 
+# Copyright (c) 2012-2014 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -337,8 +337,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         """ wavg with svd cut """
         a,b,c = gvar(["1(1)","1(1)","1(1)"])
         var = wavg([(a+b)/2,(a+c)/2.,a],svdcut=1-1e-16).var
-        self.assertAlmostEqual(var,0.44)
-        var = wavg([(a+b)/2.,(a+c)/2.,a],svdcut=1e-16).var
+        self.assertAlmostEqual(var,0.4561552812808828)
+        var = wavg([(a+b)/2.,(a+c)/2.,a],svdcut=1e-18).var
         self.assertAlmostEqual(var,1./3.)
         var = wavg([b,c,a]).var
         self.assertAlmostEqual(var,1./3.)
@@ -352,9 +352,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
     ##
     def test_wavg_dict(self):
         """ wavg of dicts """
-        ans = wavg([dict(a=gvar(2.1,1.),  b=[gvar(2.1,1.),4+gvar(2.1,1.)], c=2+gvar(2.1,1.)),
-                    dict(a=gvar(1.9,10.), b=[gvar(1.9,10.),4+gvar(1.9,10.)]),
-                    dict(c=2+gvar(1.9,10.))])
+        ans = wavg([
+            dict(c=2+gvar(1.9,10.)),
+            dict(a=gvar(2.1,1.),  b=[gvar(2.1,1.),4+gvar(2.1,1.)], c=2+gvar(2.1,1.)),
+            dict(a=gvar(1.9,10.), b=[gvar(1.9,10.),4+gvar(1.9,10.)]), 
+            ])
         self.assert_arraysclose(mean(ans['b']),[2.09802,6.09802],rtol=1e-4)
         self.assert_arraysclose(sdev(ans['b']),[0.995037,0.995037],rtol=1e-4)
         self.assertAlmostEqual(ans['a'].mean, 2.09802, places=4)
@@ -1269,7 +1271,17 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                             analyzer=tabulate,alg="nmsimplex2")
         self.assert_arraysclose(ans.x,[5.,-3.],rtol=1e-4)
         self.assert_arraysclose(ans.f,-1.,rtol=1e-4)
-    ##
+    def test_gammaQ(self):
+        " gammaQ(a, x) "
+        cases = [
+            (2.371, 5.243, 0.05371580082389009, 0.9266599665892222),
+            (20.12, 20.3, 0.4544782602230986, 0.4864172139106905),
+            (100.1, 105.2, 0.29649013488390663, 0.6818457585776236),
+            (1004., 1006., 0.4706659307021259, 0.5209695379094582),
+            ]
+        for a, x, gax, gxa in cases:
+            np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
+            np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
 ##
 
 def partialerrors(outputs,inputs):

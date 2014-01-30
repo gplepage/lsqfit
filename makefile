@@ -57,6 +57,9 @@ tests test-all:
 run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
+register-pypi:
+	python setup.py register # use only once, first time
+
 upload-pypi:
 	python setup.py sdist upload
 

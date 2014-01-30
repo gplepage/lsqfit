@@ -1,6 +1,6 @@
 include makefile README INSTALLATION COPYING MANIFEST.in CHANGES
-include setup.py src/gvar.pxd src/gvar/*.pxd src/lsqfit/*.pxd src/*.pyx
-include gdev.py gdev-setup.py
+include setup.py src/gvar.pxd src/gvar/*.pxd  src/*.pyx
+include gdev-setup.py
 include doc/lsqfit.pdf
 
 graft doc/html

@@ -52,7 +52,7 @@ variables including:
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012-14 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -71,10 +71,17 @@ from ._gvarcore import *
 gvar = GVarFactory()            # order matters for this statement
 
 from ._svec_smat import *
-from ._bufferdict import BufferDict
+from ._bufferdict import BufferDict, asbufferdict
 from ._utilities import *
+from ._version import version as __version__
 
 from . import dataset
+
+try:
+    # use lsqfit's gammaQ if available; otherwise use one in ._utilities
+    from lsqfit._utilities import gammaQ
+except:
+    pass
 
 _GVAR_LIST = []
 

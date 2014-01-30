@@ -56,7 +56,7 @@ The :mod:`lsqfit` tutorial contains extended explanations and examples.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2013 G. Peter Lepage. 
+# Copyright (c) 2008-2014 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,10 +78,9 @@ import math, pickle, time, copy
 import gvar as _gvar
 
 # add extras and utilities to lsqfit 
-from ._extras import empbayes_fit, wavg, WAvg
+from ._extras import empbayes_fit, wavg 
 from ._utilities import dot as _util_dot
-from ._utilities import multifit, multiminex
-from gvar import gammaQ
+from ._utilities import multifit, multiminex, gammaQ
 from ._version import version as __version__
 
 

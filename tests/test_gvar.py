@@ -1001,23 +1001,23 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         x = [2., 4.]
         self.assertAlmostEqual(chi2(x,g), 2.)
         self.assertEqual(chi2.dof, 2)
-        self.assertAlmostEqual(chi2.Q, 0.36787944)
+        self.assertAlmostEqual(chi2.Q, 0.36787944, places=2)
         g = dict(a=gvar(1,1), b=[[gvar(2,2)], [gvar(3,3)], [gvar(4,4)]], c=gvar(5,5))
         x = dict(a=2., b=[[4.], [6.]])
         self.assertAlmostEqual(chi2(x,g), 3.)
         self.assertEqual(chi2.dof, 3)
-        self.assertAlmostEqual(chi2.Q, 0.3916252)
+        self.assertAlmostEqual(chi2.Q, 0.3916252, places=2)
         self.assertAlmostEqual(chi2(g,x), 3.)
         self.assertEqual(chi2.dof, 3)
-        self.assertAlmostEqual(chi2.Q, 0.3916252)
+        self.assertAlmostEqual(chi2.Q, 0.3916252, places=2)
         self.assertAlmostEqual(chi2(2., gvar(1,1)), 1.)
         self.assertEqual(chi2.dof, 1)
-        self.assertAlmostEqual(chi2.Q, 0.31731051)
+        self.assertAlmostEqual(chi2.Q, 0.31731051, places=2)
         g1 = dict(a=gvar(1, 1), b=[gvar(2, 2)])
         g2 = dict(a=gvar(2, 2), b=[gvar(4, 4)])
         self.assertAlmostEqual(chi2(g1, g2), 0.2 + 0.2)
         self.assertEqual(chi2.dof, 2)
-        self.assertAlmostEqual(chi2.Q, 0.81873075)
+        self.assertAlmostEqual(chi2.Q, 0.81873075, places=2)
 
     def test_corr(self):
         """ rebuild (corr!=0) """
@@ -1030,7 +1030,19 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(bcov[1,0],bcov[0,1])
         self.assert_arraysclose((b[1]-b[0]).sdev,1.0)
         self.assert_arraysclose((a[1]-a[0]).sdev,5.0)
-    ##   
+    
+    def test_gammaQ(self):
+        " gammaQ(a, x) "
+        cases = [
+            (2.371, 5.243, 0.05371580082389009, 0.9266599665892222),
+            (20.12, 20.3, 0.4544782602230986, 0.4864172139106905),
+            (100.1, 105.2, 0.29649013488390663, 0.6818457585776236),
+            (1004., 1006., 0.4706659307021259, 0.5209695379094582),
+            ]
+        for a, x, gax, gxa in cases:
+            np.testing.assert_allclose(gax, gv._utilities.gammaQ(a, x), rtol=0.01)
+            np.testing.assert_allclose(gxa, gv._utilities.gammaQ(x, a), rtol=0.01)
+
 ##  
           
 if __name__ == '__main__':

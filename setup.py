@@ -3,7 +3,7 @@ build in place: python setup.py build_ext --inplace
 install in ddd: python setup.py install --install-lib ddd
 
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-13 G. Peter Lepage.
+Copyright (c) 2011-14 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,10 +22,15 @@ from Cython.Distutils import build_ext
 from distutils.command.build_py import build_py
 import numpy
 
-LSQFIT_VERSION = '4.5.3'
+LSQFIT_VERSION = '4.6'
 
-# create lsqfit/version.py so lsqfit knows its version number 
+# create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
+    version_file.write(
+        "# File created by lsqfit setup.py\nversion = '%s'\n" 
+        % LSQFIT_VERSION
+        )
+with open("src/gvar/_version.py","w") as version_file:
     version_file.write(
         "# File created by lsqfit setup.py\nversion = '%s'\n" 
         % LSQFIT_VERSION

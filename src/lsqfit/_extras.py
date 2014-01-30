@@ -1,7 +1,7 @@
 """ part of lsqfit module: extra functions  """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012-13 G. Peter Lepage. 
+# Copyright (c) 2012-14 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@ import gvar
 import lsqfit
 import time
 import collections
-from ._utilities import multiminex
-from gvar import gammaQ
+from ._utilities import multiminex, gammaQ
 
 
 def empbayes_fit(z0, fitargs, **minargs): 
@@ -55,7 +54,6 @@ def empbayes_fit(z0, fitargs, **minargs):
             save['lastz'] = z 
             save['lastp0'] = fit.pmean
         return -fit.logGBF
-    ##
     try:
         z = multiminex(numpy.array(z0), minfcn, **minargs).x
     except ValueError:
@@ -65,20 +63,139 @@ def empbayes_fit(z0, fitargs, **minargs):
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
     return lsqfit.nonlinear_fit(**args), z
-##
 
-class WAvg(gvar.GVar):
+
+class GVarWAvg(gvar.GVar):
     """ Result from weighted average :func:`lsqfit.wavg`. 
 
-    :class:`WAvg` objects are |GVar|\s but 
-    """
-    def __init__(self, avg, chi2, dof, Q):
-       super(WAvg, self).__init__(*avg.internaldata)
-       self.chi2 = chi2
-       self.dof = dof
-       self.Q = Q
+    :class:`GVarWAvg` objects are |GVar|\s with extra 
+    attributes: 
 
-def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
+    .. attribute:: chi2
+        
+        ``chi**2`` for weighted average.
+        
+    .. attribute:: dof
+        
+        Effective number of degrees of freedom.
+        
+    .. attribute:: Q
+        
+        The probability that the ``chi**2`` could have been larger, 
+        by chance, assuming that the data are all Gaussain and consistent
+        with each other. Values smaller than 0.1 or suggest that the 
+        data are not Gaussian or are inconsistent with each other. Also 
+        called the *p-value*.
+
+        Quality factor `Q` (or *p-value*) for fit.
+
+    .. attribute:: time
+
+        Time required to do average.
+
+    .. attribute:: fit
+
+        Fit result from average.
+    """
+    def __init__(self, avg, fit):
+        super(GVarWAvg, self).__init__(*avg.internaldata)
+        self.chi2 = fit.chi2
+        self.dof = fit.dof
+        self.Q = fit.Q
+        self.time = fit.time
+        self.fit = fit
+
+class ArrayWAvg(numpy.ndarray):
+    """ Result from weighted average :func:`lsqfit.wavg`. 
+
+    :class:`ArrayWAvg` objects are :mod:`numpy` arrays (of |GVar|\s) with extra 
+    attributes: 
+
+    .. attribute:: chi2
+        
+        ``chi**2`` for weighted average.
+        
+    .. attribute:: dof
+        
+        Effective number of degrees of freedom.
+        
+    .. attribute:: Q
+        
+        The probability that the ``chi**2`` could have been larger, 
+        by chance, assuming that the data are all Gaussain and consistent
+        with each other. Values smaller than 0.1 or suggest that the 
+        data are not Gaussian or are inconsistent with each other. Also 
+        called the *p-value*.
+
+        Quality factor `Q` (or *p-value*) for fit.
+
+    .. attribute:: time
+
+        Time required to do average.
+
+    .. attribute:: fit
+
+        Fit result from average.
+    """
+    def __new__(cls, g, fit):
+        obj = numpy.ndarray.__new__(cls, g.shape, g.dtype, g.flatten())
+        obj.chi2 = fit.chi2
+        obj.dof = fit.dof
+        obj.Q = fit.Q
+        obj.time = fit.time
+        obj.fit = fit
+        return obj
+
+    # def __array_finalize__(self, obj):   # don't want this
+    #     if obj is None:                   # since it attaches Q, etc
+    #         return                        # to any array descended from 
+    #     self.chi2 = obj.chi2              # this one
+    #     self.dof = obj.dof                # really just want Q, etc.
+    #     self.Q = obj.Q                    # for initial output of wavg
+    #     self.time = obj.time
+    #     self.fit = obj.fit
+
+class BufferDictWAvg(gvar.BufferDict):
+    """ Result from weighted average :func:`lsqfit.wavg`. 
+
+    :class:`BufferDictWAvg` objects are :class:`gvar.BufferDict`\s (of |GVar|\s) 
+    with extra attributes: 
+
+    .. attribute:: chi2
+        
+        ``chi**2`` for weighted average.
+        
+    .. attribute:: dof
+        
+        Effective number of degrees of freedom.
+        
+    .. attribute:: Q
+        
+        The probability that the ``chi**2`` could have been larger, 
+        by chance, assuming that the data are all Gaussain and consistent
+        with each other. Values smaller than 0.1 or suggest that the 
+        data are not Gaussian or are inconsistent with each other. Also 
+        called the *p-value*.
+
+        Quality factor `Q` (or *p-value*) for fit.
+
+    .. attribute:: time
+
+        Time required to do average.
+
+    .. attribute:: fit
+
+        Fit result from average.
+    """
+    def __init__(self, g, fit):
+        super(BufferDictWAvg, self).__init__(g)
+        self.Q = fit.Q
+        self.chi2 = fit.chi2
+        self.dof = fit.dof
+        self.time = fit.time
+        self.fit = fit
+
+def wavg(dataseq, prior=None, **kargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
         
     The weighted average of several |GVar|\s is what one obtains from
@@ -90,16 +207,18 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
     computed by ``wavg`` take account of correlations between the
     |GVar|\s.
         
-    Typical usage is::
+    Typical usage is ::
         
         x1 = gvar.gvar(...)
         x2 = gvar.gvar(...)
         x3 = gvar.gvar(...)
         xavg = wavg([x1, x2, x3])   # weighted average of x1, x2 and x3
     
-    The individual |GVar|\s in this example can be  replaced by
+    where the result ``xavg`` is a |GVar| containing the weighted average.
+
+    The individual |GVar|\s in the last example can be  replaced by
     multidimensional distributions, represented by arrays of |GVar|\s
-    or dictionaries of |GVar|\s or arrays of |GVar|\s. For example, ::
+    or dictionaries of |GVar|\s (or arrays of |GVar|\s). For example, ::
 
         x1 = [gvar.gvar(...), gvar.gvar(...)]
         x2 = [gvar.gvar(...), gvar.gvar(...)]
@@ -107,41 +226,33 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
         xavg = wavg([x1, x2, x3])   
             # xavg[i] is wgtd avg of x1[i], x2[i], x3[i]
 
-    and ::
+    where each array ``x1``, ``x2`` ... must have the same shape. 
+    The result ``xavg`` in this case is an array of |GVar|\s, where 
+    the shape of the array is the same as that of ``x1``, etc.
+
+    Another example is ::
 
         x1 = dict(a=[gvar.gvar(...), gvar.gvar(...)], b=gvar.gvar(...))
         x2 = dict(a=[gvar.gvar(...), gvar.gvar(...)], b=gvar.gvar(...))
-        x3 = dict(a=[gvar.gvar(...), gvar.gvar(...)], b=gvar.gvar(...))
+        x3 = dict(a=[gvar.gvar(...), gvar.gvar(...)])
         xavg = wavg([x1, x2, x3])   
             # xavg['a'][i] is wgtd avg of x1['a'][i], x2['a'][i], x3['a'][i]
-            # xavg['b'] is gtd avg of x1['b'], x2['b'], x3['b']       
+            # xavg['b'] is gtd avg of x1['b'], x2['b']  
+
+    where different dictionaries can have (some) different keys. Here the 
+    result ``xavg`` is a :class:`gvar.BufferDict`` having the same keys as
+    ``x1``, etc.
         
-    :param xa: The |GVar|\s to be averaged. ``xa`` is a one-dimensional
+    :param dataseq: The |GVar|\s to be averaged. ``dataseq`` is a one-dimensional
         sequence of |GVar|\s, or of arrays of |GVar|\s, or of dictionaries 
-        containing |GVar|\s or arrays of |GVar|\s. All ``xa[i]`` must
+        containing |GVar|\s or arrays of |GVar|\s. All ``dataseq[i]`` must
         have the same shape.
-    :param svdcut: If positive, eigenvalues of the ``xa`` covariance matrix
-        that are smaller than ``svdcut`` times the maximum eigenvalue 
-        are replaced by ``svdcut`` times the maximum eigenvalue. If 
-        negative, eigenmodes with eigenvalues smaller than ``|svdcut|``
-        times the largest eigenvalue are discarded. If zero or ``None``,
-        the covariance matrix is left unchanged.
-    :type svdcut: ``None`` or ``float``
-    :param svdnum: If positive, at most ``svdnum`` eigenmodes of the 
-        ``xa`` covariance matrix are retained; the modes with the smallest
-        eigenvalues are discarded. ``svdnum`` is ignored if set to
-        ``None``.
-    :type svdnum: ``None`` or ``int``
-    :param rescale: If ``True``, rescale covariance matrix so diagonal 
-        elements all equal 1 before applying *svd* cuts. (Default is
-        ``True``.)
-    :type rescale: ``bool``
-    :param covfac: The covariance matrix (or matrices) of ``xa`` is 
-        multiplied by ``covfac`` if ``covfac`` is not ``None``.
-    :type covfac: ``None`` or number
-    :returns: Weighted average of the ``xa`` elements. The result has the 
-        same type and shape as each element of ``xa`` (that is, either a
-        |GVar| or an array of |GVar|\s.)
+    :param prior: Prior values for the averages, to be included in the weighted
+        average. Default value is ``None``, in which case ``prior`` is ignored.
+    :type prior: |GVar| or array/dictionary of |GVar|\s
+    :param kargs: Additional arguments (e.g., ``svdcut``) to the fitter 
+        used to do the averaging.
+    :type kargs: dict
         
     The following function attributes are also set:    
         
@@ -166,94 +277,63 @@ def wavg(xa, svdcut=None, svdnum=None, rescale=True, covfac=None):
     .. attribute:: wavg.time
 
         Time required to do average.
-        
+
+    .. attribute:: wavg.fit
+
+        Fit output from average.
+    
+    These same attributes are also attached to the output |GVar|, 
+    array or dictionary from :func:`gvar.wavg`.            
     """
-    cpu_time = time.clock()
-    xa = numpy.asarray(xa)
-    if xa.size == 0:
+    if len(dataseq) <= 0:
         return None
-    s = None
-    svdcorrection = []
-    if len(xa.shape) > 1:
-        ## xa is an array of arrays ##
-        shape = xa[0].shape
-        xaflat = [xai.flat for xai in xa]
-        chi2 = 0.0
-        dof = 0
-        ans = []
-        for xtuple in zip(*xaflat):
-            ans.append(wavg(
-                xtuple, 
-                svdcut=svdcut, svdnum=svdnum,
-                rescale=rescale, covfac=covfac
-                ))
-            chi2 += wavg.chi2
-            dof += wavg.dof
-            svdcorrection.append(wavg.svdcorrection)
-        ans = numpy.array(ans)
-        ans.shape = shape
-    elif hasattr(xa[0], 'keys'):
-        data = collections.OrderedDict()
-        # collect copies of data -- different dicts can have different keys
-        for xai in xa:
-            for k in xai:
-                if k in data:
-                    data[k].append(xai[k])
-                else:
-                    data[k] = [xai[k]]
-        ans = gvar.BufferDict()
-        chi2 = 0.0
-        dof = 0
-        for k in data:
-            ans[k] = wavg(
-                data[k], 
-                svdcut=svdcut, svdnum=svdnum,
-                rescale=rescale, covfac=covfac
-                )
-            chi2 += wavg.chi2
-            dof += wavg.dof
-            svdcorrection.append(wavg.svdcorrection)
-    else:
-        cov = gvar.evalcov(xa)
-        if covfac is not None:
-            cov *= covfac
-        ## invert cov ## 
-        if numpy.all(numpy.diag(numpy.diag(cov))==cov):
-            ## cov is diagonal ## 
-            invcov = 1./numpy.diag(cov)
-            dof = len(xa)-1
-            ans = numpy.dot(invcov, xa)/sum(invcov)
-            chi2 = numpy.sum((xa-ans)**2*invcov).mean
-            ##
+    elif len(dataseq) == 1:
+        wavg.Q = 1
+        wavg.chi2 = 0
+        wavg.dof = 0
+        wavg.time = 0
+        wavg.fit = None
+        if hasattr(dataseq[0], 'keys'):
+            return BufferDictWAvg(dataseq[0], wavg)
+        if numpy.shape(dataseq[0]) == ():
+            return GVarWAvg(dataseq[0], wavg)
         else:
-            ## cov is not diagonal ##
-            if (svdcut is None or svdcut==0) and (svdnum is None or svdnum<0):
-                invcov = numpy.linalg.inv(cov)
-                dof = len(xa)-1
-            else:
-                ## apply svdcuts; compute conditioned inverse ## 
-                s = gvar.SVD(cov, svdcut=svdcut, svdnum=svdnum, rescale=rescale,
-                             compute_delta=True)
-                invcov = numpy.sum(numpy.outer(wj, wj) for wj 
-                                        in reversed(s.decomp(-1)))
-                dof = len(s.val)-1
-                if s.delta is not None:
-                    svdcorrection = sum(s.delta)
-                ##
-            ##
-            sum_invcov = numpy.sum(invcov, axis=1)
-            ans = numpy.dot(sum_invcov, xa)/sum(sum_invcov)
-            chi2 = numpy.dot((xa-ans), numpy.dot(invcov, (xa-ans))).mean
-        ans = WAvg(ans, chi2, dof, gammaQ(dof/2., chi2/2.))
-        ##
-    wavg.chi2 = chi2 
-    wavg.dof = dof
-    wavg.Q = gammaQ(dof/2., chi2/2.)
-    wavg.s = s
-    wavg.svdcorrection = svdcorrection
-    wavg.time = time.clock() - cpu_time
-    return ans
-##
+            return ArrayWAvg(numpy.asarray(dataseq[0]), wavg)
+    if hasattr(dataseq[0], 'keys'):
+        keylist = []
+        data = []
+        p = gvar.BufferDict()
+        for dataseq_i in dataseq:
+            keys = list(dataseq_i.keys())
+            for k in keys:
+                data.append(numpy.asarray(dataseq_i[k]).flat)
+                if k not in p:
+                    p[k] = dataseq_i[k]
+            keylist += list(keys)
+        data = numpy.concatenate(data)
+        p0 = gvar.mean(p) if prior is None else None
+        def fcn(p):
+            return numpy.concatenate([numpy.asarray(p[k]).flat for k in keylist])
+    else:
+        p = numpy.asarray(dataseq[0])
+        data = [numpy.asarray(dataseqi).flatten() for dataseqi in dataseq]
+        p0 = gvar.mean(data[0]) if prior is None else None
+        def fcn(p):
+            return len(data) * [p]
+    fit = lsqfit.nonlinear_fit(
+        data=data, fcn=fcn, p0=p0, prior=prior, **kargs
+        )
+    wavg.Q = fit.Q
+    wavg.chi2 = fit.chi2
+    wavg.dof = fit.dof
+    wavg.time = fit.time
+    wavg.fit = fit
+    if p.shape is None:
+        return BufferDictWAvg(gvar.BufferDict(p, buf=fit.p.flat), fit)
+    elif p.shape == ():
+        return GVarWAvg(fit.p.flat[0], fit)
+    else:
+        return ArrayWAvg(fit.p.reshape(p.shape), fit)
 
 if __name__ == '__main__':
     pass
