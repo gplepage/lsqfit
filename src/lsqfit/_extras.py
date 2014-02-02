@@ -103,6 +103,7 @@ class GVarWAvg(gvar.GVar):
         self.dof = fit.dof
         self.Q = fit.Q
         self.time = fit.time
+        self.svdcorrection = fit.svdcorrection
         self.fit = fit
 
 class ArrayWAvg(numpy.ndarray):
@@ -143,6 +144,7 @@ class ArrayWAvg(numpy.ndarray):
         obj.dof = fit.dof
         obj.Q = fit.Q
         obj.time = fit.time
+        obj.svdcorrection = fit.svdcorrection
         obj.fit = fit
         return obj
 
@@ -193,19 +195,27 @@ class BufferDictWAvg(gvar.BufferDict):
         self.chi2 = fit.chi2
         self.dof = fit.dof
         self.time = fit.time
+        self.svdcorrection = fit.svdcorrection
         self.fit = fit
 
-def wavg(dataseq, prior=None, **kargs):
+def wavg(dataseq, prior=None, fast=False, **kargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
         
     The weighted average of several |GVar|\s is what one obtains from
-    a  least-squares fit of the collection of |GVar|\s to the one-
-    parameter fit function ``def f(p): return N * [p[0]]`` where ``N``
-    is the number of |GVar|\s. The average is the best-fit value for
-    ``p[0]``.  |GVar|\s with smaller standard deviations carry more
-    weight than those with larger standard deviations. The averages
-    computed by ``wavg`` take account of correlations between the
-    |GVar|\s.
+    a  least-squares fit of the collection of |GVar|\s to the
+    one-parameter fit function ::
+
+        def f(p): 
+            return N * [p[0]]
+
+    where ``N`` is the number of |GVar|\s. The average is the best-fit 
+    value for ``p[0]``.  |GVar|\s with smaller standard deviations carry 
+    more weight than those with larger standard deviations. The averages
+    computed by ``wavg`` take account of correlations between the |GVar|\s.
+
+    If ``prior`` is not ``None``, it is added to the list of data 
+    used in the average. Thus ``wavg([x2, x3], prior=x1)`` is the 
+    same as ``wavg([x1, x2, x3])``. 
         
     Typical usage is ::
         
@@ -242,7 +252,22 @@ def wavg(dataseq, prior=None, **kargs):
     where different dictionaries can have (some) different keys. Here the 
     result ``xavg`` is a :class:`gvar.BufferDict`` having the same keys as
     ``x1``, etc.
-        
+     
+    Weighted averages can become costly when the number of random samples being 
+    averaged is large (100s or more). In such cases it might be useful to set
+    parameter ``fast=True``. This causes ``wavg`` to estimate the weighted 
+    average by incorporating the random samples one at a time into a 
+    running average::
+
+        result = prior
+        for dataseq_i in dataseq:
+            result = wavg([result, dataseq_i], ...)
+
+    This method is much faster when ``len(dataseq)`` is large, and gives the
+    exact result when there are no correlations between different elements
+    of list ``dataseq``. The results are approximately correct when 
+    ``dataseq[i]`` and ``dataseq[j]`` are correlated for ``i!=j``.
+
     :param dataseq: The |GVar|\s to be averaged. ``dataseq`` is a one-dimensional
         sequence of |GVar|\s, or of arrays of |GVar|\s, or of dictionaries 
         containing |GVar|\s or arrays of |GVar|\s. All ``dataseq[i]`` must
@@ -250,6 +275,11 @@ def wavg(dataseq, prior=None, **kargs):
     :param prior: Prior values for the averages, to be included in the weighted
         average. Default value is ``None``, in which case ``prior`` is ignored.
     :type prior: |GVar| or array/dictionary of |GVar|\s
+    :param fast: Setting ``fast=True`` causes ``wavg`` to compute an 
+        approximation to the weighted average that is much faster to calculate 
+        when averaging a large number of samples (100s or more). The default is 
+        ``fast=False``.
+    :type fast: bool 
     :param kargs: Additional arguments (e.g., ``svdcut``) to the fitter 
         used to do the averaging.
     :type kargs: dict
@@ -278,6 +308,10 @@ def wavg(dataseq, prior=None, **kargs):
 
         Time required to do average.
 
+    .. attribute:: wavg.svdcorrection
+
+        The *svd* corrections made to the data when ``svdcut`` is not ``None``.
+
     .. attribute:: wavg.fit
 
         Fit output from average.
@@ -286,23 +320,67 @@ def wavg(dataseq, prior=None, **kargs):
     array or dictionary from :func:`gvar.wavg`.            
     """
     if len(dataseq) <= 0:
-        return None
-    elif len(dataseq) == 1:
+        if prior is None:
+            return None 
         wavg.Q = 1
         wavg.chi2 = 0
         wavg.dof = 0
         wavg.time = 0
         wavg.fit = None
+        wavg.svdcorrection = None
+        if hasattr(prior, 'keys'):
+            return BufferDictWAvg(dataseq[0], wavg)
+        if numpy.shape(prior) == ():
+            return GVarWAvg(prior, wavg)
+        else:
+            return ArrayWAvg(numpy.asarray(prior), wavg)        
+    elif len(dataseq) == 1 and prior is None:
+        wavg.Q = 1
+        wavg.chi2 = 0
+        wavg.dof = 0
+        wavg.time = 0
+        wavg.fit = None
+        wavg.svdcorrection = None
         if hasattr(dataseq[0], 'keys'):
             return BufferDictWAvg(dataseq[0], wavg)
         if numpy.shape(dataseq[0]) == ():
             return GVarWAvg(dataseq[0], wavg)
         else:
             return ArrayWAvg(numpy.asarray(dataseq[0]), wavg)
+    if fast:
+        chi2 = 0
+        dof = 0
+        time = 0
+        ans = prior
+        svdcorrection = gvar.BufferDict()
+        for i, dataseq_i in enumerate(dataseq):
+            if ans is None:
+                ans = dataseq_i
+            else:
+                ans = wavg([ans, dataseq_i], fast=False, **kargs)
+                chi2 += wavg.chi2
+                dof += wavg.dof
+                time += wavg.time
+                if wavg.svdcorrection is not None:
+                    for k in wavg.svdcorrection:
+                        svdcorrection[str(i) + ':' + k] = wavg.svdcorrection[k]
+        wavg.chi2 = chi2
+        wavg.dof = dof
+        wavg.time = time
+        wavg.Q = gammaQ(dof / 2., chi2 / 2.)
+        wavg.svdcorrection = svdcorrection
+        wavg.fit = None
+        ans.dof = wavg.dof
+        ans.Q = wavg.Q
+        ans.chi2 = wavg.chi2
+        ans.time = wavg.time
+        ans.svdcorrection = wavg.svdcorrection
+        ans.fit = wavg.fit
+        return ans
     if hasattr(dataseq[0], 'keys'):
         keylist = []
-        data = []
-        p = gvar.BufferDict()
+        data = [] if prior is None else [prior]
+        p = gvar.BufferDict() if prior is None else gvar.asbufferdict(prior)
         for dataseq_i in dataseq:
             keys = list(dataseq_i.keys())
             for k in keys:
@@ -311,22 +389,22 @@ def wavg(dataseq, prior=None, **kargs):
                     p[k] = dataseq_i[k]
             keylist += list(keys)
         data = numpy.concatenate(data)
-        p0 = gvar.mean(p) if prior is None else None
+        p0 = gvar.BufferDict(p, buf=(gvar.mean(p.buf) + gvar.sdev(p.buf)/10.))
         def fcn(p):
             return numpy.concatenate([numpy.asarray(p[k]).flat for k in keylist])
     else:
         p = numpy.asarray(dataseq[0])
-        data = [numpy.asarray(dataseqi).flatten() for dataseqi in dataseq]
-        p0 = gvar.mean(data[0]) if prior is None else None
+        data = [] if prior is None else [prior]
+        data += [numpy.asarray(dataseqi).flatten() for dataseqi in dataseq]
+        p0 = gvar.mean(data[0]) + gvar.sdev(data[0]) / 10.
         def fcn(p):
             return len(data) * [p]
-    fit = lsqfit.nonlinear_fit(
-        data=data, fcn=fcn, p0=p0, prior=prior, **kargs
-        )
+    fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **kargs)
     wavg.Q = fit.Q
     wavg.chi2 = fit.chi2
     wavg.dof = fit.dof
     wavg.time = fit.time
+    wavg.svdcorrection = fit.svdcorrection
     wavg.fit = fit
     if p.shape is None:
         return BufferDictWAvg(gvar.BufferDict(p, buf=fit.p.flat), fit)

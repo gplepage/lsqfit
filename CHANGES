@@ -1,8 +1,13 @@
+Version 4.6.1 - 2014-02-02
+===========================
+Cleaning up some small bugs introduced with the new lsqfit.wavg. Also 
+introduced an approximate but potentially much faster *fast* mode for it.
+
 Version 4.6 - 2014-01-30
 ========================
-The main change here is an upgrade to gvar.wavg.
+The main change here is an upgrade to lsqfit.wavg.
 
-- Somewhat incompatible change in gvar.wavg: When averaging arrays or dicts,
+- Somewhat incompatible change in lsqfit.wavg: When averaging arrays or dicts,
   wavg used to ignore correlations between different elements of the 
   array or dict. The new wavg takes account of all correlations between 
   different pieces of input data. wavg returns a GVar if averaging 

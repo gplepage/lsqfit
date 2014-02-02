@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.6 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.6.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '4.6',
+        VERSION:     '4.6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.6 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.6.1 documentation" href="index.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -808,16 +808,22 @@ dictionary for <a class="reference internal" href="#lsqfit.nonlinear_fit" title=
 
 <dl class="function">
 <dt id="lsqfit.wavg">
-<tt class="descclassname">lsqfit.</tt><tt class="descname">wavg</tt><big>(</big><em>dataseq</em>, <em>prior=None</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">lsqfit.</tt><tt class="descname">wavg</tt><big>(</big><em>dataseq</em>, <em>prior=None</em>, <em>fast=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Weighted average of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays/dicts of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
 <p>The weighted average of several <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s is what one obtains from
-a  least-squares fit of the collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to the one-
-parameter fit function <tt class="docutils literal"><span class="pre">def</span> <span class="pre">f(p):</span> <span class="pre">return</span> <span class="pre">N</span> <span class="pre">*</span> <span class="pre">[p[0]]</span></tt> where <tt class="docutils literal"><span class="pre">N</span></tt>
-is the number of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The average is the best-fit value for
-<tt class="docutils literal"><span class="pre">p[0]</span></tt>.  <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with smaller standard deviations carry more
-weight than those with larger standard deviations. The averages
-computed by <tt class="docutils literal"><span class="pre">wavg</span></tt> take account of correlations between the
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+a  least-squares fit of the collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to the
+one-parameter fit function</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> 
+    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">N</span></tt> is the number of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The average is the best-fit 
+value for <tt class="docutils literal"><span class="pre">p[0]</span></tt>.  <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s with smaller standard deviations carry 
+more weight than those with larger standard deviations. The averages
+computed by <tt class="docutils literal"><span class="pre">wavg</span></tt> take account of correlations between the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
+<p>If <tt class="docutils literal"><span class="pre">prior</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it is added to the list of data 
+used in the average. Thus <tt class="docutils literal"><span class="pre">wavg([x2,</span> <span class="pre">x3],</span> <span class="pre">prior=x1)</span></tt> is the 
+same as <tt class="docutils literal"><span class="pre">wavg([x1,</span> <span class="pre">x2,</span> <span class="pre">x3])</span></tt>.</p>
 <p>Typical usage is</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="n">x2</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
@@ -851,6 +857,20 @@ the shape of the array is the same as that of <tt class="docutils literal"><span
 <p>where different dictionaries can have (some) different keys. Here the 
 result <tt class="docutils literal"><span class="pre">xavg</span></tt> is a <tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict`</span></tt> having the same keys as
 <tt class="docutils literal"><span class="pre">x1</span></tt>, etc.</p>
+<p>Weighted averages can become costly when the number of random samples being 
+averaged is large (100s or more). In such cases it might be useful to set
+parameter <tt class="docutils literal"><span class="pre">fast=True</span></tt>. This causes <tt class="docutils literal"><span class="pre">wavg</span></tt> to estimate the weighted 
+average by incorporating the random samples one at a time into a 
+running average:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="n">prior</span>
+<span class="k">for</span> <span class="n">dataseq_i</span> <span class="ow">in</span> <span class="n">dataseq</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">result</span><span class="p">,</span> <span class="n">dataseq_i</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This method is much faster when <tt class="docutils literal"><span class="pre">len(dataseq)</span></tt> is large, and gives the
+exact result when there are no correlations between different elements
+of list <tt class="docutils literal"><span class="pre">dataseq</span></tt>. The results are approximately correct when 
+<tt class="docutils literal"><span class="pre">dataseq[i]</span></tt> and <tt class="docutils literal"><span class="pre">dataseq[j]</span></tt> are correlated for <tt class="docutils literal"><span class="pre">i!=j</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -862,6 +882,10 @@ containing <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.
 have the same shape.</li>
 <li><strong>prior</strong> (<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> or array/dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s) &#8211; Prior values for the averages, to be included in the weighted
 average. Default value is <tt class="docutils literal"><span class="pre">None</span></tt>, in which case <tt class="docutils literal"><span class="pre">prior</span></tt> is ignored.</li>
+<li><strong>fast</strong> (<em>bool</em>) &#8211; Setting <tt class="docutils literal"><span class="pre">fast=True</span></tt> causes <tt class="docutils literal"><span class="pre">wavg</span></tt> to compute an 
+approximation to the weighted average that is much faster to calculate 
+when averaging a large number of samples (100s or more). The default is 
+<tt class="docutils literal"><span class="pre">fast=False</span></tt>.</li>
 <li><strong>kargs</strong> (<em>dict</em>) &#8211; Additional arguments (e.g., <tt class="docutils literal"><span class="pre">svdcut</span></tt>) to the fitter 
 used to do the averaging.</li>
 </ul>
@@ -897,6 +921,12 @@ called the <em>p-value</em>.</p>
 <dt id="lsqfit.wavg.time">
 <tt class="descclassname">wavg.</tt><tt class="descname">time</tt><a class="headerlink" href="#lsqfit.wavg.time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Time required to do average.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.wavg.svdcorrection">
+<tt class="descclassname">wavg.</tt><tt class="descname">svdcorrection</tt><a class="headerlink" href="#lsqfit.wavg.svdcorrection" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>svd</em> corrections made to the data when <tt class="docutils literal"><span class="pre">svdcut</span></tt> is not <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -1228,7 +1258,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
