@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Numerical Analysis Modules in gvar &mdash; lsqfit 4.7 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '4.7',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
+    <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="numerical-analysis-modules-in-gvar">
+<span id="id1"></span><h1>Numerical Analysis Modules in <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a><a class="headerlink" href="#numerical-analysis-modules-in-gvar" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s can be used in many numerical algorithms, to propagates errors
+through the algorithm. A code that is written in pure Python is likely to
+work well with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, perhaps with minor modifications.
+Here we describe some sample numerical codes, included in
+<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, that have been adapted
+to work with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. More samples will follow with time.</p>
+<div class="section" id="cubic-splines">
+<h2>Cubic Splines<a class="headerlink" href="#cubic-splines" title="Permalink to this headline">¶</a></h2>
+<p>The module <tt class="xref py py-mod docutils literal"><span class="pre">gvar.cspline</span></tt> implements a class for smoothing and/or
+interpolating one-dimensional data using cubic splines:</p>
+<dl class="class">
+<dt id="gvar.cspline.CSpline">
+<em class="property">class </em><tt class="descclassname">gvar.cspline.</tt><tt class="descname">CSpline</tt><big>(</big><em>x</em>, <em>y</em>, <em>deriv=(None</em>, <em>None)</em>, <em>warn=True</em><big>)</big><a class="headerlink" href="#gvar.cspline.CSpline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cubic spline resentation of a function.</p>
+<p>Given <tt class="docutils literal"><span class="pre">N</span></tt> values of a function <tt class="docutils literal"><span class="pre">y[i]</span></tt> at <tt class="docutils literal"><span class="pre">N</span></tt> points
+<tt class="docutils literal"><span class="pre">x[i]</span></tt> for <tt class="docutils literal"><span class="pre">i=0..N-1</span></tt> (the &#8216;knots&#8217; of the spline), 
+the code</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">gvar.cspline</span> <span class="kn">import</span> <span class="n">CSpline</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">CSpline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>defines a function <tt class="docutils literal"><span class="pre">f</span></tt> such that: a) <tt class="docutils literal"><span class="pre">f(x[i])</span> <span class="pre">=</span> <span class="pre">y[i]</span></tt> for 
+all <tt class="docutils literal"><span class="pre">i</span></tt>; and b) <tt class="docutils literal"><span class="pre">f(x)</span></tt> is 
+continuous, as are its first and second derivatives.
+Function <tt class="docutils literal"><span class="pre">f(x)</span></tt> is a cubic polynomial between the knots <tt class="docutils literal"><span class="pre">x[i]</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">CSpline(x,y)</span></tt> creates a <em>natural spline</em>, which has zero second
+derivative at the end points, <tt class="docutils literal"><span class="pre">x[0]</span></tt> and <tt class="docutils literal"><span class="pre">x[-1]</span></tt>. More generally
+one can specify the derivatives of <tt class="docutils literal"><span class="pre">f(x)</span></tt> at one or both of the
+endpoints:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">f</span> <span class="o">=</span> <span class="n">CSpline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="p">[</span><span class="n">dydx_i</span><span class="p">,</span> <span class="n">dydx_f</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">dydx_i</span></tt> is the derivative at <tt class="docutils literal"><span class="pre">x[0]</span></tt> and <tt class="docutils literal"><span class="pre">dydx_f</span></tt> is the 
+derivative at <tt class="docutils literal"><span class="pre">x[-1]</span></tt>. Replacing either (or both) of these with 
+<tt class="docutils literal"><span class="pre">None</span></tt> results in a derivative corresponding to zero second 
+derivative at that boundary (i.e., a <em>natural</em> boundary).</p>
+<p>Derivatives and integrals of the spline function can also be evaluated:</p>
+<blockquote>
+<div><p><tt class="docutils literal"><span class="pre">f.D(x)</span></tt> &#8212; first derivative at <tt class="docutils literal"><span class="pre">x</span></tt>;</p>
+<p><tt class="docutils literal"><span class="pre">f.D2(x)</span></tt> &#8212; second derivative at <tt class="docutils literal"><span class="pre">x</span></tt>;</p>
+<p><tt class="docutils literal"><span class="pre">f.integ(x)</span></tt> &#8212; integral from <tt class="docutils literal"><span class="pre">x[0]</span></tt> to <tt class="docutils literal"><span class="pre">x</span></tt>.</p>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>1-d sequence of numbers</em>) &#8211; The knots of the spline, where the function values are
+specified.</li>
+<li><strong>y</strong> (<em>1-d sequence</em>) &#8211; Function values at the locations specified by <tt class="docutils literal"><span class="pre">x[i]</span></tt>.</li>
+<li><strong>deriv</strong> (<em>2-component sequence</em>) &#8211; Derivatives at initial and final boundaries of the 
+region specified by <tt class="docutils literal"><span class="pre">x[i]</span></tt>. Default value is <tt class="docutils literal"><span class="pre">None</span></tt> for 
+each boundary.</li>
+<li><strong>warn</strong> &#8211; If <tt class="docutils literal"><span class="pre">True</span></tt>, warnings are generated 
+when the spline function is called for <tt class="docutils literal"><span class="pre">x</span></tt> values that 
+fall outside of the original range of <tt class="docutils literal"><span class="pre">x</span></tt>s used to 
+define the spline. Default value is <tt class="docutils literal"><span class="pre">True</span></tt>;
+out-of-range warnings are suppressed if set to <tt class="docutils literal"><span class="pre">False</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="ordinary-differential-equations">
+<h2>Ordinary Differential Equations<a class="headerlink" href="#ordinary-differential-equations" title="Permalink to this headline">¶</a></h2>
+<p>The module <tt class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></tt> implements two classes for integrating systems
+of first-order differential equations using an adaptive Runge-Kutta
+algorithm. One integrates scalar- or array-valued equations, while the
+other integrates dictionary-valued equations:</p>
+<dl class="class">
+<dt id="gvar.ode.Integrator">
+<em class="property">class </em><tt class="descclassname">gvar.ode.</tt><tt class="descname">Integrator</tt><big>(</big><em>deriv</em>, <em>tol=1e-05</em>, <em>h=None</em>, <em>hmin=None</em>, <em>analyzer=None</em><big>)</big><a class="headerlink" href="#gvar.ode.Integrator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrate <tt class="docutils literal"><span class="pre">dy/dx</span> <span class="pre">=</span> <span class="pre">deriv(x,y)</span></tt>.</p>
+<p>An <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> object <tt class="docutils literal"><span class="pre">odeint</span></tt> integrates <tt class="docutils literal"><span class="pre">dy/dx</span> <span class="pre">=</span> <span class="pre">f(x,y)</span></tt>
+to obtain <tt class="docutils literal"><span class="pre">y(x1)</span></tt> from <tt class="docutils literal"><span class="pre">y0</span> <span class="pre">=</span> <span class="pre">y(x0)</span></tt>. <tt class="docutils literal"><span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">f(x,y)</span></tt> can
+be scalars or <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays. Typical usage is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">gvar.ode</span> <span class="kn">import</span> <span class="n">Integrator</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">odeint</span> <span class="o">=</span> <span class="n">Integrator</span><span class="p">(</span><span class="n">deriv</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>  <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">))</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>The first call to <tt class="docutils literal"><span class="pre">odeint</span></tt> integrates from <tt class="docutils literal"><span class="pre">x=x0</span></tt> to <tt class="docutils literal"><span class="pre">x=x1</span></tt>,
+returning <tt class="docutils literal"><span class="pre">y1=y(x1)</span></tt>. The second call continues the integration
+to <tt class="docutils literal"><span class="pre">x=x2</span></tt>, returning <tt class="docutils literal"><span class="pre">y2=y(x2)</span></tt>. Any of the initial parameters
+can be reset in the calls to <tt class="docutils literal"><span class="pre">odeint</span></tt>: for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y2</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integrator uses an adaptive Runge-Kutta algorithm that adjusts
+the integrator&#8217;s step size to obtain relative accuracy <tt class="docutils literal"><span class="pre">tol</span></tt> in the solution.
+An initial step size can be set in the <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> by specifying
+parameter <tt class="docutils literal"><span class="pre">h</span></tt>. A minimum step size <tt class="docutils literal"><span class="pre">hmin</span></tt> can also be specified;
+the <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> raises an exception if the step size becomes
+smaller than <tt class="docutils literal"><span class="pre">hmin</span></tt>. The <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> keeps track of the
+number of good steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is increased, and the number of
+bad steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is decreased and the step is repeated:
+<tt class="docutils literal"><span class="pre">odeint.ngood</span></tt> and <tt class="docutils literal"><span class="pre">odeint.nbad</span></tt>, respectively.</p>
+<p>An analyzer <tt class="docutils literal"><span class="pre">analyzer(x,y)</span></tt> can be specified using parameter
+<tt class="docutils literal"><span class="pre">analyzer</span></tt>. This function is called after every full step of
+the integration, with the current values of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt>. 
+Objects of type <a class="reference internal" href="#gvar.ode.Solution" title="gvar.ode.Solution"><tt class="xref py py-class docutils literal"><span class="pre">gvar.ode.Solution</span></tt></a> are examples of 
+(simple) analyzers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>deriv</strong> &#8211; Function of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> that returns <tt class="docutils literal"><span class="pre">dy/dx</span></tt>. 
+The return value should have the same shape as <tt class="docutils literal"><span class="pre">y</span></tt> if arrays
+are used.</li>
+<li><strong>tol</strong> (<em>float</em>) &#8211; Relative accuracy in <tt class="docutils literal"><span class="pre">y</span></tt> relative to <tt class="docutils literal"><span class="pre">|y|</span> <span class="pre">+</span> <span class="pre">h|dy/dx|</span></tt>
+for each step in the integration. Any integration step that achieves
+less precision is repeated with a smaller step size. The step size
+is increased if precision is higher than needed. Default is 1e-5.</li>
+<li><strong>h</strong> (<em>float or None</em>) &#8211; Absolute value of initial step size. The default value equals the
+entire width of the integration interval.</li>
+<li><strong>hmin</strong> (<em>float or None</em>) &#8211; Smallest step size allowed. An exception is raised
+if a smaller step size is needed. This is mostly useful for 
+preventing infinite loops caused by programming errors. The 
+default value is zero (which does <em>not</em> prevent infinite loops).</li>
+<li><strong>analyzer</strong> &#8211; Function of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> that is called after each
+step of the integration. This can be used to analyze intermediate
+results.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="gvar.ode.DictIntegrator">
+<em class="property">class </em><tt class="descclassname">gvar.ode.</tt><tt class="descname">DictIntegrator</tt><big>(</big><em>deriv</em>, <em>tol=1e-05</em>, <em>h=None</em>, <em>hmin=None</em>, <em>analyzer=None</em><big>)</big><a class="headerlink" href="#gvar.ode.DictIntegrator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integrate <tt class="docutils literal"><span class="pre">dy/dx</span> <span class="pre">=</span> <span class="pre">deriv(x,y)</span></tt> where <tt class="docutils literal"><span class="pre">y</span></tt> is a dictionary.</p>
+<p>An <tt class="xref py py-class docutils literal"><span class="pre">DictIntegrator</span></tt> object <tt class="docutils literal"><span class="pre">odeint</span></tt> integrates <tt class="docutils literal"><span class="pre">dy/dx</span> <span class="pre">=</span> <span class="pre">f(x,y)</span></tt>
+to obtain <tt class="docutils literal"><span class="pre">y(x1)</span></tt> from <tt class="docutils literal"><span class="pre">y0</span> <span class="pre">=</span> <span class="pre">y(x0)</span></tt>. <tt class="docutils literal"><span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">f(x,y)</span></tt> are 
+dictionary types having the same keys, and containing scalars 
+and/or <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays as values. Typical usage is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">gvar.ode</span> <span class="kn">import</span> <span class="n">DictIntegrator</span>
+
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">odeint</span> <span class="o">=</span> <span class="n">DictIntegrator</span><span class="p">(</span><span class="n">deriv</span><span class="o">=</span><span class="n">f</span><span class="p">,</span>  <span class="n">tol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">))</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">))</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>The first call to <tt class="docutils literal"><span class="pre">odeint</span></tt> integrates from <tt class="docutils literal"><span class="pre">x=x0</span></tt> to <tt class="docutils literal"><span class="pre">x=x1</span></tt>,
+returning <tt class="docutils literal"><span class="pre">y1=y(x1)</span></tt>. The second call continues the integration
+to <tt class="docutils literal"><span class="pre">x=x2</span></tt>, returning <tt class="docutils literal"><span class="pre">y2=y(x2)</span></tt>. Any of the initial parameters
+can be reset in the calls to <tt class="docutils literal"><span class="pre">odeint</span></tt>: for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">y2</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The integrator uses an adaptive Runge-Kutta algorithm that adjusts
+the integrator&#8217;s step size to obtain relative accuracy <tt class="docutils literal"><span class="pre">tol</span></tt> in the solution.
+An initial step size can be set in the <tt class="xref py py-class docutils literal"><span class="pre">DictIntegrator</span></tt> by specifying
+parameter <tt class="docutils literal"><span class="pre">h</span></tt>. A minimum ste psize <tt class="docutils literal"><span class="pre">hmin</span></tt> can also be specified;
+the <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> raises an exception if the step size becomes
+smaller than <tt class="docutils literal"><span class="pre">hmin</span></tt>. The <tt class="xref py py-class docutils literal"><span class="pre">DictIntegrator</span></tt> keeps track of the
+number of good steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is increased, and the number of
+bad steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is decreases and the step is repeated:
+<tt class="docutils literal"><span class="pre">odeint.ngood</span></tt> and <tt class="docutils literal"><span class="pre">odeint.nbad</span></tt>, respectively.</p>
+<p>An analyzer <tt class="docutils literal"><span class="pre">analyzer(x,y)</span></tt> can be specified using parameter
+<tt class="docutils literal"><span class="pre">analyzer</span></tt>. This function is called after every full step of
+the integration with the current values of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt>.     
+Objects of type <a class="reference internal" href="#gvar.ode.Solution" title="gvar.ode.Solution"><tt class="xref py py-class docutils literal"><span class="pre">gvar.ode.Solution</span></tt></a> are examples of 
+(simple) analyzers.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>deriv</strong> &#8211; Function of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> that returns <tt class="docutils literal"><span class="pre">dy/dx</span></tt>. 
+The return value should be a dictionary with the same 
+keys as <tt class="docutils literal"><span class="pre">y</span></tt>, and values that have the same
+shape as the corresponding values in <tt class="docutils literal"><span class="pre">y</span></tt>.</li>
+<li><strong>tol</strong> (<em>float</em>) &#8211; Relative accuracy in <tt class="docutils literal"><span class="pre">y</span></tt> relative to <tt class="docutils literal"><span class="pre">|y|</span> <span class="pre">+</span> <span class="pre">h|dy/dx|</span></tt>
+for each step in the integration. Any integration step that achieves
+less precision is repeated with a smaller step size. The step size
+is increased if precision is higher than needed.</li>
+<li><strong>h</strong> (<em>float</em>) &#8211; Absolute value of initial step size. The default value equals the
+entire width of the integration interval.</li>
+<li><strong>hmin</strong> (<em>float</em>) &#8211; Smallest step size allowed. An exception is raised
+if a smaller step size is needed. This is mostly useful for 
+preventing infinite loops caused by programming errors. The 
+default value is zero (which does <em>not</em> prevent infinite loops).</li>
+<li><strong>analyzer</strong> &#8211; Function of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> that is called after each
+step of the integration. This can be used to analyze intermediate
+results.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<p>A simple analyzer class is:</p>
+<dl class="class">
+<dt id="gvar.ode.Solution">
+<em class="property">class </em><tt class="descclassname">gvar.ode.</tt><tt class="descname">Solution</tt><a class="headerlink" href="#gvar.ode.Solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>ODE analyzer for storing intermediate values.</p>
+<p>Usage: eg, given</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">odeint</span> <span class="o">=</span> <span class="n">Integrator</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">soln</span> <span class="o">=</span> <span class="n">Solution</span><span class="p">()</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y0</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="n">analyzer</span><span class="o">=</span><span class="n">soln</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>then the <tt class="docutils literal"><span class="pre">soln.x[i]</span></tt> are the points at which the integrator 
+evaluated the solution, and <tt class="docutils literal"><span class="pre">soln.y[i]</span></tt> is the solution
+of the differential equation at that point.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a><ul>
+<li><a class="reference internal" href="#cubic-splines">Cubic Splines</a></li>
+<li><a class="reference internal" href="#ordinary-differential-equations">Ordinary Differential Equations</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gvar_dataset.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="lsqfit.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">lsqfit</span></tt> - Nonlinear Least Squares Fitting</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
+             >previous</a> |</li>
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009-2013, G. P. Lepage.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
