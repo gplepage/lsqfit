@@ -47,7 +47,7 @@ def fcn(x,p):              # fit function of x and parameters p
 # do the fit
 fit = lsqfit.nonlinear_fit(data=(x,y),prior=prior,fcn=fcn)
 sys.stdout = open("eg0.out","w")
-print(fit.format(100))     # print standard summary of fit
+print(fit.format(maxline=True))     # print standard summary of fit
 
 p = fit.p                  # best-fit values for parameters
 outputs = dict(a=p['a'],b=p['b'])

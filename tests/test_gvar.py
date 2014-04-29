@@ -29,7 +29,7 @@ FAST = False
 class ArrayTests(object):
     def __init__(self):
         pass
-    ##
+    
     def assert_gvclose(self,x,y,rtol=1e-5,atol=1e-8,prt=False):
         """ asserts that the means and sdevs of all x and y are close """
         if hasattr(x,'keys') and hasattr(y,'keys'): 
@@ -48,7 +48,7 @@ class ArrayTests(object):
         for xi,yi in zip(x,y):
             self.assertGreater(atol+rtol*abs(yi.mean),abs(xi.mean-yi.mean))
             self.assertGreater(10*(atol+rtol*abs(yi.sdev)),abs(xi.sdev-yi.sdev))
-    ##
+    
     def assert_arraysclose(self,x,y,rtol=1e-5,prt=False):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = np.array(x).flatten()
@@ -60,14 +60,13 @@ class ArrayTests(object):
             print(y)
             print(max_val,max_rdiff,rtol)
         self.assertAlmostEqual(max_rdiff,0.0,delta=rtol)
-    ##
+    
     def assert_arraysequal(self,x,y):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = [float(xi) for xi in np.array(x).flatten()]
         y = [float(yi) for yi in np.array(y).flatten()]
         self.assertSequenceEqual(x,y)
-    ##
-##
+    
 
 class test_svec(unittest.TestCase,ArrayTests):
     def test_v(self):
@@ -75,7 +74,7 @@ class test_svec(unittest.TestCase,ArrayTests):
         v = svec(3)   # [1,2,0,0,3]
         v.assign([1.,3.,2.],[0,4,1])
         self.assert_arraysequal(v.toarray(),[1.,2.,0.,0.,3.])
-    ##
+    
     def test_null_v(self):
         """ svec(0) """
         v = svec(0)
@@ -87,7 +86,7 @@ class test_svec(unittest.TestCase,ArrayTests):
         self.assertEqual(v.dot(u),0.0)
         self.assertEqual(u.dot(v),0.0)
         self.assert_arraysequal(u.add(v).toarray(),v.add(u).toarray())
-    ##
+    
     def test_v_clone(self):
         """ svec.clone """
         v1 = svec(3)   # [1,2,0,0,3]
@@ -96,7 +95,7 @@ class test_svec(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(v1.toarray(),v2.toarray())
         v2.assign([10.,20.,30.],[0,1,2])
         self.assert_arraysequal(v2.toarray(),[10.,20.,30.])
-    ##   
+       
     def test_v_dot(self):
         """ svec.dot """
         v1 = svec(3)   # [1,2,0,0,3]
@@ -111,7 +110,7 @@ class test_svec(unittest.TestCase,ArrayTests):
         v2.assign([4,5],[3,4])
         self.assertEqual(v1.dot(v2),v2.dot(v1))
         self.assertEqual(v1.dot(v2),0.0)
-    ##
+    
     def test_v_add(self):
         """ svec.add """
         v1 = svec(3)    # [1,2,0,0,3]
@@ -144,14 +143,13 @@ class test_svec(unittest.TestCase,ArrayTests):
         v2.assign([10,20],[1,2])
         self.assert_arraysequal(v1.add(v2,5,7).toarray(),[5.,80.,155.,20.])
         self.assert_arraysequal(v2.add(v1,7,5).toarray(),[5.,80.,155.,20.])
-    ##    
+        
     def test_v_mul(self):
         """ svec.mul """
         v1 = svec(3)    # [1,2,0,0,3]
         v1.assign([1.,3.,2.],[0,4,1])
         self.assert_arraysequal(v1.mul(10).toarray(),[10,20,0,0,30])
-    ##
-##
+
 
 class test_smat(unittest.TestCase,ArrayTests):
     def setUp(self):
@@ -170,16 +168,16 @@ class test_smat(unittest.TestCase,ArrayTests):
                        [   0.,    0.,    0.,    0.,    0.,    4.,    0.,    0.],
                        [   0.,    0.,    0.,    0.,    0.,    0.,    5.,    0.],
                        [   0.,    0.,    0.,    0.,    0.,    0.,    0.,    3.]])
-    ##
+    
     def tearDown(self):
         global smat_m,np_m
         smat_m = None
         np_m = None
-    ##
+    
     def test_m_append(self):
         """ smat.append_diag smat.append_diag_m smat.append_row smat.toarray"""
         self.assert_arraysequal(smat_m.toarray(),np_m)
-    ##    
+        
     def test_m_dot(self):
         """ smat.dot """
         global smat_m,np_m
@@ -191,7 +189,7 @@ class test_smat(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(smat_m.dot(v).toarray(),[0.,100.,0.,200.,100.])
         self.assertEqual(smat_m.dot(v).dot(v),np.dot(np.dot(np_m[:nv,:nv],np_v),np_v))
         self.assertEqual(smat_m.dot(v).size,3)
-    ##
+    
     def test_m_expval(self):
         """ smat.expval """
         global smat_m,np_m
@@ -200,8 +198,7 @@ class test_smat(unittest.TestCase,ArrayTests):
         np_v = v.toarray()
         nv = len(np_v)
         self.assertEqual(smat_m.expval(v),np.dot(np.dot(np_m[:nv,:nv],np_v),np_v))
-    ##
-##    
+    
        
 class test_gvar1(unittest.TestCase,ArrayTests):
     """ gvar1 - part 1 """
@@ -215,18 +212,18 @@ class test_gvar1(unittest.TestCase,ArrayTests):
         x = gvar(xmean,xsdev)
         # ranseed((1968,1972,1972,1978,1980))
         # random.seed(1952)
-    ##
+    
     def tearDown(self):
         """ cleanup after tests """
         global x,gvar
         gvar = restore_gvar()
         x = None
-    ##
+    
     def test_str(self):
         """ str(x) """
         global x,xmean,xsdev,gvar
         self.assertEqual(str(x), x.fmt())
-    ##
+    
     def test_call(self):
         """ x() """
         global x,xmean,xsdev,gvar
@@ -237,47 +234,38 @@ class test_gvar1(unittest.TestCase,ArrayTests):
         std = np.std(xlist)
         self.assertAlmostEqual(avg,x.mean,delta=fac*x.sdev/n**0.5)
         self.assertAlmostEqual(std,(1-1./n)**0.5*xsdev,delta=fac*x.sdev/(2*n)**0.5)
-    ##
+    
     def test_cmp(self):
         """ x==y x!=y x>y x<y"""
         global x,xmean,xsdev,gvar
-        y = gvar(x)                     # y.der == x.der
-        self.assertTrue(y==x and not x!=y)
-        y = gvar(x.mean,x.sdev)         # y.der != x.der
-        self.assertTrue(y!=x and not x==y)
-        y = gvar(x.mean,x.der,x.cov)    # y.der == x.der
-        self.assertTrue(x==y and not x!=y)
-        y = gvar(x.mean,2*x.der,x.cov)  # different der
-        self.assertTrue(x!=y and not x==y)
-        y = gvar(2*x.mean,x.der,x.cov)  # different mean
-        self.assertTrue(x!=y and not x==y  )
-        y = gvar(x.mean, 1.)            # cmp with non-GVar
-        self.assertTrue(y != y.mean and not y == y.mean)
-        self.assertTrue(y.mean != y and not y.mean == y)
-        y = gvar(x.mean, 0)
-        self.assertTrue(not y != y.mean and y == y.mean)
-        self.assertTrue(not y.mean != y and y.mean == y)
-        y = gvar(2*x.mean, 0)
-        self.assertTrue(y != x.mean and not y == x.mean)
-        self.assertTrue(x.mean != y and not x.mean == y)
-        self.assertTrue(gvar(1.,1.) > gvar(-1.,10.))
-        self.assertTrue(gvar(1.,1.) < gvar(1.01,10.))
-    ##
+        x = gvar(1, 10)
+        y = gvar(2, 20)
+        self.assertTrue(y!=x and 2*x==y and x==1 and y!=1 and 1==x and 1!=y)
+        self.assertTrue(
+            not y==x and not 2*x!=y and not x!=1 and not y==1 
+            and not 1!=x and not 1==y
+            )
+        self.assertTrue(y>x and x<y and y>=x and x<=y and y>=2*x and 2*x<=y)
+        self.assertTrue(not y<x and not x>y and not y<=x and not x>=y)
+        self.assertTrue(y>1 and x<2 and y>=1 and x<=2 and y>=2 and 2*x<=2)
+        self.assertTrue(not y<1 and not x>2 and not y<=1 and not x>=2)
+        self.assertTrue(1<y and 2>x and 1<=y and 2>=x and 2<=y and 2>=2*x)
+        self.assertTrue(not 1>y and not 2<x and not 1>=y and not 2<=x)
+
     def test_neg(self):
         """ -x """
         global x,xmean,xsdev,gvar
         z = -x
         self.assertEqual(x.mean,-z.mean)
         self.assertEqual(x.var,z.var)
-    ##
+    
     def test_pos(self):
         """ +x """
         global x,xmean,xsdev,gvar
         z = +x
         self.assertEqual(x.mean, z.mean)
         self.assertEqual(x.var, x.var)
-    ##
-##
+
 
 class test_gvar2(unittest.TestCase,ArrayTests):
     """ gvar - part 2 """ 
@@ -290,7 +278,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         # ranseed((1968,1972,1972,1978,1980))
         # random.seed(1952)
         self.label = None
-    ##
+    
     def tearDown(self):
         """ cleanup after tests """
         global x,y,gvar
@@ -299,7 +287,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         gvar = restore_gvar()
         # if self.label is not None:
         #     print self.label
-    ##
+    
     def test_add(self):
         """ x+y """
         global x,y,gvar
@@ -313,7 +301,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         z = y.mean + x
         self.assertEqual(z.mean,x.mean+y.mean)
         self.assertEqual(z.var,x.var)
-    ##
+    
     def test_sub(self):
         """ x-y """
         global x,y,gvar
@@ -327,7 +315,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         z = y.mean - x
         self.assertEqual(z.mean,y.mean-x.mean)
         self.assertEqual(z.var,x.var)
-    ##
+    
     def test_mul(self):
         """ x*y """
         z = x*y
@@ -342,7 +330,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         z = y.mean * x
         self.assertEqual(z.mean,x.mean*y.mean)
         self.assertEqual(z.var,np.dot(dz,np.dot(cov,dz)))
-    ##
+    
     def test_div(self):
         """ x/y """
         z = x/y
@@ -358,7 +346,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         dz = [-y.mean/x.mean**2,0.]
         self.assertEqual(z.mean,y.mean/x.mean)
         self.assertEqual(z.var,np.dot(dz,np.dot(cov,dz)))
-    ##
+    
     def test_pow(self):
         """ x**y """
         z = x**y
@@ -374,7 +362,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         dz = [y.mean**x.mean*log(y.mean),0.]
         self.assertEqual(z.mean,y.mean**x.mean)
         self.assertEqual(z.var,np.dot(dz,np.dot(cov,dz)))
-    ##
+    
     def t_fcn(self,f,df):
         """ tester for test_fcn """
         gdict = dict(globals())
@@ -385,7 +373,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         dfxm = eval(df,gdict)
         self.assertAlmostEqual(fx.mean,fxm)
         self.assertAlmostEqual(fx.var,x.var*dfxm**2)
-    ##
+    
     def test_fcn(self):
         """ f(x) """
         flist = [
@@ -400,13 +388,39 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         for f,df in flist:
             self.label = f
             self.t_fcn(f,df)
-    ##
+
+    def test_gvar_function(self):
+        """ gvar_function(x, f, dfdx) """
+        x = sqrt(gvar(0.1, 0.1) + gvar(0.2, 0.5))
+        def fcn(x):
+            return sin(x + x**2)
+        def dfcn_dx(x):
+            return cos(x + x**2) * (1 + 2*x)
+        f = fcn(x).mean
+        dfdx = dfcn_dx(x).mean
+        diff = gvar_function(x, f, dfdx) - fcn(x)
+        self.assertAlmostEqual(diff.mean, 0.0)
+        self.assertAlmostEqual(diff.sdev, 0.0)
+        diff = gvar_function([x, x + gvar(2,2)], f, [dfdx, 0]) - fcn(x)
+        self.assertAlmostEqual(diff.mean, 0.0)
+        self.assertAlmostEqual(diff.sdev, 0.0)
+        x = gvar(dict(a='1(1)', b=['2(2)', '3(3)']))
+        z = gvar(1,1)
+        def fcn(x):
+            return sin(x['a'] * x['b'][0]) * x['b'][1]
+        f = fcn(x)
+        dfdx = dict(a=f.deriv(x['a']), b=[f.deriv(x['b'][0]), f.deriv(x['b'][1])])
+        f = f.mean
+        diff = gvar_function(x, f, dfdx) - fcn(x)
+        self.assertAlmostEqual(diff.mean, 0.0)
+        self.assertAlmostEqual(diff.sdev, 0.0)
+    
     def test_wsum_der(self):
         """ wsum_der """
         gv = GVarFactory()
         x = gv([1,2],[[3,4],[4,5]])
         self.assert_arraysequal(wsum_der(np.array([10.,100]),x),[10.,100.])
-    ##
+    
     def test_wsum_gvar(self):
         """ wsum_gvar """
         gv = GVarFactory()
@@ -415,7 +429,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         ws = wsum_gvar(v,x)
         self.assertAlmostEqual(ws.val,np.dot(v,mean(x)))
         self.assert_arraysclose(ws.der,wsum_der(v,x))
-    ##
+    
     def test_dotder(self):
         """ GVar.dotder """
         gv = GVarFactory()
@@ -423,7 +437,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         v = np.array([10.,100.])
         self.assertAlmostEqual(x[0].dotder(v),20.)
         self.assertAlmostEqual(x[1].dotder(v),200.)
-    ##
+    
     def test_fmt(self):
         """ x.fmt """
         self.assertEqual(x.fmt(None), x.fmt(2))
@@ -499,7 +513,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(fmtg3['g1'],g1.fmt())
         self.assertEqual(fmtg3['g2'][0],g2[0].fmt())
         self.assertEqual(fmtg3['g2'][1],g2[1].fmt())
-    ##
+    
     def test_partialvar(self):
         """ x.partialvar x.partialsdev fmt_errorbudget """
         gvar = gvar_factory()
@@ -582,8 +596,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         ""
         ])
         self.assertEqual(tmp,out,"fmt_value output wrong")
-        ##
-    ##
+    
     def test_der(self):
         """ x.der """ 
         global x,y
@@ -591,7 +604,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(y.der,[0.,1.])
         z = x*y**2
         self.assert_arraysequal(z.der,[y.mean**2,2*x.mean*y.mean])
-    ##
+    
     def test_construct_gvar(self):
         """ construct_gvar """
         v = 2.0
@@ -606,7 +619,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(z.var,np.dot(dv,np.dot(cov,dv)))
         self.assertEqual(z.sdev,sqrt(z.var))
         # self.assertTrue(z.cov is cov)
-    ##
+    
     def t_gvar(self,args,xm,dx,xcov,xder):
         """ worker for test_gvar """
         gvar = gvar_factory()
@@ -615,7 +628,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(x.sdev,dx)
         self.assert_arraysequal(evalcov([x]),xcov)
         self.assert_arraysequal(x.der,xder)
-    ##
+    
     def test_gvar(self):
         """ gvar """
         ## tests for arguments corresponding to a single gvar ##
@@ -634,8 +647,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         for a in arglist:
             self.label = "gvar(%s)" % a[0]
             self.t_gvar(a[0],a[1],a[2],a[3],a[4])
-        ##
-        ## tests involving a single argument that is sequence ##
+        
+        # tests involving a single argument that is sequence 
         x = gvar([[(0,1),(1,2)],[(3,4),(5,6)],[(7,8),(9,10)]])
         y = np.array([[gvar(0,1),gvar(1,2)],[gvar(3,4),gvar(5,6)],
                     [gvar(7,8),gvar(9,10)]])
@@ -649,8 +662,22 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         x = gvar([gvar(0,1),gvar(2,3)])
         y = np.array([gvar(0,1),gvar(2,3)])
         self.assert_gvclose(x,y)
-        ##
-    ##
+
+        # tests involving dictionary arguments
+        x = gvar(dict(a=1,b=[2,3]), dict(a=10, b=[20,30]))
+        y = dict(a=gvar(1,10), b=[gvar(2,20), gvar(3,30)])
+        self.assert_gvclose(x,y)
+        a, b = gvar([1,2],[10,20])
+        a, b = a+b, a-b
+        x = gvar([a, a+b, b, b-a])
+        y = BufferDict()
+        y['a'] = [a, a+b]
+        y['b'] = [b, b-a]
+        self.assert_gvclose(y.flat, x)
+        z = gvar(mean(y), evalcov(y))
+        self.assert_gvclose(z.flat, y.flat)
+        self.assert_arraysclose(evalcov(z.flat), evalcov(x))
+        
     def test_asgvar(self):
         """ asgvar """
         z = asgvar(x)
@@ -658,7 +685,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         z = asgvar("2.00(25)")
         self.assertEqual(z.mean,2.0)
         self.assertEqual(z.sdev,0.25)
-    ##
+    
     def test_basis5(self):
         """ gvar(x,dx) """
         xa = np.array([[2.,4.]])
@@ -672,7 +699,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(np.shape(xa),np.shape(x))
         xcov = xcov.reshape((2,2))
         self.assert_arraysequal(xcov.diagonal(),[dxa[0,0]**2,dxa[0,1]**2])
-    ##
+    
     def test_basis6(self):
         """ gvar(x,cov) """
         xa = np.array([2.,4.])
@@ -684,7 +711,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             self.assertEqual(dxai2,xi.sdev**2)
         self.assertEqual(np.shape(xa),np.shape(x))
         self.assert_arraysequal(xcov,cov.reshape((2,2)))
-    ##
+    
     def test_mean_sdev_var(self):
         """ mean(g) sdev(g) var(g) """
         def compare(x,y):
@@ -695,7 +722,6 @@ class test_gvar2(unittest.TestCase,ArrayTests):
                     self.assertEqual(x[k],y[k])
                 else:
                     self.assertTrue(all(x[k]==y[k]))
-        ##
         a = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
         a_mean = dict(x=1.,y=np.array([3.,5.]))
         a_sdev = dict(x=2.,y=np.array([4.,6.]))
@@ -712,7 +738,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(mean(gvar(1,2)),1.)
         self.assertEqual(sdev(gvar(1,2)),2.)
         self.assertEqual(var(gvar(1,2)),4.)
-    ##
+    
     def test_uncorrelated(self):
         """ uncorrelated(g1, g2) """
         a = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
@@ -737,7 +763,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertTrue(not uncorrelated(a,c))
         self.assertTrue(not uncorrelated(b,c))
         self.assertTrue(not uncorrelated(a,b))
-    ##
+    
     def test_deriv(self):
         global x, y, gvar
         f = 2 * x ** 2. + 3 * y
@@ -782,7 +808,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         rc = evalcov([x+y/2,2*x-y])
         rotn = np.array([[1.,1/2.],[2.,-1.]])
         self.assert_arraysequal(rc,np.dot(rotn,np.dot(c[:2,:2],rotn.transpose())))
-    ##
+    
     def test_evalcov2(self):
         """ evalcov(dict) """
         c = evalcov({0:x+y/2,1:2*x-y})
@@ -795,7 +821,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(c['x','x'],x.var)
         self.assert_arraysequal(c['x','y'],[x.var,evalcov([x,y])[0,1]])
         self.assert_arraysequal(c['y','x'],c['x','y'])
-    ##
+    
     @unittest.skipIf(FAST,"skipping test_raniter for speed")
     def test_raniter(self):
         """ raniter """
@@ -808,7 +834,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(np.cov(ans[0],ans[1]),evalcov([x,y]),rtol=rtol)
         self.assertAlmostEqual(ans[0].mean(),x.mean,delta=x.sdev*rtol)
         self.assertAlmostEqual(ans[1].mean(),y.mean,delta=y.sdev*rtol)
-    ##
+    
     @unittest.skipIf(FAST,"skipping test_raniter2 for speed")
     def test_raniter2(self):
         """ raniter & svd """
@@ -829,7 +855,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(da.std(),dda,delta=rtol*dda)
             self.assertAlmostEqual(a0.mean(),1.,delta=rtol)
             self.assertAlmostEqual(da.mean(),0.1,delta=rtol*da.std())
-    ##
+    
     def test_bootstrap_iter(self):
         """ bootstrap_iter """
         p = BufferDict()
@@ -853,7 +879,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             dp = abs(pb_mean-p_mean)
             self.assertGreater(p_sdev[0]*5,dp[0])
             self.assertGreater(p_sdev[0]*5./10.,dp[1])
-    ##
+    
     def test_raniter3(self):
         """ raniter & BufferDict """
         pr = BufferDict()
@@ -876,10 +902,10 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             pksdev = prsdev[k]
             self.assertAlmostEqual(np.max(np.abs((pkmean-ansmean)/pksdev)),0.0,delta=delta)
             self.assertAlmostEqual(np.max(np.abs((pksdev-anssdev)/pksdev)),0.0,delta=delta)
-    ##
+    
     def test_SVD(self):
         """ SVD """
-        ## non-singular ##
+        # non-singular 
         x,y = gvar([1,1],[1,4])
         cov = evalcov([(x+y)/2**0.5,(x-y)/2**0.5])
         s = SVD(cov)
@@ -895,8 +921,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(sum(np.outer(vi,vi)*ei for ei,vi in zip(e,v)),
                              cov,rtol=1e-6)
         self.assertAlmostEqual(s.kappa,1/16.)
-        ##
-        ## singular case ##
+        
+        # singular case 
         cov = evalcov([(x+y)/2**0.5,(x-y)/2**0.5,x,y])
         s = SVD(cov)
         e,v,k = s.val,s.vec,s.kappa
@@ -915,8 +941,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         s = SVD(cov,svdnum=3,svdcut=1e-4,compute_delta=True)
         e,v,k,d = s.val,s.vec,s.kappa,s.delta
         self.assert_arraysclose(e,[32*1e-4,2.,32.],rtol=1e-6)
-        ##
-        ## s.delta s.decomp ##
+        
+        # s.delta s.decomp 
         for rescale in [False,True]:
             mat = [[1.,.25],[.25,2.]]
             s = SVD(mat,rescale=rescale)
@@ -937,8 +963,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             if rescale==False:
                 m2 = np.sum(np.outer(wj,wj) for wj in s.decomp(2))
                 self.assert_arraysclose(mat,np.dot(m2,minv))
-        ##
-    ##
+    
     def test_svd(self):
         """ svd """
         x = gvar(1,1)
@@ -955,7 +980,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             self.assert_arraysclose(numpy.dot(cov,invcov),[[1,0],[0,1]])
             self.assertAlmostEqual(svd.eigen_range,dx.var)
             self.assertAlmostEqual(numpy.exp(svd.logdet)/dxm.var*xm.var,4.0)
-    ##
+    
     def test_valder(self):
         """ valder_var """
         alist = [[1.,2.,3.]]
@@ -968,7 +993,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             der[i] = 1.
             self.assert_arraysequal(ai.der,der)
             self.assertEqual(ai.val,ali)
-    ##
+    
     def test_ranseed(self):
         """ ranseed """
         f = raniter([x,y])
@@ -980,7 +1005,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(f1,next(f))
         self.assertEqual(x1,x())
         self.assertEqual(y1,y())
-    ##
+    
     def test_rebuild(self):
         """ rebuild """
         gvar = gvar_factory()
@@ -1042,8 +1067,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         for a, x, gax, gxa in cases:
             np.testing.assert_allclose(gax, gv._utilities.gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gv._utilities.gammaQ(x, a), rtol=0.01)
-
-##  
+  
           
 if __name__ == '__main__':
 	unittest.main()

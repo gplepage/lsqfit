@@ -165,6 +165,9 @@ class test_bufferdict(unittest.TestCase,ArrayTests):
         self.assertEqual(nb.flat[-1],130.)
         with self.assertRaises(ValueError):
             nb = BufferDict(b,buf=nb.flat[:-1])
+        nb = BufferDict(b, keys=reversed(bkeys))
+        nbkeys = list(nb.keys())
+        self.assertEqual(nbkeys, list(reversed(bkeys)))
     ##
     def test_b_update(self):
         """ b.add(dict(..)) """

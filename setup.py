@@ -22,7 +22,7 @@ from Cython.Distutils import build_ext
 from distutils.command.build_py import build_py
 import numpy
 
-LSQFIT_VERSION = '4.6.1'
+LSQFIT_VERSION = '4.7'
 
 # create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -37,23 +37,24 @@ with open("src/gvar/_version.py","w") as version_file:
         )
 
 # extension modules 
-libraries = ["gsl","gslcblas"]
-include_dirs = [numpy.get_include()]
-extra_link_args = [] # ['-framework','vecLib'] # for Mac OSX ?
+# Add explicit directories to the ..._dirs variables if 
+# the build process has trouble finding the gsl library 
+# or the numpy headers. This should not be necessary if
+# gsl and numpy are installed in standard locations.
+ext_args = dict(
+    libraries=["gsl", "gslcblas"],
+    include_dirs=[numpy.get_include()],
+    library_dirs=[],
+    runtime_library_dirs=[],
+    extra_link_args=[], # ['-framework','vecLib'], # for Mac OSX ?
+    )
 ext_modules = [     #
-    Extension("gvar._gvarcore",["src/gvar/_gvarcore.pyx"],libraries=libraries,
-              include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("gvar._svec_smat",["src/gvar/_svec_smat.pyx"],libraries=libraries,
-              include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("gvar._utilities",["src/gvar/_utilities.pyx"],libraries=libraries,
-              include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("gvar.dataset",["src/gvar/dataset.pyx"],libraries=libraries,
-              include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("gvar._bufferdict",["src/gvar/_bufferdict.pyx"],libraries=libraries,
-              include_dirs=include_dirs,extra_link_args=extra_link_args),
-    Extension("lsqfit._utilities",["src/lsqfit/_utilities.pyx"],
-              libraries=libraries, include_dirs=include_dirs,
-              extra_link_args=extra_link_args)
+    Extension("gvar._gvarcore", ["src/gvar/_gvarcore.pyx"], **ext_args),
+    Extension( "gvar._svec_smat", ["src/gvar/_svec_smat.pyx"], **ext_args),
+    Extension("gvar._utilities", ["src/gvar/_utilities.pyx"], **ext_args),
+    Extension("gvar.dataset", ["src/gvar/dataset.pyx"], **ext_args),
+    Extension("gvar._bufferdict", ["src/gvar/_bufferdict.pyx"], **ext_args),
+    Extension("lsqfit._utilities", ["src/lsqfit/_utilities.pyx"],  **ext_args),
     ]
 
 # packages
@@ -104,6 +105,7 @@ setup(name='lsqfit',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'

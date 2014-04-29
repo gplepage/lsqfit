@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.6.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.7 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '4.6.1',
+        URL_ROOT:    './',
+        VERSION:     '4.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.6.1 documentation" href="index.html" />
-    <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
+    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="prev" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -45,9 +44,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
+          <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -113,53 +112,53 @@ instead of a dictionary.</p>
 <div class="section" id="formal-background">
 <h2>Formal Background<a class="headerlink" href="#formal-background" title="Permalink to this headline">¶</a></h2>
 <p>The formal structure structure of a least-squares problem involves
-fitting input data <img class="math" src="_images/math/6e6ceb79ebc4bf613298e0144eae25dd73de9be3.png" alt="y_i" style="vertical-align: -4px"/> with functions <img class="math" src="_images/math/cba4e0e3438f94bd51f45a2b7eb9e1696209e5a9.png" alt="f_i(p)" style="vertical-align: -4px"/> by adjusting
-fit parameters <img class="math" src="_images/math/b1c35b1f3a048397767b86d920f8c4a22adbea61.png" alt="p_a" style="vertical-align: -4px"/> to minimize</p>
+fitting input data <img class="math" src="_images/math/ec62fe89a2cfa3e0993899eaa4237367667f3ebf.png" alt="y_i" style="vertical-align: -4px"/> with functions <img class="math" src="_images/math/40a2b604e99fd43b836e70a47c4af98fa9b3dbf4.png" alt="f_i(p)" style="vertical-align: -4px"/> by adjusting
+fit parameters <img class="math" src="_images/math/ed4aa5bfaca4d391ba4f4c15c86179aa00fea00a.png" alt="p_a" style="vertical-align: -4px"/> to minimize</p>
 <div class="math">
-<p><img src="_images/math/a356f2bbf418ac8896b9b00d5c8f461ed2f4881d.png" alt="\chi^2 &amp;\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
+<p><img src="_images/math/f40042363f566fef59580698e379748a42ff8777.png" alt="\chi^2 &amp;\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
 \Delta y(p)_j  \\
 &amp;\equiv (\Delta y(p))^\mathrm{T}\cdot \mathrm{cov}_y^{-1}\cdot
 \Delta y(p)"/></p>
-</div><p>where <img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is the covariance matrix for the input data
+</div><p>where <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is the covariance matrix for the input data
 and</p>
 <div class="math">
-<p><img src="_images/math/e1b4889232ec3e5273e2d3d22ac1c77a377a3171.png" alt="\Delta y(p)_i \equiv f_i(p) - y_i."/></p>
+<p><img src="_images/math/7cfc9a8da0a30784fe3b8622dd1e0cb7c8ec38b7.png" alt="\Delta y(p)_i \equiv f_i(p) - y_i."/></p>
 </div><p>There are generally two types of input data &#8212; actual data and
 prior information for each fit parameter &#8212; but we lump these together
-here since they enter in the same way (that is, the sums over <img class="math" src="_images/math/34857b3ba74ce5cd8607f3ebd23e9015908ada71.png" alt="i" style="vertical-align: 0px"/>
-and <img class="math" src="_images/math/8122aa89ea6e80784c6513d22787ad86e36ad0cc.png" alt="j" style="vertical-align: -4px"/> are over all data and priors).</p>
-<p>The best-fit values <img class="math" src="_images/math/24ef7ea574aad98de551cf64dff4360403ae8343.png" alt="\overline{p}_a" style="vertical-align: -4px"/> for the fit parameters are those
-that minimize <img class="math" src="_images/math/a61c1e51680e27d35d05bebed87d474972fc70bd.png" alt="\chi^2" style="vertical-align: -4px"/>:</p>
+here since they enter in the same way (that is, the sums over <img class="math" src="_images/math/62494ad46772c68b86d00123a1ea8f195a7864b2.png" alt="i" style="vertical-align: 0px"/>
+and <img class="math" src="_images/math/976b652be33ea6b747a03babbb113160506846d0.png" alt="j" style="vertical-align: -4px"/> are over all data and priors).</p>
+<p>The best-fit values <img class="math" src="_images/math/fc4affc28fb114163c14165a1fb24a5c540a7963.png" alt="\overline{p}_a" style="vertical-align: -4px"/> for the fit parameters are those
+that minimize <img class="math" src="_images/math/143d854fb865a4fb5147d3cc5d31426941bdd597.png" alt="\chi^2" style="vertical-align: -4px"/>:</p>
 <div class="math">
-<p><img src="_images/math/1d2eb8c3fca1a271e727b571252e066a52defd81.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}
+<p><img src="_images/math/f58680b6ccfa686d3fd52533f7695c225c84cc6f.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}
 \cdot\mathrm{cov}_y^{-1}\cdot
 \Delta y(\overline{p}) = 0"/></p>
-</div><p>where the derivatives are <img class="math" src="_images/math/eff3c78760db7b72508c2467103cb63cf9e170ec.png" alt="\partial_a = \partial/\partial
-\overline{p}_a" style="vertical-align: -5px"/>. The covariance matrix <img class="math" src="_images/math/09656e29357d31d0dab9bf38d0ce635413858f9a.png" alt="\mathrm{cov}_p" style="vertical-align: -6px"/> for these is
+</div><p>where the derivatives are <img class="math" src="_images/math/a99e208376ed9d408e7dffe3e6d624dfa400c2e2.png" alt="\partial_a = \partial/\partial
+\overline{p}_a" style="vertical-align: -5px"/>. The covariance matrix <img class="math" src="_images/math/72f2f5202feb882926834030925accc55f1e7ab1.png" alt="\mathrm{cov}_p" style="vertical-align: -6px"/> for these is
 obtained (approximately) from</p>
 <div class="math">
-<p><img src="_images/math/8b56d848f8a2a97e694c94d79ad34e1a1d85a39a.png" alt="(\mathrm{cov^{-1}_p})_{ab} \equiv
+<p><img src="_images/math/b7d11d4d11f6d0b877c276173a29943b1c1f77e3.png" alt="(\mathrm{cov^{-1}_p})_{ab} \equiv
 (\partial_a \Delta y(\overline p))^\mathrm{T}
 \cdot \mathrm{cov}^{-1}_y \cdot
 (\partial_b\Delta y(\overline p))."/></p>
-</div><p>Consequently the variance for any function <img class="math" src="_images/math/d505b6bbd2d7d4ba0d8cd2fe55409bdcc0ba0d9a.png" alt="g(\overline p)" style="vertical-align: -4px"/> of the
+</div><p>Consequently the variance for any function <img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/> of the
 best-fit parameters is given by (approximately)</p>
 <div class="math">
-<p><img src="_images/math/e102238def74f10eed3ea51f4fd8f5fa23fbee8c.png" alt="\sigma^2_{g} = (\partial g(\overline p))^\mathrm{T} \cdot
+<p><img src="_images/math/6b7b025185bc3193cae031d023cd22da436816e9.png" alt="\sigma^2_{g} = (\partial g(\overline p))^\mathrm{T} \cdot
 \mathrm{cov}_p \cdot \partial g(\overline p)"/></p>
 </div><p>The definition of the covariance matrix implies that it and any variance
-<img class="math" src="_images/math/55842b916cc7909358e26096f908ccdf64fd3c9e.png" alt="\sigma^2_g" style="vertical-align: -8px"/> derived from it depend linearly (approximately) on the
-elements of the input data covariance matrix <img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, at
+<img class="math" src="_images/math/e4cf161bcc4d03d4a1c3f4441bcba57966672964.png" alt="\sigma^2_g" style="vertical-align: -8px"/> derived from it depend linearly (approximately) on the
+elements of the input data covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, at
 least when errors are small:</p>
 <div class="math">
-<p><img src="_images/math/2cdc13edb7b591e8923313816edf65dba11aa3e1.png" alt="\sigma^2_g \approx \sum_{ij} c(\overline p)_{ij} \,
+<p><img src="_images/math/16a5fda0992cfb22803ea1711d8814cd1c64e78b.png" alt="\sigma^2_g \approx \sum_{ij} c(\overline p)_{ij} \,
  (\mathrm{cov}_y)_{ij}"/></p>
 </div><p>This allows us to associate different portions of the output error
-<img class="math" src="_images/math/55842b916cc7909358e26096f908ccdf64fd3c9e.png" alt="\sigma^2_g" style="vertical-align: -8px"/> with different parts of the input error
-<img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, creating an &#8220;error budget&#8221; for
-<img class="math" src="_images/math/d505b6bbd2d7d4ba0d8cd2fe55409bdcc0ba0d9a.png" alt="g(\overline p)" style="vertical-align: -4px"/>.
+<img class="math" src="_images/math/e4cf161bcc4d03d4a1c3f4441bcba57966672964.png" alt="\sigma^2_g" style="vertical-align: -8px"/> with different parts of the input error
+<img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, creating an &#8220;error budget&#8221; for
+<img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/>.
 Such information helps pinpoint the input errors that most affect the
-output errors for any particular quantity  <img class="math" src="_images/math/d505b6bbd2d7d4ba0d8cd2fe55409bdcc0ba0d9a.png" alt="g(\overline p)" style="vertical-align: -4px"/>,
+output errors for any particular quantity  <img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/>,
 and also indicates how those output errors might change for a given change
 in input error.</p>
 <p>The relationship between the input and output errors is only
@@ -169,27 +168,27 @@ errors &#8212; but only weakly when errors are small. Neglecting such variation
 in the parameters, the error budget for any quantity is easily computed
 using</p>
 <div class="math">
-<p><img src="_images/math/3be7b57c0fa772417f3b099d3ace3c4264eb2bd5.png" alt="\frac{\partial (\mathrm{cov}_p)_{ab}}{\partial (\mathrm{cov}_y)_{ij}}
+<p><img src="_images/math/6248c44731bcc8df420d1adf355431b57aec1e6d.png" alt="\frac{\partial (\mathrm{cov}_p)_{ab}}{\partial (\mathrm{cov}_y)_{ij}}
  = D_{ai}\,D_{bj}"/></p>
 </div><p>where</p>
 <div class="math">
-<p><img src="_images/math/d2969fb723918da40baf6bb4e6ddc02b011fdca6.png" alt="D_{ai} \equiv (\mathrm{cov}_p \cdot \partial \Delta y \cdot
+<p><img src="_images/math/e2e0fc02079c67ed3070a4042d363e1f3e8dd724.png" alt="D_{ai} \equiv (\mathrm{cov}_p \cdot \partial \Delta y \cdot
    \mathrm{cov}_y^{-1})_{ai}"/></p>
 </div><p>and, trivially,
-<img class="math" src="_images/math/c1e3de1b9f3757fbbbdb77c54f5dd7cc3bfbc2b8.png" alt="\mathrm{cov}_p = D\cdot\mathrm{cov}_y\cdot D^\mathrm{T}" style="vertical-align: -6px"/>.</p>
+<img class="math" src="_images/math/ec3bade7b995767184074bd4bf6629ae26f0c3b9.png" alt="\mathrm{cov}_p = D\cdot\mathrm{cov}_y\cdot D^\mathrm{T}" style="vertical-align: -6px"/>.</p>
 <p>This last formula suggests that</p>
 <div class="math">
-<p><img src="_images/math/74afbf1e8b502600c862150afd3bb96e9d14e8ee.png" alt="\frac{\partial \overline{p}_a}{\partial y_i} = D_{ai}."/></p>
+<p><img src="_images/math/990366a65b1942a67e5f80464888ece41a9ceb73.png" alt="\frac{\partial \overline{p}_a}{\partial y_i} = D_{ai}."/></p>
 </div><p>This relationship is true in the limit of small errors, as is easily derived
 from the minimum condition for the fit, which defines (implicitly)
-<img class="math" src="_images/math/0d40401d5fd5baf0afb237bae989b640095b0821.png" alt="\overline{p}_a(y)" style="vertical-align: -4px"/>: Differentiating with respect to
-<img class="math" src="_images/math/6e6ceb79ebc4bf613298e0144eae25dd73de9be3.png" alt="y_i" style="vertical-align: -4px"/> we obtain</p>
+<img class="math" src="_images/math/17df9cad4087304b9a125bceb586b4cca0513a83.png" alt="\overline{p}_a(y)" style="vertical-align: -4px"/>: Differentiating with respect to
+<img class="math" src="_images/math/ec62fe89a2cfa3e0993899eaa4237367667f3ebf.png" alt="y_i" style="vertical-align: -4px"/> we obtain</p>
 <div class="math">
-<p><img src="_images/math/93a453c2a0ee91b2e07214daf687e8174f82766e.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
+<p><img src="_images/math/4344a120976bf6bcdd2c7bff8b213ee6d88acb75.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
 \frac{\partial\Delta y(\overline{p})}{\partial y_i} = 0"/></p>
-</div><p>where we have ignored terms suppressed by a factor of <img class="math" src="_images/math/1264f24cb1dc7c2b4bcb50a78ca07554f7f442cb.png" alt="\Delta y(p)" style="vertical-align: -4px"/>.
+</div><p>where we have ignored terms suppressed by a factor of <img class="math" src="_images/math/a9c518b3071d03b1f8e0f098883f804c13aa8e73.png" alt="\Delta y(p)" style="vertical-align: -4px"/>.
 This leads immediately to the relationship above.</p>
-<p>The data&#8217;s covariance matrix <img class="math" src="_images/math/061caf2f9bb538ac797d035fa0b3fcd4d6f5de4d.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
+<p>The data&#8217;s covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
 singular, making it difficult to invert. This problem is dealt with using
 an <em>svd</em> cut: the covariance matrix is diagonalized, some number of the
 smallest (and therefore least-well determined) eigenvalues and their
@@ -197,8 +196,8 @@ eigenvectors are discarded, and the inverse matrix is reconstituted from
 the eigenmodes that remain. (Instead of discarding modes one can replace
 their eigenvalues by the smallest eigenvalue that is retained; this is less
 conservative and sometimes leads to more accurate results.) Note that the
-covariance matrix has at most <img class="math" src="_images/math/fc97ef67268cd4e91bacdf12b8901d7036c9a056.png" alt="N" style="vertical-align: 0px"/> non-zero eigenvalues when it is
-estimated from <img class="math" src="_images/math/fc97ef67268cd4e91bacdf12b8901d7036c9a056.png" alt="N" style="vertical-align: 0px"/> random samples; zero-modes should always be
+covariance matrix has at most <img class="math" src="_images/math/10f77f12438cb385098c4d2344aaa427d0a462a8.png" alt="N" style="vertical-align: 0px"/> non-zero eigenvalues when it is
+estimated from <img class="math" src="_images/math/10f77f12438cb385098c4d2344aaa427d0a462a8.png" alt="N" style="vertical-align: 0px"/> random samples; zero-modes should always be
 discarded.</p>
 </div>
 <div class="section" id="nonlinear-fit-objects">
@@ -494,11 +493,13 @@ errors in the final error estimates:</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>maxline</strong> (<em>integer</em>) &#8211; Maximum number of data points for which fit 
+<li><strong>maxline</strong> (<em>integer or bool</em>) &#8211; Maximum number of data points for which fit 
 results and input data are tabulated. <tt class="docutils literal"><span class="pre">maxline&lt;0</span></tt> implies
 that only <tt class="docutils literal"><span class="pre">chi2</span></tt>, <tt class="docutils literal"><span class="pre">Q</span></tt>, <tt class="docutils literal"><span class="pre">logGBF</span></tt>, and <tt class="docutils literal"><span class="pre">itns</span></tt> are
-tabulated; no parameter values are included. Default is
-<tt class="docutils literal"><span class="pre">maxline=0</span></tt>.</li>
+tabulated; no parameter values are included. Setting
+<tt class="docutils literal"><span class="pre">maxline=True</span></tt> prints all data points; setting it 
+equal <tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt> is the same as setting
+it equal to <tt class="docutils literal"><span class="pre">-1</span></tt>. Default is <tt class="docutils literal"><span class="pre">maxline=0</span></tt>.</li>
 <li><strong>pstyle</strong> (<em>&#8216;vv&#8217;, &#8216;v&#8217;, or &#8216;m&#8217;</em>) &#8211; Style used for parameter list. Supported values are
 &#8216;vv&#8217; for very verbose, &#8216;v&#8217; for verbose, and &#8216;m&#8217; for minimal.
 When &#8216;m&#8217; is set, only parameters whose values differ from their
@@ -963,11 +964,12 @@ form <tt class="docutils literal"><span class="pre">&quot;log(XX)&quot;</span></
 <tt class="docutils literal"><span class="pre">&quot;sqrtXX&quot;</span></tt> where <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> is an arbitrary string. For each
 such key it adds a new entry to the parameter dictionary
 with key <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> where:</p>
-<div class="highlight-python"><pre>p["XX"] = exp(p[k])    for k = "log(XX)" or "logXX"
+<div class="highlight-python"><div class="highlight"><pre>p[&quot;XX&quot;] = exp(p[k])    for k = &quot;log(XX)&quot; or &quot;logXX&quot;
 
 or
 
-p["XX"] = p[k] ** 2    for k = "sqrt(XX)" or "sqrtXX"</pre>
+p[&quot;XX&quot;] = p[k] ** 2    for k = &quot;sqrt(XX)&quot; or &quot;sqrtXX&quot;
+</pre></div>
 </div>
 <p>This means that the fit function can be expressed entirely in 
 terms of <tt class="docutils literal"><span class="pre">p[&quot;XX&quot;]</span></tt> even if the actual fit parameter is 
@@ -1227,8 +1229,8 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="gvar_dataset.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
+  <p class="topless"><a href="gvar_other.html"
+                        title="previous chapter">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -1256,14 +1258,14 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
+          <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2013, G. P. Lepage.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

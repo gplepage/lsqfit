@@ -23,6 +23,8 @@ run:
 	- diff -w p-corr.out p-corr.tmp
 	$(PYTHON) err-budget.py > err-budget.tmp
 	- diff -w err-budget.out err-budget.tmp
+	$(PYTHON) pendulum.py > pendulum.tmp
+	- diff -w pendulum.out pendulum.tmp
 
 update-all:
 	$(PYTHON) simple.py > simple.out

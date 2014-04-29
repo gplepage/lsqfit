@@ -71,9 +71,11 @@ The :mod:`lsqfit` tutorial contains extended explanations and examples.
 import collections
 import functools
 import inspect
+import sys
 import warnings
-import numpy
 import math, pickle, time, copy
+
+import numpy
 
 import gvar as _gvar
 
@@ -388,9 +390,11 @@ class nonlinear_fit(object):
         :param maxline: Maximum number of data points for which fit 
             results and input data are tabulated. ``maxline<0`` implies
             that only ``chi2``, ``Q``, ``logGBF``, and ``itns`` are
-            tabulated; no parameter values are included. Default is
-            ``maxline=0``.
-        :type maxline: integer
+            tabulated; no parameter values are included. Setting
+            ``maxline=True`` prints all data points; setting it 
+            equal ``None`` or ``False`` is the same as setting
+            it equal to ``-1``. Default is ``maxline=0``.
+        :type maxline: integer or bool
         :param pstyle: Style used for parameter list. Supported values are
             'vv' for very verbose, 'v' for verbose, and 'm' for minimal.
             When 'm' is set, only parameters whose values differ from their
@@ -401,6 +405,11 @@ class nonlinear_fit(object):
         # unpack arguments 
         if nline is not None and maxline == 0:
             maxline = nline         # for legacy code (old name)
+        if maxline is True:
+            # print all data
+            maxline = sys.maxsize
+        if maxline is False or maxline is None:
+            maxline = -1
         if pstyle[:2] == 'vv':
             pstyle = 'vv'
         elif pstyle[:1] == 'v':

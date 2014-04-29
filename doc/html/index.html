@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit Documentation &mdash; lsqfit 4.6.1 documentation</title>
+    <title>lsqfit Documentation &mdash; lsqfit 4.7 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '4.6.1',
+        URL_ROOT:    './',
+        VERSION:     '4.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.6.1 documentation" href="#" />
+    <link rel="top" title="lsqfit 4.7 documentation" href="#" />
     <link rel="next" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -47,7 +46,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="N">next</a> |</li>
-        <li><a href="#">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="#">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -63,7 +62,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview and Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#introduction">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#making-fake-data">Making Fake Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#gaussian-random-variables-and-error-propagation">Gaussian Random Variables and Error Propagation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#basic-fits">Basic Fits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#chained-fits">Chained Fits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#x-has-error-bars"><tt class="docutils literal"><span class="pre">x</span></tt> has Error Bars</a></li>
@@ -82,10 +81,12 @@
 <li class="toctree-l1"><a class="reference internal" href="gvar.html"><tt class="docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#creating-gaussian-variables">Creating Gaussian Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#computing-covariance-matrices">Computing Covariance Matrices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#gvar-arithmetic-and-functions"><tt class="docutils literal"><span class="pre">gvar.GVar</span></tt> Arithmetic and Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#error-budgets-from-gvars">Error Budgets from <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#storing-gvars-for-later-use-bufferdicts">Storing <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s for Later Use: <tt class="docutils literal"><span class="pre">gvar.BufferDict</span></tt>s</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#random-number-generators">Random Number Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#limitations">Limitations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#implementation-notes-derivatives-optimizations">Implementation Notes; Derivatives; Optimizations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#optimizations">Optimizations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#utilities">Utilities</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#classes">Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#requirements">Requirements</a></li>
@@ -95,6 +96,11 @@
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#classes">Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gvar_other.html">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gvar_other.html#cubic-splines">Cubic Splines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar_other.html#ordinary-differential-equations">Ordinary Differential Equations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lsqfit.html"><tt class="docutils literal"><span class="pre">lsqfit</span></tt> - Nonlinear Least Squares Fitting</a><ul>
@@ -126,9 +132,7 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">lsqfit Documentation</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#">lsqfit Documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
@@ -164,12 +168,12 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >next</a> |</li>
-        <li><a href="#">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="#">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2013, G. P. Lepage.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

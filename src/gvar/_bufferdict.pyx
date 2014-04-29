@@ -97,17 +97,31 @@ class BufferDict(collections.MutableMapping):
     buffer can also be accessed through iterator ``a.flat`` (in analogy
     with :mod:`numpy` arrays), and through ``a.flatten()`` which returns a
     copy of the buffer.
+
+    When creating a |BufferDict| from a dictionary (or another |BufferDict|),
+    the keys included and their order can be specified using a list of keys: 
+    for example, ::
+
+        >>> d = dict(a=0.0,b=[1.,2.],c=[[3.,4.],[5.,6.]],d=None)
+        >>> print(d)
+        {'a': 0.0, 'c': [[3.0, 4.0], [5.0, 6.0]], 'b': [1.0, 2.0], 'd': None}
+        >>> a = BufferDict(d, keys=['d', 'b', 'a'])
+        >>> for k in a:
+        ...     print(k, a[k])
+        d None
+        b [1.0 2.0]
+        a 0.0
          
     A |BufferDict| functions like a dictionary except: a) items cannot be
     deleted once inserted; b) all values must be either scalars or arrays
     of scalars, where the scalars can be any noniterable type that works
-    with :mod:`numpy` arrays; and c) any new value assigned to a key must
-    have the same size and shape as the original value.
+    with :mod:`numpy` arrays; and c) any new value assigned to an existing 
+    key must have the same size and shape as the original value.
         
     Note that |BufferDict|\s can be pickled and unpickled even when they 
     store |GVar|\s (which themselves cannot be pickled separately).
     """
-    def __init__(self,*args,**kargs):
+    def __init__(self, *args, **kargs):
         super(BufferDict, self).__init__()
         self.shape = None
         if len(args)==0:
@@ -117,6 +131,15 @@ class BufferDict(collections.MutableMapping):
             self._data = {}
             for k in sorted(kargs):
                 self[k] = kargs[k]
+        elif len(args) == 1 and 'keys' in kargs and len(kargs) == 1:
+            self._buf = numpy.array([],int)
+            self._keys = []
+            self._data = {}
+            try:
+                for k in kargs['keys']:
+                    self[k] = args[0][k] 
+            except KeyError:
+                raise KeyError('Dictionary does not contain key in keys: ' + str(k))               
         else:
             if len(args)==2 and len(kargs)==0:
                 bd,buf = args
@@ -128,7 +151,7 @@ class BufferDict(collections.MutableMapping):
                 buf = kargs['buf']
             else:
                 raise ValueError("Bad arguments for BufferDict.")
-            if isinstance(bd,BufferDict):
+            if isinstance(bd, BufferDict):
                 # make copy of BufferDict bd, possibly with new buffer 
                 self._keys = copy.copy(bd._keys)
                 self._data = copy.copy(bd._data)
@@ -136,7 +159,7 @@ class BufferDict(collections.MutableMapping):
                              else numpy.asarray(buf))
                 if bd.size != self.size:
                     raise ValueError("buf is wrong size --- %s not %s"
-                                     % (self.size,bd.size))
+                                     % (self.size, bd.size))
                 if self._buf.ndim!=1:
                     raise ValueError("buf must be 1-d, not shape = %s"
                                      % (self._buf.shape,))

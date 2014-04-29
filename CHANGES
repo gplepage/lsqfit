@@ -1,3 +1,43 @@
+Version 4.7
+==============
+A minor upgrade but with one backwards incompatible change (that is unlikey
+to affect much code). The incompatibility is the main reason for calling this
+release version 4.7 rather than 4.6.2.
+
+- GVars can be used with any comparison operator now (==, !=, >, >=, <, <=). 
+  The comparison is made with the mean value of the GVar, ignoring the 
+  standard deviation. This is to facilitate the use/design of numeric functions 
+  that are designed to work with either floats or GVars. The definition of == 
+  and != has changed from the past. Before x==y for two GVars was true only if
+  both their means and standard deviations agreed; now it is true if their
+  means agree, but their standard deviations disagree.
+
+- Can use keyword keys to specify the which keys to use and their order when
+  creating a BufferDict from a dictionary-like object.
+
+- Significantly more documentation for the gvar module, and some rearrangement
+  and expansion of the overview documentation.
+
+- New function gvar.gvar_function for creating new arithmetic Python 
+  functions that can accept GVar arguments.
+
+- gvar.gvar(x, xcov) now works when x and xcov are dictionaries. This allows
+  you to deconstruct a dictionary of GVars using gvar.mean and gvar.evalcov, 
+  and then to reconstruct the dictionary using gvar.gvar: e.g.,
+  gvar.gvar(gvar.mean(g), gvar.evalcov(g)) rebuilds g when g is an array
+  of GVars, or a dictionary of GVars and arrays of GVars. 
+
+- gvar has two new numerical analysis modules: gvar.ode for integrating 
+  ordinary differential equations, and gvar.cspline for creating cubic 
+  splines from 1-d data. These modules are adapted from standard routines
+  so they work with GVars as well as floats, which is why they are included
+  here. Additional modules will be added as the need arises.
+
+- When printing an lsqfit fit using fit.format(), setting option maxline=True
+  (rather than a number) now causes all data to be printed.
+
+- Other minor rearrangements and clarifications in setup.py and a few other files.
+
 Version 4.6.1 - 2014-02-02
 ===========================
 Cleaning up some small bugs introduced with the new lsqfit.wavg. Also 

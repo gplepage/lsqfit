@@ -12,6 +12,7 @@
 # GNU General Public License for more details.
 
 PYTHON = python
+# PYTHONHASH = `python -c 'import sys; print(hash(sys.version))'`
 
 install : 
 	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHON)

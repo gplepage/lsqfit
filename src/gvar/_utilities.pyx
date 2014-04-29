@@ -193,7 +193,7 @@ def deriv(g, GVar x):
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
 
-    ``x`` must be an *independent* |GVar|, which is a |GVar| created by a 
+    ``x`` must be an *primary* |GVar|, which is a |GVar| created by a 
     call to :func:`gvar.gvar` (*e.g.*, ``x = gvar.gvar(xmean, xsdev)``) or a 
     function ``f(x)`` of such a |GVar|. (More precisely, ``x.der`` must have 
     only one nonzero entry.)
@@ -208,7 +208,7 @@ def deriv(g, GVar x):
     for i in range(x.d.size):
         if x.d.v[i].v != 0:
             if xder != 0:
-                raise ValueError("derivative ambiguous -- x is not independent")
+                raise ValueError("derivative ambiguous -- x is not primary")
             else:
                 xder = x.d.v[i].v
                 ider = x.d.v[i].i
@@ -316,7 +316,7 @@ def evalcov(g):
     covariance matrix as an array with shape ``g.shape+g.shape``.
     If ``g`` is a dictionary whose values are |GVar|\s or arrays of 
     |GVar|\s, the result is a doubly-indexed dictionary where 
-    ``cov[k1,k2]`` is the covariance for ``g[k1]`` and ``g[k2]``.
+    ``cov[k1,k2]`` is the covariance for ``g[k1].flat`` and ``g[k2].flat``.
     """
     cdef int a,b,ng,i,j,nc
     cdef numpy.ndarray[numpy.double_t,ndim=2] ans

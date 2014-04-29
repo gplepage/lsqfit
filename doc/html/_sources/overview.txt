@@ -12,11 +12,13 @@ least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
 :mod:`lsqfit` because it provides the fitting functions. :mod:`lsqfit` makes
 heavy use of auxiliary module :mod:`gvar`, which provides tools that
-facilitate the analysis of error propagation, and also the creation of
-complicated multi-dimensional Gaussian distributions.
+simplify the analysis of error propagation, and also the creation of
+complicated multi-dimensional Gaussian distributions. The power of the
+:mod:`gvar` module is a feature that distinguishes :mod:`lsqfit` from 
+standard fitting packages, as demonstrated below.
 
 The following (complete) code illustrates basic usage of :mod:`lsqfit`::
-   
+
    import numpy as np
    import gvar as gv
    import lsqfit
@@ -49,10 +51,6 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
    inputs = dict(y=y, prior=prior)
    print(gv.fmt_values(outputs))              # tabulate outputs
    print(gv.fmt_errorbudget(outputs, inputs)) # print error budget for outputs
-   
-   # save best-fit values in file 'outputfile.p' for later use
-   import pickle
-   pickle.dump(fit.p, open('outputfile.p', 'wb'))
 
 This code fits the function ``f(x,a,b)= exp(a+b*x)`` (see ``fcn(x,p)``)
 to two sets of data, labeled ``data1`` and ``data2``, by varying parameters
@@ -75,7 +73,8 @@ the covariance matrix). The dictionary ``prior`` gives *a priori* estimates
 for the two parameters, ``a`` and ``b``: each is assumed to be 0.5±0.5 
 before fitting. The parameters ``p[k]`` in the fit function ``fcn(x, p)`` 
 are stored in a dictionary having the same keys and layout as
-``prior``. In addition, there is an extra piece of input data,
+``prior`` (since ``prior`` specifies the fit parameters for 
+the fitter). In addition, there is an extra piece of input data,
 ``y['b/a']``, which indicates that ``b/a`` is 2±0.5. The fit
 function for this data is simply the ratio ``b/a`` (represented by
 ``p['b']/p['a']`` in fit function ``fcn(x,p)``). The fit function returns
@@ -96,25 +95,7 @@ the ``y`` data, with only small contributions from uncertainties in the
 priors ``prior``. The fit results corresponding to each piece of input data
 are also tabulated (``Fit: ...``); the agreement is excellent, as expected
 given that the ``chi**2`` per degree of freedom is only 0.17.
-   
-The last section of the code uses Python's :mod:`pickle` module to save the
-best-fit values of the parameters in a file for later use. They are recovered
-using :mod:`pickle` again::
-   
-   >>> import pickle
-   >>> p = pickle.load(open('outputfile.p', 'rb'))
-   >>> print(p['a'])
-   0.253(32)
-   >>> print(p['b'])
-   0.449(65)
-   >>> print(p['b']/p['a'])
-   1.78(30)
-   
-The recovered parameters are :class:`gvar.GVar`\s, with their full covariance
-matrix intact. (:mod:`pickle` works here because the variables in ``fit.p``
-are stored in a special dictionary of type :class:`gvar.BufferDict`;
-:class:`gvar.GVar`\s cannot be pickled otherwise.)
-   
+      
 Note that the constraint in ``y`` on ``b/a`` in this example is much tighter
 than the constraints on ``a`` and ``b`` separately. This suggests a variation
 on the previous code, where the tight restriction on ``b/a`` is built into the
@@ -131,7 +112,7 @@ prior rather than ``y``::
        'data2' : np.array([0.1, 0.5])
        }
    prior = dict(a=gv.gvar(0.5, 0.5))
-   prior['b'] = prior['a']*gv.gvar(2.0, 0.5)
+   prior['b'] = prior['a'] * gv.gvar(2.0, 0.5)
 
    def fcn(x, p):             # fit function of x and parameters p[k]
       ans = {}
@@ -163,7 +144,7 @@ There are several things worth noting from this example:
      (``fcn(x, p)``) has to return a dictionary with the same layout as
      that of ``y`` (that is, with the same keys and where the value for
      each key has the same shape as the corresponding value in ``y``).
-     :mod:`lsqfit` does allow ``y`` to be an array instead of a dictionary, 
+     :mod:`lsqfit` allows ``y`` to be an array instead of a dictionary, 
      which might be preferable for very simple fits (but usually not 
      otherwise).
      
@@ -208,115 +189,190 @@ statement if using Python 2; or add ::
 
 at the start of your file. 
 
-.. _making-fake-data:
+Gaussian Random Variables and Error Propagation
+------------------------------------------------
+The inputs and outputs of a nonlinear least squares analysis are probability
+distributions, and these distributions will be Gaussian provided the input
+data are sufficiently accurate. :mod:`lsqfit` assumes this to be the case. 
+(It also provides tests for non-Gaussian behavior, together with 
+methods for dealing with such behavior.)
+One of the most distinctive features of :mod:`lsqfit` is that it is 
+built around a class, |GVar|, of objects that can be used to 
+represent arbitrarily complicated Gaussian distributions
+--- that is, *Gaussian random variables* that specify the means and 
+covariance matrix of the probability distributions. 
+The input data for a fit are represented
+by a collection of |GVar|\s that specify both the values and possible 
+errors in the input values. The result of a fit is a collection of
+|GVar|\s specifying the best-fit values for the fit parameters and the 
+estimated uncertainty in those values. 
 
-Making Fake Data
-----------------
-We need data in order to demonstrate curve fitting. The easiest route
-is to make fake data. The recipe is simple: 1) choose some well defined
-function ``f(x)`` of the independent variable ``x``; 2) choose values for
-the ``x``\s, and therefore the "correct" values for ``y=f(x)``; and 3) add
-random noise to the ``y``\s, to simulate measurement errors. Here we will work
-through a simple implementation of this recipe to illustrate how the
-:mod:`gvar` module can be used to build complicated Gaussian distributions (in
-this case for the correlated noise in the ``y``\s). A reader eager to fit
-real data can skip this section on first reading.
+There are three important things to know about |GVar|\s, in addition
+to knowing how to create them (see :ref:`creating-gaussian-variables`):
 
-For the function ``f`` we choose something familiar (to some people): 
-a sum of exponentials
-``sum_i=0..99 a[i] exp(-E[i]*x)``. We take as our exact values for the
-parameters ``a[i]=0.4`` and ``E[i]=0.9*(i+1)``, which are easy to remember.
-This is simple in Python::
+  1)  |GVar|\s describe not only means and standard deviations, but also
+      statistical correlations between different objects. For example, the
+      |GVar|\s created by ::
 
-   import numpy as np
-   
-   def f_exact(x, nexp=100):
-       return sum(0.4 * np.exp(-0.9 * (i + 1) * x) for i in range(nexp))
-   
-For ``x``\s we take ``1,2,3..10,12,14..20``, and exact ``y``\s are then given by
-``f_exact(x)``::
+        >>> import gvar as gv
+        >>> a, b = gv.gvar([1, 1], [[0.01, 0.01], [0.01, 0.010001]])
+        >>> print(a, b)
+        1.00(10) 1.00(10)
 
-   >>> x = array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-   >>> y_exact = f_exact(x)
-   >>> print(y_exact)               # correct/exact values for y
-   [  2.74047100e-01   7.92134506e-02   2.88190008e-02 ... ]
+      both have means of ``1`` and standard deviations equal to or 
+      very close to ``0.1``, but the ratio ``b/a`` has a 
+      standard deviation that is 100x smaller::
 
-Finally we need to add random noise to the ``y_exact``\s to obtain our
-fit data. We do this by forming ``y_exact*noise`` where ::
+        >>> print(b / a)
+        1.0000(10)
 
-   noise = 1 + sum_n=0..99 c[n] * (x / x_max) ** n,
-   
-Here ``x_max`` is the largest ``x`` used, and the ``c[n]`` are Gaussian
-random variable with means and standard deviations of order 0.01. This
-is easy to implement in Python using the :mod:`gvar` module::
+      This is because the covariance matrix specified for ``a`` and ``b`` 
+      when they were created has large, positive off-diagonal elements:: 
 
-   import gvar as gv
-   
-   def make_data(nexp=100, eps=0.01): # make x, y fit data
-       x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-       cr = gv.gvar(0.0, eps)
-       c = [gv.gvar(cr(), eps) for n in range(100)]
-       x_xmax = x/max(x)
-       noise = 1 +  sum(c[n] * x_xmax ** n for n in range(100))
-       y = f_exact(x, nexp) * noise
-       return x, y
+        >>> print(gv.evalcov([a, b]))         # covariance matrix
+        [[ 0.01      0.01    ]
+         [ 0.01      0.010001]]
 
-Gaussian variable ``cr`` represents a Gaussian distribution with mean
-0.0 and width 0.01, which we use here as a random number generator:
-``cr()`` is a number drawn randomly from the distribution represented by
-``cr``::
+      These off-diagonal elements imply that ``a`` and ``b`` are strongly
+      correlated, which means that ``b / a`` or ``b - a`` will have 
+      much smaller uncertainties than ``a`` or ``b`` separately. The 
+      correlation coefficient for ``a`` and ``b`` is 0.99995::
 
-   >>> print(cr)
-   0.000(10)
-   >>> print(cr())
-   0.00452180208286
-   >>> print(cr())
-   -0.00731564589737
+        >>> print(gv.evalcorr([a, b]))        # correlation matrix
+        [[ 1.       0.99995]
+         [ 0.99995  1.     ]]
 
-We use ``cr()`` to generate mean values for the Gaussian distributions
-represented by the ``c[n]``\s, each of which has width 0.01. The resulting
-``y``\s fluctuate around the corresponding values of ``f_exact(x)`` and have 
-statistical errors::
 
-   >>> print(y)
-   [0.2752(27) 0.07951(80) ... ]
-   >>> print(y-f_exact(x))
-   [0.0011(27) 0.00029(80) ... ]
-   
-Different ``y``\s are also correlated (by construction), which becomes clear
-if we evaluate the covariance matrix for the ``y``\s::
+  2)  |GVar|\s can be used in arithmetic expressions or as arguments
+      to pure-Python functions. The results are also |GVar|\s. Covariances
+      are propagated through these expressions following the usual rules,
+      (automatically) preserving information about correlations. For 
+      example, the |GVar|\s ``a`` and ``b`` above could have been created 
+      using the following code::
 
-   >>> print(gv.evalcov(y))
-   [[  7.52900382e-06   2.18173029e-06   7.95744444e-07 ... ]
-    [  2.18173029e-06   6.33815228e-07   2.31761675e-07 ... ]
-    [  7.95744444e-07   2.31761675e-07   8.49651978e-08 ... ]
-    ...
-   ]
+        >>> a = gv.gvar(1, 0.1)
+        >>> b = a + gv.gvar(0, 0.001)
+        >>> print(a, b)
+        1.00(10) 1.00(10)
+        >>> print(b / a)
+        1.0000(10)
+        >>> print(gv.evalcov([a, b]))
+        [[ 0.01      0.01    ]
+         [ 0.01      0.010001]]
 
-The diagonal elements of the covariance matrix are the variances of the
-individual ``y``\s; the off-diagonal elements are a measure of the
-correlations::
+      The correlation is obvious from this code: ``b`` is equal to ``a`` 
+      plus a very small correction. From these variables we can 
+      create new variables that are also highly correlated::
 
-   < (y[i]-<y[i]>) * (y[j]-<y[j]>) >.
+        >>> x = gv.log(1 + a ** 2)
+        >>> y = b * gv.cosh(a / 2)
+        >>> print(x, y, y / x)
+        0.69(10) 1.13(14) 1.627(34)
+        >>> print gv.evalcov([x, y])
+        [[ 0.01        0.01388174]
+         [ 0.01388174  0.01927153]]
 
-The Gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
-our fake data.
+      The :mod:`gvar` module defines versions of the standard Python
+      functions (``sin``, ``cos``, ...) that work with |GVar|\s. Most any
+      numeric pure-Python function will work with them as well. Numeric
+      functions that are compiled in C or other low-level languages 
+      generally do not work with |GVar|\s; they should be replaced by
+      equivalent pure-Python functions if they are needed for |GVar|-valued
+      arguments. See :ref:`gvar-arithmetic-and-functions` for more 
+      information.
+
+      The fact that correlation information is preserved *automatically* 
+      through arbitrarily complicated arithmetic is what makes 
+      |GVar|\s particularly useful. This is accomplished using *automatic
+      differentiation* to compute the derivatives of any *derived* |GVar| 
+      with respect to the *primary* |GVar|\s (those defined using 
+      :func:`gvar.gvar`) from which it was created. As a result, for example,
+      we need not provide derivatives of fit functions for :mod:`lsqfit`
+      (which are needed for the fit) since they are computed implicitly 
+      by the fitter from the fit function itself. Also
+      it becomes trivial to build correlations into the priors used
+      in fits, and to analyze the propagation of errors through
+      complicated functions of the parameters after the fit.
+
+  3)  Storing |GVar|\s in a file for later use is somewhat complicated 
+      because one generally wants to hold onto their correlations as well 
+      as their mean values and standard deviations. One easy way to do 
+      this is to put all of the |GVar|\s to be saved into a single 
+      dictionary object of type |BufferDict|, and then to save the 
+      |BufferDict| using Python's :mod:`pickle` module: for example,
+      using the variables defined above, ::
+
+        >>> import pickle
+        >>> buffer = gv.BufferDict(a=a, b=b, x=x, y=y)
+        >>> print(buffer)
+        {'a': 1.00(10),'b': 1.00(10),'x': 0.69(10),'y': 1.13(14)}
+        >>> pickle.dump(buffer, open('outputfile.p', 'wb'))
+
+      This creates a file named ``'outputfile.p'`` containing the |GVar|\s.
+      Loading the file into a Python code later recovers the |BufferDict|
+      with correlations intact::
+
+        >>> buffer = pickle.load(open('outputfile.p', 'rb'))
+        >>> print(buffer)
+        {'a': 1.00(10),'b': 1.00(10),'x': 0.69(10),'y': 1.13(14)}
+        >>> print(buffer['y'] / buffer['x'])
+        1.627(34)
+
+      |BufferDict|\s were created specifically to handle |GVar|\s, 
+      although they can be useful with other data types as well. 
+      The values in a pickled |BufferDict| can be individual |GVar|\s or 
+      arbitrary :mod:`numpy` arrays of |GVar|\s. See 
+      :ref:`storing-gvars-for-later-use` for more information.
+
+There is considerably more information about |GVar|\s in the documentation for
+module :mod:`gvar`.
 
 
 .. _basic-fits:
 
 Basic Fits
 ----------
-Now that we have fit data, ``x,y = make_data()``, we pretend ignorance
-of the exact functional relationship between ``x`` and ``y`` (*i.e.*,
-``y=f_exact(x)``). Typically we *do* know the functional form and have some
-*a priori* idea about the parameter values. The point of the fit is to
-improve our knowledge of the parameter values, beyond our *a priori*
-impressions, by analyzing the fit data. Here we see how to do this using
-the :mod:`lsqfit` module.
+A fit analysis typically requires three types of input: 1) fit data
+``x,y`` (or possibly just ``y``); 2) a function ``y = f(x, p)`` relating 
+values of ``y`` to to values of ``x`` and a set of fit parameters ``p``
+(if there is no ``x``, then ``y = f(p)``);
+and 3) some *a priori* idea about the fit parameters' values. The *a priori*
+information about a parameter could be fairly imprecise --- for example,
+the parameter is order 1. The point of 
+the fit is to improve our knowledge of the parameter values, beyond 
+our *a priori* impressions, by analyzing the fit data. We now show how 
+to do this using the :mod:`lsqfit` module.
 
-First we need code to represent the fit function. In this case we know
-that a sum of exponentials is appropriate, so we define the following 
+For this example, we use 
+fake data generated by a function, ``make_data()``, that is described  
+at the end of this section. The function call ``x,y = make_data()`` 
+generates 15 values for ``x``, equal to ``1,2,3..10,12,14..20``, 
+and 15 values for ``y``, where each ``y`` is obtained by adding
+random noise to the value 
+of a function of the corresponding ``x``. The function of ``x`` we use is::
+
+    sum(a[i] * exp(-E[i]*x)  for i in range(100))
+
+where ``a[i]=0.4`` and ``E[i]=0.9*(i+1)``. 
+The result is a set of random ``y``\s with correlated statistical errors::
+
+   >>> print(y)
+   [0.2752(27) 0.07951(80) ... ]
+
+   >>> print(gv.evalcov(y))              # covariance matrix
+   [[  7.52900382e-06   2.18173029e-06   7.95744444e-07 ... ]
+    [  2.18173029e-06   6.33815228e-07   2.31761675e-07 ... ]
+    [  7.95744444e-07   2.31761675e-07   8.49651978e-08 ... ]
+    ...
+   ]
+
+Our goal is to fit this data for ``y``, as a function of ``x``, 
+and obtain estimates for the parameters ``a[i]`` and ``E[i]``. The 
+correct results are, of course, ``a[i]=0.4`` and ``E[i]=0.9*(i+1)`` 
+but we will pretend that we do not know this.
+
+Next we need code for the fit function. We assume that we know
+that a sum of exponentials is appropriate, and therefore we define the following 
 Python function to represent the relationship between ``x`` and ``y`` in 
 our fit::
 
@@ -328,23 +384,23 @@ our fit::
        return sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E))
 
 The fit parameters, ``a[i]`` and ``E[i]``, are stored in a
-dictionary, using labels ``a`` and ``b`` to access them. These parameters
+dictionary, using labels ``a`` and ``E`` to access them. These parameters
 are varied in the fit to find the best-fit values ``p=p_fit`` for which
 ``f(x, p_fit)`` most closely approximates the ``y``\s in our fit data. The
 number of exponentials included in the sum is specified implicitly in this
 function, by the lengths of the ``p['a']`` and ``p['E']`` arrays.
 
-Next we need to define priors that encapsulate our *a priori* knowledge 
-about the parameter values. In practice we almost always have *a priori* 
+Finally we need to define priors that encapsulate our *a priori* knowledge 
+about the fit-parameter values. In practice we almost always have *a priori* 
 knowledge about parameters; it is usually impossible to design a fit
 function without some sense of the parameter sizes. Given such knowledge
 it is important (usually essential) to include it in the fit. This is 
 done by designing priors for the fit, which are probability distributions 
 for each parameter that describe the *a priori* uncertainty in that 
-parameter. As in the previous section, we use objects of type
+parameter. As discussed in the previous section, we use objects of type
 :class:`gvar.GVar` to describe (Gaussian) probability distributions.
 Let's assume that before the fit we suspect that each ``a[i]`` is of order
-0.5±0.5, while ``E[i]`` is of order ``1+i±0.5``. A prior
+0.5±0.5, while ``E[i]`` is of order (1+i)±0.5. A prior
 that represents this information is built using the following code::
 
    import lsqfit
@@ -368,15 +424,15 @@ one would then have::
 We use dictionary-like class :class:`gvar.BufferDict` for the prior because it
 allows us to save the prior if we wish (using Python's :mod:`pickle` module).
 If saving is unnecessary, :class:`gvar.BufferDict` can be replaced by
-``dict()`` or most any other Python dictionary class.
+``dict()`` or most any other Python dictionary class. 
 
 With fit data, a fit function, and a prior for the fit parameters, we are 
 finally ready to do the fit, which is now easy::
 
   fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior)
   
-So pulling together the entire code, from this section and the previous
-one, our complete Python program for making fake data and fitting it is::
+So pulling together the entire code,
+our complete Python program for making fake data and fitting it is::
 
    import lsqfit
    import numpy as np
@@ -426,9 +482,9 @@ one, our complete Python program for making fake data and fitting it is::
        main()
 
 We are not sure *a priori* how many exponentials are needed to fit our
-data; given that there are only fifteen ``y``\s, and these are noisy, there
+data. Given that there are only fifteen ``y``\s, and these are noisy, there
 may only be information in the data about the first few terms. Consequently
-we wrote our code to try fitting with each of ``nexp=3,4,5..19`` terms.
+we write our code to try fitting with each of ``nexp=3,4,5..19`` terms.
 (The pieces of the code involving ``p0`` are optional; they make the
 more complicated fits go about 30 times faster since the output from one
 fit is used as the starting point for the next fit --- see the discussion
@@ -577,6 +633,40 @@ following code added to the end of ``main()`` (outside the loop)::
       plt.show()
 
 
+**Making Fake Data:** Function ``make_data()`` creates a list of ``x`` values, 
+evaluates the underlying function, ``f_exact(x)``, for those values,
+and then adds random noise to the results to create the ``y`` array
+of fit data: ``y = f_exact(x) * noise`` where ::
+
+      noise = 1 + sum_n=0..99 c[n] * (x/x_max) ** n
+
+Here the ``c[n]`` are random coefficients generated using the following code::
+
+       cr = gv.gvar(0.0, eps)
+       c = [gv.gvar(cr(), eps) for n in range(100)]
+
+Gaussian variable ``cr`` represents a Gaussian distribution with mean
+0.0 and width 0.01, which we use here as a random number generator:
+``cr()`` is a number drawn randomly from the distribution represented by
+``cr``::
+
+   >>> print(cr)
+   0.000(10)
+   >>> print(cr())
+   0.00452180208286
+   >>> print(cr())
+   -0.00731564589737
+
+We use ``cr()`` to generate mean values for the Gaussian distributions
+represented by the ``c[n]``\s, each of which has width 0.01. The resulting
+``y``\s fluctuate around the corresponding values of ``f_exact(x)``::
+
+   >>> print(y-f_exact(x))
+   [0.0011(27) 0.00029(80) ... ]
+   
+The Gaussian variables ``y[i]`` together with the numbers ``x[i]`` comprise
+our fake data.
+
 Chained Fits
 -------------
 The priors in a fit represent knowledge that we have about the parameters 
@@ -636,11 +726,45 @@ prior for each new fit is the best-fit output (``fit.p``) from the previous
 fit. The output from the chain's final fit is the cummulative  result of all
 of these fits.
 
+Finally note that this particular problem can be done much more 
+simply using a weighted average (:func:`lsqfit.wavg`). 
+Adding the following code 
+onto the end of the ``main()`` subroutine in the previous section ::
+
+    fit.p['a1/a0'] = fit.p['a'][1] / fit.p['a'][0]
+    new_data = {'a1/a0' : gv.gvar(1,1e-5)}
+    new_p = lsqfit.wavg([fit.p, new_data])
+
+    print('chi2/dof = %.2f\n' % new_p.chi2 / new_p.dof)
+    print('E:', new_p['E'][:4])
+    print('a:', new_p['a'][:4])
+    print('a1/a0:', new_p['a1/a0'])
+
+gives the following output:
+
+.. literalinclude:: eg1b.out
+
+Here we do a weighted average of ``a[1]/a[0]`` from the 
+original fit (``fit.p['a1/a0']``) with our new piece of data
+(``new_data['a1/a0']``). The dictionary ``new_p`` returned by 
+:func:`lsqfit.wavg` has an entry for 
+every key in either ``fit.p`` or ``new_data``. The weighted average for 
+``a[1]/a[0]`` is in ``new_data['a1/a0']``. New values for the
+fit parameters, that take account of the new data, are stored in 
+``new_p['E']`` and ``new_p['a']``. The ``E[i]`` and ``a[i]`` 
+estimates differ from their values in ``fit.p`` since those parameters
+are correlated with ``a[1]/a[0]``. Consequently when the ratio
+is shifted by new data, the  ``E[i]`` and ``a[i]`` are shifted as well.
+The final results in ``new_p``
+are almost identical to what we obtained above; this is because
+the errors are sufficiently small
+that the ratio ``a[1]/a[0]`` is Gaussian. 
 
 ``x`` has Error Bars
 --------------------
-We now consider variations on our basic fit analysis (described above). The 
-first variation concerns what to do when the independent variables, the 
+We now consider variations on our basic fit analysis (described in
+:ref:`basic-fits`). 
+The first variation concerns what to do when the independent variables, the 
 ``x``\s, have errors, as well as the ``y``\s. This is easily handled by 
 turning the ``x``\s into fit parameters, and otherwise dispensing 
 with independent variables.
@@ -711,8 +835,9 @@ Running the new code gives, for ``nexp=6`` terms:
 This looks quite a bit like what we obtained before, except that now there 
 are 15 more parameters, one for each ``x``, and also now all results are
 a good deal less accurate. Note that one result from this analysis is new 
-values for the ``x``\s. In some cases the errors on the ``x`` values have
-been reduced --- by information in the fit data.
+values for the ``x``\s. In some cases (*e.g.*,  ``x[7]``), 
+the errors on the ``x`` values have been 
+reduced --- by information in the fit data.
 
 
 .. _correlated-parameters:
@@ -783,7 +908,7 @@ significantly larger with the correlated prior (``logGBF = 227``) than it
 was for the uncorrelated prior (``logGBF = 221``). Had we been
 uncertain as to which prior was more appropriate, this difference says that
 the data prefers the correlated prior. (More precisely, it says that we
-would be ``exp(227-221) = 400`` times more likely to get this data 
+would be ``exp(227-221) = 400`` times more likely to get our ``x,y`` data 
 from a theory with the
 correlated prior than from one with the uncorrelated prior.) This
 difference is significant despite the fact that the ``chi**2``\s in the two
@@ -1481,6 +1606,8 @@ where now each parameter has its own :class:`gvar.GVar`.
 
 Appendix: A Simple Pedagogical Example
 -------------------------------------------
+A Bad Solution
+.................
 Consider a problem where we have five pieces of uncorrelated data for a 
 function ``y(x)``::
 
@@ -1526,7 +1653,7 @@ This fit was generated using the following code::
 
    p0 = np.ones(5.)              # starting value for chi**2 minimization
    fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
-   print(fit.format(maxline=5))
+   print(fit.format(maxline=True))
 
 Note that here the function ``gv.gvar`` converts the strings 
 ``'0.5351(54)'``, *etc.* into |GVar|\s. Running the code gives the 
@@ -1558,6 +1685,8 @@ gives a fairly precise answer for ``p[0]``
 best-fit values for the coefficients are quite 
 large (*e.g.*, ``p[3]= -39(4)``), perhaps unreasonably large.
 
+Priors
+.......
 The problem with a 5-parameter fit is that there is no reason to neglect 
 terms in the expansion of ``y(x)`` with ``n>4``. Whether or not
 extra terms are important depends entirely on how large we 
@@ -1602,7 +1731,7 @@ The prior information is introduced into the fit as a *prior*::
    prior = gv.gvar(91 * ['0(1)'])  
 
    fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
-   print(fit.format(maxline=5))
+   print(fit.format(maxline=True))
 
 Note that a starting value ``p0`` is not needed when a prior is specified. 
 This code also gives an excellent fit, with a ``chi**2`` per degree of 
@@ -1663,6 +1792,9 @@ last terms added are having no impact, and so end up equal to the prior value
 ---  the fit data are not sufficiently precise to add new information about
 these parameters.
 
+Bayes Factor 
+.............
+
 We can test our priors for this fit by re-doing the fit with broader and 
 narrower priors. Setting ``prior = gv.gvar(91 * ['0(3)'])`` gives an excellent
 fit, ::
@@ -1721,6 +1853,8 @@ which prints the following table::
                 total:      3.48
 
 
+Marginalization
+.................
 There is a second, equivalent way of fitting this data that illustrates the
 idea of *marginalization.* We really only care about parameter ``p[0]`` in 
 our fit. This suggests that we remove ``n>0`` terms from the data *before*
@@ -1730,7 +1864,8 @@ we do the fit::
 
 Before the fit, our best estimate for the parameters is from the priors. We
 use these to create an estimate for the correction to each data point
-coming from ``n>0`` terms in ``y(x)``. This new data, ``ymod[i]``, should be fit with 
+coming from ``n>0`` terms in ``y(x)``. This new data, ``ymod[i]``, 
+should be fit with 
 a new fitting function, ``ymod(x) = p[0]`` --- that is, it should be fit
 to a constant, independent of ``x[i]``. The last three lines of the code
 above are easily modified to implement this idea::
@@ -1757,7 +1892,7 @@ above are easily modified to implement this idea::
    ymod = y - (f(x, prior) - f(x, priormod))  # correct y
    
    fit = lsqfit.nonlinear_fit(data=(x, ymod), prior=priormod, fcn=f)
-   print(fit.format(maxline=5))
+   print(fit.format(maxline=True))
 
 Running this code give::
 

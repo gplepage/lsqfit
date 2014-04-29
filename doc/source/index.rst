@@ -14,6 +14,7 @@ Contents:
    overview.rst
    gvar.rst
    gvar_dataset.rst
+   gvar_other.rst
    lsqfit.rst
 
 Indices and tables

@@ -78,6 +78,16 @@ def main():
     # print(newfit.p['a'][1] / newfit.p['a'][0])
     # print(fit.p['a'][1] / fit.p['a'][0])
 
+    # alternate method for extra data
+    sys.stdout = tee.tee(sys_stdout, open("eg1b.out", "w"))
+    fit.p['a1/a0'] = fit.p['a'][1] / fit.p['a'][0]
+    new_data = {'a1/a0' : gv.gvar(1,1e-5)}
+    new_p = lsqfit.wavg([fit.p, new_data])
+    print 'chi2/dof = %.2f\n' % (new_p.chi2 / new_p.dof)
+    print 'E:', new_p['E'][:4]
+    print 'a:', new_p['a'][:4]
+    print 'a1/a0:', new_p['a1/a0']
+
     # # extra data 2
     # sys.stdout = tee.tee(sys_stdout, open("eg1b.out", "w"))
     # newfit = fit

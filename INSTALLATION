@@ -3,7 +3,12 @@ To install:
 1. If not already installed, download and install the following packages:
 
 	a. The Gnu Scientific Library (gsl) - provides standard numerical 
-		analysis packages in C.
+		analysis packages in C. Should the build process for lsqfit
+		have difficutly finding the gsl libraries or headers, modify the
+		build script (setup.py) to point to the directories containing the 
+		gsl headers and compiled libraries: add explicit addresses to the 
+		include_dirs, library_dirs, and runtime_library_dirs lists in
+		setup.py.
 		(http://www.gnu.org/software/gsl/)
 		
 	b. The numpy python library - provides fast floating-point array 
@@ -16,7 +21,7 @@ To install:
 		may not work. 
 		(http://www.cython.org/)
 				
-	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2 and 3.3. It
+	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2-3.4. It
 	does not work for Python versions 2.5.X or earlier. It has not been tested
 	for Python 3.0 and 3.1, but likely works at least with the latter. Some
 	of the tests don't work with Python 2.6.
@@ -48,6 +53,13 @@ To install:
 	This creates aliases, using the old names, for the critical elements of
 	the gvar package, thereby allowing most old code to run. Use gvar
 	instead of gdev for new code.
+
+	N.B. Adjust the entries for variables include_dirs, library_dirs, and
+	runtime_library_dirs in setup.py if 'make install' generates complaints about
+	being unable to find header files for gsl or numpy, or libraries for gsl.
+	These variables are lists of directories that the build code looks in for 
+	include files and libraries, in addition to the standard places built 
+	into the system.
 	
 3. (Optional) Run 'make tests' to test your installation of lsqfit if you
 	are using Python 2.7 or later (they don't work as well with Python 2.6). 
@@ -79,7 +91,7 @@ Problems:
 	Contact Peter Lepage: g.p.lepage@cornell.edu
 
 
-# Copyright (c) 2008-2013 G. Peter Lepage. 
+# Copyright (c) 2008-2014 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -13,11 +13,15 @@
 Introduction 
 ------------------
 This module provides tools for representing and manipulating Gaussian
-random variables numerically. A Gaussian variable is a random variable that
+random variables numerically. It can deal with individual variables or
+arbitrarily large sets of variables, correlated or uncorrelated. It 
+also supports complicated (Python) functions of Gaussian
+variables.
+
+A Gaussian variable is a random variable that
 represents a *typical* random number drawn from a particular Gaussian (or
 normal) probability distribution; more precisely, it represents the entire
-probability distribution, and not, for example, a *particular* random number
-drawn from that distribution. A given Gaussian variable ``x`` is therefore
+probability distribution. A given Gaussian variable ``x`` is therefore
 completely characterized by its mean ``x.mean`` and standard deviation
 ``x.sdev``.
     
@@ -39,10 +43,7 @@ which follows from linearizing the ``x`` dependence of ``f(x)`` about point
 The last formula, together with its multidimensional generalization, leads
 to a full calculus for Gaussian random variables that assigns
 Gaussian-variable values to arbitrary arithmetic expressions and functions
-involving Gaussian variables. This calculus is useful for analyzing the
-propagation of statistical and other random errors (provided the standard
-deviations are small enough).
-    
+involving Gaussian variables. 
 A multidimensional collection ``x[i]`` of Gaussian variables is
 characterized by the means ``x[i].mean`` for each variable, together with a
 covariance matrix ``cov[i, j]``. Diagonal elements of ``cov`` specify the
@@ -54,18 +55,36 @@ variables::
     
 where ``<y>`` denotes the expectation value or mean for a random variable
 ``y``.
-    
-    
+
+Gaussian variables are represented in :mod:`gvar` 
+by objects of type |GVar|. |GVar|\s are particularly useful 
+for error propagation because the errors 
+(i.e., standard deviations) associated with them 
+propagate through arbitrarily complex Python functions. This is true 
+of errors from individual |GVar|\s,
+and also of the correlations between different 
+|GVar|\s. In the following sections we demonstrate how to create
+|GVar|\s and how to manipulate them to solve common problems in
+error propagation. They are also very useful for creating 
+correlated Gaussian priors for Bayesian analyses.
+
+.. _creating-gaussian-variables:
+
 Creating Gaussian Variables
 ---------------------------
-An object of type |GVar| represents a single Gaussian variable. Such an
-object can be created for a single variable, with mean ``xmean`` and
-standard deviation ``xsdev`` (both scalars), using::
+Objects of type |GVar| are of two types: 1) primary |GVar|\s 
+that are created from means and covariances using 
+:func:`gvar.gvar`; and 2) derived |GVar|\s that result 
+from arithmetic expressions or functions involving |GVar|\s 
+(primary or derived).
+A single (primary) |GVar| is 
+created from its mean ``xmean`` and standard deviation
+``xsdev`` using::
     
  	x = gvar.gvar(xmean, xsdev).
     
-This function can also be used to convert strings like ``'-72.374(22)'`` or
-``'511.2 +- 0.3'`` into |GVar|\s: for example, ::
+This function can also be used to convert strings like ``"-72.374(22)"`` 
+or ``"511.2 +- 0.3"`` into |GVar|\s: for example, ::
     
     >>> import gvar
     >>> x = gvar.gvar(3.1415, 0.0002)
@@ -74,24 +93,23 @@ This function can also be used to convert strings like ``'-72.374(22)'`` or
     >>> x = gvar.gvar("3.1415(2)")
     >>> print(x)
     3.14150(20)
+    >>> x = gvar.gvar("3.1415 +- 0.0002")
+    >>> print(x)
+    3.14150(20)
+
+Note that ``x = gvar.gvar(x)`` is useful when you are unsure 
+whether ``x`` is a |GVar| or a string representing a |GVar|.
     
-Function ``gvar.asgvar(x)`` returns x if it is a |GVar|; 
-otherwise it returns ``gvar.gvar(x)``.
-    
-|GVar|\s are far more interesting when used to describe multidimensional
+|GVar|\s are usually more interesting when used to describe multidimensional
 distributions, especially if there are correlations between different
 variables. Such distributions are represented by collections of |GVar|\s in
-one of two standard formats: 1) :mod:`numpy` type arrays of |GVar|\s (any
+one of two standard formats: 1) :mod:`numpy`  arrays of |GVar|\s (any
 shape); or, more flexibly, 2) Python dictionaries whose values are |GVar|\s or
 arrays of |GVar|\s. Most functions in :mod:`gvar` that handle multiple
 |GVar|\s work with either format, and if they return multidimensional results
 do so in the same format as the inputs (that is, arrays or dictionaries). Any
 dictionary is converted internally into a specialized (ordered) dictionary of
 type |BufferDict|, and dictionary-valued results are also |BufferDict|\s.
-|BufferDict|\s are also useful for archiving |GVar|\s, since they may be
-pickled using Python's :mod:`pickle` module; |GVar|\s cannot be pickled
-otherwise. A pickled |BufferDict| preserves any correlations that exist
-between the different |GVar|\s in it.
     
 To create an array of |GVar|\s with mean values specified by array
 ``xmean`` and covariance matrix ``xcov``, use ::
@@ -107,58 +125,26 @@ array, for example, is a |GVar| where::
     x[i].sdev = xcov[i, i]**0.5  # std deviation of x[i]
     x[i].var  = xcov[i, i]       # variance of x[i]
     
-|GVar|\s can be used in arithmetic expressions, just like Python
-floats. These expressions result in new |GVar|\s whose means and standard
-deviations are determined from the original covariance matrix. The
-arithmetic expressions can include calls to standard functions including:
-``exp, log, sqrt, sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh,
-arcsinh, arccosh, arctanh``.
-    
 As an example, ::
     
-    >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.], [0., 4.]])
+    >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.24], [0.24, 4.]])
     >>> print('x =', x, '   y =', y)
     x = 0.10(13)    y = 10.0(2.0)
     
 makes ``x`` and ``y`` |GVar|\s with standard deviations ``sigma_x=0.125`` and
-``sigma_y=2``, and, in this case, no correlation between ``x`` and ``y``
-(since ``cov[i, j]=0`` when ``i!=j``). If now we set, for example, ::
-    
-    >>> f = x + y
-    >>> print('f =', f)
-    f = 10.1(2.0)
-    
-then ``f`` is a |GVar| with ::
-    
-    f.var = df/dx cov[0, 0] df/dx + df/dx cov[0, 1] df/dy + ... 
-          = 2.0039**2
-    
-where ``cov`` is the original covariance matrix used to define ``x`` and
-``y`` (in ``gvar.gvar``). Note that while ``f`` and ``y`` separately have
-20% uncertainties in this example, the ratio ``f/y`` has much smaller
-errors::
-    
-    >>> print(f / y)
-    1.010(13)
-    
-This happens, of course, because the errors in ``f`` and ``y`` are highly
-correlated (since the error in ``f`` comes mostly from ``y``).
-    
-It is sometimes useful to know how much of the uncertainty in some quantity
-is due to a particular input uncertainty. Continuing the example above, for
-example, we might want to know how much of ``f``\s standard deviation
-is due to the standard deviation of ``x`` and how much comes from ``y``. 
-This is easily computed (for the example above)::
-    
-    >>> print(f.partialsdev(x))        # uncertainty in f due to x
-    0.125
-    >>> print(f.partialsdev(y))        # uncertainty in f due to y
-    2.0
-    >>> print(f.partialsdev(x, y))     # uncertainty in f due to x and y
-    2.00390244274
-    >>> print(f.sdev)                  # should be the same
-    2.00390244274
-    
+``sigma_y=2``, and a fairly strong statistical correlation::
+
+    >>> print(gvar.evalcov([x, y]))     # covariance matrix
+    [[ 0.015625  0.24    ]
+     [ 0.24      4.      ]]
+    >>> print(gvar.evalcorr([x, y]))    # correlation matrix
+    [[ 1.    0.96]
+     [ 0.96  1.  ]]
+
+Here functions :func:`gvar.evalcov` and :func:`gvar.evalcorr` compute the
+covariance and correlation matrices, respectively, of the list of 
+|GVar|\s in their arguments.
+
 :func:`gvar.gvar` can also be used to convert strings or tuples stored in
 arrays or dictionaries into |GVar|\s: for example, ::
     
@@ -171,60 +157,235 @@ arrays or dictionaries into |GVar|\s: for example, ::
     
 If the covariance matrix in ``gvar.gvar`` is diagonal, it can be replaced
 by an array of standard deviations (square roots of diagonal entries in
-``cov``). The example above, therefore, is equivalent to::
+``cov``). The example above without correlations, therefore, would be::
     
     >>> x, y = gvar.gvar([0.1, 10.], [0.125, 2.])
     >>> print('x =', x, '   y =', y)
-    x = 0.10(13)    y = 10.0(2.0)
+    x = 0.10(12)    y = 10.0(2.0)
+    >>> print(gvar.evalcov([x, y]))     # covariance matrix
+    [[ 0.015625  0.      ]
+     [ 0.        4.      ]]
+    >>> print(gvar.evalcorr([x, y]))    # correlation matrix
+    [[ 1.  0.]
+     [ 0.  1.]]
     
+.. _gvar-arithmetic-and-functions:
     
-Computing Covariance Matrices
------------------------------   
-The covariance matrix for a set of |GVar|\s, ``g0 g1`` ...,
-can be computed using ::
+|GVar| Arithmetic and Functions
+-------------------------------------------
+The |GVar|\s discussed in the previous section are all *primary* |GVar|\s
+since they were created by specifying their means and covariances 
+explicitly, using :func:`gvar.gvar`. What makes |GVar|\s particularly
+useful is that they can be used in 
+arithemtic expressions (and numeric pure-Python functions), just like
+Python floats. Such expressions result in new, *derived* |GVar|\s 
+whose means, standard deviations, and correlations 
+are determined from the covariance matrix of the 
+primary |GVar|\s. The
+automatic propagation of correlations 
+through arbitrarily complicated arithmetic is an especially useful
+feature of |GVar|\s.
     
-    gvar.evalcov([g0, g1...]) -> cov_g
+As an example, again define
     
-where ``cov_g[i, j]`` gives the covariance between ``gi`` and ``gj``.
-Instead of a list or array of ``g``\s, one can also give a dictionary ``g``
-where ``g[k]`` is a |GVar|. In this case :func:`gvar.evalcov` returns a
-doubly-indexed dictionary ``cov_g[k1][k2]`` where keys ``k1, k2`` are 
-in ``g``.
+    >>> x, y = gvar.gvar([0.1, 10.], [0.125, 2.])
     
-Using the example from the previous section, the code
+and set
     
-    >>> x, y = gvar.gvar([0.1, 10.], [[0.015625, 0.], [0., 4.]])
-    >>> f = x+y
-    >>> print(gvar.evalcov([x, y, f]))
-    [[ 0.015625  0.        0.015625]
-     [ 0.        4.        4.      ]
-     [ 0.015625  4.        4.015625]]
+    >>> f = x + y
+    >>> print('f =', f)
+    f = 10.1(2.0)
     
-confirms that ``x`` and ``y`` are uncorrelated with each other, but strongly
-correlated with ``f``. The correlation matrix can be readily obtained as 
-well::
+Then ``f`` is a (derived) |GVar| whose variance ``f.var`` equals ::
+    
+    df/dx cov[0, 0] df/dx + 2 df/dx cov[0, 1] df/dy + ... = 2.0039**2
+    
+where ``cov`` is the original covariance matrix used to define ``x`` and
+``y`` (in ``gvar.gvar``). Note that while ``f`` and ``y`` separately have
+20% uncertainties in this example, the ratio ``f/y`` has much smaller
+errors::
+    
+    >>> print(f / y)
+    1.010(13)
 
-    >>> print(gvar.evalcorr([x, y, f]))
-    [[ 1.          0.          0.06237829]
-     [ 0.          1.          0.99805258]
-     [ 0.06237829  0.99805258  1.        ]]
+This happens, of course, because the errors in ``f`` and ``y`` are highly
+correlated --- the error in ``f`` comes mostly from ``y``. |GVar|\s 
+automatically track correlations even through complicated arithmetic
+expressions and functions: for example, the following 
+more complicated ratio has a still
+smaller error, because of stronger correlations between numerator and
+denominator::
 
+    >>> print(gvar.sqrt(f**2 + y**2) / f)
+    1.4072(87)
+    >>> print(gvar.evalcorr([f, y]))
+    [[ 1.          0.99805258]
+     [ 0.99805258  1.        ]]
+    >>> print(gvar.evalcorr([gvar.sqrt(f**2 + y**2), f]))
+    [[ 1.         0.9995188]
+     [ 0.9995188  1.       ]]
+
+The :mod:`gvar` module defines versions of the standard Python mathematical
+functions that work with |GVar| arguments. These include:
+``exp, log, sqrt, sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh,
+arcsinh, arccosh, arctanh``. Numeric functions defined 
+entirely in Python (*i.e.*, pure-Python functions) 
+will likely also work with |GVar|\s.
+
+Numeric functions implemented by modules using low-level languages like C  
+will *not* work with |GVar|\s. Such functions must 
+be replaced by equivalent code written 
+directly in Python. In some cases it is possible to construct  
+a |GVar|-capable function from low-level code for the function and its
+derivative. For example, the following code defines a new version of the
+standard Python error function that accepts either floats or |GVar|\s 
+as its argument::
+
+    import math
+    import gvar
+
+    def erf(x):
+        if isinstance(x, gvar.GVar):
+            f = math.erf(x.mean)
+            dfdx = 2. * math.exp(- x.mean ** 2) / math.sqrt(math.pi)
+            return gvar.gvar_function(x, f, dfdx)
+        else:
+            return math.erf(x)
+
+Here function :func:`gvar.gvar_function` creates the |GVar| for a function with
+mean value ``f`` and derivative ``dfdx`` at point ``x``. 
+
+Some sample numerical analysis codes, adapted for use with |GVar|\s, are 
+described in :ref:`numerical-analysis-modules-in-gvar`.
+
+Arithmetic operators ``+ - * / ** == != <> += -= *= /=`` are all defined
+for |GVar|\s. Comparison operators are also supported: ``== != > >= < <=``.
+They are applied to the mean values of |GVar|\s: for example, 
+``gvar.gvar(1,1) == gvar.var(1,2)`` is true, as is ``gvar.gvar(1,1) > 0``.
+Logically ``x>y`` for |GVar|\s should evaluate to a boolean-valued random 
+variable, but such variables are beyond the scope of this module. 
+Comparison operators that act only on the mean values make it easier to implement 
+pure-Python functions that work with either |GVar|\s or :class:`float`\s
+as arguments. 
+
+*Implementation Notes:* Each |GVar| keeps track of three
+pieces of information: 1) its mean value; 2) its derivatives with respect to
+the primary |GVar|\s (created by :func:`gvar.gvar`); 
+and 3) the location of the covariance matrix for the primary |GVar|\s.
+The derivatives and covariance matrix allow one to compute the
+standard deviation of the |GVar|, as well as correlations between it and any
+other function of the primary |GVar|\s. The derivatives for 
+derived |GVar|\s are computed automatically, using *automatic 
+differentiation*. 
+
+The derivative of a |GVar| ``f`` with 
+respect to a primary |GVar| ``x`` is obtained from ``f.deriv(x)``. A list
+of derivatives with respect to all primary |GVar|\s is given by ``f.der``,
+where the order of derivatives is the same as the order in which the primary
+|GVar|\s were created.  
+
+
+A |GVar| can be constructed at a
+very low level by supplying all the three 
+essential pieces of information --- for example, ::
     
-It is often convenient to group related |GVar|\s together in a dictionary
-rather than an array since dictionaries are far more flexible. ``gvar.evalcov`` 
-can be used to evaluate the covariance matrix for a dictionary containing
-|GVar|\s and/or arbitrary arrays of |GVar|\s::
+    f = gvar.gvar(fmean, fder, cov)
     
-    >>> d = dict(x=x, y=y, g=[x+y, x-y])
-    >>> cov = gvar.evalcov(d)
-    >>> print(cov['x', 'x'])
-    0.015625
-    >>> print(cov['x', 'y'])
-    0.0
-    >>> print(cov['x', 'g'])
-    [ 0.015625  0.015625]
+where ``fmean`` is the mean, ``fder`` is an array where ``fder[i]`` is the
+derivative of ``f`` with respect to the ``i``-th primary |GVar|
+(numbered in the order in which they were created using :func:`gvar.gvar`),
+and ``cov`` is the covariance matrix for the primary |GVar|\s (easily
+obtained from an existing |GVar| ``x`` using ``x.cov``).
+
+Error Budgets from |GVar|\s
+------------------------------------
+It is sometimes useful to know how much of the uncertainty in a derived quantity
+is due to a particular input uncertainty. Continuing the example above, for
+example, we might want to know how much of ``f``\s standard deviation
+is due to the standard deviation of ``x`` and how much comes from ``y``. 
+This is easily computed::
     
+    >>> x, y = gvar.gvar([0.1, 10.], [0.125, 2.])
+    >>> f = x + y
+    >>> print(f.partialsdev(x))        # uncertainty in f due to x
+    0.125
+    >>> print(f.partialsdev(y))        # uncertainty in f due to y
+    2.0
+    >>> print(f.partialsdev(x, y))     # uncertainty in f due to x and y
+    2.00390244274
+    >>> print(f.sdev)                  # should be the same
+    2.00390244274
+
+This shows, for example, that most (2.0) of the uncertainty in ``f`` (2.0039)
+is from ``y``. 
+
+:mod:`gvar` provides a useful tool for compiling an "error budget" for 
+derived |GVar|\s relative to the primary |GVar|\s from which they
+were constructed: continuing the example above, ::
+
+    >>> outputs = {'f':f, 'f/y':f/y}
+    >>> inputs = {'x':x, 'y':y}
+    >>> print(gvar.fmt_values(outputs))
+    Values:
+                    f/y: 1.010(13)           
+                      f: 10.1(2.0)           
+
+    >>> print(gvar.fmt_errorbudget(outputs=outputs, inputs=inputs))
+    Partial % Errors:
+                               f/y         f
+    ----------------------------------------
+                      y:      0.20     19.80
+                      x:      1.24      1.24
+    ----------------------------------------
+                  total:      1.25     19.84
     
+This shows ``y`` is responsible for 19.80% of the 19.84% uncertainty in ``f``,
+but only 0.2% of the 1.25% uncertainty in ``f/y``. The total uncertainty in each case
+is obtained by adding the ``x`` and ``y`` contributions in quadrature.
+
+
+.. _storing-gvars-for-later-use:
+
+Storing |GVar|\s for Later Use: |BufferDict|\s
+--------------------------------------------------
+Storing |GVar|\s in a file for later use is complicated by the need to 
+capture the covariances between different |GVar|\s as well as their 
+means. To save an array or dictionary ``g`` of |GVar|\s, for example,
+we might use ::
+
+    >>> gmean = gvar.mean(g) 
+    >>> gcov = gvar.evalcov(g)
+
+to extract the means and covariance matrix into arrays/dictionaries of 
+floats which then can be saved using standard methods. To reassemble
+the |GVar|\s we use::
+
+    >>> g = gvar.gvar(gmean, gcov)
+
+This procedure preserves the correlations between different elements 
+of the original array/dictionary ``g``, but ignores their correlations
+with any other |GVar|\s. So it is important to include all |GVar|\s of 
+interest in a single array or dictionary (``g``) before saving them.
+
+This process is simplified if the |GVar|\s that need saving are all
+in a |BufferDict| since these can be serialized and saved to a file
+using Python's standard :mod:`pickle` module. So if ``g`` is a 
+|BufferDict| containing |GVar|\s (and/or arrays of |GVar|\s), ::
+
+    >>> import pickle
+    >>> with open('gfile.p', 'wb') as ofile:
+    ...     pickle.dump(g, ofile)
+
+saves the contents of ``g`` to a file named ``gfile.p``. 
+The |GVar|\s are retrieved using::
+
+    >>> with open('gfile.p', 'rb') as ifile:
+    ...     g = pickle.load(ifile)
+
+|BufferDict|\s also have methods that allow saving their contents 
+using Python's :mod:`json` module rather than :mod:`pickle`.
+
+  
 .. _gvar-random-number-generators:
     
 Random Number Generators
@@ -373,39 +534,13 @@ about 2e-8 (with 64-bit floating point numbers --- ``tiny**2`` is what
 appears in the covariance matrix).
     
     
-Implementation Notes; Derivatives; Optimizations 
+Optimizations 
 ------------------------------------------------
-There are two types of |GVar|: the underlying independent variables, created
-with calls to :func:`gvar.gvar`; and variables which are obtained from
-functions of the underlying variables. Each |GVar| must keep track of three
-pieces of information: 1) its mean value; 2) its derivatives with respect to
-the underlying variables; and 3) the covariance matrix for the underlying
-variables. The derivatives and covariance matrix allow one to compute the
-standard deviation of the |GVar| as well as correlations between it and any
-other function of the underlying variables. A |GVar| can be constructed at a
-very low level by supplying all three pieces of information --- for example, ::
-    
-	f = gvar.gvar(fmean, fder, cov)
-    
-where ``fmean`` is the mean, ``fder`` is an array where ``fder[i]`` is the
-derivative of ``f`` with respect to the ``i``-th underlying variable
-(numbered in the order in which they were created using :func:`gvar.gvar`),
-and ``cov`` is the covariance matrix for the underlying variables (easily
-obtained from an existing |GVar| ``x`` using ``x.cov``).
-    
-The derivatives stored in a |GVar| are sometimes useful. Consider, for
-example, an array ``x`` each of whose elements was created by a call to
-:func:`gvar.gvar`: ``x[i] = gvar.gvar(xi_mean,xi_sdev)``. Then
-derivatives of a function ``f(x)`` with respect to the ``x[i]`` can be
-computed from the |GVar| ``fx = f(x)`` using ``fx.dotder(x[i].der)``, which
-equals ``df(x)/dx[i]`` at the point ``x`` specified by the means of the
-``x[i]``\s. Note that this trick only works because the ``x[i]`` are 
-among the underlying (original) |GVar|\s (and not combinations of these).
-
-When there are lots of underlying variables, the number of derivatives can
+When there are lots of primary |GVar|\s, the number of derivatives stored 
+for each derived |GVar| can
 become rather large, potentially (though not necessarily) leading to slower
 calculations. One way to alleviate this problem, should it arise, is to
-separate the underlying variables into groups that are never mixed in
+separate the primary variables into groups that are never mixed in
 calculations and to use different :func:`gvar.gvar`\s when generating the
 variables in different groups. New versions of :func:`gvar.gvar` are
 obtained using :func:`gvar.switch_gvar`: for example, ::
@@ -434,30 +569,6 @@ is negligible --- it used to be more important, in earlier implementations
 of |GVar| before sparse matrices were introduced to keep track of
 covariances. Note that the previous :func:`gvar.gvar` can be restored using
 :func:`gvar.restore_gvar`.
-    
-|GVar|\s are designed to work well with :mod:`numpy` arrays. They
-can be combined in arithmetic expressions with arrays of numbers or of
-|GVar|\s; the results in both cases are arrays of
-|GVar|\s.
-        
-Arithmetic operators ``+ - * / ** == != <> += -= *= /=`` are all defined.
-|GVar|\s are not ordered so ``> >= < <=`` are not defined.  Two |GVar|\s are
-equal only if their means and derivatives are  equal, and their covariance
-matrices the same. A |GVar| ``x`` is defined to equal a non-|GVar| ``y`` only
-if ``x.mean == y`` and ``x.sdev == 0``.
-
-The operators ``>`` and ``<`` are also defined. These allow |GVar|\s to be
-ordered, which sometimes simplifies algorithm design. |GVar| ``x`` is 
-defined to be greater than |GVar| ``y`` if ``x.mean > y.mean``. Similarly 
-|GVar| ``x`` is defined to be greater than a number ``y`` if ``x.mean > y``.
-This definition is inconsistent with the definitions of ``==`` and ``!=`` 
-in that, for example, ``not (x>y or x<y)`` is *not* equivalent to ``x==y``. 
-Logically ``x>y`` for |GVar|\s should evaluate to a boolean-valued 
-random variable, but such variables are beyond the scope of this module.
-The operators ``>`` and ``<`` are included only because they facilitate
-algorithmic design. Operators ``>=`` and ``<=`` are *not* defined 
-for |GVar|\s.
-
 
 
 Utilities
@@ -465,6 +576,11 @@ Utilities
 The function used to create Gaussian variable objects is:
 
 .. autofunction:: gvar.gvar(...)
+
+The following function is useful for constructing new functions that
+can accept |GVar|\s as arguments:
+
+.. autofunction:: gvar.gvar_function(x, f, dfdx)
 
 Means, standard deviations, variances, formatted strings, covariance
 matrices and correlation/comparison information can be extracted from arrays 

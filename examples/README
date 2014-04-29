@@ -12,5 +12,8 @@ doc/html/index.html):
 	err-budget.py - "Tuning Priors and the Empirical Bayes Criterion" and
 	                "Partial Errors and Error Budgets"
 
+    pendulum.py - fit pendulum motion using a differential-equation 
+                  integrator inside the fit function.
+
 To run under a different version of python, say python3 for example, use
 'make PYTHON=python3 run'.

@@ -413,5 +413,5 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
     else:
         return ArrayWAvg(fit.p.reshape(p.shape), fit)
 
-if __name__ == '__main__':
-    pass
+# if __name__ == '__main__':
+#     pass

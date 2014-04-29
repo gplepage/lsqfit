@@ -40,9 +40,9 @@ cdef extern from "math.h":
 
 
 import numpy
-from numpy import sin,cos,tan,exp,log,sqrt
-from numpy import sinh,cosh,tanh,arcsin,arccos,arctan
-from numpy import arcsinh,arccosh,arctanh
+from numpy import sin, cos, tan, exp, log, sqrt, fabs
+from numpy import sinh, cosh, tanh, arcsin, arccos, arctan
+from numpy import arcsinh, arccosh, arctanh
 # from re import compile as _compile
 import copy
 
@@ -149,36 +149,26 @@ cdef class GVar:
     def __hash__(self):
         return id(self)
 
-    def __richcmp__(xx,yy,op):
-        """ only == and != defined """
-        if (op not in [2,3]):
-            # raise TypeError("unorderable types")
-            if isinstance(xx, GVar):
-                xx = xx.mean
-            if isinstance(yy, GVar):
-                yy = yy.mean
-            if op == 0:
-                return xx < yy
-            elif op == 4:
-                return xx > yy
-            # elif op == 1:
-            #     return xx <= yy
-            # elif op == 5:
-            #     return xx >= yy
-            else:
-                raise TypeError(">= and <= undefined for GVars")
-        if not (isinstance(xx,GVar) and isinstance(yy,GVar)):
-            if not isinstance(xx, GVar):
-                xx, yy = yy, xx
-            if xx.sdev == 0 and xx.mean == yy:
-                return True if op == 2 else False
-            else:
-                return False if op == 2 else True
-        if ((xx.cov is yy.cov) and (xx.mean==yy.mean) 
-                and numpy.all(xx.der==yy.der)):
-            return True if op==2 else False
+    def __richcmp__(xx, yy, op):
+        """ Compare mean values. """
+        if isinstance(xx, GVar):
+            xx = xx.mean
+        if isinstance(yy, GVar):
+            yy = yy.mean
+        if op == 0:
+            return xx < yy
+        elif op == 2:
+            return xx == yy
+        elif op == 3:
+            return xx != yy
+        elif op == 4:
+            return xx > yy
+        elif op == 1:
+            return xx <= yy
+        elif op == 5:
+            return xx >= yy
         else:
-            return True if op==3 else False
+            raise TypeError("undefined comparison for GVars")
 
     def __call__(self):
         """ Generate random number from ``self``'s distribution."""
@@ -390,20 +380,22 @@ cdef class GVar:
         cdef double ans = c_sqrt(self.v)
         return GVar(ans,self.d.mul(0.5/ans),self.cov)
     
+    def fabs(self):
+        if self.v >= 0:
+            return self
+        else:
+            return -self
+
     def deriv(GVar self, GVar x):
-        """ Derivative of ``self`` with respest to *independent* |GVar| ``x``.
+        """ Derivative of ``self`` with respest to *primary* |GVar| ``x``.
 
-        ``x`` must be an *independent* |GVar|, which is a |GVar| created by a 
-        call to :func:`gvar.gvar` (*e.g.*, ``x = gvar.gvar(xmean, xsdev)``) or a 
-        function ``f(x)`` of such a |GVar|. (More precisely, ``x.der`` must have 
-        only one nonzero entry.)
-
-        All |GVar|\s are constructed from a set of independent |GVar|\s. 
+        All |GVar|\s are constructed from primary |GVar|\s. 
         ``self.deriv(x)`` returns the partial derivative of ``self`` with 
-        respect to independent |GVar| ``x``, holding all of the other 
-        independent |GVar|\s constant.
+        respect to primary |GVar| ``x``, holding all of the other 
+        primary |GVar|\s constant.
 
-        :param x: The independent |GVar|.
+        :param x: A primary |GVar| (or a function of a single 
+            primary |GVar|).
         :returns: The derivative of ``self`` with respect to ``x``.
         """
         cdef Py_ssize_t i, ider
@@ -412,7 +404,7 @@ cdef class GVar:
         for i in range(x.d.size):
             if x.d.v[i].v != 0:
                 if xder != 0:
-                    raise ValueError("derivative ambiguous -- x is not independent")
+                    raise ValueError("derivative ambiguous -- x is not primary")
                 else:
                     xder = x.d.v[i].v
                     ider = x.d.v[i].i
@@ -632,13 +624,19 @@ class GVarFactory:
         Returns a |GVar| with mean ``x`` and standard deviation ``xsdev``.
         Returns an array of |GVar|\s if ``x`` and ``xsdev`` are arrays
         with the same shape; the shape of the result is the same as the
-        shape of ``x``. 
+        shape of ``x``. Returns a |BufferDict| if ``x`` and ``xsdev`` 
+        are dictionaries with the same keys and layout; the result has
+        the same keys and layout as ``x``.
         
     .. function:: gvar(x,xcov)
         
         Returns an array of |GVar|\s with means given by array ``x`` and a
         covariance matrix given by array ``xcov``, where ``xcov.shape =
-        2*x.shape``. The result has the same shape as ``x``.
+        2*x.shape``; the result has the same shape as ``x``. Returns a
+        |BufferDict| if ``x`` and ``xcov`` are dictionaries, where the
+        keys in ``xcov`` are ``(k1,k2)`` for any keys ``k1`` and ``k2``
+        in ``x``. The layout for ``xcov`` is compatible with that  
+        produced by :func:`gvar.evalcov` with a dictionary argument.
         
     .. function:: gvar((x,xsdev))
         
@@ -687,45 +685,66 @@ class GVarFactory:
         cdef numpy.ndarray[numpy.intp_t,ndim=1] d_idx
         
         if len(args)==2:
-            # (x,xsdev) or (xarray,sdev-array) or (xarray,cov) 
-            # unpack arguments and verify types 
-            try:
-                x = numpy.asarray(args[0],float)
-                xsdev = numpy.asarray(args[1],float)
-            except (ValueError,TypeError):
-                raise TypeError(    #):
-                        "Arguments must be numbers or arrays of numbers")
-
-            if len(x.shape)==0:
-                # single gvar from x and xsdev 
-                if len(xsdev.shape)!=0:
-                    raise ValueError("x and xsdev different shapes.")
-                idx = self.cov.append_diag(numpy.array([xsdev**2]))
-                der = svec(1)
-                der.v[0].i = idx[0]
-                der.v[0].v = 1.0
-                return GVar(x,der,self.cov)
-
-            else:
-                # array of gvars from x and sdev/cov arrays 
-                nx = len(x.flat)
-                if x.shape==xsdev.shape:  # x,sdev
-                    idx = self.cov.append_diag(xsdev.reshape(nx)**2)
-                elif xsdev.shape==2*x.shape: # x,cov
-                    idx = self.cov.append_diag_m(xsdev.reshape(nx,nx))
+            if hasattr(args[0], 'keys'):
+                # args are dictionaries -- convert to arrays
+                if not hasattr(args[1], 'keys'):
+                    raise ValueError(
+                        'Argument mismatch: %s, %s' 
+                        % (str(type(args[0])), str(type(args[1])))
+                        )
+                if set(args[0].keys()) == set(args[1].keys()):
+                    # means and stdevs
+                    x = BufferDict(args[0])
+                    xsdev = BufferDict(x, buf=numpy.empty(x.size, float))
+                    for k in x:
+                        xsdev[k] = args[1][k]
+                    xflat = self(x.flat, xsdev.flat)
+                    return BufferDict(x, buf=xflat)
                 else:
-                    raise ValueError("Argument shapes mismatched: "+
-                        str(x.shape)+' '+str(xsdev.shape))
-                d = numpy.ones(nx,float)
-                ans = []
-                for i in range(nx):
+                    # means and covariance matrix
+                    x = BufferDict(args[0])
+                    xcov = numpy.empty((x.size, x.size), float)
+                    for k1 in x:
+                        for k2 in x:
+                            xcov[x.slice(k1), x.slice(k2)] = args[1][k1, k2]
+                    xflat = self(x.flat, xcov)
+                    return BufferDict(x, buf=xflat)
+            else:
+                # (x,xsdev) or (xarray,sdev-array) or (xarray,cov) 
+                # unpack arguments and verify types 
+                try:
+                    x = numpy.asarray(args[0],float)
+                    xsdev = numpy.asarray(args[1],float)
+                except (ValueError,TypeError):
+                    raise TypeError("Arguments must be numbers or arrays of numbers")
+
+                if len(x.shape)==0:
+                    # single gvar from x and xsdev 
+                    if len(xsdev.shape)!=0:
+                        raise ValueError("x and xsdev different shapes.")
+                    idx = self.cov.append_diag(numpy.array([xsdev**2]))
                     der = svec(1)
-                    der.v[0].i = idx[i]
+                    der.v[0].i = idx[0]
                     der.v[0].v = 1.0
-                    ans.append(GVar(x.flat[i],der,self.cov))
-                return numpy.array(ans).reshape(x.shape)
-
-
+                    return GVar(x,der,self.cov)
+                else:
+                    # array of gvars from x and sdev/cov arrays 
+                    nx = len(x.flat)
+                    if x.shape==xsdev.shape:  # x,sdev
+                        idx = self.cov.append_diag(xsdev.reshape(nx)**2)
+                    elif xsdev.shape==2*x.shape: # x,cov
+                        idx = self.cov.append_diag_m(xsdev.reshape(nx,nx))
+                    else:
+                        raise ValueError("Argument shapes mismatched: "+
+                            str(x.shape)+' '+str(xsdev.shape))
+                    d = numpy.ones(nx,float)
+                    ans = []
+                    for i in range(nx):
+                        der = svec(1)
+                        der.v[0].i = idx[i]
+                        der.v[0].v = 1.0
+                        ans.append(GVar(x.flat[i],der,self.cov))
+                    return numpy.array(ans).reshape(x.shape)
         elif len(args)==1:
             x = args[0]
             if isinstance(x,str):
@@ -820,12 +839,90 @@ class GVarFactory:
                 der.v[i].i = d_idx[i]
                 der.v[i].v = d_v[i]
             return GVar(x,der,cov)
-
         else:
             raise ValueError("Wrong number of arguments: "+str(len(args)))
 
 
-        
+def gvar_function(x, double f, dfdx):
+    """ Create a |GVar| for function f(x) given f and df/dx at x.
+
+    This function creates a |GVar| corresponding to a function of |GVar|\s ``x``
+    whose value is ``f`` and whose derivatives with respect to each
+    ``x`` are given by ``dfdx``. Here ``x`` can be a single |GVar|,
+    an array of |GVar|\s (for a multidimensional function), or 
+    a dictionary whose values are |GVar|\s or arrays of |GVar|\s, while 
+    ``dfdx`` must be a float, an array of floats, or a dictionary 
+    whose values are floats or arrays of floats, respectively.
+
+    This function is useful for creating functions that can accept
+    |GVar|\s as arguments. For example, ::
+
+        import math
+        import gvar as gv 
+
+        def sin(x):
+            if isinstance(x, gv.GVar):
+                f = math.sin(x.mean)
+                dfdx = math.cos(x.mean)
+                return gv.gvar_function(x, f, dfdx)
+            else:
+                return math.sin(x)
+
+    creates a version of ``sin(x)`` that works with either floats or
+    |GVar|\s as its argument. This particular function is unnecessary since
+    it is already provided by :mod:`gvar`. 
+
+    :param x: Point at which the function is evaluated.
+    :type x: |GVar|, array of |GVar|\s, or a dictionary of |GVar|\s
+
+    :param f: Value of function at point ``gvar.mean(x)``.
+    :type f: float
+
+    :param dfdx: Derivatives of function with respect to x at 
+        point ``gvar.mean(x)``.
+    :type dfdx: float, array of floats, or a dictionary of floats
+
+    :returns: A |GVar| representing the function's value at ``x``.
+    """
+    cdef svec f_d
+    cdef GVar x_i
+    cdef double dfdx_i
+    if hasattr(x, 'keys'):
+        if not isinstance(x, BufferDict):
+            x = BufferDict(x)
+        if x.size == 0 or not isinstance(x.buf[0], GVar):
+            raise ValueError('x has no GVars')
+        if not hasattr(dfdx, 'keys'):
+            raise ValueError('x is a dictionary, dfdx is not')
+        tmp = BufferDict()
+        try:
+            for k in x:
+                tmp[k] = dfdx[k]
+                assert numpy.shape(tmp[k]) == numpy.shape(x[k])
+        except KeyError:
+            raise ValueError("dfdx[k] doesn't exist for k = " + str(k))
+        except AssertionError:
+            raise ValueError('shape(dfdx[k]) != shape(x[k]) for k = ' + str(k))
+        dfdx = tmp
+    else:
+        x = numpy.asarray(x)
+        if x.size == 0 or not isinstance(x.flat[0], GVar):
+            raise ValueError('x has no GVars')
+        dfdx = numpy.asarray(dfdx)
+        if x.shape != dfdx.shape:
+            raise ValueError('shape(dfdx) != shape(x)')
+    f_d = None
+    for x_i, dfdx_i in zip(x.flat, dfdx.flat):
+        if f_d is None:
+            f_d = x_i.d.mul(dfdx_i)
+        else:
+            f_d = f_d.add(x_i.d, 1., dfdx_i)
+    return GVar(f, f_d, x_i.cov)
+
+
+
+
+
 
 
  

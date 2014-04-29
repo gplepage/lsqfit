@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -7,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.6.1 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 4.7 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '4.6.1',
+        URL_ROOT:    './',
+        VERSION:     '4.7',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.6.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -51,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -69,8 +68,10 @@ least-squares fitting of noisy data by multi-dimensional, nonlinear
 functions of arbitrarily many parameters. The central module is
 <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> because it provides the fitting functions. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> makes
 heavy use of auxiliary module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>, which provides tools that
-facilitate the analysis of error propagation, and also the creation of
-complicated multi-dimensional Gaussian distributions.</p>
+simplify the analysis of error propagation, and also the creation of
+complicated multi-dimensional Gaussian distributions. The power of the
+<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module is a feature that distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> from
+standard fitting packages, as demonstrated below.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -104,10 +105,6 @@ complicated multi-dimensional Gaussian distributions.</p>
 <span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>              <span class="c"># tabulate outputs</span>
 <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="c"># print error budget for outputs</span>
-
-<span class="c"># save best-fit values in file &#39;outputfile.p&#39; for later use</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This code fits the function <tt class="docutils literal"><span class="pre">f(x,a,b)=</span> <span class="pre">exp(a+b*x)</span></tt> (see <tt class="docutils literal"><span class="pre">fcn(x,p)</span></tt>)
@@ -131,13 +128,14 @@ the covariance matrix). The dictionary <tt class="docutils literal"><span class=
 for the two parameters, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>: each is assumed to be 0.5±0.5
 before fitting. The parameters <tt class="docutils literal"><span class="pre">p[k]</span></tt> in the fit function <tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>
 are stored in a dictionary having the same keys and layout as
-<tt class="docutils literal"><span class="pre">prior</span></tt>. In addition, there is an extra piece of input data,
+<tt class="docutils literal"><span class="pre">prior</span></tt> (since <tt class="docutils literal"><span class="pre">prior</span></tt> specifies the fit parameters for
+the fitter). In addition, there is an extra piece of input data,
 <tt class="docutils literal"><span class="pre">y['b/a']</span></tt>, which indicates that <tt class="docutils literal"><span class="pre">b/a</span></tt> is 2±0.5. The fit
 function for this data is simply the ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> (represented by
 <tt class="docutils literal"><span class="pre">p['b']/p['a']</span></tt> in fit function <tt class="docutils literal"><span class="pre">fcn(x,p)</span></tt>). The fit function returns
 a dictionary having the same keys and layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>The output from the code sample above is:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538    itns = 5
 
 Parameters:
@@ -168,8 +166,7 @@ Partial % Errors:
               prior:      0.92      1.58      1.88
 --------------------------------------------------
               total:     12.78     16.80     14.42
-
-</pre>
+</pre></div>
 </div>
 <p>The best-fit values for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> are 0.253(32) and
 0.449(65), respectively; and the best-fit result for <tt class="docutils literal"><span class="pre">b/a</span></tt> is
@@ -181,23 +178,6 @@ the <tt class="docutils literal"><span class="pre">y</span></tt> data, with only
 priors <tt class="docutils literal"><span class="pre">prior</span></tt>. The fit results corresponding to each piece of input data
 are also tabulated (<tt class="docutils literal"><span class="pre">Fit:</span> <span class="pre">...</span></tt>); the agreement is excellent, as expected
 given that the <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom is only 0.17.</p>
-<p>The last section of the code uses Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module to save the
-best-fit values of the parameters in a file for later use. They are recovered
-using <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> again:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">])</span>
-<span class="go">0.253(32)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
-<span class="go">0.449(65)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">])</span>
-<span class="go">1.78(30)</span>
-</pre></div>
-</div>
-<p>The recovered parameters are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, with their full covariance
-matrix intact. (<tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> works here because the variables in <tt class="docutils literal"><span class="pre">fit.p</span></tt>
-are stored in a special dictionary of type <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>;
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be pickled otherwise.)</p>
 <p>Note that the constraint in <tt class="docutils literal"><span class="pre">y</span></tt> on <tt class="docutils literal"><span class="pre">b/a</span></tt> in this example is much tighter
 than the constraints on <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> separately. This suggests a variation
 on the previous code, where the tight restriction on <tt class="docutils literal"><span class="pre">b/a</span></tt> is built into the
@@ -213,7 +193,7 @@ prior rather than <tt class="docutils literal"><span class="pre">y</span></tt>:<
     <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
     <span class="p">}</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
-<span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p[k]</span>
    <span class="n">ans</span> <span class="o">=</span> <span class="p">{}</span>
@@ -245,7 +225,7 @@ far greater flexibility than, say, an array. The fit function
 (<tt class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></tt>) has to return a dictionary with the same layout as
 that of <tt class="docutils literal"><span class="pre">y</span></tt> (that is, with the same keys and where the value for
 each key has the same shape as the corresponding value in <tt class="docutils literal"><span class="pre">y</span></tt>).
-<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> does allow <tt class="docutils literal"><span class="pre">y</span></tt> to be an array instead of a dictionary,
+<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> allows <tt class="docutils literal"><span class="pre">y</span></tt> to be an array instead of a dictionary,
 which might be preferable for very simple fits (but usually not
 otherwise).</li>
 <li>The independent data (<tt class="docutils literal"><span class="pre">x</span></tt>) can be anything; it is simply passed
@@ -286,80 +266,173 @@ statement if using Python 2; or add</p>
 </div>
 <p>at the start of your file.</p>
 </div>
-<div class="section" id="making-fake-data">
-<span id="id1"></span><h2>Making Fake Data<a class="headerlink" href="#making-fake-data" title="Permalink to this headline">¶</a></h2>
-<p>We need data in order to demonstrate curve fitting. The easiest route
-is to make fake data. The recipe is simple: 1) choose some well defined
-function <tt class="docutils literal"><span class="pre">f(x)</span></tt> of the independent variable <tt class="docutils literal"><span class="pre">x</span></tt>; 2) choose values for
-the <tt class="docutils literal"><span class="pre">x</span></tt>s, and therefore the &#8220;correct&#8221; values for <tt class="docutils literal"><span class="pre">y=f(x)</span></tt>; and 3) add
-random noise to the <tt class="docutils literal"><span class="pre">y</span></tt>s, to simulate measurement errors. Here we will work
-through a simple implementation of this recipe to illustrate how the
-<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module can be used to build complicated Gaussian distributions (in
-this case for the correlated noise in the <tt class="docutils literal"><span class="pre">y</span></tt>s). A reader eager to fit
-real data can skip this section on first reading.</p>
-<p>For the function <tt class="docutils literal"><span class="pre">f</span></tt> we choose something familiar (to some people):
-a sum of exponentials
-<tt class="docutils literal"><span class="pre">sum_i=0..99</span> <span class="pre">a[i]</span> <span class="pre">exp(-E[i]*x)</span></tt>. We take as our exact values for the
-parameters <tt class="docutils literal"><span class="pre">a[i]=0.4</span></tt> and <tt class="docutils literal"><span class="pre">E[i]=0.9*(i+1)</span></tt>, which are easy to remember.
-This is simple in Python:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-
-<span class="k">def</span> <span class="nf">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nexp</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="mf">0.4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.9</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nexp</span><span class="p">))</span>
+<div class="section" id="gaussian-random-variables-and-error-propagation">
+<h2>Gaussian Random Variables and Error Propagation<a class="headerlink" href="#gaussian-random-variables-and-error-propagation" title="Permalink to this headline">¶</a></h2>
+<p>The inputs and outputs of a nonlinear least squares analysis are probability
+distributions, and these distributions will be Gaussian provided the input
+data are sufficiently accurate. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> assumes this to be the case.
+(It also provides tests for non-Gaussian behavior, together with
+methods for dealing with such behavior.)
+One of the most distinctive features of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> is that it is
+built around a class, <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, of objects that can be used to
+represent arbitrarily complicated Gaussian distributions
+&#8212; that is, <em>Gaussian random variables</em> that specify the means and
+covariance matrix of the probability distributions.
+The input data for a fit are represented
+by a collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that specify both the values and possible
+errors in the input values. The result of a fit is a collection of
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s specifying the best-fit values for the fit parameters and the
+estimated uncertainty in those values.</p>
+<p>There are three important things to know about <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, in addition
+to knowing how to create them (see <a class="reference internal" href="gvar.html#creating-gaussian-variables"><em>Creating Gaussian Variables</em></a>):</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first"><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s describe not only means and standard deviations, but also
+statistical correlations between different objects. For example, the
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.010001</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="go">1.00(10) 1.00(10)</span>
 </pre></div>
 </div>
-<p>For <tt class="docutils literal"><span class="pre">x</span></tt>s we take <tt class="docutils literal"><span class="pre">1,2,3..10,12,14..20</span></tt>, and exact <tt class="docutils literal"><span class="pre">y</span></tt>s are then given by
-<tt class="docutils literal"><span class="pre">f_exact(x)</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">3.</span><span class="p">,</span><span class="mf">4.</span><span class="p">,</span><span class="mf">5.</span><span class="p">,</span><span class="mf">6.</span><span class="p">,</span><span class="mf">7.</span><span class="p">,</span><span class="mf">8.</span><span class="p">,</span><span class="mf">9.</span><span class="p">,</span><span class="mf">10.</span><span class="p">,</span><span class="mf">12.</span><span class="p">,</span><span class="mf">14.</span><span class="p">,</span><span class="mf">16.</span><span class="p">,</span><span class="mf">18.</span><span class="p">,</span><span class="mf">20.</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y_exact</span> <span class="o">=</span> <span class="n">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y_exact</span><span class="p">)</span>               <span class="c"># correct/exact values for y</span>
-<span class="go">[  2.74047100e-01   7.92134506e-02   2.88190008e-02 ... ]</span>
+<p>both have means of <tt class="docutils literal"><span class="pre">1</span></tt> and standard deviations equal to or
+very close to <tt class="docutils literal"><span class="pre">0.1</span></tt>, but the ratio <tt class="docutils literal"><span class="pre">b/a</span></tt> has a
+standard deviation that is 100x smaller:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+<span class="go">1.0000(10)</span>
 </pre></div>
 </div>
-<p>Finally we need to add random noise to the <tt class="docutils literal"><span class="pre">y_exact</span></tt>s to obtain our
-fit data. We do this by forming <tt class="docutils literal"><span class="pre">y_exact*noise</span></tt> where</p>
-<div class="highlight-python"><pre>noise = 1 + sum_n=0..99 c[n] * (x / x_max) ** n,</pre>
-</div>
-<p>Here <tt class="docutils literal"><span class="pre">x_max</span></tt> is the largest <tt class="docutils literal"><span class="pre">x</span></tt> used, and the <tt class="docutils literal"><span class="pre">c[n]</span></tt> are Gaussian
-random variable with means and standard deviations of order 0.01. This
-is easy to implement in Python using the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
-
-<span class="k">def</span> <span class="nf">make_data</span><span class="p">(</span><span class="n">nexp</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span> <span class="c"># make x, y fit data</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">,</span><span class="mf">3.</span><span class="p">,</span><span class="mf">4.</span><span class="p">,</span><span class="mf">5.</span><span class="p">,</span><span class="mf">6.</span><span class="p">,</span><span class="mf">7.</span><span class="p">,</span><span class="mf">8.</span><span class="p">,</span><span class="mf">9.</span><span class="p">,</span><span class="mf">10.</span><span class="p">,</span><span class="mf">12.</span><span class="p">,</span><span class="mf">14.</span><span class="p">,</span><span class="mf">16.</span><span class="p">,</span><span class="mf">18.</span><span class="p">,</span><span class="mf">20.</span><span class="p">])</span>
-    <span class="n">cr</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">cr</span><span class="p">(),</span> <span class="n">eps</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]</span>
-    <span class="n">x_xmax</span> <span class="o">=</span> <span class="n">x</span><span class="o">/</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">noise</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span>  <span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_xmax</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">nexp</span><span class="p">)</span> <span class="o">*</span> <span class="n">noise</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+<p>This is because the covariance matrix specified for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>
+when they were created has large, positive off-diagonal elements:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>         <span class="c"># covariance matrix</span>
+<span class="go">[[ 0.01      0.01    ]</span>
+<span class="go"> [ 0.01      0.010001]]</span>
 </pre></div>
 </div>
-<p>Gaussian variable <tt class="docutils literal"><span class="pre">cr</span></tt> represents a Gaussian distribution with mean
-0.0 and width 0.01, which we use here as a random number generator:
-<tt class="docutils literal"><span class="pre">cr()</span></tt> is a number drawn randomly from the distribution represented by
-<tt class="docutils literal"><span class="pre">cr</span></tt>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>
-<span class="go">0.000(10)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">())</span>
-<span class="go">0.00452180208286</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">())</span>
-<span class="go">-0.00731564589737</span>
+<p>These off-diagonal elements imply that <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> are strongly
+correlated, which means that <tt class="docutils literal"><span class="pre">b</span> <span class="pre">/</span> <span class="pre">a</span></tt> or <tt class="docutils literal"><span class="pre">b</span> <span class="pre">-</span> <span class="pre">a</span></tt> will have
+much smaller uncertainties than <tt class="docutils literal"><span class="pre">a</span></tt> or <tt class="docutils literal"><span class="pre">b</span></tt> separately. The
+correlation coefficient for <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> is 0.99995:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>        <span class="c"># correlation matrix</span>
+<span class="go">[[ 1.       0.99995]</span>
+<span class="go"> [ 0.99995  1.     ]]</span>
 </pre></div>
 </div>
-<p>We use <tt class="docutils literal"><span class="pre">cr()</span></tt> to generate mean values for the Gaussian distributions
-represented by the <tt class="docutils literal"><span class="pre">c[n]</span></tt>s, each of which has width 0.01. The resulting
-<tt class="docutils literal"><span class="pre">y</span></tt>s fluctuate around the corresponding values of <tt class="docutils literal"><span class="pre">f_exact(x)</span></tt> and have
-statistical errors:</p>
+</li>
+<li><p class="first"><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s can be used in arithmetic expressions or as arguments
+to pure-Python functions. The results are also <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Covariances
+are propagated through these expressions following the usual rules,
+(automatically) preserving information about correlations. For
+example, the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> above could have been created
+using the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="go">1.00(10) 1.00(10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+<span class="go">1.0000(10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>
+<span class="go">[[ 0.01      0.01    ]</span>
+<span class="go"> [ 0.01      0.010001]]</span>
+</pre></div>
+</div>
+<p>The correlation is obvious from this code: <tt class="docutils literal"><span class="pre">b</span></tt> is equal to <tt class="docutils literal"><span class="pre">a</span></tt>
+plus a very small correction. From these variables we can
+create new variables that are also highly correlated:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
+<span class="go">0.69(10) 1.13(14) 1.627(34)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<span class="go">[[ 0.01        0.01388174]</span>
+<span class="go"> [ 0.01388174  0.01927153]]</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module defines versions of the standard Python
+functions (<tt class="docutils literal"><span class="pre">sin</span></tt>, <tt class="docutils literal"><span class="pre">cos</span></tt>, ...) that work with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Most any
+numeric pure-Python function will work with them as well. Numeric
+functions that are compiled in C or other low-level languages
+generally do not work with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s; they should be replaced by
+equivalent pure-Python functions if they are needed for <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>-valued
+arguments. See <a class="reference internal" href="gvar.html#gvar-arithmetic-and-functions"><em>gvar.GVar Arithmetic and Functions</em></a> for more
+information.</p>
+<p>The fact that correlation information is preserved <em>automatically</em>
+through arbitrarily complicated arithmetic is what makes
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s particularly useful. This is accomplished using <em>automatic
+differentiation</em> to compute the derivatives of any <em>derived</em> <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>
+with respect to the <em>primary</em> <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (those defined using
+<a class="reference internal" href="gvar.html#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>) from which it was created. As a result, for example,
+we need not provide derivatives of fit functions for <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a>
+(which are needed for the fit) since they are computed implicitly
+by the fitter from the fit function itself. Also
+it becomes trivial to build correlations into the priors used
+in fits, and to analyze the propagation of errors through
+complicated functions of the parameters after the fit.</p>
+</li>
+<li><p class="first">Storing <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in a file for later use is somewhat complicated
+because one generally wants to hold onto their correlations as well
+as their mean values and standard deviations. One easy way to do
+this is to put all of the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s to be saved into a single
+dictionary object of type <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>, and then to save the
+<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> using Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module: for example,
+using the variables defined above,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">buffer</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: 1.00(10),&#39;b&#39;: 1.00(10),&#39;x&#39;: 0.69(10),&#39;y&#39;: 1.13(14)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">buffer</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This creates a file named <tt class="docutils literal"><span class="pre">'outputfile.p'</span></tt> containing the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.
+Loading the file into a Python code later recovers the <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>
+with correlations intact:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">buffer</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
+<span class="go">{&#39;a&#39;: 1.00(10),&#39;b&#39;: 1.00(10),&#39;x&#39;: 0.69(10),&#39;y&#39;: 1.13(14)}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">buffer</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="nb">buffer</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">])</span>
+<span class="go">1.627(34)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s were created specifically to handle <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s,
+although they can be useful with other data types as well.
+The values in a pickled <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> can be individual <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or
+arbitrary <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. See
+<a class="reference internal" href="gvar.html#storing-gvars-for-later-use"><em>Storing gvar.GVars for Later Use: gvar.BufferDicts</em></a> for more information.</p>
+</li>
+</ol>
+</div></blockquote>
+<p>There is considerably more information about <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in the documentation for
+module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a>.</p>
+</div>
+<div class="section" id="basic-fits">
+<span id="id1"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this headline">¶</a></h2>
+<p>A fit analysis typically requires three types of input: 1) fit data
+<tt class="docutils literal"><span class="pre">x,y</span></tt> (or possibly just <tt class="docutils literal"><span class="pre">y</span></tt>); 2) a function <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f(x,</span> <span class="pre">p)</span></tt> relating
+values of <tt class="docutils literal"><span class="pre">y</span></tt> to to values of <tt class="docutils literal"><span class="pre">x</span></tt> and a set of fit parameters <tt class="docutils literal"><span class="pre">p</span></tt>
+(if there is no <tt class="docutils literal"><span class="pre">x</span></tt>, then <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f(p)</span></tt>);
+and 3) some <em>a priori</em> idea about the fit parameters&#8217; values. The <em>a priori</em>
+information about a parameter could be fairly imprecise &#8212; for example,
+the parameter is order 1. The point of
+the fit is to improve our knowledge of the parameter values, beyond
+our <em>a priori</em> impressions, by analyzing the fit data. We now show how
+to do this using the <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> module.</p>
+<p>For this example, we use
+fake data generated by a function, <tt class="docutils literal"><span class="pre">make_data()</span></tt>, that is described
+at the end of this section. The function call <tt class="docutils literal"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">make_data()</span></tt>
+generates 15 values for <tt class="docutils literal"><span class="pre">x</span></tt>, equal to <tt class="docutils literal"><span class="pre">1,2,3..10,12,14..20</span></tt>,
+and 15 values for <tt class="docutils literal"><span class="pre">y</span></tt>, where each <tt class="docutils literal"><span class="pre">y</span></tt> is obtained by adding
+random noise to the value
+of a function of the corresponding <tt class="docutils literal"><span class="pre">x</span></tt>. The function of <tt class="docutils literal"><span class="pre">x</span></tt> we use is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">sum</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">x</span><span class="p">)</span>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">a[i]=0.4</span></tt> and <tt class="docutils literal"><span class="pre">E[i]=0.9*(i+1)</span></tt>.
+The result is a set of random <tt class="docutils literal"><span class="pre">y</span></tt>s with correlated statistical errors:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="go">[0.2752(27) 0.07951(80) ... ]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-<span class="go">[0.0011(27) 0.00029(80) ... ]</span>
-</pre></div>
-</div>
-<p>Different <tt class="docutils literal"><span class="pre">y</span></tt>s are also correlated (by construction), which becomes clear
-if we evaluate the covariance matrix for the <tt class="docutils literal"><span class="pre">y</span></tt>s:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>              <span class="c"># covariance matrix</span>
 <span class="go">[[  7.52900382e-06   2.18173029e-06   7.95744444e-07 ... ]</span>
 <span class="go"> [  2.18173029e-06   6.33815228e-07   2.31761675e-07 ... ]</span>
 <span class="go"> [  7.95744444e-07   2.31761675e-07   8.49651978e-08 ... ]</span>
@@ -367,25 +440,12 @@ if we evaluate the covariance matrix for the <tt class="docutils literal"><span 
 <span class="go">]</span>
 </pre></div>
 </div>
-<p>The diagonal elements of the covariance matrix are the variances of the
-individual <tt class="docutils literal"><span class="pre">y</span></tt>s; the off-diagonal elements are a measure of the
-correlations:</p>
-<div class="highlight-python"><pre>&lt; (y[i]-&lt;y[i]&gt;) * (y[j]-&lt;y[j]&gt;) &gt;.</pre>
-</div>
-<p>The Gaussian variables <tt class="docutils literal"><span class="pre">y[i]</span></tt> together with the numbers <tt class="docutils literal"><span class="pre">x[i]</span></tt> comprise
-our fake data.</p>
-</div>
-<div class="section" id="basic-fits">
-<span id="id2"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this headline">¶</a></h2>
-<p>Now that we have fit data, <tt class="docutils literal"><span class="pre">x,y</span> <span class="pre">=</span> <span class="pre">make_data()</span></tt>, we pretend ignorance
-of the exact functional relationship between <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> (<em>i.e.</em>,
-<tt class="docutils literal"><span class="pre">y=f_exact(x)</span></tt>). Typically we <em>do</em> know the functional form and have some
-<em>a priori</em> idea about the parameter values. The point of the fit is to
-improve our knowledge of the parameter values, beyond our <em>a priori</em>
-impressions, by analyzing the fit data. Here we see how to do this using
-the <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> module.</p>
-<p>First we need code to represent the fit function. In this case we know
-that a sum of exponentials is appropriate, so we define the following
+<p>Our goal is to fit this data for <tt class="docutils literal"><span class="pre">y</span></tt>, as a function of <tt class="docutils literal"><span class="pre">x</span></tt>,
+and obtain estimates for the parameters <tt class="docutils literal"><span class="pre">a[i]</span></tt> and <tt class="docutils literal"><span class="pre">E[i]</span></tt>. The
+correct results are, of course, <tt class="docutils literal"><span class="pre">a[i]=0.4</span></tt> and <tt class="docutils literal"><span class="pre">E[i]=0.9*(i+1)</span></tt>
+but we will pretend that we do not know this.</p>
+<p>Next we need code for the fit function. We assume that we know
+that a sum of exponentials is appropriate, and therefore we define the following
 Python function to represent the relationship between <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> in
 our fit:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -397,22 +457,22 @@ our fit:</p>
 </pre></div>
 </div>
 <p>The fit parameters, <tt class="docutils literal"><span class="pre">a[i]</span></tt> and <tt class="docutils literal"><span class="pre">E[i]</span></tt>, are stored in a
-dictionary, using labels <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> to access them. These parameters
+dictionary, using labels <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">E</span></tt> to access them. These parameters
 are varied in the fit to find the best-fit values <tt class="docutils literal"><span class="pre">p=p_fit</span></tt> for which
 <tt class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p_fit)</span></tt> most closely approximates the <tt class="docutils literal"><span class="pre">y</span></tt>s in our fit data. The
 number of exponentials included in the sum is specified implicitly in this
 function, by the lengths of the <tt class="docutils literal"><span class="pre">p['a']</span></tt> and <tt class="docutils literal"><span class="pre">p['E']</span></tt> arrays.</p>
-<p>Next we need to define priors that encapsulate our <em>a priori</em> knowledge
-about the parameter values. In practice we almost always have <em>a priori</em>
+<p>Finally we need to define priors that encapsulate our <em>a priori</em> knowledge
+about the fit-parameter values. In practice we almost always have <em>a priori</em>
 knowledge about parameters; it is usually impossible to design a fit
 function without some sense of the parameter sizes. Given such knowledge
 it is important (usually essential) to include it in the fit. This is
 done by designing priors for the fit, which are probability distributions
 for each parameter that describe the <em>a priori</em> uncertainty in that
-parameter. As in the previous section, we use objects of type
+parameter. As discussed in the previous section, we use objects of type
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> to describe (Gaussian) probability distributions.
 Let&#8217;s assume that before the fit we suspect that each <tt class="docutils literal"><span class="pre">a[i]</span></tt> is of order
-0.5±0.5, while <tt class="docutils literal"><span class="pre">E[i]</span></tt> is of order <tt class="docutils literal"><span class="pre">1+i±0.5</span></tt>. A prior
+0.5±0.5, while <tt class="docutils literal"><span class="pre">E[i]</span></tt> is of order (1+i)±0.5. A prior
 that represents this information is built using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">lsqfit</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -442,8 +502,8 @@ finally ready to do the fit, which is now easy:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>So pulling together the entire code, from this section and the previous
-one, our complete Python program for making fake data and fitting it is:</p>
+<p>So pulling together the entire code,
+our complete Python program for making fake data and fitting it is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">lsqfit</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -493,18 +553,18 @@ one, our complete Python program for making fake data and fitting it is:</p>
 </pre></div>
 </div>
 <p>We are not sure <em>a priori</em> how many exponentials are needed to fit our
-data; given that there are only fifteen <tt class="docutils literal"><span class="pre">y</span></tt>s, and these are noisy, there
+data. Given that there are only fifteen <tt class="docutils literal"><span class="pre">y</span></tt>s, and these are noisy, there
 may only be information in the data about the first few terms. Consequently
-we wrote our code to try fitting with each of <tt class="docutils literal"><span class="pre">nexp=3,4,5..19</span></tt> terms.
+we write our code to try fitting with each of <tt class="docutils literal"><span class="pre">nexp=3,4,5..19</span></tt> terms.
 (The pieces of the code involving <tt class="docutils literal"><span class="pre">p0</span></tt> are optional; they make the
 more complicated fits go about 30 times faster since the output from one
 fit is used as the starting point for the next fit &#8212; see the discussion
 of the <tt class="docutils literal"><span class="pre">p0</span></tt> parameter for <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>.) Running
 this code produces the following output, which is reproduced here in some
 detail in order to illustrate a variety of features:</p>
-<div class="highlight-python"><pre>************************************* nexp = 3
+<div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 6.3e+02 [15]    Q = 0    logGBF = -4465.1    itns = 30
+  chi2/dof [dof] = 6.3e+02 [15]    Q = 0    logGBF = -4465    itns = 30
 
 Parameters:
             a 0   0.0288 (11)     [  0.50 (50) ]  
@@ -522,7 +582,7 @@ a1/a0 = 1.23130(47)   a2/a0 = 2.7070(13)
 
 ************************************* nexp = 4
 Least Square Fit:
-  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = 220.04    itns = 220
+  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = 220.04    itns = 218
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -666,7 +726,7 @@ E1/E0 = 2.0004(19)   E2/E0 = 3.036(47)
 a1/a0 = 1.0038(67)   a2/a0 = 1.11(13)
 
 --------------------- fit with extra information
-</pre>
+</pre></div>
 </div>
 <p>There are several things to notice here:</p>
 <blockquote>
@@ -762,7 +822,7 @@ correlation is evident in the covariance matrix:</p>
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
 output from <tt class="docutils literal"><span class="pre">fit.format(100)</span></tt>):</p>
-<div class="highlight-python"><pre>Fit:
+<div class="highlight-python"><div class="highlight"><pre>Fit:
      x[k]               y[k]          f(x[k],p)
 -----------------------------------------------
         1        0.2752 (27)        0.2752 (20)
@@ -779,7 +839,8 @@ output from <tt class="docutils literal"><span class="pre">fit.format(100)</span
        14      1.342(19)e-06      1.348(13)e-06
        16      2.217(37)e-07      2.227(23)e-07
        18      3.661(85)e-08      3.679(40)e-08
-       20       6.24(61)e-09      6.078(71)e-09</pre>
+       20       6.24(61)e-09      6.078(71)e-09
+</pre></div>
 </div>
 <p>The fit is excellent over the entire eight orders of magnitude. This
 information is presented again in the following plot, which shows the ratio
@@ -788,7 +849,7 @@ The correct result for this ratio, of course, is one. The smooth variation
 in the data &#8212; smooth compared with the size of the statistical-error bars
 &#8212; is an indication of the statistical correlations between individual
 <tt class="docutils literal"><span class="pre">y</span></tt>s.</p>
-<img alt="_images/fig1.png" src="_images/fig1.png" style="width: 80%;" />
+<a class="reference internal image-reference" href="_images/fig1.png"><img alt="_images/fig1.png" src="_images/fig1.png" style="width: 80%;" /></a>
 <p>This particular plot was made using the <tt class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></tt> module, with the
 following code added to the end of <tt class="docutils literal"><span class="pre">main()</span></tt> (outside the loop):</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">pylab</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -801,6 +862,39 @@ following code added to the end of <tt class="docutils literal"><span class="pre
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<p><strong>Making Fake Data:</strong> Function <tt class="docutils literal"><span class="pre">make_data()</span></tt> creates a list of <tt class="docutils literal"><span class="pre">x</span></tt> values,
+evaluates the underlying function, <tt class="docutils literal"><span class="pre">f_exact(x)</span></tt>, for those values,
+and then adds random noise to the results to create the <tt class="docutils literal"><span class="pre">y</span></tt> array
+of fit data: <tt class="docutils literal"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">f_exact(x)</span> <span class="pre">*</span> <span class="pre">noise</span></tt> where</p>
+<div class="highlight-python"><div class="highlight"><pre>noise = 1 + sum_n=0..99 c[n] * (x/x_max) ** n
+</pre></div>
+</div>
+<p>Here the <tt class="docutils literal"><span class="pre">c[n]</span></tt> are random coefficients generated using the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cr</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">eps</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="p">[</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">cr</span><span class="p">(),</span> <span class="n">eps</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Gaussian variable <tt class="docutils literal"><span class="pre">cr</span></tt> represents a Gaussian distribution with mean
+0.0 and width 0.01, which we use here as a random number generator:
+<tt class="docutils literal"><span class="pre">cr()</span></tt> is a number drawn randomly from the distribution represented by
+<tt class="docutils literal"><span class="pre">cr</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">)</span>
+<span class="go">0.000(10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">())</span>
+<span class="go">0.00452180208286</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">cr</span><span class="p">())</span>
+<span class="go">-0.00731564589737</span>
+</pre></div>
+</div>
+<p>We use <tt class="docutils literal"><span class="pre">cr()</span></tt> to generate mean values for the Gaussian distributions
+represented by the <tt class="docutils literal"><span class="pre">c[n]</span></tt>s, each of which has width 0.01. The resulting
+<tt class="docutils literal"><span class="pre">y</span></tt>s fluctuate around the corresponding values of <tt class="docutils literal"><span class="pre">f_exact(x)</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">f_exact</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="go">[0.0011(27) 0.00029(80) ... ]</span>
+</pre></div>
+</div>
+<p>The Gaussian variables <tt class="docutils literal"><span class="pre">y[i]</span></tt> together with the numbers <tt class="docutils literal"><span class="pre">x[i]</span></tt> comprise
+our fake data.</p>
 </div>
 <div class="section" id="chained-fits">
 <h2>Chained Fits<a class="headerlink" href="#chained-fits" title="Permalink to this headline">¶</a></h2>
@@ -829,12 +923,12 @@ onto the end of the <tt class="docutils literal"><span class="pre">main()</span>
 </pre></div>
 </div>
 <p>The result of the new fit (to one piece of new data) is:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.32 [1]    Q = 0.57    logGBF = 3.9303    itns = 2
 
 Parameters:
-            a 0    0.4018 (40)      [  0.4018 (40) ]  
-              1    0.4018 (40)      [  0.4033 (49) ]  
+            a 0    0.4018 (39)      [  0.4018 (39) ]  
+              1    0.4018 (39)      [  0.4033 (48) ]  
               2     0.421 (20)      [   0.447 (51) ]  
               3      0.53 (17)      [    0.60 (21) ]  
               4      0.46 (34)      [    0.38 (37) ]  
@@ -874,8 +968,7 @@ Parameters:
 
 Settings:
   svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-</pre>
+</pre></div>
 </div>
 <p>Parameters <tt class="docutils literal"><span class="pre">a[0]</span></tt> and <tt class="docutils literal"><span class="pre">E[0]</span></tt> are essentially unchanged by the new
 information, but <tt class="docutils literal"><span class="pre">a[i]</span></tt> and <tt class="docutils literal"><span class="pre">E[i]</span></tt> are more precise for <tt class="docutils literal"><span class="pre">i=2</span></tt>
@@ -902,11 +995,49 @@ use of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsq
 prior for each new fit is the best-fit output (<tt class="docutils literal"><span class="pre">fit.p</span></tt>) from the previous
 fit. The output from the chain&#8217;s final fit is the cummulative  result of all
 of these fits.</p>
+<p>Finally note that this particular problem can be done much more
+simply using a weighted average (<a class="reference internal" href="lsqfit.html#lsqfit.wavg" title="lsqfit.wavg"><tt class="xref py py-func docutils literal"><span class="pre">lsqfit.wavg()</span></tt></a>).
+Adding the following code
+onto the end of the <tt class="docutils literal"><span class="pre">main()</span></tt> subroutine in the previous section</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a1/a0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;a1/a0&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1e-5</span><span class="p">)}</span>
+<span class="n">new_p</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">wavg</span><span class="p">([</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">new_data</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;chi2/dof = </span><span class="si">%.2f</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">new_p</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="n">new_p</span><span class="o">.</span><span class="n">dof</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;E:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;a:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s">&#39;a1/a0&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>gives the following output:</p>
+<div class="highlight-python"><div class="highlight"><pre>chi2/dof = 0.32
+
+E: [0.90030(51) 1.80007(67) 2.711(12) 3.76(18)]
+a: [0.4018(39) 0.4018(39) 0.421(20) 0.53(17)]
+a1/a0: 1.000000(10)
+</pre></div>
+</div>
+<p>Here we do a weighted average of <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt> from the
+original fit (<tt class="docutils literal"><span class="pre">fit.p['a1/a0']</span></tt>) with our new piece of data
+(<tt class="docutils literal"><span class="pre">new_data['a1/a0']</span></tt>). The dictionary <tt class="docutils literal"><span class="pre">new_p</span></tt> returned by
+<a class="reference internal" href="lsqfit.html#lsqfit.wavg" title="lsqfit.wavg"><tt class="xref py py-func docutils literal"><span class="pre">lsqfit.wavg()</span></tt></a> has an entry for
+every key in either <tt class="docutils literal"><span class="pre">fit.p</span></tt> or <tt class="docutils literal"><span class="pre">new_data</span></tt>. The weighted average for
+<tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt> is in <tt class="docutils literal"><span class="pre">new_data['a1/a0']</span></tt>. New values for the
+fit parameters, that take account of the new data, are stored in
+<tt class="docutils literal"><span class="pre">new_p['E']</span></tt> and <tt class="docutils literal"><span class="pre">new_p['a']</span></tt>. The <tt class="docutils literal"><span class="pre">E[i]</span></tt> and <tt class="docutils literal"><span class="pre">a[i]</span></tt>
+estimates differ from their values in <tt class="docutils literal"><span class="pre">fit.p</span></tt> since those parameters
+are correlated with <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>. Consequently when the ratio
+is shifted by new data, the  <tt class="docutils literal"><span class="pre">E[i]</span></tt> and <tt class="docutils literal"><span class="pre">a[i]</span></tt> are shifted as well.
+The final results in <tt class="docutils literal"><span class="pre">new_p</span></tt>
+are almost identical to what we obtained above; this is because
+the errors are sufficiently small
+that the ratio <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt> is Gaussian.</p>
 </div>
 <div class="section" id="x-has-error-bars">
 <h2><tt class="docutils literal"><span class="pre">x</span></tt> has Error Bars<a class="headerlink" href="#x-has-error-bars" title="Permalink to this headline">¶</a></h2>
-<p>We now consider variations on our basic fit analysis (described above). The
-first variation concerns what to do when the independent variables, the
+<p>We now consider variations on our basic fit analysis (described in
+<a class="reference internal" href="#basic-fits"><em>Basic Fits</em></a>).
+The first variation concerns what to do when the independent variables, the
 <tt class="docutils literal"><span class="pre">x</span></tt>s, have errors, as well as the <tt class="docutils literal"><span class="pre">y</span></tt>s. This is easily handled by
 turning the <tt class="docutils literal"><span class="pre">x</span></tt>s into fit parameters, and otherwise dispensing
 with independent variables.</p>
@@ -970,7 +1101,7 @@ fit parameters <tt class="docutils literal"><span class="pre">p</span></tt> inst
 </pre></div>
 </div>
 <p>Running the new code gives, for <tt class="docutils literal"><span class="pre">nexp=6</span></tt> terms:</p>
-<div class="highlight-python"><pre>************************************* nexp = 6
+<div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 6
 Least Square Fit:
   chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
 
@@ -1008,13 +1139,14 @@ Settings:
 
 E1/E0 = 2.018(22)   E2/E0 = 3.27(31)
 a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
-</pre>
+</pre></div>
 </div>
 <p>This looks quite a bit like what we obtained before, except that now there
 are 15 more parameters, one for each <tt class="docutils literal"><span class="pre">x</span></tt>, and also now all results are
 a good deal less accurate. Note that one result from this analysis is new
-values for the <tt class="docutils literal"><span class="pre">x</span></tt>s. In some cases the errors on the <tt class="docutils literal"><span class="pre">x</span></tt> values have
-been reduced &#8212; by information in the fit data.</p>
+values for the <tt class="docutils literal"><span class="pre">x</span></tt>s. In some cases (<em>e.g.</em>,  <tt class="docutils literal"><span class="pre">x[7]</span></tt>),
+the errors on the <tt class="docutils literal"><span class="pre">x</span></tt> values have been
+reduced &#8212; by information in the fit data.</p>
 </div>
 <div class="section" id="correlated-parameters-gaussian-bayes-factor">
 <span id="correlated-parameters"></span><h2>Correlated Parameters; Gaussian Bayes Factor<a class="headerlink" href="#correlated-parameters-gaussian-bayes-factor" title="Permalink to this headline">¶</a></h2>
@@ -1060,7 +1192,7 @@ introduce these correlations:</p>
 </div>
 <p>Running the code as before, but now with the correlated prior in place, we
 obtain the following fit with <tt class="docutils literal"><span class="pre">nexp=7</span></tt> terms:</p>
-<div class="highlight-python"><pre>************************************* nexp = 7
+<div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 7
 Least Square Fit:
   chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = 227.47    itns = 3
 
@@ -1085,7 +1217,7 @@ Settings:
 
 E1/E0 = 1.9994(11)   E2/E0 = 3.000(11)
 a1/a0 = 0.9996(25)   a2/a0 = 1.005(28)
-</pre>
+</pre></div>
 </div>
 <p>The results are similar to before for the leading parameters, but
 substantially more accurate for parameters describing the second and later
@@ -1102,7 +1234,7 @@ significantly larger with the correlated prior (<tt class="docutils literal"><sp
 was for the uncorrelated prior (<tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">221</span></tt>). Had we been
 uncertain as to which prior was more appropriate, this difference says that
 the data prefers the correlated prior. (More precisely, it says that we
-would be <tt class="docutils literal"><span class="pre">exp(227-221)</span> <span class="pre">=</span> <span class="pre">400</span></tt> times more likely to get this data
+would be <tt class="docutils literal"><span class="pre">exp(227-221)</span> <span class="pre">=</span> <span class="pre">400</span></tt> times more likely to get our <tt class="docutils literal"><span class="pre">x,y</span></tt> data
 from a theory with the
 correlated prior than from one with the uncorrelated prior.) This
 difference is significant despite the fact that the <tt class="docutils literal"><span class="pre">chi**2</span></tt>s in the two
@@ -1128,7 +1260,8 @@ procedure for setting priors is called the <em>Empirical Bayes</em> method.</p>
 </div>
 <p>which varies <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array <tt class="docutils literal"><span class="pre">z</span></tt>, starting at <tt class="docutils literal"><span class="pre">z0</span></tt>, to maximize
 <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt> where</p>
-<div class="highlight-python"><pre>fit = lsqfit.nonlinear_fit(**fitargs(z)).</pre>
+<div class="highlight-python"><div class="highlight"><pre>fit = lsqfit.nonlinear_fit(**fitargs(z)).
+</pre></div>
 </div>
 <p>Function <tt class="docutils literal"><span class="pre">fitargs(z)</span></tt> returns a dictionary containing the arguments for
 <tt class="xref py py-func docutils literal"><span class="pre">nonlinear_fit()</span></tt>. These arguments, and the prior in particular, are
@@ -1160,7 +1293,7 @@ to parameter <tt class="docutils literal"><span class="pre">z</span></tt>. Funct
 different values of <tt class="docutils literal"><span class="pre">z</span></tt> and selects the <tt class="docutils literal"><span class="pre">z</span></tt> that maximizes <tt class="docutils literal"><span class="pre">fit.logGBF</span></tt>.
 It returns the corresponding fit and the value of <tt class="docutils literal"><span class="pre">z</span></tt>.</p>
 <p>This code generates the following output when <tt class="docutils literal"><span class="pre">nexp=7</span></tt>:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = 233.98    itns = 1
 
 Parameters:
@@ -1184,8 +1317,8 @@ Settings:
 
 E1/E0 = 1.9993(10)   E2/E0 = 3.0015(94)
 a1/a0 = 0.9995(25)   a2/a0 = 1.011(17)
-prior['a'] = 0.500(95)
-</pre>
+prior[&#39;a&#39;] = 0.500(95)
+</pre></div>
 </div>
 <p>Reducing the width of the <tt class="docutils literal"><span class="pre">prior['a']</span></tt>s from 0.5 to 0.1 increased
 <tt class="docutils literal"><span class="pre">logGBF</span></tt> from 227 to 234. The error for <tt class="docutils literal"><span class="pre">a2/a0</span></tt> is 40%
@@ -1199,7 +1332,7 @@ value of the priors <tt class="docutils literal"><span class="pre">prior['a']</s
 functions as well as priors. Consider the following two fits of the sort
 discussed in the previous section, one using just two terms in the fit
 function and one using three terms:</p>
-<div class="highlight-python"><pre>************************************* nexp = 2
+<div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 2
 Least Square Fit:
   chi2/dof [dof] = 0.47 [15]    Q = 0.96    logGBF = 254.15    itns = 6
 
@@ -1227,9 +1360,7 @@ Parameters:
 
 Settings:
   svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-
-</pre>
+</pre></div>
 </div>
 <p>Measured by their <tt class="docutils literal"><span class="pre">chi**2</span></tt>s, the two fits are almost equally good. The
 Bayes factor for the first fit, however, is much larger than that for the
@@ -1282,7 +1413,7 @@ an error-budget table:</p>
 </pre></div>
 </div>
 <p>This gives the following output:</p>
-<div class="highlight-python"><pre>Values:
+<div class="highlight-python"><div class="highlight"><pre>Values:
               E2/E0: 3.000(11)           
               E1/E0: 1.9994(11)          
               a2/a0: 1.005(28)           
@@ -1296,8 +1427,7 @@ Partial % Errors:
                   E:      0.35      0.02      2.44      0.16
 ------------------------------------------------------------
               total:      0.37      0.05      2.79      0.25
-
-</pre>
+</pre></div>
 </div>
 <p>This table shows, for example, that the 0.37% uncertainty in <tt class="docutils literal"><span class="pre">E2/E0</span></tt>
 comes from a 0.09% contribution due to <tt class="docutils literal"><span class="pre">prior['a']</span></tt>, a 0.07% contribution
@@ -1337,13 +1467,15 @@ assume that <em>a priori</em> we know that: <tt class="docutils literal"><span c
 <tt class="docutils literal"><span class="pre">E[i+1]-E[i]=0.9(2)</span></tt>, and <tt class="docutils literal"><span class="pre">a[i]=0.5(5)</span></tt>. Suppose that our goal is to
 find good estimates for <tt class="docutils literal"><span class="pre">E[0]</span></tt> and <tt class="docutils literal"><span class="pre">a[0]</span></tt>.</p>
 <p>We know that for some set of parameters</p>
-<div class="highlight-python"><pre>y = sum_i=0..inf  a[i]*exp(-E[i]*x)</pre>
+<div class="highlight-python"><div class="highlight"><pre>y = sum_i=0..inf  a[i]*exp(-E[i]*x)
+</pre></div>
 </div>
 <p>for each <tt class="docutils literal"><span class="pre">x</span></tt>-<tt class="docutils literal"><span class="pre">y</span></tt> pair in our fit data. Given that
 <tt class="docutils literal"><span class="pre">a[0]</span></tt> and <tt class="docutils literal"><span class="pre">E[0]</span></tt> are all we want to know, we might imagine defining
 a new, modified dependent variable <tt class="docutils literal"><span class="pre">ymod</span></tt>, equal to just
 <tt class="docutils literal"><span class="pre">a[0]*exp(-E[0]*x)</span></tt>:</p>
-<div class="highlight-python"><pre>ymod = y - sum_i=1..inf a[i]*exp(-E[i]*x)</pre>
+<div class="highlight-python"><div class="highlight"><pre>ymod = y - sum_i=1..inf a[i]*exp(-E[i]*x)
+</pre></div>
 </div>
 <p>We know everything on the right-hand side of this equation: we have exact
 values for <tt class="docutils literal"><span class="pre">y</span></tt> and we have <em>a priori</em> estimates for the <tt class="docutils literal"><span class="pre">a[i]</span></tt> and
@@ -1393,7 +1525,7 @@ correct the exact data, which comes from a new <tt class="docutils literal"><spa
 <p>Running the new code produces the following output, where again <tt class="docutils literal"><span class="pre">nexp</span></tt> is
 the number of exponentials kept in the fit (and <tt class="docutils literal"><span class="pre">20-nexp</span></tt> is the number
 pushed into the modified dependent variable <tt class="docutils literal"><span class="pre">ymod</span></tt>):</p>
-<div class="highlight-python"><pre>************************************* nexp = 1
+<div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 1
 Least Square Fit (input data correlated with prior):
   chi2/dof [dof] = 0.051 [10]    Q = 1    logGBF = 97.499    itns = 5
 
@@ -1511,7 +1643,7 @@ Settings:
 
 E1/E0 = 1.999(24)   E2/E0 = 3.00(21)
 a1/a0 = 0.997(77)   a2/a0 = 1.01(25)
-</pre>
+</pre></div>
 </div>
 <p>Here we use <tt class="docutils literal"><span class="pre">fit.format(10)</span></tt> to print out a table of <tt class="docutils literal"><span class="pre">x</span></tt> and
 <tt class="docutils literal"><span class="pre">y</span></tt> (actually <tt class="docutils literal"><span class="pre">ymod</span></tt>) values, together with the value of the
@@ -1567,7 +1699,7 @@ has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
 for example, with an <em>SVD</em> cut of 1e-19, instead of 1e-15, we would have
 obtained the following output:</p>
-<div class="highlight-python"><pre>Least Square Fit (input data correlated with prior):
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (input data correlated with prior):
   chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 100.46    itns = 5
 
 Parameters:
@@ -1600,7 +1732,7 @@ Settings:
 
 E1/E0 = 2.00(72)   E2/E0 = 3.0(6.1)
 a1/a0 = 1.0(2.3)   a2/a0 = 1.0(6.8)
-</pre>
+</pre></div>
 </div>
 <p>The standard deviations quoted for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, <em>etc.</em> are much too large
 compared with the standard deviations shown for the individual parameters,
@@ -1660,7 +1792,7 @@ code,</p>
 </pre></div>
 </div>
 <p>which gives:</p>
-<div class="highlight-python"><pre>Values:
+<div class="highlight-python"><div class="highlight"><pre>Values:
               E2/E0: 3.00(21)            
               E1/E0: 1.999(24)           
               a2/a0: 1.01(25)            
@@ -1674,8 +1806,7 @@ Partial % Errors:
                   E:      5.87      0.99     22.35      6.30
 ------------------------------------------------------------
               total:      6.98      1.22     25.27      7.70
-
-</pre>
+</pre></div>
 </div>
 <p>Here the contribution from the <em>SVD</em> cut is almost negligible.</p>
 <p>Note that covariance matrices are rescaled so that all diagonal
@@ -1683,14 +1814,16 @@ elements equal one before the <em>SVD</em> cut is applied. This means,
 among other things, that uncorrelated errors &#8212; that is, diagonal sub-matrices
 of the covariance matrix &#8212; are unaffected by <em>SVD</em> cuts. Applying an <em>SVD</em>
 cut of 1e-4, for example, to the following singular covariance matrix,</p>
-<div class="highlight-python"><pre>[[  1.0   1.0   0.0  ]
+<div class="highlight-python"><div class="highlight"><pre>[[  1.0   1.0   0.0  ]
  [  1.0   1.0   0.0  ]
- [  0.0   0.0   1e-20]],</pre>
+ [  0.0   0.0   1e-20]],
+</pre></div>
 </div>
 <p>gives a new, non-singular matrix:</p>
-<div class="highlight-python"><pre>[[  1.0001   0.9999   0.0  ]
+<div class="highlight-python"><div class="highlight"><pre>[[  1.0001   0.9999   0.0  ]
  [  0.9999   1.0001   0.0  ]
- [  0.0      0.0      1e-20]]</pre>
+ [  0.0      0.0      1e-20]]
+</pre></div>
 </div>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> uses a default value for <tt class="docutils literal"><span class="pre">svdcut</span></tt> of 1e-15,
 and applies <em>SVD</em> cuts to the covariance matrices from both the fit data and
@@ -1746,11 +1879,11 @@ the <tt class="docutils literal"><span class="pre">main()</span></tt> subroutine
 </div>
 <p>The results are consistent with the results obtained directly from the fit
 (when using <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt>):</p>
-<div class="highlight-python"><pre>Bootstrap results:
+<div class="highlight-python"><div class="highlight"><pre>Bootstrap results:
 E1/E0 = 1.999(17)   E2/E1 = 2.98(18)
 a1/a0 = 0.995(55)   a2/a0 = 0.97(28)
 E1 = 1.799(16)   a1 = 0.398(23)
-</pre>
+</pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms our previous error estimates
 (to within 10-30%, since <tt class="docutils literal"><span class="pre">Nbs=40</span></tt>). When <tt class="docutils literal"><span class="pre">Nbs</span></tt> is small, it is often
@@ -1825,7 +1958,7 @@ given by the fit (<tt class="docutils literal"><span class="pre">fit.psdev</span
 distributions may become non-Gaussian, and the interpretation of fit
 results more complicated.)</p>
 <p>In the present example, the output from the three simulations is:</p>
-<div class="highlight-python"><pre>************************************* simulation
+<div class="highlight-python"><div class="highlight"><pre>************************************* simulation
 Least Square Fit:
   chi2/dof [dof] = 0.27 [15]    Q = 1    logGBF = 228.78    itns = 46
 
@@ -1920,8 +2053,7 @@ E1/E0: 0.00009(107)   E2/E0: -0.0006(111)
 a1/a0: 4(2557)e-06   a2/a0: -0.0009(281)
 
 Parameter chi2/dof [dof] = 0.14 [4]   Q = 1.0
-
-</pre>
+</pre></div>
 </div>
 <p>The simulations show that the fit values usually agree with the correct
 values to within a standard deviation or so (the correct results here are
@@ -2003,7 +2135,7 @@ use the following fitting code:</p>
 </div>
 <p>where we are assuming <em>a priori</em> information that suggests
 the average is around 0.02. The output from this code is:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = 5.3431    itns = 2
 
 Parameters:
@@ -2013,7 +2145,7 @@ Settings:
   svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
 a = 0.004(18)
-</pre>
+</pre></div>
 </div>
 <p>This is not such a useful result since much of the one-sigma range for <tt class="docutils literal"><span class="pre">a</span></tt>
 is negative, and yet we know that <tt class="docutils literal"><span class="pre">a</span></tt> must be postive.</p>
@@ -2037,7 +2169,7 @@ Rather than including all keys, the decorator can be written with a list
 containing just the variables to be transformed: here,
 <tt class="docutils literal"><span class="pre">&#64;lsqfit.transform_p(['loga'],</span> <span class="pre">0)</span></tt>.</p>
 <p>The result from this fit is</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.252    itns = 12
 
 Parameters:
@@ -2047,7 +2179,7 @@ Settings:
   svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
 
 a = 0.012(11)
-</pre>
+</pre></div>
 </div>
 <p>which is more compelling. The &#8220;correct&#8221; value for <tt class="docutils literal"><span class="pre">a</span></tt> here is 0.015
 (from the method used to generate the <tt class="docutils literal"><span class="pre">y</span></tt>s).</p>
@@ -2119,18 +2251,22 @@ fluctuate together, the prior should be redefined:</p>
 </div>
 <div class="section" id="appendix-a-simple-pedagogical-example">
 <h2>Appendix: A Simple Pedagogical Example<a class="headerlink" href="#appendix-a-simple-pedagogical-example" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-bad-solution">
+<h3>A Bad Solution<a class="headerlink" href="#a-bad-solution" title="Permalink to this headline">¶</a></h3>
 <p>Consider a problem where we have five pieces of uncorrelated data for a
 function <tt class="docutils literal"><span class="pre">y(x)</span></tt>:</p>
-<div class="highlight-python"><pre>x[i]       y(x[i])
+<div class="highlight-python"><div class="highlight"><pre>x[i]       y(x[i])
 ----------------------
 0.1        0.5351 (54)
 0.3        0.6762 (67)
 0.5        0.9227 (91)
 0.7        1.3803(131)
-0.95       4.0145(399)</pre>
+0.95       4.0145(399)
+</pre></div>
 </div>
 <p>We know that <tt class="docutils literal"><span class="pre">y(x)</span></tt> has a Taylor expansion in <tt class="docutils literal"><span class="pre">x</span></tt>:</p>
-<div class="highlight-python"><pre>y(x) = sum_n=0..inf p[n] x**n</pre>
+<div class="highlight-python"><div class="highlight"><pre>y(x) = sum_n=0..inf p[n] x**n
+</pre></div>
 </div>
 <p>The challenge is to extract a reliable estimate for <tt class="docutils literal"><span class="pre">y(0)=p[0]</span></tt> from the
 data &#8212; that is, the challenge is to extrapolate the data to <tt class="docutils literal"><span class="pre">x=0</span></tt>.</p>
@@ -2138,7 +2274,7 @@ data &#8212; that is, the challenge is to extrapolate the data to <tt class="doc
 <tt class="docutils literal"><span class="pre">y(x)</span></tt> after five terms, because there are only five pieces of data.
 That gives the following fit, where the gray band shows the 1-sigma
 uncertainty in the fit function evaluated with the best-fit parameters:</p>
-<img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" />
+<a class="reference internal image-reference" href="_images/appendix_1.png"><img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" /></a>
 <p>This fit was generated using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -2156,13 +2292,13 @@ uncertainty in the fit function evaluated with the best-fit parameters:</p>
 
 <span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mf">5.</span><span class="p">)</span>              <span class="c"># starting value for chi**2 minimization</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Note that here the function <tt class="docutils literal"><span class="pre">gv.gvar</span></tt> converts the strings
 <tt class="docutils literal"><span class="pre">'0.5351(54)'</span></tt>, <em>etc.</em> into <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Running the code gives the
 following output:</p>
-<div class="highlight-python"><pre>Least Square Fit (no prior):
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (no prior):
   chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
 
 Parameters:
@@ -2179,7 +2315,8 @@ Fit:
       0.3    0.6762 (67)    0.6762 (67)
       0.5    0.9227 (91)    0.9227 (91)
       0.7     1.380 (13)     1.380 (13)
-     0.95     4.014 (40)     4.014 (40)</pre>
+     0.95     4.014 (40)     4.014 (40)
+</pre></div>
 </div>
 <p>This is a &#8220;perfect&#8221; fit in that the fit function agrees exactly with
 the data; the <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the fit is zero. The 5-parameter fit
@@ -2187,6 +2324,9 @@ gives a fairly precise answer for <tt class="docutils literal"><span class="pre"
 (<tt class="docutils literal"><span class="pre">0.74(4)</span></tt>), but the curve looks oddly stiff. Also some of the
 best-fit values for the coefficients are quite
 large (<em>e.g.</em>, <tt class="docutils literal"><span class="pre">p[3]=</span> <span class="pre">-39(4)</span></tt>), perhaps unreasonably large.</p>
+</div>
+<div class="section" id="priors">
+<h3>Priors<a class="headerlink" href="#priors" title="Permalink to this headline">¶</a></h3>
 <p>The problem with a 5-parameter fit is that there is no reason to neglect
 terms in the expansion of <tt class="docutils literal"><span class="pre">y(x)</span></tt> with <tt class="docutils literal"><span class="pre">n&gt;4</span></tt>. Whether or not
 extra terms are important depends entirely on how large we
@@ -2200,7 +2340,8 @@ order one. Then we would need to keep at least 91 terms in the
 Taylor expansion if we wanted the terms we dropped to be small compared
 with the 1% data errors at <tt class="docutils literal"><span class="pre">x=0.95</span></tt>. So a possible fitting function
 would be:</p>
-<div class="highlight-python"><pre>y(x; N) = sum_n=0..N p[n] x**n</pre>
+<div class="highlight-python"><div class="highlight"><pre>y(x; N) = sum_n=0..N p[n] x**n
+</pre></div>
 </div>
 <p>with <tt class="docutils literal"><span class="pre">N=90</span></tt>.</p>
 <p>Fitting a 91-parameter formula to five pieces of data is also impossible.
@@ -2226,16 +2367,16 @@ actually fitting 91+5 pieces of data with 91 parameters.</p>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Note that a starting value <tt class="docutils literal"><span class="pre">p0</span></tt> is not needed when a prior is specified.
 This code also gives an excellent fit, with a <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of
 freedom of <tt class="docutils literal"><span class="pre">0.35</span></tt> (note that the data point at <tt class="docutils literal"><span class="pre">x=0.95</span></tt> is off the chart,
 but agrees with the fit to within its 1% errors):</p>
-<img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" />
+<a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
 <p>The fit code output is:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
 
 Parameters:
@@ -2272,7 +2413,8 @@ Fit:
      0.95     4.014 (40)     4.014 (40)
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0</pre>
+  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+</pre></div>
 </div>
 <p>This is a much more plausible fit than than the 5-parameter fit, and gives an
 extrapolated value of <tt class="docutils literal"><span class="pre">p[0]=0.489(17)</span></tt>. The original data points were
@@ -2283,17 +2425,21 @@ result.  Increasing the number of terms further would have no effect since the
 last terms added are having no impact, and so end up equal to the prior value
 &#8212;  the fit data are not sufficiently precise to add new information about
 these parameters.</p>
+</div>
+<div class="section" id="bayes-factor">
+<h3>Bayes Factor<a class="headerlink" href="#bayes-factor" title="Permalink to this headline">¶</a></h3>
 <p>We can test our priors for this fit by re-doing the fit with broader and
 narrower priors. Setting <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(3)'])</span></tt> gives an excellent
 fit,</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993    itns = 2
 
 Parameters:
               0   0.490 (33)     [  0.0 (3.0) ]
               1    0.38 (48)     [  0.0 (3.0) ]
               2    0.6 (1.8)     [  0.0 (3.0) ]
-              ...</pre>
+              ...
+</pre></div>
 </div>
 <p>but with a very small <tt class="docutils literal"><span class="pre">chi2/dof</span></tt> and somewhat larger errors on the best-fit
 estimates for the parameters. The logarithm of the (Gaussian) Bayes Factor,
@@ -2309,14 +2455,15 @@ are more consistent with coefficients of order one than with coefficients of
 order three. The <tt class="docutils literal"><span class="pre">logGBF</span></tt> values argue for the original prior.</p>
 <p>Narrower priors, <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0.0(3)'])</span></tt>, give a poor fit,
 and also a less optimal <tt class="docutils literal"><span class="pre">logGBF</span></tt>:</p>
-<div class="highlight-python"><pre>Least Square Fit:
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058    itns = 2
 
 Parameters:
               0   0.484 (11)     [  0.00 (30) ]  *
               1   0.454 (98)     [  0.00 (30) ]  *
               2    0.50 (23)     [  0.00 (30) ]  *
-              ...</pre>
+              ...
+</pre></div>
 </div>
 <p>The priors are responsible for about half of the final error in our best
 estimate of <tt class="docutils literal"><span class="pre">p[0]</span></tt> (with priors of <tt class="docutils literal"><span class="pre">0(1)</span></tt>); the rest comes from the
@@ -2328,23 +2475,29 @@ using the code</p>
 </pre></div>
 </div>
 <p>which prints the following table:</p>
-<div class="highlight-python"><pre>Partial % Errors:
+<div class="highlight-python"><div class="highlight"><pre>Partial % Errors:
                             p0
 ------------------------------
                   y:      2.67
               prior:      2.23
 ------------------------------
-              total:      3.48</pre>
+              total:      3.48
+</pre></div>
 </div>
+</div>
+<div class="section" id="marginalization">
+<h3>Marginalization<a class="headerlink" href="#marginalization" title="Permalink to this headline">¶</a></h3>
 <p>There is a second, equivalent way of fitting this data that illustrates the
 idea of <em>marginalization.</em> We really only care about parameter <tt class="docutils literal"><span class="pre">p[0]</span></tt> in
 our fit. This suggests that we remove <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms from the data <em>before</em>
 we do the fit:</p>
-<div class="highlight-python"><pre>ymod[i] = y[i] - sum_n=1...inf prior[n] * x[i] ** n</pre>
+<div class="highlight-python"><div class="highlight"><pre>ymod[i] = y[i] - sum_n=1...inf prior[n] * x[i] ** n
+</pre></div>
 </div>
 <p>Before the fit, our best estimate for the parameters is from the priors. We
 use these to create an estimate for the correction to each data point
-coming from <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms in <tt class="docutils literal"><span class="pre">y(x)</span></tt>. This new data, <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>, should be fit with
+coming from <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms in <tt class="docutils literal"><span class="pre">y(x)</span></tt>. This new data, <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
+should be fit with
 a new fitting function, <tt class="docutils literal"><span class="pre">ymod(x)</span> <span class="pre">=</span> <span class="pre">p[0]</span></tt> &#8212; that is, it should be fit
 to a constant, independent of <tt class="docutils literal"><span class="pre">x[i]</span></tt>. The last three lines of the code
 above are easily modified to implement this idea:</p>
@@ -2370,11 +2523,11 @@ above are easily modified to implement this idea:</p>
 <span class="n">ymod</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prior</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">priormod</span><span class="p">))</span>  <span class="c"># correct y</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">priormod</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Running this code give:</p>
-<div class="highlight-python"><pre>Least Square Fit (input data correlated with prior):
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (input data correlated with prior):
   chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
 
 Parameters:
@@ -2390,7 +2543,8 @@ Fit:
      0.95    4.0 (3.0)    0.489 (17)  *
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0</pre>
+  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+</pre></div>
 </div>
 <p>Remarkably this one-parameter fit gives results for <tt class="docutils literal"><span class="pre">p[0]</span></tt> that are identical (to
 machine precision) to our 91-parameter fit above. The 90 parameters for
@@ -2399,7 +2553,7 @@ in this way has no effect if the fit function is linear in that parameter.
 Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
 effectively linear). The fit here is:</p>
-<img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" />
+<a class="reference internal image-reference" href="_images/appendix_3.png"><img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" /></a>
 <p>The constant is consistent with all of the data in <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
 even at <tt class="docutils literal"><span class="pre">x[i]=0.95</span></tt>, because <tt class="docutils literal"><span class="pre">ymod[i]</span></tt> has much larger errors for
 larger <tt class="docutils literal"><span class="pre">x[i]</span></tt> because of the correction terms.</p>
@@ -2418,6 +2572,7 @@ and are essential &#8212; removing the correlations between different
 larger errors.</p>
 </div>
 </div>
+</div>
 
 
           </div>
@@ -2429,7 +2584,7 @@ larger errors.</p>
   <ul>
 <li><a class="reference internal" href="#">Overview and Tutorial</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#making-fake-data">Making Fake Data</a></li>
+<li><a class="reference internal" href="#gaussian-random-variables-and-error-propagation">Gaussian Random Variables and Error Propagation</a></li>
 <li><a class="reference internal" href="#basic-fits">Basic Fits</a></li>
 <li><a class="reference internal" href="#chained-fits">Chained Fits</a></li>
 <li><a class="reference internal" href="#x-has-error-bars"><tt class="docutils literal"><span class="pre">x</span></tt> has Error Bars</a></li>
@@ -2442,7 +2597,13 @@ larger errors.</p>
 <li><a class="reference internal" href="#testing-fits-with-simulated-data">Testing Fits with Simulated Data</a></li>
 <li><a class="reference internal" href="#positive-parameters">Positive Parameters</a></li>
 <li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
-<li><a class="reference internal" href="#appendix-a-simple-pedagogical-example">Appendix: A Simple Pedagogical Example</a></li>
+<li><a class="reference internal" href="#appendix-a-simple-pedagogical-example">Appendix: A Simple Pedagogical Example</a><ul>
+<li><a class="reference internal" href="#a-bad-solution">A Bad Solution</a></li>
+<li><a class="reference internal" href="#priors">Priors</a></li>
+<li><a class="reference internal" href="#bayes-factor">Bayes Factor</a></li>
+<li><a class="reference internal" href="#marginalization">Marginalization</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -2485,12 +2646,12 @@ larger errors.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.6.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2013, G. P. Lepage.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

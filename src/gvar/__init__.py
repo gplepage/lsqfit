@@ -32,6 +32,8 @@ variables including:
     - ``fmt_values(g)`` --- create table of values for printing
     
     - ``fmt_errorbudget(g)`` --- create error-budget table for printing
+
+    - ``fmt_chi2(f)`` --- format chi**2 information in f as string for printing
     
     - class ``BufferDict`` --- ordered dictionary with data buffer
     
@@ -48,6 +50,13 @@ variables including:
     - ``dataset.bootstrap_iter(data,N)`` --- bootstrap random sample data
     
     - class ``dataset.Dataset`` --- class for collecting random sample data
+
+There are also sub-modules that implement some standard numerical analysis 
+tools for use with |GVar|\s:
+
+    - ``ode`` --- integration of systems of ordinary differential equations
+
+    - ``cspline`` --- cubic splines for 1-d data
     
 """
 
@@ -76,6 +85,8 @@ from ._utilities import *
 from ._version import version as __version__
 
 from . import dataset
+from . import ode 
+from . import cspline
 
 try:
     # use lsqfit's gammaQ if available; otherwise use one in ._utilities
@@ -267,9 +278,18 @@ def chi2(g1, g2=None, svdcut=1e-15, svdnum=None, nocorr=False, fmt=False):
 def fmt_chi2(f):
     """ Return string containing ``chi**2/dof``, ``dof`` and ``Q`` from ``f``.
 
-    Assumes ``f`` has attributes ``chi2``, ``dof`` and ``Q``.
+    Assumes ``f`` has attributes ``chi2``, ``dof`` and ``Q``. The 
+    logarithm of the Bayes factor will also be printed if ``f`` has
+    attribute ``logGBF``.
     """
-    return "chi2/dof = %.2g [%d]   Q = %.2g" % (f.chi2 / f.dof, f.dof, f.Q)
+    if hasattr(f, 'logGBF'):
+        fmt = "chi2/dof = %.2g [%d]    Q = %.2g    log(GBF) = %.5g"
+        chi2_dof = f.chi2 / f.dof if f.dof != 0 else 0
+        return fmt % (chi2_dof, f.dof, f.Q, f.logGBF)
+    else:
+        fmt = "chi2/dof = %.2g [%d]    Q = %.2g"
+        chi2_dof = f.chi2 / f.dof if f.dof != 0 else 0
+        return fmt % (chi2_dof, f.dof, f.Q)
 
 def svd(g, svdcut=None, svdnum=None, rescale=True, compute_inv=False):
     """ Apply svd cuts to collection of |GVar|\s in ``g``. 
