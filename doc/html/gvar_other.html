@@ -168,6 +168,30 @@ smaller than <tt class="docutils literal"><span class="pre">hmin</span></tt>. Th
 number of good steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is increased, and the number of
 bad steps, where <tt class="docutils literal"><span class="pre">h</span></tt> is decreased and the step is repeated:
 <tt class="docutils literal"><span class="pre">odeint.ngood</span></tt> and <tt class="docutils literal"><span class="pre">odeint.nbad</span></tt>, respectively.</p>
+<p>A custom criterion for step-size changes can be implemented by 
+specifying a function for parameter delta. This is a function
+<tt class="docutils literal"><span class="pre">delta(yerr,</span> <span class="pre">y,</span> <span class="pre">delta_y)</span></tt> of the estimated error <tt class="docutils literal"><span class="pre">yerr</span></tt>
+after a given step, the proposed value for <tt class="docutils literal"><span class="pre">y</span></tt>, and the 
+proposed change <tt class="docutils literal"><span class="pre">delta_y</span></tt> in <tt class="docutils literal"><span class="pre">y</span></tt> that returns a number 
+that is compared with the tolerance <tt class="docutils literal"><span class="pre">tol</span></tt>. The step size is 
+decreased and the step repeated if <tt class="docutils literal"><span class="pre">delta(yerr,</span> <span class="pre">y,</span> <span class="pre">delta_y)</span> <span class="pre">&gt;</span> <span class="pre">tol</span></tt>;
+otherwise the step is accepted and the step size increased. 
+The default definition of <tt class="docutils literal"><span class="pre">delta</span></tt> is roughly equivalent to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="k">def</span> <span class="nf">delta</span><span class="p">(</span><span class="n">yerr</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">delta_y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">yerr</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">delta_y</span><span class="p">)</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">ode</span><span class="o">.</span><span class="n">TINY</span><span class="p">)</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>A custom definition can be used to allow an <tt class="docutils literal"><span class="pre">Integrator</span></tt> to 
+work with data types other than floats or <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays of floats. 
+All that is required of the data type is that it support 
+ordinary arithmetic. Therefore, for example, defining 
+<tt class="docutils literal"><span class="pre">delta(yerr,</span> <span class="pre">y,</span> <span class="pre">delta_y)</span></tt> with <tt class="docutils literal"><span class="pre">np.abs()</span></tt> instead of <tt class="docutils literal"><span class="pre">np.fabs()</span></tt>
+allows <tt class="docutils literal"><span class="pre">y</span></tt> to be complex valued. (Actually the real default <tt class="docutils literal"><span class="pre">delta</span></tt> 
+allows this as well.)</p>
 <p>An analyzer <tt class="docutils literal"><span class="pre">analyzer(x,y)</span></tt> can be specified using parameter
 <tt class="docutils literal"><span class="pre">analyzer</span></tt>. This function is called after every full step of
 the integration, with the current values of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt>. 
@@ -191,6 +215,14 @@ entire width of the integration interval.</li>
 if a smaller step size is needed. This is mostly useful for 
 preventing infinite loops caused by programming errors. The 
 default value is zero (which does <em>not</em> prevent infinite loops).</li>
+<li><strong>delta</strong> &#8211; Function <tt class="docutils literal"><span class="pre">delta(yerr,</span> <span class="pre">y,</span> <span class="pre">delta_y)</span></tt> that returns 
+a number to be compared  with <tt class="docutils literal"><span class="pre">tol</span></tt> at each integration step: 
+if it is larger than <tt class="docutils literal"><span class="pre">tol</span></tt>, the step is repeated with a smaller 
+step size; if it is smaller the step is accepted and a larger 
+step size used for the subsequent step. Here <tt class="docutils literal"><span class="pre">yerr</span></tt> is an 
+estimate of the error in <tt class="docutils literal"><span class="pre">y</span></tt> on the last step; <tt class="docutils literal"><span class="pre">y</span></tt> is the 
+proposed value; and <tt class="docutils literal"><span class="pre">delta_y</span></tt> is the change in <tt class="docutils literal"><span class="pre">y</span></tt> over 
+the last step.</li>
 <li><strong>analyzer</strong> &#8211; Function of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> that is called after each
 step of the integration. This can be used to analyze intermediate
 results.</li>

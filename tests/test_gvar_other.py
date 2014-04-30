@@ -102,6 +102,20 @@ class test_ode(unittest.TestCase,ArrayTests):
         exact = dict(y=numpy.sin(w * x1), dydx=w * numpy.cos(w * x1))
         self.assert_gvclose(y1, exact)
 
+    def test_delta(self):
+        def delta(yerr, y, delta_y):
+            return np.max(
+                np.abs(yerr) / (np.abs(y) + np.abs(delta_y))
+                )
+        def f(x, y):
+            return y * (1 + 0.1j)
+        odeint = ode.Integrator(deriv=f, h=1, tol=1e-13, delta=delta)
+        y0 = 1
+        y1 = odeint(y0, (0, 1))
+        exact = numpy.exp(1 + 0.1j)
+        self.assertAlmostEqual(y1, exact)
+
+
 class test_cspline(unittest.TestCase,ArrayTests):
     def setUp(self): pass
         

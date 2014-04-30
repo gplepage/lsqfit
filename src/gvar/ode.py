@@ -11,8 +11,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+import sys
+
 import numpy
 import gvar
+
+TINY = sys.float_info.min
 
 class Integrator(object):
     """ Integrate ``dy/dx = deriv(x,y)``.
@@ -48,6 +52,31 @@ class Integrator(object):
     bad steps, where ``h`` is decreased and the step is repeated:
     ``odeint.ngood`` and ``odeint.nbad``, respectively.
 
+    A custom criterion for step-size changes can be implemented by 
+    specifying a function for parameter delta. This is a function
+    ``delta(yerr, y, delta_y)`` --- of the estimated error ``yerr``
+    after a given step, the proposed value for ``y``, and the 
+    proposed change ``delta_y`` in ``y`` --- that returns a number 
+    to compare with tolerance ``tol``. The step size is 
+    decreased and the step repeated if ``delta(yerr, y, delta_y) > tol``;
+    otherwise the step is accepted and the step size increased. 
+    The default definition of ``delta`` is roughly equivalent to::
+
+        import numpy as np
+        import gvar as gv
+        def delta(yerr, y, delta_y):
+            return np.max(
+                np.fabs(yerr) / (np.fabs(y) + np.fabs(delta_y) + gv.ode.TINY)
+                )
+    
+    A custom definition can be used to allow an ``Integrator`` to 
+    work with data types other than floats or :mod:`numpy` arrays of floats. 
+    All that is required of the data type is that it support 
+    ordinary arithmetic. Therefore, for example, defining 
+    ``delta(yerr, y, delta_y)`` with ``np.abs()`` instead of ``np.fabs()``
+    allows ``y`` to be complex valued. (Actually the real default ``delta`` 
+    allows this as well.)
+
     An analyzer ``analyzer(x,y)`` can be specified using parameter
     ``analyzer``. This function is called after every full step of
     the integration, with the current values of ``x`` and ``y``. 
@@ -70,15 +99,24 @@ class Integrator(object):
         preventing infinite loops caused by programming errors. The 
         default value is zero (which does *not* prevent infinite loops).
     :type hmin: float or None
+    :param delta: Function ``delta(yerr, y, delta_y)`` that returns 
+        a number to be compared  with ``tol`` at each integration step: 
+        if it is larger than ``tol``, the step is repeated with a smaller 
+        step size; if it is smaller the step is accepted and a larger 
+        step size used for the subsequent step. Here ``yerr`` is an 
+        estimate of the error in ``y`` on the last step; ``y`` is the 
+        proposed value; and ``delta_y`` is the change in ``y`` over 
+        the last step.
     :param analyzer: Function of ``x`` and ``y`` that is called after each
         step of the integration. This can be used to analyze intermediate
         results. 
     """
-    def __init__(self, deriv=None, tol=1e-5, h=None, hmin=None, analyzer=None):
+    def __init__(self, deriv=None, tol=1e-5, h=None, hmin=None, delta=None, analyzer=None):
         self.deriv = deriv
         self.tol = tol
         self.h = h
         self.hmin = hmin
+        self.delta = delta
         self.analyzer = analyzer
         self.ngood = 0
         self.nbad = 0
@@ -99,6 +137,7 @@ class Integrator(object):
         hmin = 0.0 if self.hmin is None else abs(self.hmin)
         x = x0
         y = numpy.asarray(y0)
+        y_shape = y.shape
         while (xdir>0 and x<x1) or (xdir<0 and x>x1):
             hold = h
             xold = x
@@ -106,8 +145,20 @@ class Integrator(object):
             if h > abs(x - x1):
                 h = abs(x - x1)
             x, y, yerr = rk5_stepper(xold, h*xdir, yold, self.deriv, errors=True)
-            delta = gvar.mean(numpy.fabs(yerr) / (numpy.fabs(y) + numpy.fabs(y-yold)))
-            delta = numpy.max(delta)
+            if self.delta is not None:
+                delta = self.delta(yerr, y, y-yold)
+            else:
+                try:
+                    delta = numpy.fabs(yerr) / (numpy.fabs(y) + numpy.fabs(y-yold) + TINY)
+                except (AttributeError, TypeError):
+                    # kludge having to do with idiocyncracy in numpy:
+                    #     fabs doesn't work on, eg, array([1.,-2.], object);
+                    #     the 'object' messes it up -- get AttributeError.
+                    #     Unfortunately abs can't be made to work for GVars.
+                    delta = numpy.abs(yerr) / (numpy.abs(y) + numpy.abs(y-yold) + TINY)
+                delta = numpy.max(delta)
+                if isinstance(delta, gvar.GVar):
+                    delta = delta.mean
             if delta >= tol:
                 # smaller step size -- adjust and redo step
                 h *= 0.97 * (tol / delta) ** 0.25
@@ -120,7 +171,10 @@ class Integrator(object):
                 self.nbad += 1
             else:
                 # larger step size -- adjust and continue
-                h *= 0.97 * (tol / delta) ** 0.20
+                if delta > 0:
+                    h *= 0.97 * (tol / delta) ** 0.20
+                else:
+                    h *= 2.
                 self.ngood += 1
             if self.analyzer is not None:
                 self.analyzer(x, y)
