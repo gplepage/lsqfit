@@ -23,24 +23,41 @@ class Integrator(object):
 
     An :class:`Integrator` object ``odeint`` integrates ``dy/dx = f(x,y)``
     to obtain ``y(x1)`` from ``y0 = y(x0)``. ``y`` and ``f(x,y)`` can
-    be scalars or :mod:`numpy` arrays. Typical usage is::
+    be scalars or :mod:`numpy` arrays. Typical usage is illustrated 
+    by the following code for integrating ``dy/dx = y``::
 
         from gvar.ode import Integrator
 
         def f(x, y):
-            ...
+            return y
 
         odeint = Integrator(deriv=f,  tol=1e-8)
-        y1 = odeint(y0, interval=(x0, x1))
-        y2 = odeint(y1, interval=(x1, x2))
+        y0 = 1.
+        y1 = odeint(y0, interval=(0, 1.))
+        y2 = odeint(y1, interval=(1., 2.))
         ...
-    
-    The first call to ``odeint`` integrates from ``x=x0`` to ``x=x1``,
-    returning ``y1=y(x1)``. The second call continues the integration
-    to ``x=x2``, returning ``y2=y(x2)``. Any of the initial parameters
-    can be reset in the calls to ``odeint``: for example, ::
 
-        y2 = odeint(y1, interval=(x1, x2), tol=1e-10)
+    Here the first call to ``odeint`` integrates the differential equation
+    from ``x=0`` to ``x=1`` starting with ``y=y0`` at ``x=0``; the result
+    is ``y1=exp(1)``, of course. Similarly the second call to ``odeint``
+    continues the integration from ``x=1`` to ``x=2``, giving ``y2=exp(2)``.
+
+    An alternative interface creates a new function which is the 
+    solution of the differential equation for specific initial conditions.
+    The code above could be rewritten::
+
+        x0 = 0.         # initial conditions
+        y0 = 1.
+        y = Integrator(deriv=f, tol=1e-8).solution(x0, y0)
+        y1 = y(1)
+        y2 = y(2)
+        ...
+
+    Here method :meth:`Integrator.solution` returns a function ``y(x)`` 
+    where: a) ``y(x0) = y0``; and b) ``y(x)`` uses the integator to 
+    integrate the differential equation to point ``x`` starting 
+    from  the last point at which ``y`` was evaluated 
+    (or from ``x0`` for the first call to ``y(x)``).
 
     The integrator uses an adaptive Runge-Kutta algorithm that adjusts
     the integrator's step size to obtain relative accuracy ``tol`` in the solution.
@@ -64,6 +81,7 @@ class Integrator(object):
 
         import numpy as np
         import gvar as gv
+        
         def delta(yerr, y, delta_y):
             return np.max(
                 np.fabs(yerr) / (np.fabs(y) + np.fabs(delta_y) + gv.ode.TINY)
@@ -74,7 +92,7 @@ class Integrator(object):
     All that is required of the data type is that it support 
     ordinary arithmetic. Therefore, for example, defining 
     ``delta(yerr, y, delta_y)`` with ``np.abs()`` instead of ``np.fabs()``
-    allows ``y`` to be complex valued. (Actually the real default ``delta`` 
+    allows ``y`` to be complex valued. (Actually the default ``delta`` 
     allows this as well.)
 
     An analyzer ``analyzer(x,y)`` can be specified using parameter
@@ -121,9 +139,8 @@ class Integrator(object):
         self.ngood = 0
         self.nbad = 0
 
-    def __call__(self, y0, interval, **kargs):
-        for i in kargs:
-            setattr(self, i, kargs[i])
+    def __call__(self, y0, interval):
+        """ Integrate from ``x0`` to ``x1`` where ``interval=(x0,x1)`` and ``y0=y(x0)``. """
         if self.deriv is None or interval[1] == interval[0]:
             return y0
         tol = abs(self.tol)
@@ -179,6 +196,16 @@ class Integrator(object):
             if self.analyzer is not None:
                 self.analyzer(x, y)
         return y
+
+    def solution(self, x0, y0):
+        """ Create a solution function ``y(x)`` such that ``y(x0) = y0``. """
+        def soln(x):
+            soln.y = self(soln.y, interval=(soln.x, x))
+            soln.x = x
+            return soln.y
+        soln.x = x0
+        soln.y = y0
+        return soln
 
 def rk5_stepper(x, h, y , deriv, errors=False):
     """ Compute y(x+h) from y and dy/dx=deriv(x,y).

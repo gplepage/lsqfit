@@ -92,18 +92,13 @@ class Pendulum(object):
         from angle theta0 with no initial velocity. Returns
         an array containing theta(t) for every t in t_array.
         """
-
         # initial values
-        t = 0
-        y = [theta0, 0.0]           # initial theta and dtheta/dt
-        theta_array = []            # the answer
+        t0 = 0
+        y0 = [theta0, 0.0]              # theta and dtheta/dt
 
-        # integration loop
-        for next_t in t_array:
-            y = self.odeint(y, interval=(t, next_t))
-            theta_array.append(y[0])
-            t = next_t
-        return theta_array
+        # solution
+        y = self.odeint.solution(t0, y0)  
+        return [y(t)[0] for t in t_array]
 
     def deriv(self, t, y, data=None):
         " Calculate [dtheta/dt, d2theta/dt2] from [theta, dtheta/dt]."

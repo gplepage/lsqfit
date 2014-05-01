@@ -1,3 +1,9 @@
+Version 4.??
+=============
+
+- Added option to gvar.ode.Integrator to allow custom adaptive 
+  strategies.
+
 Version 4.7
 ==============
 A minor upgrade but with one backwards incompatible change (that is unlikey

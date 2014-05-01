@@ -116,6 +116,17 @@ class test_ode(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(y1, exact)
 
 
+    def test_solution(self):
+        def f(x, y):
+            return y
+        y = ode.Integrator(deriv=f, h=1, tol=1e-13).solution(0., 1.)
+        self.assertAlmostEqual(y(1.), np.exp(1.))
+        self.assertEqual(y.x, 1)
+        self.assertAlmostEqual(y.y, np.exp(1))
+        self.assertAlmostEqual(y(1.5), np.exp(1.5))
+        self.assertEqual(y.x, 1.5)
+        self.assertAlmostEqual(y.y, np.exp(1.5))
+
 class test_cspline(unittest.TestCase,ArrayTests):
     def setUp(self): pass
         
