@@ -457,7 +457,8 @@ cdef class GVar:
             # do not use compact notation 
             return "%g +- %g" % (v,dv)
 
-        if dv<1.0 and ndecimal>0:
+        dv = round(dv, ndecimal)
+        if dv<1.0:
             ft =  '%.' + str(ndecimal) + 'f%s(%.0f)'
             return ft % (v, sep, dv * 10. ** ndecimal)
         else:

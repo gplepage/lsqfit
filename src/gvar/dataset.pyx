@@ -1,7 +1,23 @@
-import gvar as _gvar
-import numpy
+# Created by Peter Lepage (Cornell University) in 2012.
+# Copyright (c) 2012-14 G. Peter Lepage.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version (see <http://www.gnu.org/licenses/>).
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
 import fileinput
-import re
+import re 
+import warnings
+
+import numpy
+
+import gvar as _gvar
 
 ## tools for random data: Dataset, avg_data, bin_data ## 
  
@@ -79,11 +95,11 @@ def bin_data(data, binsize=2):
     ##
 ##
         
-def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
+def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn=True):
     """ Average random data to estimate mean.
         
-    ``data`` is a list of random numbers or random arrays, or a dictionary
-    of lists of random numbers/arrays: for example, ::
+    ``data`` is a list of random numbers, a list of random arrays, or a dictionary
+    of lists of random numbers and/or arrays: for example, ::
         
         >>> random_numbers = [1.60, 0.99, 1.28, 1.30, 0.54, 2.15]
         >>> random_arrays = [[12.2,121.3],[13.4,149.2],[11.7,135.3],
@@ -144,9 +160,12 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
     typical choice for analyzing bootstrap data --- hence its name. The
     default value is ``bstrap=False``.
 
-    The final option is to omit the error estimates on the averages, which 
+    The fourth option is to omit the error estimates on the averages, which 
     is triggered by setting ``noerror=True``. Just the mean values are 
     returned. The default value is ``noerror=False``.
+
+    The final option ``warn`` determines whether or not a warning is issued when
+    different components of a dictionary data set have different sample sizes.
     """
     if bstrap:
         median = True
@@ -156,7 +175,13 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
         if not data:
             return _gvar.BufferDict()
         newdata = []                    # data repacked as a list of arrays
-        samplesize = min([len(data[k]) for k in data])
+        samplesize_list = [len(data[k]) for k in data]
+        samplesize = min(samplesize_list)
+        if warn and samplesize != max(samplesize_list):
+            warnings.warn(
+                'sample sizes differ for different entries: %d %d'
+                % (samplesize, max(samplesize_list))
+                )
         if samplesize<=0:
             raise ValueError(  
                 "Largest consistent sample size is zero --- no data."
@@ -210,13 +235,15 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False):
             return means
         norm = 1.0 if spread else float(len(data))
         if len(data)>=2:
-            cov = numpy.cov(data.reshape(data.shape[0],means.size),
-                            rowvar=False,bias=True)/norm
+            cov = numpy.cov(
+                data.reshape(data.shape[0], means.size),
+                rowvar=False, bias=True
+                ) / norm
         else:
-            cov = numpy.zeros(means.shape+means.shape,float)
+            cov = numpy.zeros(means.shape + means.shape, float)
         if cov.shape==() and means.shape==():
             cov = cov**0.5
-        return _gvar.gvar(means,cov.reshape(means.shape+means.shape))
+        return _gvar.gvar(means, cov.reshape(means.shape+means.shape))
         ##
     ##
 ##
@@ -457,7 +484,7 @@ class Dataset(_BASE_DICT):
         >>> print([k for k in a])
         []
     """
-    def __init__(self,*args,**kargs):
+    def __init__(self, *args, **kargs):
         cdef Py_ssize_t binsize
         super(Dataset, self).__init__()
         if not args:
@@ -522,8 +549,8 @@ class Dataset(_BASE_DICT):
             dd = dict(n=1.739,a=[0.494,2.734])          # method 3
             data.append(dd)
             
-        adds one new random number (or array) to ``data['n']`` (or
-        ``data['a']``).
+        adds one new random number to ``data['n']``, and a new
+        vector to ``data['a']``.
         """
         if len(args)>2 or (args and kargs):
             raise ValueError("Too many arguments.")
@@ -572,8 +599,8 @@ class Dataset(_BASE_DICT):
                         a=[[0.494,2.734],[ 0.172, 1.400]])  # method 3
             data.extend(dd)
             
-        adds two new random numbers (or arrays) to ``data['n']`` (or
-        ``data['a']``).
+        adds two new random numbers to ``data['n']``, and two new 
+        random vectors to ``data['a']``.
             
         This method can be used to merge two datasets, whether or not they
         share keys: for example, ::

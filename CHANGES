@@ -1,8 +1,16 @@
-Version 4.??
+Version 4.7+
 =============
 
+- gvar.dataset.avg_data(s) for a dictionary s now (optionally) issues
+  a warning if different entries in s have different sample sizes. The
+  smallest sample size is chosen for all entries in such situations.
+
 - Added option to gvar.ode.Integrator to allow custom adaptive 
-  strategies.
+  strategies. Also offers a different interface to the integrator.
+
+- Fixed minor irregularity (not really a bug) in GVar.fmt: 
+  x = gvar(0.999,0.999) implied that x.fmt(2) gave 1.00(100) which 
+  is correct but non-standard (should be 1.00(1.00) and now is).
 
 Version 4.7
 ==============

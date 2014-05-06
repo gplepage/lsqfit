@@ -18,6 +18,7 @@ test-dataset.py
 
 import os
 import unittest
+import warnings
 import numpy as np
 import random
 import gvar as gv
@@ -101,8 +102,14 @@ class test_dataset(unittest.TestCase,ArrayTests):
         """ avg_data """
         self.assertTrue(avg_data([]) is None)
         self.assertEqual(avg_data(dict()),BufferDict())
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter("always")
+            avg_data(dict(s=[1.],v=[1.,2.]))
+            self.assertEqual(len(w), 1)
         with self.assertRaises(ValueError):
-            avg_data(dict(s=[],v=[1.,2.]))
+            avg_data(dict(s=[],v=[1.,2.]), warn=False)
+        with self.assertRaises(ValueError):
+            avg_data(dict(s=[], v=[]))
         with self.assertRaises(ValueError):
             avg_data([1,2,"s"])
         mean = avg_data([1])
