@@ -32,6 +32,7 @@ update-all:
 	$(PYTHON) x-err.py > x-err.out
 	$(PYTHON) p-corr.py > p-corr.out
 	$(PYTHON) err-budget.py > err-budget.out
+	$(PYTHON) pendulum.py > pendulum.out
 
 clean:
 	rm -f *.pyc *.tmp *.p *.prof

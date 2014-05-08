@@ -210,11 +210,10 @@ class nonlinear_fit(object):
         :class:`lsqfit.multifit`, which does the fitting.
     """
     def __init__(self, data=None, fcn=None, prior=None, p0=None, #):
-                svdcut=(1e-15, 1e-15), svdnum=None, debug=False, **kargs): 
+                svdcut=1e-15, debug=False, **kargs): 
         # capture arguments; initialize parameters 
         self.fitterargs = kargs
-        self.svdcut = svdcut if isinstance(svdcut, tuple) else (svdcut, None)
-        self.svdnum = svdnum if isinstance(svdnum, tuple) else (svdnum, None)
+        self.svdcut = svdcut
         self.data = data
         self.p0file = p0 if isinstance(p0, str) else None
         self.p0 = p0 if self.p0file is None else None
@@ -229,9 +228,9 @@ class nonlinear_fit(object):
         if (debug and prior is not None and
             not all(isinstance(pri, _gvar.GVar) for pri in prior.flat)):
             raise TypeError("Priors must be GVars.")
-        x, y, prior, fdata = _unpack_data( #
+        x, y, prior, fdata = _unpack_data(
             data=self.data, prior=prior, svdcut=self.svdcut, 
-            svdnum=self.svdnum)  
+            )  
         self.x = x 
         self.y = y   
         self.prior = prior  
@@ -559,17 +558,8 @@ class nonlinear_fit(object):
             max(w2,10), int(max(w2,10)/2) * ' ', max(w3,10))
         for di,stars in zip(data, collect.stars):
             table += (fst % tuple(di)) + stars + '\n'
-        
-        # tabulate settings 
-        def svdfmt(x):
-            """ Format svd elements. """
-            x1 ,x2 = x
-            x1 = "%.2g" % x1 if x1 is not None else 'None'
-            x2 = "%.2g" % x2 if x2 is not None else 'None'
-            return "(" + x1 + "," + x2 + ")"
-        
-        settings = "\nSettings:\n  svdcut = %s   svdnum = %s" % ( #
-            svdfmt(self.svdcut), svdfmt(self.svdnum))
+                
+        settings = "\nSettings:\n  svdcut = {svdcut}".format(svdcut=self.svdcut)
         settings += "    reltol/abstol = %.2g/%.2g\n" % ( #
             self.reltol, self.abstol)
         if pstyle == 'm':
@@ -748,7 +738,7 @@ class nonlinear_fit(object):
         """
         pexact = self.pmean if pexact is None else pexact
         # Note: don't need svdcut/svdnum since these are built into the data_iter
-        fargs = dict(fcn=self.fcn, svdcut=None, svdnum=None, p0=pexact)
+        fargs = dict(fcn=self.fcn, svdcut=None, p0=pexact)
         fargs.update(self.fitterargs)
         fargs.update(kargs)
         for ysim, priorsim in self._simulated_data_iter(
@@ -1126,7 +1116,7 @@ def _reformat(p, buf):
         ans = numpy.array(buf).reshape(numpy.shape(p))
     return ans
     
-def _unpack_data(data, prior, svdcut, svdnum): 
+def _unpack_data(data, prior, svdcut): 
     """ Unpack data and prior into ``(x, y, prior, fdata)``. 
         
     This routine unpacks ``data`` and ``prior`` into ``x, y, prior, fdata``
@@ -1170,13 +1160,25 @@ def _unpack_data(data, prior, svdcut, svdnum):
     # create svd script 
     fdata = dict(svdcorrection={})
         
-    def _apply_svd(k, data, fdata=fdata, svdcut=svdcut, svdnum=svdnum):
+    def _apply_svd(k, data, fdata=fdata, svdcut=svdcut):
         """ apply svd cut and save related data """
         i = 1 if k == 'prior' else 0
-        ans = _gvar.svd(data, svdcut=svdcut[i], svdnum=svdnum[i], 
-                        rescale=True, compute_inv=True)
-        fdata[k] = _FDATA(mean=_gvar.mean(data.flat), wgt=_gvar.svd.inv_wgt)
-        fdata['svdcorrection'][k] = _gvar.svd.correction
+        ans, invcov_wgts = _gvar.svd(data, svdcut=svdcut, compute_inv=True)
+        if max(len(iw) for iw, w in invcov_wgts) == 1:
+            inv_wgt = [w for iw, w in invcov_wgts]
+        else:
+            inv_wgt = []
+            for iw, w in invcov_wgts:
+                wgt = numpy.zeros(len(data.flat), float)
+                wgt[iw] = w
+                inv_wgt.append(wgt)
+        inv_wgt = numpy.array(inv_wgt)
+        fdata[k] = _FDATA(mean=_gvar.mean(data.flat), wgt=inv_wgt)
+        sum_svd = sum(_gvar.svd.correction)
+        if sum_svd.mean == 0 and sum_svd.sdev == 0:
+            fdata['svdcorrection'][k] = None
+        else:
+            fdata['svdcorrection'][k] = _gvar.svd.correction
         if k == 'prior':
             fdata['logdet_prior'] = _gvar.svd.logdet
         elif k == 'y':

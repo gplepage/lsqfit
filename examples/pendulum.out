@@ -20,7 +20,7 @@ Fit:
         9     0.832 (79)     0.935 (44)  *
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut = 1e-15    reltol/abstol = 0.0001/0
 
 fit/exact for (g/l) = 1.004(17)
 fit/exact for theta(0) = 1.012(18)

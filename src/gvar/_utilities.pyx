@@ -726,7 +726,7 @@ class SVD(object):
         The first ``nmod`` eigenvalues in ``self.val`` were modified by
         the *SVD* cut (equals 0 unless ``svdcut > 0``).
 
-    ..  attribute:: kappa 
+    ..  attribute:: eigen_range 
         
         Ratio of the smallest to the largest eigenvector in the 
         unconditioned matrix (after rescaling if ``rescale=True``)
@@ -768,6 +768,7 @@ class SVD(object):
             val = numpy.array(val)
             vec = numpy.array(vec)
         self.kappa = val[0]/val[-1] if val[-1]!=0 else None  # min/max eval
+        self.eigen_range = self.kappa
         self.delta = None 
         self.nmod = 0       
         # svd cuts 

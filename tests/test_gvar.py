@@ -859,7 +859,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     def test_bootstrap_iter(self):
         """ bootstrap_iter """
         p = BufferDict()
-        p = gv.gvar(1,1)*np.array([1,1])+gv.gvar(0.1,1e-4)*np.array([1,-1])
+        p = gvar(1,1)*np.array([1,1])+gvar(0.1,1e-4)*np.array([1,-1])
         p_sw = np.array([p[0]+p[1],p[0]-p[1]])/2.
         p_cov = evalcov(p_sw.flat)
         p_mean = mean(p_sw.flat)
@@ -964,22 +964,178 @@ class test_gvar2(unittest.TestCase,ArrayTests):
                 m2 = np.sum(np.outer(wj,wj) for wj in s.decomp(2))
                 self.assert_arraysclose(mat,np.dot(m2,minv))
     
+    def test_diagonal_blocks(self):
+        """ find_diagonal_blocks """
+        def make_blocks(*m_list):
+            m_list = [np.asarray(m, float) for m in m_list]
+            n = sum([m.shape[0] for m in m_list])
+            ans = np.zeros((n,n), float)
+            i = 0
+            for m in m_list:
+                j = i + m.shape[0]
+                ans[i:j, i:j] = m 
+                i = j
+            return ans
+        def compare_blocks(b1, b2):
+            s1 = set([tuple(list(b1i)) for b1i in b1])
+            s2 = set([tuple(list(b2i)) for b2i in b2])
+            self.assertEqual(s1, s2)
+        m = make_blocks(
+            [[1]],
+            [[1, 1], [1, 1]], 
+            [[1]]
+            )
+        compare_blocks(find_diagonal_blocks(m), [[0], [3], [1, 2]])
+        m = make_blocks(
+            [[1, 0, 1], [0, 1, 0], [1, 0, 1]],
+            [[1, 1], [1, 1]], 
+            [[1]],
+            [[1]]
+            )
+        compare_blocks(
+            find_diagonal_blocks(m), [[1], [5], [6], [0, 2], [3, 4]]
+            )
+        m = make_blocks(
+            [[1, 0, 1, 1], 
+             [0, 1, 0, 1], 
+             [1, 0, 1, 1],
+             [1, 1, 1, 1]],
+            [[1, 1], [1, 1]], 
+            [[1]],
+            [[1]]
+            )
+        compare_blocks(
+            find_diagonal_blocks(m), [[6], [7], [0, 1, 2, 3] , [4, 5]]
+            )
+
     def test_svd(self):
         """ svd """
-        x = gvar(1,1)
-        dx = gvar(1,1)*1e-2
-        cut = 4e-2
-        for g in [BufferDict({0:x-dx,1:x+dx}),[x-dx,x+dx]]:
-            gm = svd(g,svdcut=cut,rescale=False,compute_inv=True)
-            xm = (gm[1]+gm[0])/2
-            dxm = (gm[1]-gm[0])/2
-            self.assert_gvclose(xm,x)
-            self.assert_gvclose(dxm,gvar(dx.mean,cut**0.5))
-            invcov = sum(np.outer(wi,wi) for wi in svd.inv_wgt)
-            cov = evalcov(gm.flat)
-            self.assert_arraysclose(numpy.dot(cov,invcov),[[1,0],[0,1]])
-            self.assertAlmostEqual(svd.eigen_range,dx.var)
-            self.assertAlmostEqual(numpy.exp(svd.logdet)/dxm.var*xm.var,4.0)
+        def make_mat(wlist, n):
+            ans = np.zeros((n,n), float)
+            for i, w in wlist:
+                ans[i, i[:, None]] += np.outer(w, w)
+            return ans
+        def test_gvar(a, b):
+            self.assertEqual(a.fmt(4), b.fmt(4))
+        def test_cov(wgts, cov, atol=1e-7):
+            invcov = make_mat(wgts, cov.shape[0])
+            np.testing.assert_allclose(
+                invcov.dot(cov), np.eye(*cov.shape), atol=atol
+                )
+            np.testing.assert_allclose(svd.logdet, np.log(np.linalg.det(cov)))
+        # diagonal
+        f = gvar(['1(2)', '3(4)'])
+        g, wgts = svd(gvar(['1(2)', '3(4)']), svdcut=0.9, compute_inv=True)
+        test_gvar(g[0], f[0])
+        test_gvar(g[1], f[1])
+        test_cov(wgts, evalcov(g))
+        self.assertEqual(svd.nmod, 0)
+        self.assertEqual(svd.eigen_range, 1.)
+        
+        # degenerate
+        g, wgts = svd(3 * [gvar('1(1)')], svdcut=1e-10, compute_inv=True)
+        test_cov(wgts, evalcov(g), atol=1e-6)
+        self.assertEqual(svd.nmod, 2)
+        self.assertAlmostEqual(svd.eigen_range, 0.0)
+
+        # blocks
+        x = gvar(10 * ['1(1)'])
+        x[:5] += gvar('1(1)')       # half are correlated
+        g = svd(x, svdcut=0.5)
+        self.assertEqual(svd.nmod, 4)
+        p = np.random.permutation(10)
+        gp = svd(x[p], svdcut=0.5)
+        self.assertEqual(svd.nmod, 4)
+        invp = np.argsort(p)
+        np.testing.assert_allclose(evalcov(g), evalcov(gp[invp]))
+        np.testing.assert_allclose(mean(g), mean(gp[invp]))
+
+
+        # cov[i,i] independent of i, cov[i,j] != 0
+        x, dx = gvar(['1(1)', '0.01(1)'])
+        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.2 ** 2, compute_inv=True)
+        y = g[0] + g[1] 
+        dy = g[0] - g[1] 
+        test_gvar(y, x)
+        test_gvar(dy, gvar('0.01(20)'))
+        test_cov(wgts, evalcov(g))
+        self.assertEqual(svd.nmod, 1)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
+
+        # negative svdcut
+        x, dx = gvar(['1(1)', '0.01(1)'])
+        g, wgts = svd([(x+dx)/2, (x-dx)/20.], svdcut=-0.2 ** 2, compute_inv=True)
+        y = g[0] + g[1] * 10
+        dy = g[0] - g[1] * 10
+        np.testing.assert_allclose(evalcov([y, dy]), [[1, 0], [0, 0]])
+        test_gvar(y, x)
+        test_gvar(dy, gvar('0(0)'))
+        self.assertEqual(svd.dof, 1)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
+
+        # cov[i,i] independent of i, cov[i,j] != 0 --- cut too small
+        x, dx = gvar(['1(1)', '0.01(1)'])
+        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.0099999** 2, compute_inv=True)
+        y = g[0] + g[1] 
+        dy = g[0] - g[1] 
+        test_gvar(y, x)
+        test_gvar(dy, dx)
+        test_cov(wgts, evalcov(g))
+        self.assertEqual(svd.nmod, 0)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
+
+
+        # cov[i,i] independent of i after rescaling, cov[i,j] != 0
+        # rescaling turns this into the previous case
+        g, wgts = svd([(x+dx)/2., (x-dx)/20.], svdcut=0.2 ** 2, compute_inv=True)
+        y = g[0] + g[1] * 10.
+        dy = g[0] - g[1] * 10.
+        test_gvar(y, x)
+        test_gvar(dy, gvar('0.01(20)'))
+        test_cov(wgts, evalcov(g))
+        self.assertEqual(svd.nmod, 1)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
+
+        # dispersed correlations
+        g2, g4 = gvar(['2(2)', '4(4)'])
+        orig_g = np.array([g2, (x+dx)/2., g4, (x-dx)/20.]) 
+        g, wgts = svd(orig_g, svdcut=0.2 ** 2, compute_inv=True)
+        y = g[1] + g[3] * 10.
+        dy = g[1] - g[3] * 10.
+        test_gvar(y, x)
+        test_gvar(dy, gvar('0.01(20)'))
+        test_gvar(g[0], g2)
+        test_gvar(g[2], g4)
+        test_cov(wgts, evalcov(g))
+        self.assertEqual(svd.nmod, 1)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
+        self.assertEqual(svd.blocks[0], [0])
+        self.assertEqual(svd.blocks[1], [2])
+        self.assertEqual(svd.blocks[2].tolist(), [1, 3])
+
+        # remove svd correction
+        g.flat -= svd.correction
+        y = g[1] + g[3] * 10.
+        dy = g[1] - g[3] * 10.
+        test_gvar(y, x)
+        test_gvar(dy, dx)
+        test_gvar(g[0], g2)
+        test_gvar(g[2], g4)
+        np.testing.assert_allclose(evalcov(g.flat), evalcov(orig_g))
+
+        # bufferdict
+        g = {}
+        g[0] = (x+dx)/2.
+        g[1] = (x-dx)/20.
+        g, wgts = svd({0:(x+dx)/2., 1:(x-dx)/20.}, svdcut=0.2 ** 2, compute_inv=True)
+        assert isinstance(g, BufferDict)
+        y = g[0] + g[1] * 10.
+        dy = g[0] - g[1] * 10.
+        test_gvar(y, x)
+        test_gvar(dy, gvar('0.01(20)'))
+        test_cov(wgts, evalcov(g.flat))
+        self.assertEqual(svd.nmod, 1)
+        self.assertAlmostEqual(svd.eigen_range, 0.01**2)
     
     def test_valder(self):
         """ valder_var """
