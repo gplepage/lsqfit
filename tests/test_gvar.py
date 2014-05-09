@@ -1013,7 +1013,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         def make_mat(wlist, n):
             ans = np.zeros((n,n), float)
             i, wgts = wlist[0]
-            ans[i, i] = np.array(wgts) ** 2
+            if len(i) > 0:
+                ans[i, i] = np.array(wgts) ** 2
             for i, wgts in wlist[1:]:
                 for w in wgts:
                     ans[i, i[:, None]] += np.outer(w, w)

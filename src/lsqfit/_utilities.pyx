@@ -611,7 +611,90 @@ def dot(numpy.ndarray[numpy.double_t, ndim=2] w not None, x):
     return ans
 ##
 ##    
-    
+def _build_chiv_chivw(fdata, fcn, prior):
+    """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. 
+
+    Also builds ``chivw``.
+    """
+    nw = sum(len(wgts) for iw, wgts in fdata.inv_wgts)
+    if prior is not None:
+        def chiv(p, fd=fdata):
+            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray ans, delta
+            delta = numpy.concatenate((fcn(p), p)) - fd.mean
+            if isinstance(delta[0], gvar.GVar):
+                ans = numpy.zeros(nw, object)
+            else:
+                ans = numpy.zeros(nw, float)
+            iw, wgts = fd.inv_wgts[0]
+            if len(iw) > 0:
+                ans[iw] = wgts * delta[iw]
+            for iw, wgt in fd.inv_wgts[1:]:
+                ans[iw] = dot(wgt, delta[iw])
+            return ans
+        def chivw(p, fd=fdata):
+            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
+            cdef numpy.ndarray ans, delta
+            delta = numpy.concatenate((fcn(p), p)) - fd.mean
+            if isinstance(delta[0], gvar.GVar):
+                ans = numpy.zeros(nw, object)
+            else:
+                ans = numpy.zeros(nw, float)
+            iw, wgts = fd.inv_wgts[0]
+            if len(iw) > 0:
+                ans[iw] = wgts ** 2 * delta[iw]  
+            for iw, wgt in fd.inv_wgts[1:]:
+                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), float)
+                for wj in wgt:
+                    wgt2 += numpy.outer(wj, wj)
+                ans[iw] = dot(wgt2, delta[iw])   
+            return ans
+        chiv.nf = nw 
+    else:
+        def chiv(p, fd=fdata):
+            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray ans, delta
+            delta = fcn(p) - fd.mean
+            if isinstance(delta[0], gvar.GVar):
+                ans = numpy.zeros(nw, object)
+            else:
+                ans = numpy.zeros(nw, float)
+            iw, wgts = fd.inv_wgts[0]
+            if len(iw) > 0:
+                ans[iw] = wgts * delta[iw]
+            for iw, wgt in fd.inv_wgts[1:]:
+                ans[iw] = dot(wgt, delta[iw])
+            return ans
+        def chivw(p, fd=fdata):
+            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
+            cdef numpy.ndarray ans, delta
+            delta = fcn(p) - fd.mean
+            if isinstance(delta[0], gvar.GVar):
+                ans = numpy.zeros(nw, object)
+            else:
+                ans = numpy.zeros(nw, float)
+            iw, wgts = fd.inv_wgts[0]
+            if len(iw) > 0:
+                ans[iw] = wgts ** 2 * delta[iw]  
+            for iw, wgt in fd.inv_wgts[1:]:
+                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), float)
+                for wj in wgt:
+                    wgt2 += numpy.outer(wj, wj)
+                ans[iw] = dot(wgt2, delta[iw])   
+            return ans
+        chiv.nf = nw 
+    return chiv, chivw
+
     
     
     

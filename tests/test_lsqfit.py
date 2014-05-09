@@ -37,7 +37,7 @@ sdev = gv.sdev
 class ArrayTests(object):
     def __init__(self):
         pass
-    ##
+    
     def assert_gvclose(self,x,y,rtol=1e-5,atol=1e-8,prt=False):
         """ asserts that the means and sdevs of all x and y are close """
         if hasattr(x,'keys') and hasattr(y,'keys'): 
@@ -56,7 +56,7 @@ class ArrayTests(object):
         for xi,yi in zip(x,y):
             self.assertGreater(atol+rtol*abs(yi.mean),abs(xi.mean-yi.mean))
             self.assertGreater(10*(atol+rtol*abs(yi.sdev)),abs(xi.sdev-yi.sdev))
-    ##
+
     def assert_arraysclose(self,x,y,rtol=1e-5,prt=False):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = np.array(x).flatten()
@@ -68,15 +68,14 @@ class ArrayTests(object):
             print(y)
             print(max_val,max_rdiff,rtol)
         self.assertAlmostEqual(max_rdiff,0.0,delta=rtol)
-    ##
+
     def assert_arraysequal(self,x,y):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = [float(xi) for xi in np.array(x).flatten()]
         y = [float(yi) for yi in np.array(y).flatten()]
         self.assertSequenceEqual(x,y)
         return 1
-    ##
-##
+
 
 bool_iter = ([True,False][i%2] for i in range(1000))
 def print_fit(fit,vd):
@@ -92,7 +91,6 @@ def print_fit(fit,vd):
     if PRINT_FIT:
         print(output)
     return output   
-##
 
 class test_lsqfit(unittest.TestCase,ArrayTests):
     def setUp(self):
@@ -106,7 +104,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             os.unlink("test-lsqfit.p")
         except OSError:
             pass
-    ##
+
     def tearDown(self):
         global gvar
         gvar = None
@@ -116,7 +114,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             pass
         # if self.label is not None:
         #     print self.label
-    ##
+
     def t_basicfit(self,yfac,pfac,p0file):
         """ checks means, sdevs, fit.cov, etc in extreme cases """
         ycov = np.array([[2.,.25],[.25,4.]])*yfac
@@ -126,7 +124,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         pr['p'] = gv.gvar([4.,16.],pcov)
         def fcn(x,p):
             return dict(y=p['p']**2)
-        ##
+        
         y = dict(y=y)
         fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,p0=p0file,debug=True)
         print_fit(fit,dict(y=wavg(fit.p['p']**2)))
@@ -164,22 +162,22 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                             delta=5e-3*err['priors'])
         else:
             self.assertTrue(False)
-    ##
+
     def test_basicfit(self):
         p0file = "test-lsqfit.p"
         for yf,pf in [(1e22,1),(1,1e22)]:
             self.label = ("nonlinear_fit prior-dominated" 
                 if yf>1 else "nonlinear_fit data-dominated")
             self.t_basicfit(yf,pf,p0file)
-    ##
+
     def test_format(self):
         """ fit.format """
-        ## case 1 - y and prior dictionaries ##
+        # case 1 - y and prior dictionaries 
         y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
         prior = gv.BufferDict(p=gv.gvar(0,2))
         def f(p): 
             return dict(a=p['p'], b=p['p'])
-        ##
+        
         fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15)
         out = "\n".join([ #
             'Least Square Fit:', 
@@ -197,8 +195,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             'Settings:', 
             '  svdcut = 1e-15    reltol/abstol = 0.0001/0', 
             ''])
-        self.assertEqual(out, fit.format(100))
-        self.assertEqual(out, fit.format(100, pstyle='v'))
+        self.assertEqual(out, fit.format(True))
+        self.assertEqual(out, fit.format(True, pstyle='v'))
         out = "\n".join([ #
             'Least Square Fit:', 
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682    itns = 2', 
@@ -221,15 +219,15 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             ''])
         self.assertEqual(out, fit.format(pstyle='m'))
         self.assert_gvclose(fit.p['p'], wavg([y['a'],y['b'],prior['p']]))
-        ##
-        ## case 2 - x and y; no prior ##
+        
+        # case 2 - x and y; no prior 
         x = np.array([1.,2.])
         y = np.array([gv.gvar(1.3,0.3), gv.gvar(1.9,0.5)])
         prior = dict(p=gv.gvar(0,2))
         p0 = gv.mean(prior)
         def f(x,p):
             return p['p']*x
-        ##
+        
         fit = nonlinear_fit(p0=p0, data=(x,y), fcn=f, svdcut=None)
         out = "\n".join([ #
             'Least Square Fit (no prior):', 
@@ -248,33 +246,33 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '  svdcut = None    reltol/abstol = 0.0001/0', 
             ''])
         self.assertEqual(out,fit.format(100))
-        ##
-    ##
+        
+    
     def test_unusual_cases(self):
         """ unusual cases """
-        ## case 1 - y and prior are scalars ##
+        # case 1 - y and prior are scalars 
         y = gv.gvar(1.5,.1)
         prior = gv.gvar(2.,.5)
         def f(p): return p
-        ##
+        
         fit = nonlinear_fit(data=y,prior=prior,fcn=f)
         self.assert_gvclose((fit.p - wavg([y,prior])),gv.gvar(0,0))
-        ##
-        ## case 2 - no x, y is 2 element array ## 
+        
+        # case 2 - no x, y is 2 element array  
         y = gv.gvar([(1.5,.1),(1.7,.2)])
         prior = gv.gvar(2.,.5)
-        def f(p): return p
-        ##
+        def f(p): return [p, p]
+        
         fit = nonlinear_fit(data=y,prior=prior,fcn=f)
         self.assert_gvclose((fit.p - wavg(y.tolist()+[prior])),
                             gv.gvar(0,0))
-        ##
-    ##
+        
+    
     def test_wavg1(self):
         """ fit vs wavg uncorrelated """
         def avg(x): # compute of avg of sequence
             return sum(x)/len(x)
-        ##
+        
         c = gvar(4.,0.125)
         for ny,yf,ryf in [(1,1.,1.),(5,1.,1.),(5,2.,1.),(5,1.,2.)]:
             y = np.array([gvar(c(),yf*c.sdev) for i in range(ny)])
@@ -283,7 +281,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             pr = dict(rooty=rooty)  # prior
             def fcn(x,p):
                 return p['rooty']**2
-            ##
+            
             fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,
                             reltol=1e-16,debug=True)
             print_fit(fit,dict(y=wavg(fit.p['rooty']**2)))
@@ -295,12 +293,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_gvclose(input,output,rtol=1e-2)
             if ny>1:  # cov diag
                 self.assert_arraysequal(fit.cov,np.diag(np.diag(fit.cov)))
-    ##
+    
     def test_wavg2(self):
         """ fit vs wavg correlated """
         def avg(x): # compute of avg of sequence
             return sum(x)/len(x)
-        ##
+        
         c = gvar(4.,0.125)
         for ny,yf,ryf in [(1,1.,1.),(5,1.,1.),(5,1.,1.),(5,2.,1.),(5,1.,2.)]:
             yo = np.array([gvar(c(),yf*c.sdev) for i in range(ny+1)])
@@ -312,17 +310,17 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             pr['rooty'] = rooty
             def fcn(x,p):
                 return p['rooty']**2
-            ##
+            
             fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,
                                 reltol=1e-16,debug=True)
             print_fit(fit,dict(y=wavg(fit.p['rooty']**2)))
-            ## check mean and std devn ##
+            # check mean and std devn 
             output = avg(fit.p['rooty']**2)
             input = wavg([avg(yo),avg(rootyo**2)])
             # print("*** wavg2",input,output)
             self.assert_gvclose(input,output,rtol=2e-2)
-            ##
-            ## check cov matrix ##
+            
+            # check cov matrix 
             invcovy = np.linalg.inv(gv.evalcov(y))
             invcovry2 = np.linalg.inv(gv.evalcov(rooty**2))
             inv_cov_input = invcovy+invcovry2   # add prior and data in quad.
@@ -331,8 +329,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_arraysclose(io_prod,np.diag(ny*[1.]),rtol=5e-2)
             if ny>1:        # cov not diag
                 self.assertTrue(not np.all(fit.cov==np.diag(np.diag(fit.cov))))
-            ##
-    ##
+            
+    
     def test_wavg_svd(self):
         """ wavg with svd cut """
         a,b,c = gvar(["1(1)","1(1)","1(1)"])
@@ -342,14 +340,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(var,1./3.)
         var = wavg([b,c,a]).var
         self.assertAlmostEqual(var,1./3.)
-    ##
+    
     def test_wavg_vec(self):
         """ wavg of arrays """
         ans = wavg([[gvar(2.1,1.),4+gvar(2.1,1.)],
                     [gvar(1.9,10.),4+gvar(1.9,10.)]])
         self.assert_arraysclose(mean(ans),[2.09802,6.09802],rtol=1e-4)
         self.assert_arraysclose(sdev(ans),[0.995037,0.995037],rtol=1e-4)
-    ##
+    
     def test_wavg_dict(self):
         """ wavg of dicts """
         ans = wavg([
@@ -368,7 +366,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         """ fit without prior """
         def avg(x): # compute of avg of sequence
             return sum(x)/len(x)
-        ##
+        
         y = gvar(4.,0.25)
         ny = 8
         y = np.array([gvar(y(),y.sdev) for i in range(ny+1)]) 
@@ -379,10 +377,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         ydict = dict(y=y)   
         def arrayfcn(x,p):
             return p**2 # np.array([p[k]**2 for k in p])
-        ##
+        
         def dictfcn(x,p):
             return dict(y=p**2) # np.array([p[k]**2 for k in p]))
-        ##
+        
         p0 = None 
         for i,data in enumerate([(None,y),(None,ydict),
                             (None,dict(y=ynocorr)),(None,ymean,ycov)]):
@@ -406,24 +404,24 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_arraysclose(gv.evalcov(fit.p**2),
                                         dataycov,rtol=1e-4)
             self.assert_gvclose(fit.p**2,datay,1e-4)
-    ##
-    # @unittest.skipIf(FAST,"skipping test_bootstrap for speed")
+    
+    @unittest.skipIf(FAST,"skipping test_bootstrap for speed")
     def test_bootstrap(self):
         """ bootstrap_iter """
-        ## data and priors ## 
+        # data and priors  
         def bin(y): # correlates different y's 
             return (y[:-1]+y[1:])/2.
-        ##
+        
         def avg(x): # compute of avg of sequence
             return sum(x)/len(x)
-        ##
+        
         yc = gvar(4.,0.25)
         p2c = gvar(4.,0.25)
         ny = 3
         y = np.array([gvar(yc(),yc.sdev) for i in range(ny)])
         p = np.array([gvar(p2c(),p2c.sdev)**0.5 for i in range(ny)])
         eps = gvar(1.,1e-4)
-        ##
+        
         cases = [(y[:-1],p[:-1],False),
                 (bin(y),bin(p),False),
                 (bin(y),bin(p),True),
@@ -434,18 +432,18 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 (y[:-1],None,True),
                 (bin(y),None,False)]
         for y,p,use_dlist in cases:
-            ## fit then bootstrap ##
+            # fit then bootstrap 
             prior = None if p is None else np.array(p) 
             p0 = gv.mean(y)**0.5 if p is None else None
             data = None,y
             def fcn(x,p):
                 return p**2 # np.array([p[k]**2 for k in p])
-            ##
+            
             fit = nonlinear_fit(data=data,fcn=fcn,prior=prior,p0=p0,debug=True)
             # print(fit.format(nline=100))
             def evfcn(p):
                 return {0:np.average(p**2)} # [p[k]**2 for k in p])
-            ##
+            
             bs_ans = gv.dataset.Dataset()
             nbs = 1000/5
             fit_iter = fit.bootstrap_iter(n=None if use_dlist else nbs,
@@ -461,11 +459,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             # print(bs_ans,fit_ans,target_ans,rtol)
             self.assert_gvclose(target_ans,fit_ans,rtol=rtol)
             self.assert_gvclose(bs_ans,fit_ans,rtol=rtol)
-            ##
-    ##
+            
+    
     def test_svd(self):
         """ svd cuts """
-        ## data and priors ## 
+        # data and priors  
         fac = 100.
         rtol = 1/fac
         sig1 = 1./fac
@@ -476,12 +474,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         p = (p02+next(gv.raniter(p02))-gv.mean(p02))**0.5
         eps = gvar(1.,1.e-8)
         reps = eps**0.5
-        ##
+        
         cases = [(y,p,1e-20),(y,p,1e-2),(y*eps,p*reps,1e-20),(y*eps,p*reps,1e-2),
                 ((gv.mean(y),gv.evalcov(y)),p,1e-20),
                 ((gv.mean(y),gv.evalcov(y)),p,1e-2)]
         for y,p,svdcut in cases:
-            ## fit then bootstrap ##
+            # fit then bootstrap 
             prior = np.array(p)
             if not isinstance(y,tuple):
                 data = None,y
@@ -489,7 +487,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 data = (None,)+y
             def fcn(x,p):
                 return p**2 # np.array([p[k]**2 for k in p])
-            ##
+            
             fit = nonlinear_fit(data=data,fcn=fcn,prior=prior,
                                 svdcut=svdcut,debug=True)
             # print(fit.format(nline=100))
@@ -504,8 +502,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_gvclose(target_ans,fit_ans,rtol=rtol)
             s2 = max(fit_ans[0].sdev*sig2/sig1,svdcut**0.5*fit_ans[0].sdev)
             self.assertAlmostEqual(fit_ans[1].sdev/s2,1.,places=2)
-            ##
-    ##
+            
+    
     def test_logGBF(self):
         " fit.logGBF "
         yg = gv.gvar(['2(1)', '4(6)', '-0.62(1)', '-100(10)'])
@@ -547,7 +545,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         if PRINT_FIT:
             def analyzer(z,f,it):
                 print("%3d  %.8f  ->  %.8f" % (it, np.exp(z[0]), f))
-            ##
+            
         else:
             analyzer = None
         z0 = np.log([5.])
@@ -557,129 +555,135 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
      
     def test_unpack_data(self):
         """ lsqfit._unpack_data """
+        def make_mat(wlist, n):
+            ans = np.zeros((n,n), float)
+            i, wgts = wlist[0]
+            if len(i) > 0:
+                ans[i, i] = np.array(wgts) ** 2
+            for i, wgts in wlist[1:]:
+                for w in wgts:
+                    ans[i, i[:, None]] += np.outer(w, w)
+            return ans
         def test_logdet(fdata, prior, y):
-            if 'logdet_prior' in fdata:
+            if prior is not None:
+                yp = np.concatenate((y.flat, prior.flat))
                 self.assertAlmostEqual(     
-                    fdata['logdet_prior'],
-                    np.log(np.linalg.det(gv.evalcov(prior.flat)))
+                    fdata.logdet,
+                    np.log(np.linalg.det(gv.evalcov(yp))),
                     )
-            if 'logdet_y' in fdata:
+            else:
                 self.assertAlmostEqual(     
-                    fdata['logdet_y'],
-                    np.log(np.linalg.det(gv.evalcov(y.flat)))
-                    )
-            if 'logdet_all' in fdata:
-                all = np.concatenate((y.flat,prior.flat))
-                self.assertAlmostEqual(     
-                    fdata['logdet_all'],
-                    np.log(np.linalg.det(gv.evalcov(all)))
+                    fdata.logdet,
+                    np.log(np.linalg.det(gv.evalcov(y.flat))),
                     )
         
-        ## case 1 - (x,y) and prior ##
-        yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
+        # case 1 - (x,y) and prior 
+        yo = dict(y=[gv.gvar(1, 2), gv.gvar(10,4)])
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
         xo = 20
-        svdcut = None
         x, y, prior, fdata = lsqfit._unpack_data(   
-            data=(xo,yo), prior=po, svdcut=svdcut
+            data=(xo,yo), prior=po, svdcut=None
             )
         self.assertEqual(x,xo)
-        self.assert_gvclose(y['y'],yo['y'])
-        self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(
-            fdata['svdcorrection'],
-            {'y': None, 'prior': None},
-            )
-        self.assertEqual(
-            set(fdata.keys()),
-            set(
-                ['y', 'prior', 'logdet_y', 'logdet_all', 'svdcorrection', 
-                'logdet_prior']
-                )
-            )
-        self.assert_arraysequal(fdata['y'].mean,[1,10])
-        self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])
-        self.assert_arraysequal(fdata['prior'].mean,[2])
-        self.assert_arraysequal(fdata['prior'].wgt,[0.25])
+        self.assert_gvclose(y['y'], yo['y'])
+        self.assert_gvclose(prior['p'], po['p'])
+        self.assert_arraysequal(fdata.mean, [1., 10., 2.])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
+        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
+        self.assertEqual(len(fdata.svdcorrection), 3)
+        sumsvd = np.sum(fdata.svdcorrection)
+        self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
         
-        ## case 2 - no x ## 
-        x, y, prior, fdata = lsqfit._unpack_data(   #
-            data=yo, prior=po, svdcut=svdcut)
+        # case 2 - no x
+        x, y, prior, fdata = lsqfit._unpack_data(   
+            data=yo, prior=po, svdcut=None
+            )
         self.assertEqual(x,False)
-        self.assert_gvclose(y['y'],yo['y'])
-        self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
-        self.assertEqual(
-            set(fdata.keys()), 
-            set(['y', 'prior', 'logdet_all', 'logdet_y',
-                 'svdcorrection', 'logdet_prior'])
-            )
-        self.assert_arraysequal(fdata['y'].mean,[1,10])
-        self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])
-        self.assert_arraysequal(fdata['prior'].mean,[2])
-        self.assert_arraysequal(fdata['prior'].wgt,[0.25])
+        self.assert_gvclose(y['y'], yo['y'])
+        self.assert_gvclose(prior['p'], po['p'])
+        self.assert_arraysequal(fdata.mean, [1., 10., 2.])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
+        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
+        self.assertEqual(len(fdata.svdcorrection), 3)
+        sumsvd = np.sum(fdata.svdcorrection)
+        self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
+
+        # case 3 - no prior, x  
+        x, y, prior, fdata = lsqfit._unpack_data(   
+            data=yo, prior=None, svdcut=None
+            )
+        self.assertEqual(x,False)
+        self.assert_gvclose(y['y'], yo['y'])
+        self.assertEqual(prior, None)
+        self.assert_arraysequal(fdata.mean, [1., 10.])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1])
+        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25])
+        self.assertEqual(len(fdata.svdcorrection), 2)
+        sumsvd = np.sum(fdata.svdcorrection)
+        self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
+        test_logdet(fdata, prior, y)
+
         
-        ## case 3 - prior and data correlated ## 
+        # case 3 - prior and data correlated  
         one = gv.gvar(1,1e-4)
         yo['y'][0] *= one
         po['p'] *= one
-        x, y, prior, fdata = lsqfit._unpack_data(   #
-            data=yo, prior=po, svdcut=svdcut)
+        x, y, prior, fdata = lsqfit._unpack_data(
+            data=yo, prior=po, svdcut=None
+            )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],{'all': None})
-        self.assertEqual(set(fdata.keys()), set(['all',
-                         'svdcorrection', 'logdet_all']))
-        self.assert_arraysequal(fdata['all'].mean,[1,10,2])
-        fd_icov = sum(np.outer(wi,wi) for wi in fdata['all'].wgt)
+        self.assert_arraysequal(fdata.mean, [1,10,2])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [1])
+        self.assert_arraysequal(fdata.inv_wgts[1][0], [0, 2])
+        fd_icov = make_mat(fdata.inv_wgts, 3)
         icov = np.linalg.inv(gv.evalcov(y['y'].tolist()+[po['p']]))
         self.assert_arraysclose(fd_icov,icov)
         icov = np.linalg.inv(gv.evalcov(np.concatenate((y.flat,prior.flat))))
         self.assert_arraysclose(fd_icov,icov)
         test_logdet(fdata, prior, y)
 
-        ## case 4 - vector p, no correlation ##
+        # case 4 - vector p, no correlation 
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
-        x, y, prior, fdata = lsqfit._unpack_data(   #
-            data=yo, prior=pvo, svdcut=svdcut)
+        x, y, prior, fdata = lsqfit._unpack_data(   
+            data=yo, prior=pvo, svdcut=None
+            )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
-        self.assertEqual(set(fdata.keys()), set(['y','prior',
-                         'svdcorrection', 'logdet_prior', 'logdet_all', 'logdet_y']))
-        self.assert_arraysequal(fdata['y'].mean,[1,10])
-        self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])
-        self.assert_arraysequal(fdata['prior'].mean,[1,1])
-        self.assert_arraysequal(fdata['prior'].wgt,[0.5,0.25])
+        self.assert_arraysequal(fdata.mean,[1, 10, 1, 1])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [0, 1, 2, 3])
+        self.assert_arraysequal(fdata.inv_wgts[0][1],[0.5, 0.25, 0.5, 0.25])
         test_logdet(fdata, prior, y)
         
-        ## case 5 - vector p, correlation ##
+        # case 5 - vector p, correlation 
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
         yo['y'][0] *= one
         pvo[0] *= one
-        x, y, prior, fdata = lsqfit._unpack_data(   #
-            data=yo, prior=pvo, svdcut=svdcut)
+        x, y, prior, fdata = lsqfit._unpack_data( 
+            data=yo, prior=pvo, svdcut=None
+            )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assertEqual(fdata['svdcorrection'],{'all': None})
-        self.assertEqual(set(fdata.keys()), set(['all',
-                         'svdcorrection', 'logdet_all']))
-        self.assert_arraysequal(fdata['all'].mean,[1,10,1,1])
-        fd_icov = sum(np.outer(wi,wi) for wi in fdata['all'].wgt)
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [1, 3])
+        self.assertEqual(numpy.ndim(fdata.inv_wgts[0][1]), 1)
+        self.assert_arraysequal(fdata.inv_wgts[1][0], [0, 2])
+        self.assertEqual(numpy.ndim(fdata.inv_wgts[1][1]), 2)
+        fd_icov = make_mat(fdata.inv_wgts, 4)
         icov = np.linalg.inv(gv.evalcov(y['y'].tolist()+prior.tolist()))
         self.assert_arraysclose(fd_icov,icov)
         icov = np.linalg.inv(gv.evalcov(np.concatenate((y.flat,prior.flat))))
         self.assert_arraysclose(fd_icov,icov)
+
         test_logdet(fdata, prior, y)
         
-        ## case 6 - (x,y,ycov) ## 
+        # case 6 - (x,y,ycov)  
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         yo_mean = gv.mean(yo['y'])
         yo_cov = gv.evalcov(yo['y'])
@@ -691,31 +695,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,xo)
         self.assert_gvclose(y,yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assertEqual(fdata['svdcorrection'],{'y': None, 'prior': None})
-        self.assertEqual(set(fdata.keys()), set(['y', 'prior',
-                         'svdcorrection', 'logdet_prior', 'logdet_y', 'logdet_all']))
-        self.assert_arraysequal(fdata['y'].mean,[1,10])
-        self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])
-        self.assert_arraysequal(fdata['prior'].mean,[2])
-        self.assert_arraysequal(fdata['prior'].wgt,[0.25])
+        self.assert_arraysequal(fdata.mean,[1,10,2])
+        self.assert_arraysequal(fdata.inv_wgts[0][0], [0, 1, 2])
+        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
         test_logdet(fdata, prior, y)
-        
-        ## case 7 - no prior ## 
-        yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
-        xo = 20
-        svdcut = None
-        x, y, prior, fdata = lsqfit._unpack_data(   #
-            data=(xo,yo), prior=None, svdcut=svdcut)
-        self.assertEqual(x,xo)
-        self.assert_gvclose(y['y'],yo['y'])
-        self.assertIs(prior,None)
-        self.assertEqual(fdata['svdcorrection'],{'y': None})
-        self.assertEqual(set(fdata.keys()), set(['y', 'svdcorrection', 'logdet_y']))
-        self.assert_arraysequal(fdata['y'].mean,[1,10])
-        self.assert_arraysequal(fdata['y'].wgt,[0.5,0.25])        
-        test_logdet(fdata, prior, y)
-        
-        ## case 8 - svd cuts ##
+                
+        # case 8 - svd cuts 
         a = gv.gvar(1,1)
         da = gv.gvar(0,0.01)
         yo = gv.gvar([(a+da),(a-da)])
@@ -729,15 +714,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 data=yo, prior=po, svdcut=svdcut)
             self.assertEqual(x,False)
             self.assert_arraysequal(gv.mean(y),gv.mean(yo))
-            self.assertEqual(set(fdata.keys()), set(['y','prior', 'logdet_y',
-                             'svdcorrection', 'logdet_prior', 'logdet_all']))
             if svdcut == 0:
                 self.assert_gvclose(y,yo)
                 self.assert_gvclose((y[1]-y[0])/2,da)
-                # self.assertIs(fdata['svdcorrection']['y'],None)
             else:
                 self.assert_gvclose((y[1]-y[0])/2,da_svd)
-                # self.assertNotEqual(fdata['svdcorrection']['y'],None)
                 with self.assertRaises(AssertionError):
                     self.assert_gvclose(y,yo)
             
@@ -745,39 +726,32 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             if svdcut == 0:
                 self.assert_gvclose(prior,po)
                 self.assert_gvclose((prior[1]-prior[0])/2,da)
-                # self.assertIs(fdata['svdcorrection']['prior'],None)
             else:
                 self.assert_gvclose((prior[1]-prior[0])/2,da_svd)
-                self.assertNotEqual(fdata['svdcorrection']['prior'],None)
                 with self.assertRaises(AssertionError):
                     self.assert_gvclose(prior,po)
-            self.assert_arraysclose(    #
-                np.sum(np.outer(wi,wi) for wi in fdata['y'].wgt),
-                np.linalg.inv(gv.evalcov(y))
-                )
-            self.assert_arraysclose(    #
-                np.sum(np.outer(wi,wi) for wi in fdata['prior'].wgt),
-                np.linalg.inv(gv.evalcov(prior))
+            self.assert_arraysclose(  
+                make_mat(fdata.inv_wgts, 4),
+                np.linalg.inv(gv.evalcov(list(y.flat) + list(prior.flat)))
                 )
             test_logdet(fdata, prior, y)
         
-        ## others: svdcut= # or (#,#); svdnum too?; 
-        ## case ?? - wrong length data tuple ##
+        # others: svdcut= # 
+        # case ?? - wrong length data tuple 
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(   
                 data=(xo,yo,yo,yo), prior=po, svdcut=svdcut)
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(   
                 data=(xo,), prior=po, svdcut=svdcut)
-        ##
-    ##  
+          
     def test_unpack_p0(self):
         """ _unpack_p0 """
         prior = gv.BufferDict()
         prior['s'] = gv.gvar(0,2.5)
         prior['v'] = [[gv.gvar(1,2),gv.gvar(0,2)]]
         prior = lsqfit._unpack_gvars(prior)
-        ## p0 is None or dict or array, with or without prior ##
+        # p0 is None or dict or array, with or without prior 
         for vin,vout in [
         (None,[[1.,0.2]]),
         ([[]],[[1.,0.2]]),
@@ -797,15 +771,15 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 p = lsqfit._unpack_p0(p0=p0,p0file=None,prior=None)
                 self.assertEqual(p['s'],p0['s'])
                 self.assert_arraysequal(p['v'],p0['v'])
-        ##
-        ## p0 is array, with prior ##
+        
+        # p0 is array, with prior 
         p0 = [[20.,30.]]
         prior = lsqfit._unpack_gvars(prior['v'])
         p = lsqfit._unpack_p0(p0=p0,p0file=None,prior=prior)
         p0 = np.array(p0)
         self.assert_arraysequal(p,p0)
-        ##
-        ## p0 from file ##
+        
+        # p0 from file 
         fn = "test-lsqfit.p"
         p0 = dict(s=10.,v=[[20.,30.]])
         with open(fn,"wb") as pfile:
@@ -829,19 +803,19 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             else:
                 return np.array([xi.mean if xi.mean!=0 else xi.sdev/10. 
                                 for xi in x.flat]).reshape(x.shape)
-        ##
+        
         self.assertEqual(p['s'],nonzero_p0(prior['s']))
         self.assert_arraysequal(p['v'],nonzero_p0(prior['v']))
-        ##
-    ##
+        
+    
     def test_unpack_gvars(self):
         """ _unpack_gvars """
-        ## null prior ##
+        # null prior 
         p0 = dict(s=10.,v=[[20.,30.]])
         prior = lsqfit._unpack_gvars(None)
         self.assertEqual(prior,None)
-        ##
-        ## real prior ##
+        
+        # real prior 
         prior = dict(s=gv.gvar(0.,1.),v=[[gv.gvar(0,2.),gv.gvar(1.,3.)]])
         nprior = lsqfit._unpack_gvars(prior)
         self.assertIsInstance(nprior,BufferDict)
@@ -853,8 +827,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assertCountEqual(prior.keys(),nprior.keys())
         for k in prior:
             self.assert_gvclose(prior[k],nprior[k])
-        ##
-        ## symbolic gvars ##
+        
+        # symbolic gvars 
         prior = dict(s=gv.gvar(0,1),v=[["0(2)",(1,3)]])
         nprior = lsqfit._unpack_gvars(prior)
         self.assertIsInstance(nprior,BufferDict)
@@ -867,8 +841,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(nprior['v'].size,2)
         self.assert_gvclose(nprior['s'],gvar(0,1))
         self.assert_gvclose(nprior['v'],[[gvar(0,2),gvar(1,3)]])
-        ##
-    ##
+        
+    
     def test_unpack_fcn(self):
         """ _unpack_fcn """
         ydict = BufferDict()
@@ -883,32 +857,32 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def fcn_dd(x,p):
             ans = dict(s=sum(p['p']),v=[p['p'][:2]])
             return ans
-        ##
+        
         def fcn_da(x,p):
             return p['p'][:3]
-        ##
+        
         def fcn_ad(x,p):
             ans = dict(s=sum(p),v=[p[:2]])
             return ans
-        ##
+        
         def fcn_aa(x,p):
             return p[:3]
-        ##
+        
         def fcn_nox_dd(p):
             ans = dict(s=sum(p['p']),v=[p['p'][:2]])
             return ans
-        ##
+        
         def fcn_nox_da(p):
             return p['p'][:3]
-        ##
+        
         def fcn_nox_ad(p):
             ans = dict(s=sum(p),v=[p[:2]])
             return ans
-        ##
+        
         def fcn_nox_aa(p):
             return p[:3]
-        ##
-        ## do all combinations of prior and y ##
+        
+        # do all combinations of prior and y 
         for x,y,pr,fcn,yout in [
             (None,ydict,prdict,fcn_dd,[sum(p0)]+p0[:2]),
             (None,ydict,prarray,fcn_ad,[sum(p0)]+p0[:2]),
@@ -923,10 +897,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             fout = flatfcn(np.array(p0))
             self.assert_arraysequal(np.shape(fout),np.shape(yout))
             self.assert_arraysequal(fout,yout)
-        ##
-    ##
+        
+    
     def test_y_fcn_match(self):
-        ## y = dictionary ##
+        # y = dictionary 
         y = gv.BufferDict(a=gv.gvar(1,1),b=[gv.gvar(2,2),gv.gvar(3,3)])
         self.assertTrue(lsqfit._y_fcn_match(y,dict(a=1.,b=[2.,3.])))
         self.assertTrue(lsqfit._y_fcn_match(y,gv.BufferDict(a=1.,b=[2.,3.])))
@@ -935,23 +909,23 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertFalse(lsqfit._y_fcn_match(y,3.))
         self.assertFalse(lsqfit._y_fcn_match(y,dict(x=1,y=[2,3.])))
         self.assertFalse(lsqfit._y_fcn_match(y,[2.,3.]))
-        ##
-        ## y = array ## 
+        
+        # y = array  
         y = np.array([gv.gvar(2.,2.),gv.gvar(3.,3.)])
         self.assertTrue(lsqfit._y_fcn_match(y,[4.,5.]))
         self.assertFalse(lsqfit._y_fcn_match(y,[4.,5.,6.]))
         self.assertFalse(lsqfit._y_fcn_match(y,dict(a=[4.,5.])))
         self.assertFalse(lsqfit._y_fcn_match(y,3.))
-        ##
-        ## y = number ##
+        
+        # y = number 
         y = np.array(gv.gvar(1,1))
         self.assertTrue(lsqfit._y_fcn_match(y,3.))
         self.assertFalse(lsqfit._y_fcn_match(y,[4.,5.]))
         self.assertFalse(lsqfit._y_fcn_match(y,dict(a=[4.,5.])))
-        ##
-    ##
+        
+    
     def test_reformat(self):
-        ## arrays ## 
+        # arrays  
         p = [[1,2],[3,4]]
         newp = lsqfit._reformat(p,[10,20,30,40])
         self.assert_arraysequal(newp,[[10,20],[30,40]])
@@ -959,8 +933,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             lsqfit._reformat(p,[10,20])
         with self.assertRaises(ValueError):
             lsqfit._reformat(p,[[10,20,30,40]])
-        ##
-        ## dictionaries ## 
+        
+        # dictionaries  
         p = BufferDict([(0,0),(1,1),(2,2),(3,3)])
         newp = lsqfit._reformat(p,[10,20,30,40])
         self.assert_arraysequal(newp.flat,[10,20,30,40])
@@ -972,14 +946,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             lsqfit._reformat(p,[10,20])
         with self.assertRaises(ValueError):
             lsqfit._reformat(p,[[10,20,30,40]])
-        ##
-    ##
+        
+    
     def test_dump(self):
         y = {0 : gv.gvar(1,2), 1 : gv.gvar(3,4)}
         prior = {0 : gv.gvar(1.5, 1)}
         def f(p):
             return {0:p[0],1:p[0]}
-        ##
+        
         fit = nonlinear_fit(data=y,prior=prior,fcn=f)
         fit.dump_p("test-lsqfit.p")
         p = nonlinear_fit.load_parameters("test-lsqfit.p")
@@ -989,25 +963,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         pmean = fit.load_parameters("test-lsqfit.p")
         self.assertAlmostEqual(pmean[0],fit.pmean[0])
         os.remove("test-lsqfit.p")
-    ##
+    
     def test_partialerr1(self):
         """ fit.p.der """
         # verifies that derivatives in fit.p relate properly to inputs
         #
-        ## data ##
+        # data 
         y = gvar(2.,0.125)
         ny = 3
         y = [gvar(y(),y.sdev) for i in range(ny)]
-        ##
-        ## prior ##
+        
+        # prior 
         p = gv.BufferDict()
         p.add("y",gvar(0.1,1e4))
         p.add("not y",gvar(3.0,0.125))
-        ##
+        
         def fcn(x,p):
             """ p['y'] is the average of the y's """
             return np.array(3*[p['y']])
-        ##
+        
         fit = nonlinear_fit(data=(None,y),fcn=fcn,prior=p,debug=True)
         if PRINT_FIT:
             print(fit.format(nline=100))
@@ -1028,25 +1002,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","not y"],p["not y"].sdev)
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
-    ##
+    
     def test_partialerr2(self):
         """ partialerrors """
         # verifies that derivatives in fit.p relate properly to inputs
         #
-        ## data ##
+        # data 
         y = gvar(2.,0.125)
         ny = 3
         y = [gvar(y(),y.sdev) for i in range(ny)]
-        ##
-        ## prior ##
+        
+        # prior 
         p = gv.BufferDict()
         p["y"] = gvar(0.1,1e4)
         p["not y"] = gvar(3.0,0.125)
-        ##
+        
         def fcn(x,p):
             """ p['y'] is the average of the y's """
             return np.array(ny*[p['y']])
-        ##
+        
         fit = nonlinear_fit(data=(None,mean(y),gv.evalcov(y)),fcn=fcn,prior=p,debug=True)
         if PRINT_FIT:
             print( fit.format(nline=100) )       
@@ -1202,26 +1176,26 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         with self.assertRaises(ValueError):
             def f(p):
                 return [p['a']]*3
-            ##
+            
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
         with self.assertRaises(ZeroDivisionError):
             def f(p):
                 1/0.
                 return [p['a']]*2
-            ##
+            
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
-    ##
+    
     def test_multifit(self):
         """ multifit """
         nx = 3
         x0 = np.arange(nx)+1.
         def f(x,x0=x0):
             return (x-x0)**3
-        ##
+        
         if PRINT_FIT:
             def tabulate(x,f,df):
                 print(x[:3],'->',f[:3])
-            ##
+            
         else:
             tabulate = None
         ans = multifit(x0=np.ones(nx),n=nx,f=f,analyzer=tabulate,
@@ -1230,7 +1204,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         ans = multifit(x0=np.zeros(nx),n=nx,f=f,analyzer=tabulate,
                         alg='lmder')
         self.assert_arraysclose(ans.x,x0,rtol=1e-3)
-    ##
+    
     def test_multiminex_exceptions(self):
         """ multiminex exceptions """
         x0 = np.array([6.0,-4.0])
@@ -1239,26 +1213,26 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 1/0.
                 ff = (x[0]-5)**2 + (x[1]+3)**2
                 return -np.cos(ff)
-            ##
+            
             ans = multiminex(x0,f)
         #
         with self.assertRaises(TypeError):
             def f(x):
                 ff = (x[0]-5)**2 + (x[1]+3)**2
                 return [-np.cos(ff)]
-            ##
+            
             ans = multiminex(x0,f)
-    ##
+    
     def test_multiminex(self):
         """ multiminex """
         def f(x):
             ff = (x[0]-5)**2 + (x[1]+3)**2
             return -np.cos(ff)
-        ##
+        
         if PRINT_FIT:
             def tabulate(x,f,it):
                 print(it,x,'->',f)
-            ##
+            
         else:
             tabulate = None
         x0 = np.array([6.0,-4.0])
@@ -1282,7 +1256,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         for a, x, gax, gxa in cases:
             np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
-##
+
 
 def partialerrors(outputs,inputs):
     err = {}
@@ -1290,7 +1264,7 @@ def partialerrors(outputs,inputs):
         for ki in inputs:
             err[ko,ki] = outputs[ko].partialsdev(*inputs[ki])
     return err
-##
+
     
     
     

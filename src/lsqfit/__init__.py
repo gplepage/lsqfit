@@ -82,12 +82,13 @@ import gvar as _gvar
 # add extras and utilities to lsqfit 
 from ._extras import empbayes_fit, wavg 
 from ._utilities import dot as _util_dot
+from ._utilities import _build_chiv_chivw
 from ._utilities import multifit, multiminex, gammaQ
 from ._version import version as __version__
 
 
-_FDATA = collections.namedtuple('_FDATA', ['mean', 'wgt'])
-# Internal data type for nonlinear_fit.unpack_data()
+_FDATA = collections.namedtuple('_FDATA', 'mean inv_wgts svdcorrection logdet')
+# Internal data type for _unpack_data()
 
 class nonlinear_fit(object):
     """ Nonlinear least-squares fit.
@@ -186,23 +187,19 @@ class nonlinear_fit(object):
         extracted from ``prior``. The default value is ``None``; ``p0``
         must be defined if ``prior`` is ``None``.
     :type p0: dictionary, array, string or ``None``
-    :param svdcut: If positive, eigenvalues of the (rescaled) ``y`` 
-        covariance matrix that are smaller than ``svdcut`` times the
-        maximum eigenvalue are replaced by ``svdcut`` times the maximum
-        eigenvalue. If negative, eigenmodes with eigenvalues smaller than
-        ``|svdcut|`` times the largest eigenvalue are discarded. If zero or
-        ``None``, the covariance matrix is left unchanged. If ``svdcut`` is
-        a 2-tuple, the first entry is ``svdcut`` for the ``y`` covariance
-        matrix and the second entry is ``svdcut`` for the prior's
-        covariance matrix.
-    :type svdcut: ``None`` or ``float`` or 2-tuple
-    :param svdnum: If positive, at most ``svdnum`` eigenmodes of the 
-        (rescaled) ``y`` covariance matrix are retained; the modes with the
-        smallest eigenvalues are discarded. ``svdnum`` is ignored if set to
-        ``None``. If ``svdnum`` is a 2-tuple, the first entry is ``svdnum``
-        for the ``y`` covariance matrix and the second entry is ``svdnum``
-        for the prior's covariance matrix.
-    :type svdnum: ``None`` or ``int`` or 2-tuple
+    :param svdcut: If ``svdcut`` is nonzero (not ``None``), *svd* cuts
+        are applied to every block-diagonal sub-matrix of the covariance 
+        matrix for the data ``y`` and ``prior`` (if there is a prior).
+        The blocks are first rescaled (symmetrically) so that all 
+        diagonal elements equal 1. Then, if ``svdcut > 0``, 
+        eigenvalues of the rescaled matrices that are smaller than ``svdcut`` 
+        times the maximum eigenvalue are replaced by ``svdcut`` times the 
+        maximum eigenvalue. This makes the covariance matrix less singular 
+        and less susceptible to roundoff error. When ``svdcut < 0``, 
+        eigenvalues smaller than ``|svdcut|`` times the maximum eigenvalue 
+        are discarded and the corresponding components in ``y`` and 
+        ``prior`` are zeroed out.
+    :type svdcut: ``None`` or ``float``
     :param debug: Set to ``True`` for extra debugging of the fit function
         and a check for roundoff errors. (Default is ``False``.)
     :type debug: boolean
@@ -213,6 +210,12 @@ class nonlinear_fit(object):
                 svdcut=1e-15, debug=False, **kargs): 
         # capture arguments; initialize parameters 
         self.fitterargs = kargs
+        if isinstance(svdcut, tuple):
+            self.svdcut = svdcut[0]
+            warnings.warn(
+                'svdcut = tuple is no longer supported; replace by a single number',
+                UserWarning, stacklevel=2
+                )
         self.svdcut = svdcut
         self.data = data
         self.p0file = p0 if isinstance(p0, str) else None
@@ -221,27 +224,30 @@ class nonlinear_fit(object):
         self._p = None
         self._palt = None
         self.debug = debug
+        if 'svdnum' in kargs:
+            del kargs['svdnum']
+            warning.warn(
+                'svdnum is no longer supported by lsqfit', 
+                UserWarning, stacklevel=2
+                )
         cpu_time = time.clock()
         
         # unpack prior,data,fcn,p0 to reconfigure for multifit 
-        prior = _unpack_gvars(prior)
-        if (debug and prior is not None and
-            not all(isinstance(pri, _gvar.GVar) for pri in prior.flat)):
-            raise TypeError("Priors must be GVars.")
         x, y, prior, fdata = _unpack_data(
             data=self.data, prior=prior, svdcut=self.svdcut, 
             )  
         self.x = x 
         self.y = y   
         self.prior = prior  
-        self.svdcorrection = fdata['svdcorrection']
+        self.svdcorrection = fdata.svdcorrection
         self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
         flatfcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y, x=self.x)
         
         # create fit function chiv for multifit 
-        self._chiv = _build_chiv(fdata=fdata, fcn=flatfcn)
-        self._chivw = self._chiv.chivw
+        self._chiv, self._chivw = _build_chiv_chivw(
+            fdata=fdata, fcn=flatfcn, prior=self.prior
+            )
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
         
@@ -289,7 +295,7 @@ class nonlinear_fit(object):
         self.psdev = _reformat(self.p0, [covii**0.5 
                                for covii in self.cov.diagonal()])
         # compute logGBF 
-        if 'logdet_all' not in fdata: 
+        if self.prior is None: 
             self.logGBF = None
         else:
             def logdet(m):
@@ -300,7 +306,7 @@ class nonlinear_fit(object):
                 # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
             logdet_cov = logdet(self.cov)
             self.logGBF = 0.5*(
-                logdet_cov - fdata['logdet_all'] - self.chi2 -
+                logdet_cov - fdata.logdet - self.chi2 -
                 self.dof * numpy.log(2. * numpy.pi)
                 )
         
@@ -530,9 +536,7 @@ class nonlinear_fit(object):
             logGBF = '%.5g' % self.logGBF
         except:
             logGBF = str(self.logGBF)
-        if 'all' in self.svdcorrection:
-            descr = " (input data correlated with prior)" 
-        elif 'prior' not in self.svdcorrection:
+        if self.prior is None:
             descr = " (no prior)"
         else:
             descr = ""
@@ -1132,13 +1136,15 @@ def _unpack_data(data, prior, svdcut):
     |GVar|\s. In the last case it is assumed that the fit function is a
     function of only the parameters: ``fcn(p)`` --- no ``x``. (This is also
     assumed if ``x = False``.)
-        
-    Output data in ``fdata`` includes: fit decompositions of ``y`` 
-    (``fdata["y"]``) and ``prior`` (``fdata["prior"]``), or of 
-    both together (``fdata["all"]``) if they are correlated. 
-    ``fdata["svdcorrection"]`` contains a dictionary with all *svd* corrections
-    (from ``y`` and ``prior``). ``fdata["logdet_prior"]`` contains
-    the logarithm of the determinant of the prior's covariance matrix.
+    
+    Output data in ``fdata`` is: ``fdata.mean`` containing the mean
+    values of ``y.flat`` and ``prior.flat`` (if there is a prior); 
+    ``fdata.svdcorrection``  containing the *svd* correction to ``y.flat`` 
+    and ``prior.flat``; ``fdata.logdet`` containing the logarithem of the 
+    determinant of the covariance matrix of ``y.flat`` and ``prior.flat``;
+    and ``fdata.inv_wgts`` containing a representation of the inverse
+    of the covariance matrix, after *svd* cuts (see :func:`gvar.svd` 
+    for a description of the format).
     """
     # unpack data tuple 
     data_is_3tuple = False
@@ -1156,65 +1162,24 @@ def _unpack_data(data, prior, svdcut):
         y = _unpack_gvars(y)
     else:
         raise ValueError("data tuple wrong length: "+str(len(data)))
+    
+    def _apply_svd(data, svdcut=svdcut):
+        ans, inv_wgts = _gvar.svd(data, svdcut=svdcut, compute_inv=True)
+        fdata = _FDATA(
+            mean=_gvar.mean(data.flat), 
+            inv_wgts=inv_wgts,
+            svdcorrection=_gvar.svd.correction,
+            logdet=_gvar.svd.logdet,
+            )
+        return ans, fdata
 
-    # create svd script 
-    fdata = dict(svdcorrection={})
-        
-    def _apply_svd(k, data, fdata=fdata, svdcut=svdcut):
-        """ apply svd cut and save related data """
-        # i = 1 if k == 'prior' else 0
-        ans, invcov_wgts = _gvar.svd(data, svdcut=svdcut, compute_inv=True)
-        if len(invcov_wgts) == 1:
-            idx, wgts = invcov_wgts[0]
-            inv_wgt = wgts
-        else:
-            # inv_wgt = []
-            idx , wgts = invcov_wgts[0]
-            inv_wgt = numpy.zeros((len(idx),len(data.flat)), float)
-            inv_wgt[numpy.arange(len(idx)), idx] = wgts
-            inv_wgt = list(inv_wgt)
-            for iw, wgts in invcov_wgts[1:]:
-                for w in wgts:
-                    wgt = numpy.zeros(len(data.flat), float)
-                    wgt[iw] = w
-                    inv_wgt.append(wgt)
-        inv_wgt = numpy.array(inv_wgt)
-        fdata[k] = _FDATA(mean=_gvar.mean(data.flat), wgt=inv_wgt)
-        sum_svd = sum(_gvar.svd.correction)
-        if sum_svd.mean == 0 and sum_svd.sdev == 0:
-            fdata['svdcorrection'][k] = None
-        else:
-            fdata['svdcorrection'][k] = _gvar.svd.correction
-        if k == 'prior':
-            fdata['logdet_prior'] = _gvar.svd.logdet
-        elif k == 'y':
-            fdata['logdet_y'] = _gvar.svd.logdet
-        elif k == 'all':
-            fdata['logdet_all'] = _gvar.svd.logdet
-        return ans
-
-    if prior is not None:
-        # have prior 
-        if data_is_3tuple or _gvar.uncorrelated(y.flat, prior.flat):
-            # y uncorrelated with prior 
-            y = _apply_svd('y', y)
-            prior = _apply_svd('prior', prior)
-            fdata['logdet_all'] = fdata['logdet_prior'] + fdata['logdet_y']
-        else:
-            # y correlated with prior 
-            yp = _apply_svd('all', numpy.concatenate((y.flat, prior.flat)))
-            y.flat = yp[:y.size]
-            prior.flat = yp[y.size:]
-            # # compute log(det(cov_pr)) where cov_pr = prior part of cov:
-            # invcov = numpy.sum(numpy.outer(wi, wi) 
-            #                    for wi in _gvar.svd.inv_wgt)
-            # s = _gvar.SVD(invcov[y.size:, y.size:])
-            # # following has minus sign because s is for the inv of cov:
-            # fdata['logdet_prior'] = -numpy.sum(numpy.log(vi) for vi in s.val)
-            # fdata['logdet_y'] = fdata['logdet_all'] - fdata['logdet_prior']
+    if prior is None:
+        y, fdata = _apply_svd(y)
     else:
-        # no prior 
-        y = _apply_svd('y', y)
+        prior = _unpack_gvars(prior)
+        yp, fdata = _apply_svd(numpy.concatenate((y.flat, prior.flat)))
+        y.flat = yp[:y.size]
+        prior.flat = yp[y.size:]
     return x, y, prior, fdata
 
 def _unpack_gvars(g):
@@ -1222,6 +1187,7 @@ def _unpack_gvars(g):
     if g is not None:
         g = _gvar.gvar(g)
         if not hasattr(g, 'flat'):
+            # must be a scalar (ie, not an array and not a dictionary)
             g = numpy.asarray(g)
     return g
 
@@ -1355,64 +1321,6 @@ def _unpack_fcn(fcn, p0, y, x):
                 return yo.flat            
     return nfcn
 
-    
-def _build_chiv(fdata, fcn):
-    """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``. """
-    if 'all' in fdata:
-        # y and prior correlated 
-        if fdata['all'].wgt.ndim != 2:
-            raise ValueError("fdata['all'].wgt is 1d! dim = "
-                             +str(fdata['all'].wgt.ndim))
-        def chiv(p, fcn=fcn, fd=fdata['all']):
-            delta = numpy.concatenate((fcn(p), p))-fd.mean
-            return _util_dot(fd.wgt, delta)
-        
-        def chivw(p, fcn=fcn, fd=fdata['all']):
-            delta = numpy.concatenate((fcn(p), p))-fd.mean
-            wgt2 = numpy.sum(numpy.outer(wj, wj) 
-                            for wj in reversed(fd.wgt))
-            return _util_dot(wgt2, delta)
-        chiv.nf = len(fdata['all'].wgt)
-        
-    elif 'prior' in fdata:
-        # y and prior uncorrelated 
-        def chiv(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
-            ans = []
-            for d, w in [(fcn(p)-yfd.mean, yfd.wgt), 
-                        (p-pfd.mean, pfd.wgt)]:
-                ans.append(_util_dot(w, d) if w.ndim==2 else w*d)
-            return numpy.concatenate(tuple(ans))
-        def chivw(p, fcn=fcn, yfd=fdata['y'], pfd=fdata['prior']):
-            ans = []
-            for d, w in [(fcn(p)-yfd.mean, yfd.wgt), 
-                        (p-pfd.mean, pfd.wgt)]:
-                if w.ndim == 2:
-                    w2 = numpy.sum(numpy.outer(wj, wj) 
-                                   for wj in reversed(w))
-                    ans.append(_util_dot(w2, d))
-                else:
-                    ans.append(w*w*d)
-            return numpy.concatenate(tuple(ans))
-        chiv.nf = len(fdata['y'].wgt)+len(fdata['prior'].wgt)
-    else:
-        # no prior 
-        def chiv(p, fcn=fcn, fd=fdata['y']):
-            ydelta = fcn(p)-fd.mean
-            return (_util_dot(fd.wgt, ydelta) if fd.wgt.ndim==2 
-                    else fd.wgt*ydelta)
-        def chivw(p, fcn=fcn, fd=fdata['y']):
-            ydelta = fcn(p)-fd.mean
-            if fd.wgt.ndim == 2:
-                wgt2 = numpy.sum(numpy.outer(wj, wj) 
-                                 for wj in reversed(fd.wgt))
-                return _util_dot(wgt2, ydelta)
-            else:
-                return fd.wgt*fd.wgt*ydelta        
-        chiv.nf = len(fdata['y'].wgt)        
-    chiv.chivw = chivw
-    return chiv
-
-
 def _y_fcn_match(y, f):
     if hasattr(f,'keys'):
         f = BufferDict(f)
@@ -1438,11 +1346,11 @@ def _y_fcn_match(y, f):
 
 # legacy definitions (obsolete) 
 class _legacy_constructor:
-    def __init__(self,cl,msg):
+    def __init__(self, cl, msg):
         self.cl = cl
         self.msg = msg
     
-    def __call__(self,*args,**kargs):
+    def __call__(self, *args, **kargs):
         warnings.warn(self.msg, UserWarning, stacklevel=2)
         return self.cl(*args,**kargs)
     
