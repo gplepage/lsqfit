@@ -295,7 +295,7 @@ class nonlinear_fit(object):
             def logdet(m):
                 (sign, ans) = numpy.linalg.slogdet(m)
                 if sign < 0:
-                    warnings.warn('det(fit.cov) < 0 --- roundoff errors?')
+                    warnings.warn('det(fit.cov) < 0 --- roundoff errors? Try an svd cut.')
                 return ans
                 # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
             logdet_cov = logdet(self.cov)
@@ -1162,16 +1162,22 @@ def _unpack_data(data, prior, svdcut):
         
     def _apply_svd(k, data, fdata=fdata, svdcut=svdcut):
         """ apply svd cut and save related data """
-        i = 1 if k == 'prior' else 0
+        # i = 1 if k == 'prior' else 0
         ans, invcov_wgts = _gvar.svd(data, svdcut=svdcut, compute_inv=True)
-        if max(len(iw) for iw, w in invcov_wgts) == 1:
-            inv_wgt = [w for iw, w in invcov_wgts]
+        if len(invcov_wgts) == 1:
+            idx, wgts = invcov_wgts[0]
+            inv_wgt = wgts
         else:
-            inv_wgt = []
-            for iw, w in invcov_wgts:
-                wgt = numpy.zeros(len(data.flat), float)
-                wgt[iw] = w
-                inv_wgt.append(wgt)
+            # inv_wgt = []
+            idx , wgts = invcov_wgts[0]
+            inv_wgt = numpy.zeros((len(idx),len(data.flat)), float)
+            inv_wgt[numpy.arange(len(idx)), idx] = wgts
+            inv_wgt = list(inv_wgt)
+            for iw, wgts in invcov_wgts[1:]:
+                for w in wgts:
+                    wgt = numpy.zeros(len(data.flat), float)
+                    wgt[iw] = w
+                    inv_wgt.append(wgt)
         inv_wgt = numpy.array(inv_wgt)
         fdata[k] = _FDATA(mean=_gvar.mean(data.flat), wgt=inv_wgt)
         sum_svd = sum(_gvar.svd.correction)

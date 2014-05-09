@@ -1012,8 +1012,11 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         """ svd """
         def make_mat(wlist, n):
             ans = np.zeros((n,n), float)
-            for i, w in wlist:
-                ans[i, i[:, None]] += np.outer(w, w)
+            i, wgts = wlist[0]
+            ans[i, i] = np.array(wgts) ** 2
+            for i, wgts in wlist[1:]:
+                for w in wgts:
+                    ans[i, i[:, None]] += np.outer(w, w)
             return ans
         def test_gvar(a, b):
             self.assertEqual(a.fmt(4), b.fmt(4))
@@ -1025,7 +1028,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(svd.logdet, np.log(np.linalg.det(cov)))
         # diagonal
         f = gvar(['1(2)', '3(4)'])
-        g, wgts = svd(gvar(['1(2)', '3(4)']), svdcut=0.9, compute_inv=True)
+        g, wgts = svd(f, svdcut=0.9, compute_inv=True)
         test_gvar(g[0], f[0])
         test_gvar(g[1], f[1])
         test_cov(wgts, evalcov(g))

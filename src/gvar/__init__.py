@@ -400,14 +400,15 @@ def svd(g, svdcut=None, compute_inv=False):
     svd.correction = numpy.zeros(cov.shape[0], object) * gvar(0, 0)
     svd.eigen_range = 1.
     svd.nmod = 0
-    invcov_wgts = []
+    invcov_wgts = [([], [])] # 1st entry for all 1x1 blocks
     lost_modes = 0
     for idx in block_idx:
         if len(idx) == 1:
             i = idx[0]
             svd.logdet += numpy.log(cov[i, i])
             if compute_inv:
-                invcov_wgts.append((numpy.array([i]), cov[i, i] ** (-0.5)))
+                invcov_wgts[0][0].append(i)
+                invcov_wgts[0][1].append(cov[i, i] ** (-0.5))
         else:
             idxT = idx[:, numpy.newaxis]
             block_cov = cov[idx, idxT]
@@ -421,8 +422,9 @@ def svd(g, svdcut=None, compute_inv=False):
             else:
                 svd.correction[idx] = gvar(0., 0.)
             if compute_inv:
-                for w in s.decomp(-1)[::-1]:
-                    invcov_wgts.append((idx, w))
+                invcov_wgts.append(
+                    (idx, numpy.array([w for w in s.decomp(-1)[::-1]]))
+                    )
             if svdcut < 0:
                 newg = numpy.zeros(len(idx), object)
                 for w in s.vec:
@@ -435,6 +437,7 @@ def svd(g, svdcut=None, compute_inv=False):
     svd.dof = len(g.flat) - lost_modes
     svd.nmod += lost_modes
     svd.blocks = block_idx
+    svd.nblocks = len(block_idx)
     return (g, invcov_wgts) if compute_inv else g
 
 def find_diagonal_blocks(m):
