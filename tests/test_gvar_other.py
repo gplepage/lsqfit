@@ -218,6 +218,16 @@ class test_cspline(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(mean(self.integf(xi, x0.mean)), mean(s.integ(xi)))
             self.assert_gvclose(s.integ(xi), self.integf(xi, x0))
 
+    def test_sin(self):
+        " test CSpline with real function "
+        x = np.arange(-1.,1.,0.0005)
+        fs = cspline.CSpline(x, np.sin(x), [np.cos(x[0]), np.cos(x[-1])])
+        for x in [-0.666, -0.333, -0.123, 0.123, 0.333, 0.666]:
+            self.assertAlmostEqual(fs(x), np.sin(x))
+            self.assertAlmostEqual(fs.D(x), np.cos(x))
+            self.assertAlmostEqual(fs.D2(x), -np.sin(x))
+            self.assertAlmostEqual(fs.integ(x), -np.cos(x) + np.cos(-1.))
+
 class PowerSeriesTests(object):
     def __init__(self):
         pass

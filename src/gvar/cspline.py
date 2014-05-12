@@ -173,7 +173,7 @@ class CSpline:
             warnings.warn('x outside of spline range: ' + str(x))
         j = numpy.searchsorted(self.x, x)
         j[j <= 0] = 1   
-        j[j >= len(x)] = len(x) - 1
+        j[j >= self.n] = self.n - 1
         i = j - 1
         x1 = self.x[i]
         x2 = self.x[j]
@@ -199,7 +199,7 @@ class CSpline:
             warnings.warn('x outside of spline range: ' + str(x))
         j = numpy.searchsorted(self.x, x)
         j[j <= 0] = 1   
-        j[j >= len(x)] = len(x) - 1
+        j[j >= self.n] = self.n - 1
         i = j - 1
         x1 = self.x[i]
         x2 = self.x[j]
