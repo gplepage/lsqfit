@@ -1,9 +1,9 @@
-Version 4.8
-=============
+Version 4.8 - 2014-05-12
+========================
 This release has a reworked framework for SVD cuts. The new framework is 
 simpler but also more robust: SVD cuts are applied separately 
 to each block-diagonal sub-matrix of the data-prior covariance matrix. This
-is more accurate, usually faster, and uses less memory typically.
+is more accurate, faster, and uses less memory (usually).
 
 - svdnum is no longer an option for lsqfit.nonlinear_fit, raniter, etc. 
   This parameter makes little sense in the new framework. Make svdcut 
