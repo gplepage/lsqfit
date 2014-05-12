@@ -115,8 +115,10 @@ cdef class GVar:
                 return ans[0] + "(0)e" + ans[1]
             else:
                 return ans[0] + "(0)"
-        elif dv < 1e-6 * abs(v) or dv > 1e4 * abs(v):
+        elif dv < 1e-6 * abs(v):
             return '%g +- %.2g' % (v, dv)
+        elif dv > 1e4 * abs(v):
+            return '%.1g +- %.2g' % (v, dv)
         elif abs(v) >= 1e6 or abs(v) < 1e-5:
             # exponential notation for large |self.mean| 
             exponent = numpy.floor(numpy.log10(abs(v)))

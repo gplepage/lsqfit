@@ -458,7 +458,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(gvar("1e+9 +- 1.23e+6").fmt(), "1.0000(12)e+09")
         self.assertEqual(gvar("1e-9 +- 0").fmt(), "1(0)e-09")
         self.assertEqual(gvar("0(0)").fmt(), "0(0)")
-        self.assertEqual(gvar("1e-9 +- 0.129").fmt(), '1e-09 +- 0.13')
+        self.assertEqual(gvar("1.234e-9 +- 0.129").fmt(), '1e-09 +- 0.13')
         self.assertEqual(gvar("1.23(4)e-9").fmt(), "1.230(40)e-09")
         self.assertEqual(gvar("1.23 +- 1.23e-12").fmt(), "1.23 +- 1.2e-12")
         self.assertEqual(gvar("1.23 +- 1.23e-6").fmt(), "1.2300000(12)")
