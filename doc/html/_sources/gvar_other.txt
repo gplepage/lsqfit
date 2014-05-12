@@ -10,7 +10,8 @@ through the algorithm. A code that is written in pure Python is likely to
 work well with |GVar|\s, perhaps with minor modifications. 
 Here we describe some sample numerical codes, included in
 :mod:`gvar`, that have been adapted
-to work with |GVar|\s. More samples will follow with time.
+to work with |GVar|\s, as well as with ``float``\s. 
+More examples will follow with time.
 
 
 Cubic Splines
@@ -37,5 +38,14 @@ other integrates dictionary-valued equations:
 A simple analyzer class is:
 
 .. autoclass:: gvar.ode.Solution()
+
+
+Power Series
+--------------
+.. automodule:: powerseries
+    :synopsis: Power series arithmetic and evaluation.
+
+.. autoclass:: gvar.powerseries.PowerSeries
+    :members:
 
 

@@ -1,5 +1,27 @@
-Version 4.7+
+Version 4.8
 =============
+This release has a reworked framework for SVD cuts. The new framework is 
+simpler but also more robust: SVD cuts are applied separately 
+to each block-diagonal sub-matrix of the data-prior covariance matrix. This
+is more accurate, usually faster, and uses less memory typically.
+
+- svdnum is no longer an option for lsqfit.nonlinear_fit, raniter, etc. 
+  This parameter makes little sense in the new framework. Make svdcut 
+  negative if it is important to get rid of certain eigenmodes. (Generally
+  it is better to keep the modes, but with larger variances. This is 
+  what happens when svdcut is positive.)
+
+- New information included in the Settings part of a fit report:
+  number of eigenmodes modified by SVD cut, time needed for fit.
+
+- Better notation for lsqfit.transform_p (mostly compatible with old
+  usage).
+
+- Added new numerical analysis routine (joining gvar.ode and gvar.cspline) 
+  in gvar for manipulating power series representations of functions:
+  gvar.powerseries. The numerical analysis routines in gvar have been
+  adapted so that they work with GVars and/or floats. More will be added
+  in the future.
 
 - gvar.dataset.avg_data(s) for a dictionary s now (optionally) issues
   a warning if different entries in s have different sample sizes. The

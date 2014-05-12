@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.7 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.8 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.7',
+        VERSION:     '4.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -788,7 +788,7 @@ of <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="d
 
 <dl class="function">
 <dt id="gvar.chi2">
-<tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em>, <em>svdcut=1e-15</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chi**2 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of whether the multi-dimensional 
 Gaussian distributions <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> (dictionaries or arrays) 
@@ -810,8 +810,8 @@ elements by zeros.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is computed from the inverse of the covariance matrix
 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>. The matrix inversion can be sensitive to roundoff 
 errors. In such cases, <em>SVD</em> cuts can be applied by setting
-parameters <tt class="docutils literal"><span class="pre">svdcut</span></tt> and <tt class="docutils literal"><span class="pre">svdnum</span></tt>. See the documentation 
-for <a class="reference internal" href="#gvar.SVD" title="gvar.SVD"><tt class="xref py py-class docutils literal"><span class="pre">gvar.SVD</span></tt></a> for information about these parameters.</p>
+parameters <tt class="docutils literal"><span class="pre">svdcut</span></tt>; see the documentation 
+for <a class="reference internal" href="#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a>, which is used to apply the cut.</p>
 <p>The return value is the <tt class="docutils literal"><span class="pre">chi**2</span></tt>. Extra data is stored in 
 <tt class="docutils literal"><span class="pre">chi2</span></tt> itself:</p>
 <dl class="attribute">
@@ -863,7 +863,7 @@ from the distribution defined by array (or dictionary) <tt class="docutils liter
 The random numbers incorporate any correlations implied by the <tt class="docutils literal"><span class="pre">g</span></tt>s.</p>
 <dl class="function">
 <dt id="gvar.raniter">
-<tt class="descclassname">gvar.</tt><tt class="descname">raniter</tt><big>(</big><em>g</em>, <em>n=None</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>rescale=True</em><big>)</big><a class="headerlink" href="#gvar.raniter" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">raniter</tt><big>(</big><em>g</em>, <em>n=None</em>, <em>svdcut=None</em><big>)</big><a class="headerlink" href="#gvar.raniter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return iterator for random samples from distribution <tt class="docutils literal"><span class="pre">g</span></tt></p>
 <p>The gaussian variables (<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> objects) in array (or dictionary) <tt class="docutils literal"><span class="pre">g</span></tt> 
 collectively define a multidimensional gaussian distribution. The 
@@ -885,15 +885,11 @@ distribution specified by <tt class="docutils literal"><span class="pre">g</span
 <li><strong>g</strong> (<em>array or dictionary or BufferDict or GVar</em>) &#8211; An array (or dictionary) of objects of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>; or a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>.</li>
 <li><strong>n</strong> &#8211; Maximum number of random iterations. Setting <tt class="docutils literal"><span class="pre">n=None</span></tt>
 (the default) implies there is no maximum number.</li>
-<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number) &#8211; If positive, replace eigenvalues of the covariance
-matrix of <tt class="docutils literal"><span class="pre">g</span></tt> with <tt class="docutils literal"><span class="pre">svdcut*(max</span> <span class="pre">eigenvalue)</span></tt>; if negative,
-discards eigenmodes with eigenvalues smaller than 
-<tt class="docutils literal"><span class="pre">svdcut*(max</span> <span class="pre">eigenvalue)</span></tt>; ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>svdnum</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or positive <tt class="docutils literal"><span class="pre">int</span></tt>) &#8211; If positive, keep only the modes with the largest 
-<tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenvalues in the covariance matrix for <tt class="docutils literal"><span class="pre">g</span></tt>; 
-ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt> or negative.</li>
-<li><strong>rescale</strong> (<em>bool</em>) &#8211; Covariance matrix is rescaled so that diagonal elements
-equal <tt class="docutils literal"><span class="pre">1</span></tt> before applying <em>svd</em> cuts if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>.</li>
+<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number) &#8211; If positive, replace eigenvalues <tt class="docutils literal"><span class="pre">eig</span></tt> of <tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s 
+correlation matrix with <tt class="docutils literal"><span class="pre">max(eig,</span> <span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig)</span></tt> where 
+<tt class="docutils literal"><span class="pre">max_eig</span></tt> is the largest eigenvalue; if negative, 
+discard eigenmodes with eigenvalues smaller 
+than <tt class="docutils literal"><span class="pre">|svdcut|</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt>. Default is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
 </ul>
 </td>
 </tr>
@@ -908,7 +904,7 @@ defined by <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 
 <dl class="function">
 <dt id="gvar.bootstrap_iter">
-<tt class="descclassname">gvar.</tt><tt class="descname">bootstrap_iter</tt><big>(</big><em>g</em>, <em>n=None</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>rescale=True</em><big>)</big><a class="headerlink" href="#gvar.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">bootstrap_iter</tt><big>(</big><em>g</em>, <em>n=None</em>, <em>svdcut=None</em><big>)</big><a class="headerlink" href="#gvar.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return iterator for bootstrap copies of <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
 <p>The gaussian variables (<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> objects) in array (or dictionary) <tt class="docutils literal"><span class="pre">g</span></tt>
 collectively define a multidimensional gaussian distribution. The
@@ -929,15 +925,11 @@ which case the resulting iterator returns bootstrap copies of the
 <li><strong>g</strong> (<em>array or dictionary or BufferDict</em>) &#8211; An array (or dictionary) of objects of type <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>.</li>
 <li><strong>n</strong> &#8211; Maximum number of random iterations. Setting <tt class="docutils literal"><span class="pre">n=None</span></tt>
 (the default) implies there is no maximum number.</li>
-<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number) &#8211; If positive, replace eigenvalues of the covariance
-matrix of <tt class="docutils literal"><span class="pre">g</span></tt> with <tt class="docutils literal"><span class="pre">svdcut*(max</span> <span class="pre">eigenvalue)</span></tt>; if negative,
-discards eigenmodes with eigenvalues smaller than 
-<tt class="docutils literal"><span class="pre">svdcut*(max</span> <span class="pre">eigenvalue)</span></tt>; ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>svdnum</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or positive <tt class="docutils literal"><span class="pre">int</span></tt>) &#8211; If positive, keep only the modes with the largest 
-<tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenvalues in the covariance matrix for <tt class="docutils literal"><span class="pre">g</span></tt>; 
-ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt> or negative.</li>
-<li><strong>rescale</strong> (<em>bool</em>) &#8211; Covariance matrix is rescaled so that diagonal elements
-equal <tt class="docutils literal"><span class="pre">1</span></tt> before applying <em>svd</em> cuts if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>.</li>
+<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number) &#8211; If positive, replace eigenvalues <tt class="docutils literal"><span class="pre">eig</span></tt> of <tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s 
+correlation matrix with <tt class="docutils literal"><span class="pre">max(eig,</span> <span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig)</span></tt> where 
+<tt class="docutils literal"><span class="pre">max_eig</span></tt> is the largest eigenvalue; if negative, 
+discard eigenmodes with eigenvalues smaller 
+than <tt class="docutils literal"><span class="pre">|svdcut|</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt>. Default is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
 </ul>
 </td>
 </tr>
@@ -972,8 +964,9 @@ the same set of random numbers at a later time.</p>
 </table>
 </dd></dl>
 
-<p>Two functions that are useful for tabulating results and for analyzing where
-the errors in a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> constructed from other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s come from:</p>
+<p>The following two functions that are useful for tabulating results
+and for analyzing where the errors in a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> constructed from
+other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s come from:</p>
 <dl class="function">
 <dt id="gvar.fmt_errorbudget">
 <tt class="descclassname">gvar.</tt><tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em>, <em>colwidth=10</em><big>)</big><a class="headerlink" href="#gvar.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
@@ -1038,49 +1031,155 @@ in <tt class="docutils literal"><span class="pre">outputs</span></tt>.</p>
 </table>
 </dd></dl>
 
-<p>The following functions creates new functions that generate <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (to
-replace <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>):</p>
+<p>The following function applies an <em>SVD</em> cut to the correlation matrix
+of a set of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s:</p>
 <dl class="function">
-<dt id="gvar.switch_gvar">
-<tt class="descclassname">gvar.</tt><tt class="descname">switch_gvar</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.switch_gvar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Switch <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> to new <tt class="xref py py-class docutils literal"><span class="pre">gvar.GVarFactory</span></tt>.</p>
+<dt id="gvar.svd">
+<tt class="descclassname">gvar.</tt><tt class="descname">svd</tt><big>(</big><em>g</em>, <em>svdcut=1e-15</em>, <em>wgts=False</em><big>)</big><a class="headerlink" href="#gvar.svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply svd cuts to collection of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
+<p>Standard usage is, for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">svdcut</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">gmod</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="n">svdcut</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">g</span></tt> is an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dictionary containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
+and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. When <tt class="docutils literal"><span class="pre">svdcut&gt;0</span></tt>, <tt class="docutils literal"><span class="pre">gmod</span></tt> is 
+a copy of <tt class="docutils literal"><span class="pre">g</span></tt> whose <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s have been modified to make 
+their correlation matrix less singular than that of the 
+original <tt class="docutils literal"><span class="pre">g</span></tt>: each eigenvalue <tt class="docutils literal"><span class="pre">eig</span></tt> of the correlation matrix is 
+replaced by <tt class="docutils literal"><span class="pre">max(eig,</span> <span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig)</span></tt> where <tt class="docutils literal"><span class="pre">max_eig</span></tt> is 
+the largest eigenvalue. This <em>SVD</em> cut, which is applied separately
+to each block-diagonal sub-matrix of the correlation matrix, 
+increases the variance of the eigenmodes with eigenvalues smaller
+than <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt>.</p>
+<p>When <tt class="docutils literal"><span class="pre">svdcut</span></tt> is negative, eigenmodes of the correlation matrix
+whose eigenvalues are smaller than <tt class="docutils literal"><span class="pre">|svdcut|</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt> are dropped
+from the new matrix and the corresponding components of <tt class="docutils literal"><span class="pre">g</span></tt> are 
+zeroed out (that is, replaced by 0(0)) in <tt class="docutils literal"><span class="pre">gmod</span></tt>.</p>
+<p>There is an additional parameter <tt class="docutils literal"><span class="pre">wgts</span></tt> in <a class="reference internal" href="#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a> whose
+default value is <tt class="docutils literal"><span class="pre">False</span></tt>. Setting <tt class="docutils literal"><span class="pre">wgts=1</span></tt> or <tt class="docutils literal"><span class="pre">wgts=-1</span></tt> instead
+causes <a class="reference internal" href="#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a> to return a tuple <tt class="docutils literal"><span class="pre">(gmod,</span> <span class="pre">i_wgts)</span></tt> where
+<tt class="docutils literal"><span class="pre">gmod</span></tt>  is the modified copy of <tt class="docutils literal"><span class="pre">g</span></tt>, and <tt class="docutils literal"><span class="pre">i_wgts</span></tt> contains a
+spectral  decomposition of the covariance matrix corresponding to
+the  modified correlation matrix if <tt class="docutils literal"><span class="pre">wgts=1</span></tt>, or a decomposition of its
+inverse if <tt class="docutils literal"><span class="pre">wgts=-1</span></tt>. The first entry <tt class="docutils literal"><span class="pre">i,</span> <span class="pre">wgts</span> <span class="pre">=</span> <span class="pre">i_wgts[0]</span></tt>  specifies
+the diagonal part of the matrix: <tt class="docutils literal"><span class="pre">i</span></tt> is a list of the indices in 
+<tt class="docutils literal"><span class="pre">gmod.flat</span></tt> corresponding to diagonal elements, and <tt class="docutils literal"><span class="pre">wgts</span> <span class="pre">**</span> <span class="pre">2</span></tt> 
+gives the corresponding matrix elements. The second and subsequent 
+entries, <tt class="docutils literal"><span class="pre">i,</span> <span class="pre">wgts</span> <span class="pre">=</span> <span class="pre">i_wgts[n]</span></tt> for <tt class="docutils literal"><span class="pre">n</span> <span class="pre">&gt;</span> <span class="pre">0</span></tt>, each correspond
+to block-diagonal sub-matrices, where <tt class="docutils literal"><span class="pre">i</span></tt> is the list of
+indices corresponding to the block, and <tt class="docutils literal"><span class="pre">wgts[j]</span></tt> are eigenvectors of
+the sub-matrix rescaled so that</p>
+<div class="highlight-python"><div class="highlight"><pre>numpy.sum(numpy.outer(wi, wi) for wi in wgts[j]
+</pre></div>
+</div>
+<p>is the sub-matrix (<tt class="docutils literal"><span class="pre">wgts=1</span></tt>) or its inverse (<tt class="docutils literal"><span class="pre">wgts=-1</span></tt>).</p>
+<p>To compute the inverse of the covariance matrix from <tt class="docutils literal"><span class="pre">i_wgts</span></tt>, 
+for example, one could use code like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">gmod</span><span class="p">,</span> <span class="n">i_wgts</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="n">svdcut</span><span class="p">,</span> <span class="n">wgts</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">inv_cov</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">),</span> <span class="nb">float</span><span class="p">)</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">wgts</span> <span class="o">=</span> <span class="n">i_wgts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                       <span class="c"># 1x1 sub-matrices</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">inv_cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wgts</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wgts</span> <span class="ow">in</span> <span class="n">i_wgts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>                <span class="c"># nxn sub-matrices (n&gt;1)</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">wgts</span><span class="p">:</span>
+        <span class="n">inv_cov</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">[:,</span> <span class="bp">None</span><span class="p">]]</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This sets <tt class="docutils literal"><span class="pre">inv_cov</span></tt> equal to the inverse of the covariance matrix of 
+the <tt class="docutils literal"><span class="pre">gmod</span></tt>s. Similarly, we can  compute the expectation value, 
+<tt class="docutils literal"><span class="pre">u.dot(inv_cov.dot(v))</span></tt>, between two vectors (<tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays) using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">result</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">i</span><span class="p">,</span> <span class="n">wgts</span> <span class="o">=</span> <span class="n">i_wgts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>                       <span class="c"># 1x1 sub-matrices </span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">wgts</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">wgts</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">wgts</span> <span class="ow">in</span> <span class="n">i_wgts</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>                <span class="c"># nxn sub-matrices (n&gt;1)</span>
+    <span class="n">result</span> <span class="o">+=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wgts</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">wgts</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">result</span></tt> is the desired expectation value.</p>
+<p>The input parameters are :</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">New <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>g</strong> &#8211; An array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dicitionary whose values are 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</li>
+<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number <tt class="docutils literal"><span class="pre">(|svdcut|&lt;=1)</span></tt>.) &#8211; If positive, replace eigenvalues <tt class="docutils literal"><span class="pre">eig</span></tt> of the correlation
+matrix with <tt class="docutils literal"><span class="pre">max(eig,</span> <span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig)</span></tt> where <tt class="docutils literal"><span class="pre">max_eig</span></tt> is
+the largest eigenvalue; if negative, 
+discard eigenmodes with eigenvalues smaller 
+than <tt class="docutils literal"><span class="pre">|svdcut|</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt>. Default is 1e-15.</li>
+<li><strong>wgts</strong> &#8211; Setting <tt class="docutils literal"><span class="pre">wgts=1</span></tt> causes <a class="reference internal" href="#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a> to compute 
+and return a spectral decomposition of the covariance matrix of 
+the modified <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, <tt class="docutils literal"><span class="pre">gmod</span></tt>. Setting <tt class="docutils literal"><span class="pre">wgts=-1</span></tt> results in 
+a decomposition of the inverse of the covariance matrix. The
+default value is <tt class="docutils literal"><span class="pre">False</span></tt>, in which case only <tt class="docutils literal"><span class="pre">gmod</span></tt> is returned.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A copy <tt class="docutils literal"><span class="pre">gmod</span></tt> of <tt class="docutils literal"><span class="pre">g</span></tt> whose correlation matrix is modified by 
+<em>svd</em> cuts. If <tt class="docutils literal"><span class="pre">wgts</span></tt> is not <tt class="docutils literal"><span class="pre">False</span></tt>,
+a tuple <tt class="docutils literal"><span class="pre">(g,</span> <span class="pre">i_wgts)</span></tt> is returned where <tt class="docutils literal"><span class="pre">i_wgts</span></tt> 
+contains a spectral decomposition of <tt class="docutils literal"><span class="pre">gmod</span></tt>&#8216;s 
+covariance matrix or its inverse.</p>
+</td>
 </tr>
 </tbody>
 </table>
+<p>Data from the <em>svd</em> analysis of <tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s covariance matrix is stored in
+<tt class="docutils literal"><span class="pre">svd</span></tt> itself:</p>
+<dl class="attribute">
+<dt id="gvar.svd.dof">
+<tt class="descclassname">svd.</tt><tt class="descname">dof</tt><a class="headerlink" href="#gvar.svd.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of independent degrees of freedom left after the 
+<em>svd</em> cut. This is the same as the number initially unless
+<tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></tt> in which case it may be smaller.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="gvar.restore_gvar">
-<tt class="descclassname">gvar.</tt><tt class="descname">restore_gvar</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.restore_gvar" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restore previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</td>
-</tr>
-</tbody>
-</table>
+<dl class="attribute">
+<dt id="gvar.svd.nmod">
+<tt class="descclassname">svd.</tt><tt class="descname">nmod</tt><a class="headerlink" href="#gvar.svd.nmod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of modes whose eignevalue was modified by the 
+<em>svd</em> cut.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="gvar.gvar_factory">
-<tt class="descclassname">gvar.</tt><tt class="descname">gvar_factory</tt><big>(</big><em>cov=None</em><big>)</big><a class="headerlink" href="#gvar.gvar_factory" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return new function for creating <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (to replace 
-<a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>).</p>
-<p>If <tt class="docutils literal"><span class="pre">cov</span></tt> is specified, it is used as the covariance matrix
-for new <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by the function returned by 
-<tt class="docutils literal"><span class="pre">gvar_factory(cov)</span></tt>. Otherwise a new covariance matrix is created
-internally.</p>
+<dl class="attribute">
+<dt id="gvar.svd.nblocks">
+<tt class="descclassname">svd.</tt><tt class="descname">nblocks</tt><a class="headerlink" href="#gvar.svd.nblocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary where <tt class="docutils literal"><span class="pre">svd.nblocks[s]</span></tt> contains the number of
+block-diagonal <tt class="docutils literal"><span class="pre">s</span></tt>-by-<tt class="docutils literal"><span class="pre">s</span></tt> sub-matrices in the correlation 
+matrix.</p>
 </dd></dl>
 
-<p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by different functions cannot be combined in arithmetic
-expressions (the error message &#8220;Incompatible GVars.&#8221; results).</p>
+<dl class="attribute">
+<dt id="gvar.svd.eigen_range">
+<tt class="descclassname">svd.</tt><tt class="descname">eigen_range</tt><a class="headerlink" href="#gvar.svd.eigen_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ratio of the smallest to largest eigenvalue before <em>svd</em> cuts are
+applied (but after rescaling).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.logdet">
+<tt class="descclassname">svd.</tt><tt class="descname">logdet</tt><a class="headerlink" href="#gvar.svd.logdet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithm of the determinant of the covariance matrix after <em>svd</em>
+cuts are applied (excluding any omitted modes when 
+<tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></tt>).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gvar.svd.correction">
+<tt class="descclassname">svd.</tt><tt class="descname">correction</tt><a class="headerlink" href="#gvar.svd.correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Array containing the <em>svd</em> corrections that were added to <tt class="docutils literal"><span class="pre">g.flat</span></tt>
+to create the modified <tt class="docutils literal"><span class="pre">g</span></tt>s.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>This function is useful when the correlation matrix is singular
+or almost singular, and its inverse is needed (as in curve fitting).</p>
 <p>The following function can be used to rebuild collections of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s,
 ignoring all correlations with other variables. It can also be used to
 introduce correlations between uncorrelated variables.</p>
@@ -1124,107 +1223,49 @@ those in <tt class="docutils literal"><span class="pre">g</span></tt> are erased
 </table>
 </dd></dl>
 
-<p>Finally there is a utility function and a class for implementing an <em>svd</em>
-analysis of a covariance or other symmetric, positive matrix:</p>
+<p>The following functions creates new functions that generate <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (to
+replace <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>):</p>
 <dl class="function">
-<dt id="gvar.svd">
-<tt class="descclassname">gvar.</tt><tt class="descname">svd</tt><big>(</big><em>g</em>, <em>svdcut=None</em>, <em>svdnum=None</em>, <em>compute_delta=False</em>, <em>rescale=True</em><big>)</big><a class="headerlink" href="#gvar.svd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Apply svd cuts to collection of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in <tt class="docutils literal"><span class="pre">g</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">g</span></tt> is an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dictionary containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
-and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. <tt class="docutils literal"><span class="pre">svd(g,...)</span></tt> returns a copy of <tt class="docutils literal"><span class="pre">g</span></tt> whose
-<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s have been modified so that their covariance matrix is less
-singular than for the original <tt class="docutils literal"><span class="pre">g</span></tt> (the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> means are unchanged).
-This is done using an <em>svd</em> algorithm which is controlled by three
-parameters: <tt class="docutils literal"><span class="pre">svdcut</span></tt>, <tt class="docutils literal"><span class="pre">svdnum</span></tt> and <tt class="docutils literal"><span class="pre">rescale</span></tt> (see
-<a class="reference internal" href="#gvar.SVD" title="gvar.SVD"><tt class="xref py py-class docutils literal"><span class="pre">gvar.SVD</span></tt></a> for more details). <em>svd</em> cuts are not applied when
-the covariance matrix is diagonal (that is, when there are no
-correlations between different elements of <tt class="docutils literal"><span class="pre">g</span></tt>).</p>
-<p>The input parameters are :</p>
+<dt id="gvar.switch_gvar">
+<tt class="descclassname">gvar.</tt><tt class="descname">switch_gvar</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.switch_gvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switch <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> to new <tt class="xref py py-class docutils literal"><span class="pre">gvar.GVarFactory</span></tt>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>g</strong> &#8211; An array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or a dicitionary whose values are 
-<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</li>
-<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or number <tt class="docutils literal"><span class="pre">(|svdcut|&lt;=1)</span></tt>.) &#8211; If positive, replace eigenvalues of the covariance 
-matrix with <tt class="docutils literal"><span class="pre">svdcut*(max</span> <span class="pre">eigenvalue)</span></tt>; if negative, discard
-eigenmodes with eigenvalues smaller than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the
-maximum eigenvalue. Default is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>svdnum</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or int) &#8211; If positive, keep only the modes with the largest 
-<tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenvalues; ignore if set to <tt class="docutils literal"><span class="pre">None</span></tt>. Default is
-<tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>rescale</strong> &#8211; Rescale the input matrix to make its diagonal elements 
-equal to 1.0 before applying <em>svd</em> cuts. (Default is <tt class="docutils literal"><span class="pre">True</span></tt>.)</li>
-<li><strong>compute_inv</strong> &#8211; Compute representation of inverse of covariance 
-matrix if <tt class="docutils literal"><span class="pre">True</span></tt>; the result is stored in <tt class="docutils literal"><span class="pre">svd.inv_wgt</span></tt> (see
-below). Default value is <tt class="docutils literal"><span class="pre">False</span></tt>.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A copy of <tt class="docutils literal"><span class="pre">g</span></tt> with the same means but with a covariance
-matrix modified by <em>svd</em> cuts.</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">New <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</td>
 </tr>
 </tbody>
 </table>
-<p>Data from the <em>svd</em> analysis of <tt class="docutils literal"><span class="pre">g</span></tt>&#8216;s covariance matrix is stored in
-<tt class="docutils literal"><span class="pre">svd</span></tt> itself:</p>
-<dl class="attribute">
-<dt id="gvar.svd.val">
-<tt class="descclassname">svd.</tt><tt class="descname">val</tt><a class="headerlink" href="#gvar.svd.val" title="Permalink to this definition">¶</a></dt>
-<dd><p>Eigenvalues of the covariance matrix after <em>svd</em> cuts (and after
-rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>); the eigenvalues are ordered, with
-the smallest first.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="gvar.svd.vec">
-<tt class="descclassname">svd.</tt><tt class="descname">vec</tt><a class="headerlink" href="#gvar.svd.vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Eigenvectors of the covariance matrix after <em>svd</em> cuts (and after
-rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>), where <tt class="docutils literal"><span class="pre">svd.vec[i]</span></tt> is the vector
-corresponding to <tt class="docutils literal"><span class="pre">svd.val[i]</span></tt>.</p>
+<dl class="function">
+<dt id="gvar.restore_gvar">
+<tt class="descclassname">gvar.</tt><tt class="descname">restore_gvar</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.restore_gvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restore previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="gvar.svd.eigen_range">
-<tt class="descclassname">svd.</tt><tt class="descname">eigen_range</tt><a class="headerlink" href="#gvar.svd.eigen_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ratio of the smallest to largest eigenvalue before <em>svd</em> cuts are
-applied (but after rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>).</p>
+<dl class="function">
+<dt id="gvar.gvar_factory">
+<tt class="descclassname">gvar.</tt><tt class="descname">gvar_factory</tt><big>(</big><em>cov=None</em><big>)</big><a class="headerlink" href="#gvar.gvar_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return new function for creating <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (to replace 
+<a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>).</p>
+<p>If <tt class="docutils literal"><span class="pre">cov</span></tt> is specified, it is used as the covariance matrix
+for new <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by the function returned by 
+<tt class="docutils literal"><span class="pre">gvar_factory(cov)</span></tt>. Otherwise a new covariance matrix is created
+internally.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="gvar.svd.D">
-<tt class="descclassname">svd.</tt><tt class="descname">D</tt><a class="headerlink" href="#gvar.svd.D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Diagonal of matrix used to rescale the covariance matrix before
-applying <em>svd</em> cuts (cuts are applied to <tt class="docutils literal"><span class="pre">D*cov*D</span></tt>) if
-<tt class="docutils literal"><span class="pre">rescale=True</span></tt>; <tt class="docutils literal"><span class="pre">svd.D</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt> if <tt class="docutils literal"><span class="pre">rescale=False</span></tt>.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="gvar.svd.logdet">
-<tt class="descclassname">svd.</tt><tt class="descname">logdet</tt><a class="headerlink" href="#gvar.svd.logdet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithm of the determinant of the covariance matrix after <em>svd</em>
-cuts are applied.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="gvar.svd.correction">
-<tt class="descclassname">svd.</tt><tt class="descname">correction</tt><a class="headerlink" href="#gvar.svd.correction" title="Permalink to this definition">¶</a></dt>
-<dd><p>Vector of the <em>svd</em> corrections to <tt class="docutils literal"><span class="pre">g.flat</span></tt>;</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="gvar.svd.inv_wgt">
-<tt class="descclassname">svd.</tt><tt class="descname">inv_wgt</tt><a class="headerlink" href="#gvar.svd.inv_wgt" title="Permalink to this definition">¶</a></dt>
-<dd><p>The sum of the outer product of vectors <tt class="docutils literal"><span class="pre">inv_wgt[i]</span></tt> with
-themselves equals the inverse of the covariance matrix after <em>svd</em>
-cuts. Only computed if <tt class="docutils literal"><span class="pre">compute_inv=True</span></tt>. The order of the
-vectors is reversed relative to <tt class="docutils literal"><span class="pre">svd.val</span></tt> and <tt class="docutils literal"><span class="pre">svd.vec</span></tt></p>
-</dd></dl>
-
-</dd></dl>
-
+<p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by different functions cannot be combined in arithmetic
+expressions (the error message &#8220;Incompatible GVars.&#8221; results).</p>
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
@@ -1661,8 +1702,8 @@ the <em>SVD</em> cut (equals 0 unless <tt class="docutils literal"><span class="
 </dd></dl>
 
 <dl class="attribute">
-<dt id="gvar.SVD.kappa">
-<tt class="descname">kappa</tt><a class="headerlink" href="#gvar.SVD.kappa" title="Permalink to this definition">¶</a></dt>
+<dt id="gvar.SVD.eigen_range">
+<tt class="descname">eigen_range</tt><a class="headerlink" href="#gvar.SVD.eigen_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ratio of the smallest to the largest eigenvector in the 
 unconditioned matrix (after rescaling if <tt class="docutils literal"><span class="pre">rescale=True</span></tt>)</p>
 </dd></dl>
@@ -1771,7 +1812,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -679,10 +679,10 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(evalcov(z.flat), evalcov(x))
         
     def test_asgvar(self):
-        """ asgvar """
-        z = asgvar(x)
+        """ gvar functions as asgvar """
+        z = gvar(x)
         self.assertTrue(z is x)
-        z = asgvar("2.00(25)")
+        z = gvar("2.00(25)")
         self.assertEqual(z.mean,2.0)
         self.assertEqual(z.sdev,0.25)
     
@@ -828,12 +828,16 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         global x,y,gvar
         n = 1000
         rtol = 5./n**0.5
+        x = gvar(x.mean, x.sdev)
+        y = gvar(y.mean, y.sdev)
         f = raniter([x,y],n)
         ans = [fi for fi in f]
+        # print(x, y, evalcov([x,y]))
+        # print (ans)
         ans = np.array(ans).transpose()
-        self.assert_arraysclose(np.cov(ans[0],ans[1]),evalcov([x,y]),rtol=rtol)
         self.assertAlmostEqual(ans[0].mean(),x.mean,delta=x.sdev*rtol)
         self.assertAlmostEqual(ans[1].mean(),y.mean,delta=y.sdev*rtol)
+        self.assert_arraysclose(np.cov(ans[0],ans[1]),evalcov([x,y]),rtol=rtol)
     
     @unittest.skipIf(FAST,"skipping test_raniter2 for speed")
     def test_raniter2(self):
@@ -1029,7 +1033,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(svd.logdet, np.log(np.linalg.det(cov)))
         # diagonal
         f = gvar(['1(2)', '3(4)'])
-        g, wgts = svd(f, svdcut=0.9, compute_inv=True)
+        g, wgts = svd(f, svdcut=0.9, wgts=-1)
         test_gvar(g[0], f[0])
         test_gvar(g[1], f[1])
         test_cov(wgts, evalcov(g))
@@ -1037,7 +1041,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(svd.eigen_range, 1.)
         
         # degenerate
-        g, wgts = svd(3 * [gvar('1(1)')], svdcut=1e-10, compute_inv=True)
+        g, wgts = svd(3 * [gvar('1(1)')], svdcut=1e-10, wgts=-1)
         test_cov(wgts, evalcov(g), atol=1e-6)
         self.assertEqual(svd.nmod, 2)
         self.assertAlmostEqual(svd.eigen_range, 0.0)
@@ -1057,7 +1061,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
 
         # cov[i,i] independent of i, cov[i,j] != 0
         x, dx = gvar(['1(1)', '0.01(1)'])
-        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.2 ** 2, compute_inv=True)
+        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.2 ** 2, wgts=-1)
         y = g[0] + g[1] 
         dy = g[0] - g[1] 
         test_gvar(y, x)
@@ -1068,7 +1072,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
 
         # negative svdcut
         x, dx = gvar(['1(1)', '0.01(1)'])
-        g, wgts = svd([(x+dx)/2, (x-dx)/20.], svdcut=-0.2 ** 2, compute_inv=True)
+        g, wgts = svd([(x+dx)/2, (x-dx)/20.], svdcut=-0.2 ** 2, wgts=-1)
         y = g[0] + g[1] * 10
         dy = g[0] - g[1] * 10
         np.testing.assert_allclose(evalcov([y, dy]), [[1, 0], [0, 0]])
@@ -1079,7 +1083,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
 
         # cov[i,i] independent of i, cov[i,j] != 0 --- cut too small
         x, dx = gvar(['1(1)', '0.01(1)'])
-        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.0099999** 2, compute_inv=True)
+        g, wgts = svd([(x+dx)/2, (x-dx)/2.], svdcut=0.0099999** 2, wgts=-1)
         y = g[0] + g[1] 
         dy = g[0] - g[1] 
         test_gvar(y, x)
@@ -1091,7 +1095,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
 
         # cov[i,i] independent of i after rescaling, cov[i,j] != 0
         # rescaling turns this into the previous case
-        g, wgts = svd([(x+dx)/2., (x-dx)/20.], svdcut=0.2 ** 2, compute_inv=True)
+        g, wgts = svd([(x+dx)/2., (x-dx)/20.], svdcut=0.2 ** 2, wgts=-1)
         y = g[0] + g[1] * 10.
         dy = g[0] - g[1] * 10.
         test_gvar(y, x)
@@ -1103,7 +1107,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         # dispersed correlations
         g2, g4 = gvar(['2(2)', '4(4)'])
         orig_g = np.array([g2, (x+dx)/2., g4, (x-dx)/20.]) 
-        g, wgts = svd(orig_g, svdcut=0.2 ** 2, compute_inv=True)
+        g, wgts = svd(orig_g, svdcut=0.2 ** 2, wgts=-1)
         y = g[1] + g[3] * 10.
         dy = g[1] - g[3] * 10.
         test_gvar(y, x)
@@ -1113,9 +1117,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         test_cov(wgts, evalcov(g))
         self.assertEqual(svd.nmod, 1)
         self.assertAlmostEqual(svd.eigen_range, 0.01**2)
-        self.assertEqual(svd.blocks[0], [0])
-        self.assertEqual(svd.blocks[1], [2])
-        self.assertEqual(svd.blocks[2].tolist(), [1, 3])
+        self.assertEqual(svd.nblocks[1], 2)
+        self.assertEqual(svd.nblocks[2], 1)
 
         # remove svd correction
         g.flat -= svd.correction
@@ -1131,7 +1134,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         g = {}
         g[0] = (x+dx)/2.
         g[1] = (x-dx)/20.
-        g, wgts = svd({0:(x+dx)/2., 1:(x-dx)/20.}, svdcut=0.2 ** 2, compute_inv=True)
+        g, wgts = svd({0:(x+dx)/2., 1:(x-dx)/20.}, svdcut=0.2 ** 2, wgts=-1)
         assert isinstance(g, BufferDict)
         y = g[0] + g[1] * 10.
         dy = g[0] - g[1] * 10.
@@ -1182,11 +1185,28 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     
     def test_chi2(self):
         """ chi2(g1, g2) """
+        # uncorrelated
         g = gvar([1., 2.], [1., 2.])
         x = [2., 4.]
         self.assertAlmostEqual(chi2(x,g), 2.)
         self.assertEqual(chi2.dof, 2)
         self.assertAlmostEqual(chi2.Q, 0.36787944, places=2)
+        
+        # correlated
+        g = np.array([g[0]+g[1], g[0]-g[1]])
+        x = np.array([x[0]+x[1], x[0]-x[1]])
+        self.assertAlmostEqual(chi2(x,g), 2.)
+        self.assertEqual(chi2.dof, 2)
+        self.assertAlmostEqual(chi2.Q, 0.36787944, places=2)
+        
+        # correlated with 0 mode and svdcut < 0
+        g = np.array([g[0], g[1], g[0]+g[1]])
+        x = np.array([x[0], x[1], x[0]+x[1]])
+        self.assertAlmostEqual(chi2(x, g, svdcut=-1e-10), 2.)
+        self.assertEqual(chi2.dof, 2)
+        self.assertAlmostEqual(chi2.Q, 0.36787944, places=2)
+        
+        # dictionaries with different keys
         g = dict(a=gvar(1,1), b=[[gvar(2,2)], [gvar(3,3)], [gvar(4,4)]], c=gvar(5,5))
         x = dict(a=2., b=[[4.], [6.]])
         self.assertAlmostEqual(chi2(x,g), 3.)
@@ -1198,6 +1218,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(chi2(2., gvar(1,1)), 1.)
         self.assertEqual(chi2.dof, 1)
         self.assertAlmostEqual(chi2.Q, 0.31731051, places=2)
+        
+        # two dictionaries
         g1 = dict(a=gvar(1, 1), b=[gvar(2, 2)])
         g2 = dict(a=gvar(2, 2), b=[gvar(4, 4)])
         self.assertAlmostEqual(chi2(g1, g2), 0.2 + 0.2)

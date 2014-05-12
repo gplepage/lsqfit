@@ -33,14 +33,14 @@ for p in [prior, log_prior, sqrt_prior]:
 	key = list(p.keys())[0]
 	sys.stdout = open("eg6-{}.out".format(key), "w")
 	if True:
-		@transform_p(p, 0)
+		@transform_p(p)
 		def fcn(p, N=len(y)):
 			return N*[p['a']]
 	else:
 		class fwrapper(object):
 			def __init__(self, N):
 				self.N = N
-			@p_transforms(p, 1)
+			@p_transforms(p, has_x=True)
 			def f(self, p):
 				"hi"
 				return self.N * [p['a']]

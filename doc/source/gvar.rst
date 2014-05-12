@@ -600,7 +600,7 @@ matrices and correlation/comparison information can be extracted from arrays
 
 .. autofunction:: gvar.uncorrelated(g1, g2)
 
-.. autofunction:: gvar.chi2(g1, g2)
+.. autofunction:: gvar.chi2(g1, g2, svdcut=1e-15)
 
 .. autofunction:: gvar.fmt_chi2(f)
 
@@ -613,19 +613,35 @@ The following function creates an iterator that generates random arrays
 from the distribution defined by array (or dictionary) ``g`` of |GVar|\s. 
 The random numbers incorporate any correlations implied by the ``g``\s.
 
-.. autofunction:: gvar.raniter(g, n=None, svdcut=None, svdnum=None, rescale=True)
+.. autofunction:: gvar.raniter(g, n=None, svdcut=None)
 
-.. autofunction:: gvar.bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True)
+.. autofunction:: gvar.bootstrap_iter(g, n=None, svdcut=None)
 
 .. autofunction:: gvar.ranseed(a)
 
-Two functions that are useful for tabulating results and for analyzing where
-the errors in a |GVar| constructed from other |GVar|\s come from:
+The following two functions that are useful for tabulating results 
+and for analyzing where the errors in a |GVar| constructed from 
+other |GVar|\s come from:
 
 .. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10)
 
 .. autofunction:: gvar.fmt_values(outputs, ndecimal=None)
 
+The following function applies an *SVD* cut to the correlation matrix 
+of a set of |GVar|\s:
+
+.. autofunction:: gvar.svd
+
+This function is useful when the correlation matrix is singular 
+or almost singular, and its inverse is needed (as in curve fitting).
+
+The following function can be used to rebuild collections of |GVar|\s, 
+ignoring all correlations with other variables. It can also be used to 
+introduce correlations between uncorrelated variables.
+
+.. autofunction:: gvar.rebuild(g, gvar=gvar, corr=0.0)
+
+   
 The following functions creates new functions that generate |GVar|\s (to 
 replace :func:`gvar.gvar`):
 
@@ -638,17 +654,6 @@ replace :func:`gvar.gvar`):
 |GVar|\s created by different functions cannot be combined in arithmetic
 expressions (the error message "Incompatible GVars." results). 
 
-The following function can be used to rebuild collections of |GVar|\s, 
-ignoring all correlations with other variables. It can also be used to 
-introduce correlations between uncorrelated variables.
-
-.. autofunction:: gvar.rebuild(g, gvar=gvar, corr=0.0)
-
-Finally there is a utility function and a class for implementing an *svd*
-analysis of a covariance or other symmetric, positive matrix:
-
-.. autofunction:: gvar.svd(g, svdcut=None, svdnum=None, compute_delta=False, rescale=True)
-   
    
 Classes
 -------

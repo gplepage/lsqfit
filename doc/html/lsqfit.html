@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.7 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.8 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.7',
+        VERSION:     '4.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8 documentation" href="index.html" />
     <link rel="prev" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -190,21 +190,18 @@ from the minimum condition for the fit, which defines (implicitly)
 This leads immediately to the relationship above.</p>
 <p>The data&#8217;s covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
 singular, making it difficult to invert. This problem is dealt with using
-an <em>svd</em> cut: the covariance matrix is diagonalized, some number of the
+an <em>SVD</em> cut: the covariance matrix is diagonalized, some number of the
 smallest (and therefore least-well determined) eigenvalues and their
 eigenvectors are discarded, and the inverse matrix is reconstituted from
 the eigenmodes that remain. (Instead of discarding modes one can replace
 their eigenvalues by the smallest eigenvalue that is retained; this is less
-conservative and sometimes leads to more accurate results.) Note that the
-covariance matrix has at most <img class="math" src="_images/math/10f77f12438cb385098c4d2344aaa427d0a462a8.png" alt="N" style="vertical-align: 0px"/> non-zero eigenvalues when it is
-estimated from <img class="math" src="_images/math/10f77f12438cb385098c4d2344aaa427d0a462a8.png" alt="N" style="vertical-align: 0px"/> random samples; zero-modes should always be
-discarded.</p>
+conservative and usually leads to more accurate results.)</p>
 </div>
 <div class="section" id="nonlinear-fit-objects">
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.nonlinear_fit">
-<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">nonlinear_fit</tt><big>(</big><em>data=None</em>, <em>fcn=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>svdcut=(1e-15</em>, <em>1e-15)</em>, <em>svdnum=None</em>, <em>debug=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">nonlinear_fit</tt><big>(</big><em>data</em>, <em>fcn</em>, <em>prior=None</em>, <em>p0=None</em>, <em>svdcut=1e-15</em>, <em>debug=False</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> fits a (nonlinear) function <tt class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></tt>
 to data <tt class="docutils literal"><span class="pre">y</span></tt> by varying parameters <tt class="docutils literal"><span class="pre">p</span></tt>, and stores the results: for
@@ -301,21 +298,20 @@ file after the fit (for priming future fits). If <tt class="docutils literal"><s
 or the attempt to read the file fails, starting values are
 extracted from <tt class="docutils literal"><span class="pre">prior</span></tt>. The default value is <tt class="docutils literal"><span class="pre">None</span></tt>; <tt class="docutils literal"><span class="pre">p0</span></tt>
 must be defined if <tt class="docutils literal"><span class="pre">prior</span></tt> is <tt class="docutils literal"><span class="pre">None</span></tt>.</li>
-<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">float</span></tt> or 2-tuple) &#8211; If positive, eigenvalues of the (rescaled) <tt class="docutils literal"><span class="pre">y</span></tt> 
-covariance matrix that are smaller than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the
-maximum eigenvalue are replaced by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the maximum
-eigenvalue. If negative, eigenmodes with eigenvalues smaller than
-<tt class="docutils literal"><span class="pre">|svdcut|</span></tt> times the largest eigenvalue are discarded. If zero or
-<tt class="docutils literal"><span class="pre">None</span></tt>, the covariance matrix is left unchanged. If <tt class="docutils literal"><span class="pre">svdcut</span></tt> is
-a 2-tuple, the first entry is <tt class="docutils literal"><span class="pre">svdcut</span></tt> for the <tt class="docutils literal"><span class="pre">y</span></tt> covariance
-matrix and the second entry is <tt class="docutils literal"><span class="pre">svdcut</span></tt> for the prior&#8217;s
-covariance matrix.</li>
-<li><strong>svdnum</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">int</span></tt> or 2-tuple) &#8211; If positive, at most <tt class="docutils literal"><span class="pre">svdnum</span></tt> eigenmodes of the 
-(rescaled) <tt class="docutils literal"><span class="pre">y</span></tt> covariance matrix are retained; the modes with the
-smallest eigenvalues are discarded. <tt class="docutils literal"><span class="pre">svdnum</span></tt> is ignored if set to
-<tt class="docutils literal"><span class="pre">None</span></tt>. If <tt class="docutils literal"><span class="pre">svdnum</span></tt> is a 2-tuple, the first entry is <tt class="docutils literal"><span class="pre">svdnum</span></tt>
-for the <tt class="docutils literal"><span class="pre">y</span></tt> covariance matrix and the second entry is <tt class="docutils literal"><span class="pre">svdnum</span></tt>
-for the prior&#8217;s covariance matrix.</li>
+<li><strong>svdcut</strong> (<tt class="docutils literal"><span class="pre">None</span></tt> or <tt class="docutils literal"><span class="pre">float</span></tt>) &#8211; If <tt class="docutils literal"><span class="pre">svdcut</span></tt> is nonzero (not <tt class="docutils literal"><span class="pre">None</span></tt>), <em>svd</em> cuts
+are applied to every block-diagonal sub-matrix of the covariance 
+matrix for the data <tt class="docutils literal"><span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">prior</span></tt> (if there is a prior).
+The blocks are first rescaled so that all 
+diagonal elements equal 1 &#8211; that is, the blocks are replaced
+by the correlation matrices for the corresponding subsets of variables. 
+Then, if <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></tt>, 
+eigenvalues of the rescaled matrices that are smaller than <tt class="docutils literal"><span class="pre">svdcut</span></tt> 
+times the maximum eigenvalue are replaced by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the 
+maximum eigenvalue. This makes the covariance matrix less singular 
+and less susceptible to roundoff error. When <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></tt>, 
+eigenvalues smaller than <tt class="docutils literal"><span class="pre">|svdcut|</span></tt> times the maximum eigenvalue 
+are discarded and the corresponding components in <tt class="docutils literal"><span class="pre">y</span></tt> and 
+<tt class="docutils literal"><span class="pre">prior</span></tt> are zeroed out.</li>
 <li><strong>debug</strong> (<em>boolean</em>) &#8211; Set to <tt class="docutils literal"><span class="pre">True</span></tt> for extra debugging of the fit function
 and a check for roundoff errors. (Default is <tt class="docutils literal"><span class="pre">False</span></tt>.)</li>
 <li><strong>fitterargs</strong> &#8211; Dictionary of arguments passed on to 
@@ -400,7 +396,7 @@ and, therefore, <tt class="docutils literal"><span class="pre">fit.palt</span></
 budgets. <tt class="docutils literal"><span class="pre">fit.p</span></tt> and <tt class="docutils literal"><span class="pre">fit.palt</span></tt> give the same means and normally
 give the same errors for each parameter. They differ only when the
 input data&#8217;s covariance matrix is too singular to invert accurately
-(because of roundoff error), in which case an <em>svd</em> cut is advisable.</p>
+(because of roundoff error), in which case an <em>SVD</em> cut is advisable.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -431,16 +427,22 @@ the fit.</p>
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
 <tt class="descname">svdcorrection</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dictionary containing the (flattened) <em>svd</em> corrections, if any, to
-the fit data <tt class="docutils literal"><span class="pre">y</span></tt> and the prior <tt class="docutils literal"><span class="pre">prior</span></tt>. For example, <tt class="docutils literal"><span class="pre">fit.y</span></tt>
-is obtained by adding <tt class="docutils literal"><span class="pre">fit.svdcorrection['y']</span></tt> to to the
-(flattened) input <tt class="docutils literal"><span class="pre">y</span></tt> data. Similarly <tt class="docutils literal"><span class="pre">fit.prior</span></tt> is the input
-prior plus <tt class="docutils literal"><span class="pre">fit.svdcorrection['prior']</span></tt>. When there is no <em>svd</em>
-correction, the entries are set equal to <tt class="docutils literal"><span class="pre">None</span></tt>. When the input
-data and prior are correlated, <tt class="docutils literal"><span class="pre">fit.svdcorrection['all']</span></tt> contains
-the correction for the concatenated data and prior. There are no
-entries for keys <tt class="docutils literal"><span class="pre">'y'</span></tt> and <tt class="docutils literal"><span class="pre">'prior'</span></tt> in this case. There is also
-no entry for key <tt class="docutils literal"><span class="pre">'prior'</span></tt> when there is no prior.</p>
+<dd><p>An array containing the (flattened) <em>SVD</em> corrections, if any, added
+to the fit data <tt class="docutils literal"><span class="pre">y</span></tt> and the prior <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.nonlinear_fit.svdn">
+<tt class="descname">svdn</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of eignemodes modified (and/or deleted) by the <em>SVD</em> cut.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.nonlinear_fit.nblocks">
+<tt class="descname">nblocks</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.nblocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary where <tt class="docutils literal"><span class="pre">nblocks[s]</span></tt> equals the number of block-diagonal
+sub-matrices of the <tt class="docutils literal"><span class="pre">y</span></tt>&#8211;<tt class="docutils literal"><span class="pre">prior</span></tt> covariance matrix that are size
+<tt class="docutils literal"><span class="pre">s</span></tt>-by-<tt class="docutils literal"><span class="pre">s</span></tt>. This is sometimes useful for debugging.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -455,7 +457,7 @@ in particular attributes:</p>
 <dt id="lsqfit.nonlinear_fit.prior">
 <tt class="descname">prior</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prior used in the fit. This may differ from the input prior if an
-<em>svd</em> cut is used (<tt class="docutils literal"><span class="pre">svdcut&gt;0</span></tt>). It is either a dictionary
+<em>SVD</em> cut is used. It is either a dictionary
 (<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) or an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>),
 depending upon the input. Equals <tt class="docutils literal"><span class="pre">None</span></tt> if no prior was specified.</p>
 </dd></dl>
@@ -474,7 +476,7 @@ argument: so <tt class="docutils literal"><span class="pre">f(p)</span></tt> rat
 <dt id="lsqfit.nonlinear_fit.y">
 <tt class="descname">y</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit data used in the fit. This may differ from the input data if
-an <em>svd</em> cut is used (<tt class="docutils literal"><span class="pre">svdcut&gt;0</span></tt>). It is either a dictionary
+an <em>SVD</em> cut is used. It is either a dictionary
 (<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) or an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>),
 depending upon the input.</p>
 </dd></dl>
@@ -488,6 +490,17 @@ errors in the final error estimates:</p>
 <dt id="lsqfit.nonlinear_fit.format">
 <tt class="descname">format</tt><big>(</big><em>maxline=0</em>, <em>pstyle='v'</em><big>)</big><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
+<p>The output tabulates the <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom of the 
+fit (<tt class="docutils literal"><span class="pre">chi2/dof</span></tt>), the number of degrees of freedom, 
+the logarithm of the Gaussian Bayes Factor for the fit (<tt class="docutils literal"><span class="pre">logGBF</span></tt>),
+and the number of fit-algorithm iterations needed by the fit. 
+Optionally, it will also list the best-fit values for the 
+fit parameters together with the prior for each (in <tt class="docutils literal"><span class="pre">[]</span></tt> on 
+each line). It can also list all of the data and the corresponding
+values from the fit. At the end it lists the <em>SVD</em> cut, 
+the number of eigenmodes modified by the <em>SVD</em> cut, the relative 
+and absolute tolerances used in the fit, and the time in seconds
+needed to do the fit.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -955,7 +968,7 @@ of freedom even if the model used to construct <tt class="docutils literal"><spa
 <h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.transform_p">
-<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>priorkeys</em>, <em>pindex=None</em>, <em>pkey=None</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>priorkeys</em>, <em>has_x=False</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorate fit function to allow log/sqrt-normal priors.</p>
 <p>This decorator can be applied to fit functions whose parameters 
 are stored in a dictionary-like object. It searches 
@@ -965,10 +978,10 @@ form <tt class="docutils literal"><span class="pre">&quot;log(XX)&quot;</span></
 such key it adds a new entry to the parameter dictionary
 with key <tt class="docutils literal"><span class="pre">&quot;XX&quot;</span></tt> where:</p>
 <div class="highlight-python"><div class="highlight"><pre>p[&quot;XX&quot;] = exp(p[k])    for k = &quot;log(XX)&quot; or &quot;logXX&quot;
-
-or
-
-p[&quot;XX&quot;] = p[k] ** 2    for k = &quot;sqrt(XX)&quot; or &quot;sqrtXX&quot;
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-python"><div class="highlight"><pre>p[&quot;XX&quot;] = p[k] ** 2    for k = &quot;sqrt(XX)&quot; or &quot;sqrtXX&quot;
 </pre></div>
 </div>
 <p>This means that the fit function can be expressed entirely in 
@@ -981,26 +994,18 @@ or second cases above, respectively. In either case
 <p>This is a convenience function. It allows for the 
 rapid replacement of a fit parameter by its 
 logarithm or square root without having to rewrite the
-fit function &#8212; only the prior need be changed. The
-decorator needs the keys from the prior, and it needs to be told which
-argument (numbered from 0) of the fit function is the 
-parameter dictionary, unless the fit function has 
-only a single argument:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+fit function &#8212; only the prior need be changed. The decorator
+needs to be told if the fit function has an <tt class="docutils literal"><span class="pre">x</span></tt> as its 
+first argument, followed by the parameters <tt class="docutils literal"><span class="pre">p</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">has_x</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>
 </div>
-<p>or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">other_arg1</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
-    <span class="o">...</span>
-</pre></div>
-</div>
-<p>or</p>
+<p>versus</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="o">...</span>        
+    <span class="o">...</span>
 </pre></div>
 </div>
 <p>A list of the specific keys that need transforming can be used instead
@@ -1014,10 +1019,10 @@ of itself to the function as an attribute: <tt class="docutils literal"><span cl
 <li><strong>priorkeys</strong> (<em>sequence</em>) &#8211; The keys in the prior that are to be tranformed. 
 Other keys can be in <tt class="docutils literal"><span class="pre">priorkeys</span></tt> provided they do not begin
 with <tt class="docutils literal"><span class="pre">'log'</span></tt> or <tt class="docutils literal"><span class="pre">'sqrt'</span></tt> &#8212; they are ignored.</li>
-<li><strong>pindex</strong> (<em>integer or None</em>) &#8211; Index of the parameters-dictionary in the argument list 
-of the fit function. Default value is <tt class="docutils literal"><span class="pre">None</span></tt>; one of 
-<tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>),
-unless the fit function has only a single argument.</li>
+<li><strong>has_x</strong> &#8211; Set equal to <tt class="docutils literal"><span class="pre">True</span></tt> if the fit function is a function
+of <tt class="docutils literal"><span class="pre">x</span></tt> and parameters <tt class="docutils literal"><span class="pre">p</span></tt> (<em>i.e.</em>, <tt class="docutils literal"><span class="pre">f(x,p)</span></tt>). Set equal to 
+<tt class="docutils literal"><span class="pre">False</span></tt> if the fit function is a function only of the parameters
+(<em>i.e.</em>, <tt class="docutils literal"><span class="pre">f(p)</span></tt>). Default is <tt class="docutils literal"><span class="pre">False</span></tt>.</li>
 <li><strong>pkey</strong> (<em>string or None</em>) &#8211; Name of the parameters-variable in the argument keyword
 dictionary of the fit function. Default value is <tt class="docutils literal"><span class="pre">None</span></tt>; one of 
 <tt class="docutils literal"><span class="pre">pkey</span></tt> or <tt class="docutils literal"><span class="pre">pindex</span></tt> must be specified (i.e., <tt class="docutils literal"><span class="pre">not</span> <span class="pre">None</span></tt>),
@@ -1260,7 +1265,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

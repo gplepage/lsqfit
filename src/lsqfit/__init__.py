@@ -87,7 +87,9 @@ from ._utilities import multifit, multiminex, gammaQ
 from ._version import version as __version__
 
 
-_FDATA = collections.namedtuple('_FDATA', 'mean inv_wgts svdcorrection logdet')
+_FDATA = collections.namedtuple(
+    '_FDATA', 'mean inv_wgts svdcorrection logdet nblocks svdn'
+    )
 # Internal data type for _unpack_data()
 
 class nonlinear_fit(object):
@@ -190,8 +192,10 @@ class nonlinear_fit(object):
     :param svdcut: If ``svdcut`` is nonzero (not ``None``), *svd* cuts
         are applied to every block-diagonal sub-matrix of the covariance 
         matrix for the data ``y`` and ``prior`` (if there is a prior).
-        The blocks are first rescaled (symmetrically) so that all 
-        diagonal elements equal 1. Then, if ``svdcut > 0``, 
+        The blocks are first rescaled so that all 
+        diagonal elements equal 1 -- that is, the blocks are replaced
+        by the correlation matrices for the corresponding subsets of variables. 
+        Then, if ``svdcut > 0``, 
         eigenvalues of the rescaled matrices that are smaller than ``svdcut`` 
         times the maximum eigenvalue are replaced by ``svdcut`` times the 
         maximum eigenvalue. This makes the covariance matrix less singular 
@@ -206,12 +210,14 @@ class nonlinear_fit(object):
     :param fitterargs: Dictionary of arguments passed on to 
         :class:`lsqfit.multifit`, which does the fitting.
     """
-    def __init__(self, data=None, fcn=None, prior=None, p0=None, #):
-                svdcut=1e-15, debug=False, **kargs): 
+    def __init__(
+        self, data, fcn, prior=None, p0=None, 
+        svdcut=1e-15, debug=False, **kargs
+        ): 
         # capture arguments; initialize parameters 
         self.fitterargs = kargs
         if isinstance(svdcut, tuple):
-            self.svdcut = svdcut[0]
+            svdcut = svdcut[0]
             warnings.warn(
                 'svdcut = tuple is no longer supported; replace by a single number',
                 UserWarning, stacklevel=2
@@ -226,7 +232,7 @@ class nonlinear_fit(object):
         self.debug = debug
         if 'svdnum' in kargs:
             del kargs['svdnum']
-            warning.warn(
+            warnings.warn(
                 'svdnum is no longer supported by lsqfit', 
                 UserWarning, stacklevel=2
                 )
@@ -240,6 +246,8 @@ class nonlinear_fit(object):
         self.y = y   
         self.prior = prior  
         self.svdcorrection = fdata.svdcorrection
+        self.nblocks = fdata.nblocks
+        self.svdn = fdata.svdn
         self.p0 = _unpack_p0(p0=self.p0, p0file=self.p0file, prior=self.prior)
         p0 = self.p0.flatten()  # only need the buffer for multifit 
         flatfcn = _unpack_fcn(fcn=self.fcn, p0=self.p0, y=self.y, x=self.x)
@@ -292,8 +300,10 @@ class nonlinear_fit(object):
         self._p = None          # lazy evaluation
         self._transformed_p = None # lazy evaluation
         self._palt = None       # lazy evaluation
-        self.psdev = _reformat(self.p0, [covii**0.5 
-                               for covii in self.cov.diagonal()])
+        self.psdev = _reformat(
+            self.p0, 
+            [covii**0.5 for covii in self.cov.diagonal()]
+            )
         # compute logGBF 
         if self.prior is None: 
             self.logGBF = None
@@ -391,6 +401,18 @@ class nonlinear_fit(object):
 
     def format(self, maxline=0, pstyle='v', nline=None): 
         """ Formats fit output details into a string for printing.
+
+        The output tabulates the ``chi**2`` per degree of freedom of the 
+        fit (``chi2/dof``), the number of degrees of freedom, 
+        the logarithm of the Gaussian Bayes Factor for the fit (``logGBF``),
+        and the number of fit-algorithm iterations needed by the fit. 
+        Optionally, it will also list the best-fit values for the 
+        fit parameters together with the prior for each (in ``[]`` on 
+        each line). It can also list all of the data and the corresponding
+        values from the fit. At the end it lists the *SVD* cut, 
+        the number of eigenmodes modified by the *SVD* cut, the relative 
+        and absolute tolerances used in the fit, and the time in seconds
+        needed to do the fit. 
                         
         :param maxline: Maximum number of data points for which fit 
             results and input data are tabulated. ``maxline<0`` implies
@@ -541,8 +563,7 @@ class nonlinear_fit(object):
         else:
             descr = ""
         table = ('Least Square Fit%s:\n  chi2/dof [dof] = %.2g [%d]    Q = %s'
-                 '    logGBF = %s' % (descr, chi2_dof, dof, Q, logGBF))
-        table = table+("    itns = %d\n" % self.nit)
+                 '    logGBF = %s\n' % (descr, chi2_dof, dof, Q, logGBF))
         if maxline < 0:
             return table
         
@@ -563,9 +584,15 @@ class nonlinear_fit(object):
         for di,stars in zip(data, collect.stars):
             table += (fst % tuple(di)) + stars + '\n'
                 
-        settings = "\nSettings:\n  svdcut = {svdcut}".format(svdcut=self.svdcut)
-        settings += "    reltol/abstol = %.2g/%.2g\n" % ( #
-            self.reltol, self.abstol)
+        settings = "\nSettings:\n  svdcut/n = {svdcut}/{svdn}".format(
+            svdcut=self.svdcut, svdn=self.svdn
+            )
+        settings += "    reltol/abstol = {rel:.2g}/{abs:.2g}".format(
+            rel=self.reltol, abs=self.abstol
+            )
+        settings +="    (itns/time = {itns}/{time:.1f})\n".format(
+            itns=self.nit, time=self.time
+            )
         if pstyle == 'm':
             settings = ""
         if self.alg != "lmsder":
@@ -741,7 +768,7 @@ class nonlinear_fit(object):
         arguments in :class:`lsqfit.nonlinear_fit`.
         """
         pexact = self.pmean if pexact is None else pexact
-        # Note: don't need svdcut/svdnum since these are built into the data_iter
+        # Note: don't need svdcut since these are built into the data_iter
         fargs = dict(fcn=self.fcn, svdcut=None, p0=pexact)
         fargs.update(self.fitterargs)
         fargs.update(kargs)
@@ -904,7 +931,7 @@ class transform_p(object):
 
         p["XX"] = exp(p[k])    for k = "log(XX)" or "logXX"
 
-        or
+    or ::
 
         p["XX"] = p[k] ** 2    for k = "sqrt(XX)" or "sqrtXX"
 
@@ -919,27 +946,19 @@ class transform_p(object):
     This is a convenience function. It allows for the 
     rapid replacement of a fit parameter by its 
     logarithm or square root without having to rewrite the
-    fit function --- only the prior need be changed. The
-    decorator needs the keys from the prior, and it needs to be told which
-    argument (numbered from 0) of the fit function is the 
-    parameter dictionary, unless the fit function has 
-    only a single argument::
+    fit function --- only the prior need be changed. The decorator
+    needs to be told if the fit function has an ``x`` as its 
+    first argument, followed by the parameters ``p``::
 
-        @lsqfit.transform_p(prior.keys(), 1)
+        @lsqfit.transform_p(prior.keys(), has_x=True)
         def fitfcn(x, p):
             ...
 
-    or ::
-
-        @lsqfit.transform_p(prior.keys(), 0)
-        def fitfcn(p, other_arg1, ...):
-            ...
-
-    or ::
+    versus ::
 
         @lsqfit.transform_p(prior.keys())
         def fitfcn(p):
-            ...        
+            ...
 
     A list of the specific keys that need transforming can be used instead
     of the list of all keys (``prior.keys()``). The decorator assigns a copy 
@@ -949,20 +968,19 @@ class transform_p(object):
         Other keys can be in ``priorkeys`` provided they do not begin
         with ``'log'`` or ``'sqrt'`` --- they are ignored.
     :type priorkeys: sequence
-    :param pindex: Index of the parameters-dictionary in the argument list 
-        of the fit function. Default value is ``None``; one of 
-        ``pkey`` or ``pindex`` must be specified (i.e., ``not None``),
-        unless the fit function has only a single argument.
-    :type pindex: integer or None
+    :param has_x: Set equal to ``True`` if the fit function is a function
+        of ``x`` and parameters ``p`` (*i.e.*, ``f(x,p)``). Set equal to 
+        ``False`` if the fit function is a function only of the parameters
+        (*i.e.*, ``f(p)``). Default is ``False``.
+    :type pindex: bool
     :param pkey: Name of the parameters-variable in the argument keyword
         dictionary of the fit function. Default value is ``None``; one of 
         ``pkey`` or ``pindex`` must be specified (i.e., ``not None``),
         unless the fit function has only a single argument.
     :type pkey: string or None
     """
-    def __init__(self, priorkeys, pindex=None, pkey=None):
-        self.pindex = pindex
-        self.pkey = pkey
+    def __init__(self, priorkeys, has_x=False):
+        self.pindex = 1 if has_x else 0
         self.log_keys = []
         self.sqrt_keys = []
         self.added_keys = []
@@ -1050,39 +1068,17 @@ class transform_p(object):
 
 
     def __call__(self, f):
-        if self.pindex is None and self.pkey is None:
-            fargs = inspect.getargspec(f)[0]
-            if len(fargs) == 1:
-                self.pindex = 0
-                self.pkey = fargs[0]
-            else:
-                raise ValueError('must specify pindex or pkey')
-        if self.pindex is None:
-            try:
-                self.pindex = inspect.getargspec(f)[0].index(self.pkey)
-            except ValueError:
-                raise ValueError('bad pkey: ' + str(self.pkey))
-        elif self.pkey is None:
-            try:
-                self.pkey = inspect.getargspec(f)[0][self.pindex]
-            except IndexError:
-                raise IndexError('bad pindex: ' + str(self.pindex))
-        else:
-            try:
-                tmp = (self.pkey == inspect.getargspec(f)[0][self.pindex])
-                if not tmp:
-                    raise IndexError
-            except IndexError: 
-                raise ValueError(
-                    "bad pindex, pkey: " + str(self.pindex) +
-                    ', ' + str(self.pkey)
-                    )
+        try:
+            pkey = inspect.getargspec(f)[0][self.pindex]
+        except IndexError:
+            raise IndexError('function has too few arguments')
+        
         @functools.wraps(f)
         def newf(*args, **kargs):
             p = ( 
                 _gvar.BufferDict(args[self.pindex])
                 if self.pindex < len(args) else
-                _gvar.BufferDict(kargs[self.pkey])
+                _gvar.BufferDict(kargs[pkey])
                 )
             for i, j in self.log_keys:
                 p[j] = _gvar.exp(p[i])
@@ -1093,9 +1089,10 @@ class transform_p(object):
                 args[self.pindex] = p
                 args = tuple(args)
             else:
-                kargs[self.pkey] = p
+                kargs[pkey] = p
             # newf.transform_p = self
             return f(*args, **kargs)
+
         newf.transform_p = self
         return newf
 
@@ -1164,12 +1161,14 @@ def _unpack_data(data, prior, svdcut):
         raise ValueError("data tuple wrong length: "+str(len(data)))
     
     def _apply_svd(data, svdcut=svdcut):
-        ans, inv_wgts = _gvar.svd(data, svdcut=svdcut, compute_inv=True)
+        ans, inv_wgts = _gvar.svd(data, svdcut=svdcut, wgts=-1)
         fdata = _FDATA(
             mean=_gvar.mean(data.flat), 
             inv_wgts=inv_wgts,
             svdcorrection=_gvar.svd.correction,
             logdet=_gvar.svd.logdet,
+            nblocks=_gvar.svd.nblocks,
+            svdn=_gvar.svd.nmod,
             )
         return ans, fdata
 

@@ -523,8 +523,8 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
                                     for vk in outputs])/val))
     return ans
 
-# bootstrap_iter, raniter, ranseed, svd, valder 
-def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
+# bootstrap_iter, raniter, svd, valder 
+def bootstrap_iter(g, n=None, svdcut=None):
     """ Return iterator for bootstrap copies of ``g``. 
         
     The gaussian variables (|GVar| objects) in array (or dictionary) ``g``
@@ -544,44 +544,36 @@ def bootstrap_iter(g, n=None, svdcut=None, svdnum=None, rescale=True):
     :type g: array or dictionary or BufferDict
     :param n: Maximum number of random iterations. Setting ``n=None``
         (the default) implies there is no maximum number.
-    :param svdcut: If positive, replace eigenvalues of the covariance
-        matrix of ``g`` with ``svdcut*(max eigenvalue)``; if negative,
-        discards eigenmodes with eigenvalues smaller than 
-        ``svdcut*(max eigenvalue)``; ignore if set to ``None``.
+    :param svdcut: If positive, replace eigenvalues ``eig`` of ``g``'s 
+        correlation matrix with ``max(eig, svdcut * max_eig)`` where 
+        ``max_eig`` is the largest eigenvalue; if negative, 
+        discard eigenmodes with eigenvalues smaller 
+        than ``|svdcut| * max_eig``. Default is ``None``.
     :type svdcut: ``None`` or number
-    :param svdnum: If positive, keep only the modes with the largest 
-        ``svdnum`` eigenvalues in the covariance matrix for ``g``; 
-        ignore if set to ``None`` or negative.
-    :type svdnum: ``None`` or positive ``int``
-    :param rescale: Covariance matrix is rescaled so that diagonal elements
-        equal ``1`` before applying *svd* cuts if ``rescale=True``.
-    :type rescale: bool
     :returns: An iterator that returns bootstrap copies of ``g``.
     """
-    if hasattr(g,'keys'):
-        g = BufferDict(g)
-    else:
-        g = numpy.asarray(g)
-    s = SVD(evalcov(g.flat),svdcut=svdcut,svdnum=svdnum,
-            rescale=rescale,compute_delta=True)
-    g_flat = g.flat if s.delta is None else (g.flat + s.delta)
-    wgt = s.decomp(1)
-    nwgt = len(wgt)
+    g, i_wgts = _gvar.svd(g, svdcut=svdcut, wgts=1)
+    g_flat = g.flat
+    nwgt = sum(len(wgts) for i, wgts in i_wgts)
     count = 0
-    while (n is None) or (count<n):
+    while (n is None) or (count < n):
         count += 1
-        z = numpy.random.normal(0.0,1.,nwgt)
-        buf = g_flat + sum(zi*wi for zi,wi in zip(z,wgt))
+        buf = numpy.array(g.flat)
+        z = numpy.random.normal(0.0, 1.0, nwgt)
+        i, wgts = i_wgts[0]
+        if len(i) > 0:
+            buf[i] += z[i] * wgts 
+        for i, wgts in i_wgts[1:]:
+            buf[i] += sum(zi * wi for zi, wi in zip(z[i], wgts))
         if g.shape is None:
-            yield BufferDict(g,buf=buf)
+            yield BufferDict(g, buf=buf)
         elif g.shape == ():
             yield next(buf.flat)
         else:
             yield buf.reshape(g.shape)
-        # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
  
-def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
+def raniter(g, n=None, svdcut=None):
     """ Return iterator for random samples from distribution ``g``
         
     The gaussian variables (|GVar| objects) in array (or dictionary) ``g`` 
@@ -603,57 +595,37 @@ def raniter(g,n=None, svdcut=None, svdnum=None, rescale=True):
     :type g: array or dictionary or BufferDict or GVar
     :param n: Maximum number of random iterations. Setting ``n=None``
         (the default) implies there is no maximum number.
-    :param svdcut: If positive, replace eigenvalues of the covariance
-        matrix of ``g`` with ``svdcut*(max eigenvalue)``; if negative,
-        discards eigenmodes with eigenvalues smaller than 
-        ``svdcut*(max eigenvalue)``; ignore if set to ``None``.
+    :param svdcut: If positive, replace eigenvalues ``eig`` of ``g``'s 
+        correlation matrix with ``max(eig, svdcut * max_eig)`` where 
+        ``max_eig`` is the largest eigenvalue; if negative, 
+        discard eigenmodes with eigenvalues smaller 
+        than ``|svdcut| * max_eig``. Default is ``None``.
     :type svdcut: ``None`` or number
-    :param svdnum: If positive, keep only the modes with the largest 
-        ``svdnum`` eigenvalues in the covariance matrix for ``g``; 
-        ignore if set to ``None`` or negative.
-    :type svdnum: ``None`` or positive ``int``
-    :param rescale: Covariance matrix is rescaled so that diagonal elements
-        equal ``1`` before applying *svd* cuts if ``rescale=True``.
-    :type rescale: bool
     :returns: An iterator that returns random arrays or dictionaries
         with the same shape as ``g`` drawn from the gaussian distribution 
         defined by ``g``.
     """
-    if hasattr(g,'keys'):
-        g = BufferDict(g)
-    else:
-        g = numpy.asarray(g)
+    g, i_wgts = _gvar.svd(g, svdcut=svdcut, wgts=1.)
     g_mean = mean(g.flat)
-    s = SVD(evalcov(g.flat),svdcut=svdcut,svdnum=svdnum,rescale=rescale)
-    wgt = s.decomp(1)
-    nwgt = len(wgt)
+    nwgt = sum(len(wgts) for i, wgts in i_wgts)
     count = 0
-    while count!=n:
+    while (n is None) or (count < n):
         count += 1
-        z = numpy.random.normal(0.0,1.,nwgt)
-        buf = g_mean + sum(zi*wi for zi,wi in zip(z,wgt))
+        z = numpy.random.normal(0.0, 1.0, nwgt)
+        buf = numpy.array(g_mean)
+        i, wgts = i_wgts[0]
+        if len(i) > 0:
+            buf[i] += z[i] * wgts 
+        for i, wgts in i_wgts[1:]:
+            buf[i] += sum(zi * wi for zi, wi in zip(z[i], wgts))
         if g.shape is None:
-            yield BufferDict(g,buf=buf)
+            yield BufferDict(g, buf=buf)
         elif g.shape == ():
             yield next(buf.flat)
         else:
             yield buf.reshape(g.shape)
-        # yield BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
     raise StopIteration
 
-# def ranseed(seed):
-#     """ Seed random number generators with tuple ``seed``.
-        
-#     Argument ``seed`` is a :class:`tuple` of integers that is used to seed
-#     the random number generators used by :mod:`numpy` and  
-#     :mod:`random` (and therefore by :mod:`gvar`). Reusing 
-#     the same ``seed`` results in the same set of random numbers.
-        
-#     :param seed: A tuple of integers.
-#     :type seed: tuple
-#     """
-#     seed = tuple(seed)
-#     numpy.random.seed(seed)
    
 class SVD(object):
     """ SVD decomposition of a pos. sym. matrix. 
@@ -738,8 +710,9 @@ class SVD(object):
         its eigenvalues. Is ``None`` if ``svdcut<0`` or 
         ``compute_delta==False``.
     """
-    def __init__(self, mat,svdcut=None,svdnum=None,compute_delta=False,
-                 rescale=False):
+    def __init__(
+        self, mat, svdcut=None, svdnum=None, compute_delta=False, rescale=False
+        ):
         super(SVD,self).__init__()
         self.svdcut = svdcut
         self.svdnum = svdnum

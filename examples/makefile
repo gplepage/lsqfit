@@ -14,17 +14,17 @@ PYTHON = python
 
 run:
 	$(PYTHON) simple.py > simple.tmp
-	- diff -w simple.out simple.tmp
+	- diff -w -I svdcut simple.out simple.tmp
 	$(PYTHON) y-vs-x.py > y-vs-x.tmp
-	- diff -w y-vs-x.out y-vs-x.tmp
+	- diff -w -I svdcut y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
-	- diff -w x-err.out x-err.tmp
+	- diff -w -I svdcut x-err.out x-err.tmp
 	$(PYTHON) p-corr.py > p-corr.tmp
-	- diff -w p-corr.out p-corr.tmp
+	- diff -w -I svdcut p-corr.out p-corr.tmp
 	$(PYTHON) err-budget.py > err-budget.tmp
-	- diff -w err-budget.out err-budget.tmp
+	- diff -w -I svdcut err-budget.out err-budget.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
-	- diff -w pendulum.out pendulum.tmp
+	- diff -w -I svdcut pendulum.out pendulum.tmp
 
 update-all:
 	$(PYTHON) simple.py > simple.out

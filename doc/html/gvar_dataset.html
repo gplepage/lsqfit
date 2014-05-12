@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.7 documentation</title>
+    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.8 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.7',
+        VERSION:     '4.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8 documentation" href="index.html" />
     <link rel="next" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
     <link rel="prev" title="gvar - Gaussian Random Variables" href="gvar.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -195,8 +195,8 @@ sample in code: for example,</p>
 <dt id="gvar.dataset.avg_data">
 <tt class="descclassname">gvar.dataset.</tt><tt class="descname">avg_data</tt><big>(</big><em>data</em>, <em>median=False</em>, <em>spread=False</em>, <em>bstrap=False</em><big>)</big><a class="headerlink" href="#gvar.dataset.avg_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Average random data to estimate mean.</p>
-<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers or random arrays, or a dictionary
-of lists of random numbers/arrays: for example,</p>
+<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers, a list of random arrays, or a dictionary
+of lists of random numbers and/or arrays: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.60</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.28</span><span class="p">,</span> <span class="mf">1.30</span><span class="p">,</span> <span class="mf">0.54</span><span class="p">,</span> <span class="mf">2.15</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">random_arrays</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">12.2</span><span class="p">,</span><span class="mf">121.3</span><span class="p">],[</span><span class="mf">13.4</span><span class="p">,</span><span class="mf">149.2</span><span class="p">],[</span><span class="mf">11.7</span><span class="p">,</span><span class="mf">135.3</span><span class="p">],</span>
 <span class="gp">... </span>                 <span class="p">[</span><span class="mf">7.2</span><span class="p">,</span><span class="mf">64.6</span><span class="p">],[</span><span class="mf">15.2</span><span class="p">,</span><span class="mf">69.0</span><span class="p">],[</span><span class="mf">8.3</span><span class="p">,</span><span class="mf">108.3</span><span class="p">]]</span>
@@ -252,9 +252,11 @@ shorthand for setting <tt class="docutils literal"><span class="pre">median=True
 overrides any explicit setting for these keyword arguments. This is the
 typical choice for analyzing bootstrap data &#8212; hence its name. The
 default value is <tt class="docutils literal"><span class="pre">bstrap=False</span></tt>.</p>
-<p>The final option is to omit the error estimates on the averages, which 
+<p>The fourth option is to omit the error estimates on the averages, which 
 is triggered by setting <tt class="docutils literal"><span class="pre">noerror=True</span></tt>. Just the mean values are 
 returned. The default value is <tt class="docutils literal"><span class="pre">noerror=False</span></tt>.</p>
+<p>The final option <tt class="docutils literal"><span class="pre">warn</span></tt> determines whether or not a warning is issued when
+different components of a dictionary data set have different sample sizes.</p>
 </dd></dl>
 
 <dl class="function">
@@ -470,8 +472,8 @@ specified: for example,</p>
 <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>adds one new random number (or array) to <tt class="docutils literal"><span class="pre">data['n']</span></tt> (or
-<tt class="docutils literal"><span class="pre">data['a']</span></tt>).</p>
+<p>adds one new random number to <tt class="docutils literal"><span class="pre">data['n']</span></tt>, and a new
+vector to <tt class="docutils literal"><span class="pre">data['a']</span></tt>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -492,8 +494,8 @@ example, each of</p>
 <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>adds two new random numbers (or arrays) to <tt class="docutils literal"><span class="pre">data['n']</span></tt> (or
-<tt class="docutils literal"><span class="pre">data['a']</span></tt>).</p>
+<p>adds two new random numbers to <tt class="docutils literal"><span class="pre">data['n']</span></tt>, and two new 
+random vectors to <tt class="docutils literal"><span class="pre">data['a']</span></tt>.</p>
 <p>This method can be used to merge two datasets, whether or not they
 share keys: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&quot;file1&quot;</span><span class="p">)</span>
@@ -650,7 +652,7 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -1,5 +1,5 @@
 Least Square Fit:
-  chi2/dof [dof] = 0.99 [10]    Q = 0.45    logGBF = 8.56    itns = 2
+  chi2/dof [dof] = 0.99 [10]    Q = 0.45    logGBF = 8.56
 
 Parameters:
             g/l   39.65 (69)     [ 39.5 (3.9) ]  
@@ -20,7 +20,7 @@ Fit:
         9     0.832 (79)     0.935 (44)  *
 
 Settings:
-  svdcut = 1e-15    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 
 fit/exact for (g/l) = 1.004(17)
 fit/exact for theta(0) = 1.012(18)

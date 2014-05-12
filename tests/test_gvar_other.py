@@ -5,6 +5,7 @@ import numpy as np
 import random
 import gvar as gv
 from gvar import *
+from gvar.powerseries import PowerSeries
 
 class ArrayTests(object):
     def __init__(self):
@@ -216,6 +217,157 @@ class test_cspline(unittest.TestCase,ArrayTests):
             self.assertGreater(1e-9, sdev(s.D2(xi)))
             self.assertAlmostEqual(mean(self.integf(xi, x0.mean)), mean(s.integ(xi)))
             self.assert_gvclose(s.integ(xi), self.integf(xi, x0))
+
+class PowerSeriesTests(object):
+    def __init__(self):
+        pass
+
+    def assert_close(self, a, b, rtol=1e-8, atol=1e-8):
+        np.testing.assert_allclose(a.c, b.c, rtol=rtol, atol=atol)
+
+class test_powerseries(unittest.TestCase, PowerSeriesTests):
+    """docstring for test_powerseries"""
+    def setUp(self):
+        self.order = 10
+        self.x = PowerSeries([0.,1.], order=self.order)
+        self.x2 = PowerSeries([0., 0., 1.], order=self.order)
+        self.z = PowerSeries([0+0j, 1.+0j], order=self.order)
+        self.one = PowerSeries([1.], order=self.order)
+        self.zero = PowerSeries([0.], order=self.order)
+        coef = 1. / np.cumprod([1.] + (1. + np.arange(0., self.order+1.)).tolist())
+        self.exp_x = PowerSeries(coef, order=self.order)
+        osc_coef = coef * (1j)**np.arange(len(coef))
+        self.cos_x = PowerSeries([xi.real for xi in osc_coef], order=self.order)
+        self.sin_x = PowerSeries([xi.imag for xi in osc_coef], order=self.order)
+
+    def test_constructor(self):
+        " PowerSeries(c, order) "
+        x = PowerSeries(1. + np.arange(2*self.order), order=self.order)
+        self.assertEqual(len(x.c), self.order + 1)
+        np.testing.assert_allclose(x.c, 1. + np.arange(self.order + 1))
+        x = PowerSeries(order=self.order)
+        y = PowerSeries(numpy.zeros(self.order + 1, object), order=self.order)
+        self.assertEqual(len(x.c), len(y.c))
+        for xi, yi in zip(x, y):
+            self.assertEqual(xi, yi)
+        for i in range(self.order + 1):
+            self.assertEqual(x[i], y[i])
+        y = PowerSeries(self.exp_x)      
+        for i in range(self.order + 1):
+            y[i] *= 2
+        self.assert_close(y, 2 * self.exp_x)
+        self.assert_close(PowerSeries(), PowerSeries([0.]))
+        with self.assertRaises(ValueError):
+            PowerSeries([])
+        with self.assertRaises(ValueError):
+            PowerSeries(order=-1)
+        with self.assertRaises(ValueError):
+            PowerSeries([1,2], order=-1)
+
+    def test_arith(self):
+        " x+y x-y x*y x/y x**2 "
+        x = self.x
+        y = self.exp_x
+        self.assert_close(x * x, self.x2)
+        self.assert_close(y / y, self.one)
+        self.assert_close((y * y) / y, y)
+        self.assert_close((x * y) / y, x)
+        self.assert_close(y - y, self.zero)
+        self.assert_close((x + y) - x, y)
+        self.assert_close(x + y - x - y, self.zero)
+        self.assert_close(x ** 2, self.x2)
+        self.assert_close(y * y * y, y ** 3)
+        self.assert_close(2 ** x, self.exp_x ** log(2.))
+        self.assert_close(y + y, 2 * y)
+        self.assert_close(y + y, y * 2)
+        self.assert_close(x + 2, PowerSeries([2, 1], order=self.order))
+        self.assert_close(2 + x, PowerSeries([2, 1], order=self.order))
+        self.assert_close(x - 2, PowerSeries([-2, 1], order=self.order))
+        self.assert_close(2 - x, PowerSeries([2, -1], order=self.order))
+        self.assert_close(2 * (y / 2), y)
+        self.assert_close(y * (2 / y), 2 * self.one)
+        self.assertEqual(y ** 0, 1.)
+        self.assert_close(y ** (-2), 1 / y / y)
+
+        # check division where c[0] = 0
+        self.assert_close(x / x, PowerSeries([1], order=self.order - 1))
+        self.assert_close((x + x ** 2) / x, PowerSeries([1, 1], order=self.order-1))
+        self.assert_close((x * x) / self.x2, PowerSeries([1], order=self.order - 2))
+
+        # check error checks
+        with self.assertRaises(ZeroDivisionError):
+            self.x / self.zero
+
+    def test_sqrt(self):
+        " sqrt "
+        y = self.exp_x
+        self.assert_close(sqrt(y) ** 2, y)
+        self.assert_close(sqrt(y ** 2), y)
+        self.assert_close(sqrt(y), y ** 0.5)
+
+    def test_exp(self):
+        x = self.x
+        y = self.exp_x
+        self.assert_close(exp(x), self.exp_x)
+        self.assert_close(log(exp(y)), y)
+        self.assert_close(2 ** y, exp(log(2) * y))
+        self.assert_close(y ** x, exp(log(y) * x))
+        self.assert_close(y ** 2.5, exp(log(y) * 2.5))
+
+    def test_trig(self):
+        jx = self.x * 1j
+        x = self.x * (1+0j)
+        self.assert_close(sin(x), (exp(jx) - exp(-jx))/2j)
+        self.assert_close(cos(x), (exp(jx) + exp(-jx))/2)
+        x = self.x
+        self.assert_close(self.sin_x, sin(self.x))
+        self.assert_close(self.cos_x, cos(self.x))
+        self.assert_close(tan(x), sin(x) / cos(x))
+        self.assert_close(cos(arccos(x)), x)
+        self.assert_close(arccos(cos(1 + x)), 1 + x)
+        self.assert_close(sin(arcsin(x)), x)
+        self.assert_close(arcsin(sin(1 + x)), 1 + x)
+        self.assert_close(tan(arctan(x)), x)
+        self.assert_close(arctan(tan(1 + x)), 1 + x)
+
+    def test_hyp(self):
+        x = self.x
+        self.assert_close(sinh(x), (self.exp_x - 1 / self.exp_x)/2)
+        self.assert_close(cosh(x), (self.exp_x + 1 / self.exp_x)/2)
+        self.assert_close(tanh(x), sinh(x) / cosh(x))
+        self.assert_close(arcsinh(sinh(x)), x)
+        self.assert_close(sinh(arcsinh(x)), x)
+        self.assert_close(arccosh(cosh(2 + x)), 2 + x)
+        self.assert_close(cosh(arccosh(1.25 + x)), 1.25 + x)
+        self.assert_close(arctanh(tanh(0.25 + x)), 0.25 + x)
+        self.assert_close(tanh(arctanh(0.25 + x)), 0.25 + x)
+
+    def test_call(self):
+        self.assert_close(self.sin_x(self.x), sin(self.x))
+        f = log(1 + self.x)
+        self.assert_close(self.exp_x(log(1 + self.x)), 1 + self.x)
+
+    def test_str(self):
+        " str(p) repr(p) "
+        self.assertEqual(str(self.x), "[ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.  0.]")
+        y = eval(repr(self.exp_x))
+        self.assert_close(y, self.exp_x)
+
+    def test_deviv_integ(self):
+        " p.deriv() p.integ() "
+        self.assert_close(self.exp_x.integ().deriv(), self.exp_x)
+        self.assert_close(self.exp_x.integ(n=2).deriv(n=2), self.exp_x)
+        self.assert_close(self.exp_x.integ(n=0), self.exp_x)
+        self.assert_close(self.exp_x.deriv(n=0), self.exp_x)
+        self.assert_close(self.x.deriv(self.order + 2), PowerSeries([0]))
+        self.assert_close(
+            self.exp_x.deriv(), 
+            PowerSeries(self.exp_x, order=self.order - 1)
+            )
+        self.assert_close(
+            self.exp_x.integ(x0=0), 
+            exp(PowerSeries(self.x, order=self.order+1)) - 1
+            )
 
 if __name__ == '__main__':
     unittest.main()

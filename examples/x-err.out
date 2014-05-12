@@ -1,6 +1,6 @@
 ************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 0.64 [15]    Q = 0.84    logGBF = 198.58    itns = 62
+  chi2/dof [dof] = 0.64 [15]    Q = 0.84    logGBF = 198.58
 
 Parameters:
             a 0      0.4026 (40)       [     0.50 (50) ]  
@@ -26,14 +26,14 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = 1e-10    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 62/0.0)
 
 E1/E0 = 2.034(11)   E2/E0 = 3.691(55)
 a1/a0 = 1.130(28)   a2/a0 = 2.678(43)
 
 ************************************* nexp = 4
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.18    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.18
 
 Parameters:
             a 0      0.4026 (40)       [     0.50 (50) ]  
@@ -61,14 +61,14 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = 1e-10    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.027(16)   E2/E0 = 3.40(26)
 a1/a0 = 1.100(52)   a2/a0 = 1.54(67)
 
 ************************************* nexp = 5
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.03    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 199.03
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]  
@@ -98,14 +98,14 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = 1e-10    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.021(20)   E2/E0 = 3.31(30)
 a1/a0 = 1.076(70)   a2/a0 = 1.46(60)
 
 ************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]  
@@ -137,14 +137,14 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = 1e-10    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.018(22)   E2/E0 = 3.27(31)
 a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
 
 ************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = 198.88    itns = 6
+  chi2/dof [dof] = 0.55 [15]    Q = 0.91    logGBF = 198.88
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]  
@@ -178,7 +178,7 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = 1e-10    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.017(22)   E2/E0 = 3.26(31)
 a1/a0 = 1.061(79)   a2/a0 = 1.45(56)

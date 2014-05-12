@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.7 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 4.8 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.7',
+        VERSION:     '4.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.7 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8 documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -97,7 +97,7 @@ standard fitting packages, as demonstrated below.</p>
 
 <span class="c"># do the fit</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>     <span class="c"># print standard summary of fit</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>     <span class="c"># print standard summary of fit</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                  <span class="c"># best-fit values for parameters</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
@@ -136,7 +136,7 @@ function for this data is simply the ratio <tt class="docutils literal"><span cl
 a dictionary having the same keys and layout as the input data <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
 <p>The output from the code sample above is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538    itns = 5
+  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538
 
 Parameters:
               a   0.253 (32)     [  0.50 (50) ]  
@@ -152,7 +152,7 @@ Fit:
           1     1.58 (12)    1.612 (82)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
 
 Values:
                   a: 0.253(32)           
@@ -218,7 +218,7 @@ the prior or back since both are forms of input information.</p>
 variables &#8212; quantities with means and a covariance matrix. These are
 represented by objects of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in the code; module
 <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> has a variety of tools for creating and manipulating
-Gaussian random variables.</li>
+Gaussian random variables (also see below).</li>
 <li>The input data is stored in a dictionary (<tt class="docutils literal"><span class="pre">y</span></tt>) whose values can
 be <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The use of a dictionary allows for
 far greater flexibility than, say, an array. The fit function
@@ -282,7 +282,7 @@ The input data for a fit are represented
 by a collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that specify both the values and possible
 errors in the input values. The result of a fit is a collection of
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s specifying the best-fit values for the fit parameters and the
-estimated uncertainty in those values.</p>
+estimated uncertainties in those values.</p>
 <p>There are three important things to know about <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, in addition
 to knowing how to create them (see <a class="reference internal" href="gvar.html#creating-gaussian-variables"><em>Creating Gaussian Variables</em></a>):</p>
 <blockquote>
@@ -564,7 +564,7 @@ this code produces the following output, which is reproduced here in some
 detail in order to illustrate a variety of features:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 6.3e+02 [15]    Q = 0    logGBF = -4465    itns = 30
+  chi2/dof [dof] = 6.3e+02 [15]    Q = 0    logGBF = -4465
 
 Parameters:
             a 0   0.0288 (11)     [  0.50 (50) ]  
@@ -575,14 +575,14 @@ Parameters:
               2   3.6643 (33)     [  3.00 (50) ]  *
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 30/0.0)
 
 E1/E0 = 1.9986(24)   E2/E0 = 3.6255(62)
 a1/a0 = 1.23130(47)   a2/a0 = 2.7070(13)
 
 ************************************* nexp = 4
 Least Square Fit:
-  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = 220.04    itns = 218
+  chi2/dof [dof] = 0.57 [15]    Q = 0.9    logGBF = 220.04
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -595,14 +595,14 @@ Parameters:
               3     4.383 (21)      [  4.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 231/0.1)
 
 E1/E0 = 2.0018(12)   E2/E0 = 3.0800(98)
 a1/a0 = 1.0094(30)   a2/a0 = 1.233(14)
 
 ************************************* nexp = 5
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.84    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.84
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -617,14 +617,14 @@ Parameters:
               4      4.95 (48)      [  5.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.0013(14)   E2/E0 = 3.065(24)
 a1/a0 = 1.0075(42)   a2/a0 = 1.189(63)
 
 ************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.7    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.97    logGBF = 220.7
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -641,14 +641,14 @@ Parameters:
               5      6.01 (50)      [  6.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.0008(17)   E2/E0 = 3.049(37)
 a1/a0 = 1.0055(56)   a2/a0 = 1.15(10)
 
 ************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.45 [15]    Q = 0.96    logGBF = 220.6    itns = 6
+  chi2/dof [dof] = 0.45 [15]    Q = 0.96    logGBF = 220.6
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -667,7 +667,7 @@ Parameters:
               6      7.02 (50)      [  7.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.0006(18)   E2/E0 = 3.042(43)
 a1/a0 = 1.0045(63)   a2/a0 = 1.13(12)
@@ -677,7 +677,7 @@ a1/a0 = 1.0045(63)   a2/a0 = 1.13(12)
 
 ************************************* nexp = 19
 Least Square Fit:
-  chi2/dof [dof] = 0.46 [15]    Q = 0.96    logGBF = 220.52    itns = 1
+  chi2/dof [dof] = 0.46 [15]    Q = 0.96    logGBF = 220.52
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -720,7 +720,7 @@ Parameters:
              18     19.00 (50)      [ 19.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 1/0.0)
 
 E1/E0 = 2.0004(19)   E2/E0 = 3.036(47)
 a1/a0 = 1.0038(67)   a2/a0 = 1.11(13)
@@ -821,7 +821,7 @@ correlation is evident in the covariance matrix:</p>
 <p>Finally we inspect the fit&#8217;s quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
-output from <tt class="docutils literal"><span class="pre">fit.format(100)</span></tt>):</p>
+output from <tt class="docutils literal"><span class="pre">fit.format(maxline=True)</span></tt>):</p>
 <div class="highlight-python"><div class="highlight"><pre>Fit:
      x[k]               y[k]          f(x[k],p)
 -----------------------------------------------
@@ -924,11 +924,11 @@ onto the end of the <tt class="docutils literal"><span class="pre">main()</span>
 </div>
 <p>The result of the new fit (to one piece of new data) is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.32 [1]    Q = 0.57    logGBF = 3.9303    itns = 2
+  chi2/dof [dof] = 0.32 [1]    Q = 0.57    logGBF = 3.9303
 
 Parameters:
-            a 0    0.4018 (39)      [  0.4018 (39) ]  
-              1    0.4018 (39)      [  0.4033 (48) ]  
+            a 0    0.4018 (40)      [  0.4018 (40) ]  
+              1    0.4018 (40)      [  0.4033 (49) ]  
               2     0.421 (20)      [   0.447 (51) ]  
               3      0.53 (17)      [    0.60 (21) ]  
               4      0.46 (34)      [    0.38 (37) ]  
@@ -967,15 +967,15 @@ Parameters:
              18     19.00 (50)      [   19.00 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 </pre></div>
 </div>
 <p>Parameters <tt class="docutils literal"><span class="pre">a[0]</span></tt> and <tt class="docutils literal"><span class="pre">E[0]</span></tt> are essentially unchanged by the new
-information, but <tt class="docutils literal"><span class="pre">a[i]</span></tt> and <tt class="docutils literal"><span class="pre">E[i]</span></tt> are more precise for <tt class="docutils literal"><span class="pre">i=2</span></tt>
-and <tt class="docutils literal"><span class="pre">i=3</span></tt>, as is <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>, of course.
+information, but <tt class="docutils literal"><span class="pre">a[i]</span></tt> and <tt class="docutils literal"><span class="pre">E[i]</span></tt> are more precise for <tt class="docutils literal"><span class="pre">i=1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>
+and <tt class="docutils literal"><span class="pre">3</span></tt>, as is <tt class="docutils literal"><span class="pre">a[1]/a[0]</span></tt>, of course.
 It might seem odd that <tt class="docutils literal"><span class="pre">E[1]</span></tt>, for example, is changed at
 all, since the fit function, <tt class="docutils literal"><span class="pre">ratio(p)</span></tt>, makes no mention of it. This
-is not surprising, however, since <tt class="docutils literal"><span class="pre">ratio(p)</span></tt> does depend up <tt class="docutils literal"><span class="pre">a[1]</span></tt>,
+is not surprising, however, since <tt class="docutils literal"><span class="pre">ratio(p)</span></tt> does depend upon <tt class="docutils literal"><span class="pre">a[1]</span></tt>,
 and <tt class="docutils literal"><span class="pre">a[1]</span></tt> is strongly correlated with <tt class="docutils literal"><span class="pre">E[1]</span></tt> through the prior. It
 is important to include all parameters from the first fit as
 parameters in the new fit in order to capture the impact of the new
@@ -1013,7 +1013,7 @@ onto the end of the <tt class="docutils literal"><span class="pre">main()</span>
 <div class="highlight-python"><div class="highlight"><pre>chi2/dof = 0.32
 
 E: [0.90030(51) 1.80007(67) 2.711(12) 3.76(18)]
-a: [0.4018(39) 0.4018(39) 0.421(20) 0.53(17)]
+a: [0.4018(41) 0.4018(40) 0.421(20) 0.53(17)]
 a1/a0: 1.000000(10)
 </pre></div>
 </div>
@@ -1103,7 +1103,7 @@ fit parameters <tt class="docutils literal"><span class="pre">p</span></tt> inst
 <p>Running the new code gives, for <tt class="docutils literal"><span class="pre">nexp=6</span></tt> terms:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 6
 Least Square Fit:
-  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93    itns = 6
+  chi2/dof [dof] = 0.54 [15]    Q = 0.92    logGBF = 198.93
 
 Parameters:
             a 0      0.4025 (41)       [     0.50 (50) ]  
@@ -1135,7 +1135,7 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 E1/E0 = 2.018(22)   E2/E0 = 3.27(31)
 a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
@@ -1194,7 +1194,7 @@ introduce these correlations:</p>
 obtain the following fit with <tt class="docutils literal"><span class="pre">nexp=7</span></tt> terms:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 7
 Least Square Fit:
-  chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = 227.47    itns = 3
+  chi2/dof [dof] = 0.44 [15]    Q = 0.97    logGBF = 227.47
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -1213,7 +1213,7 @@ Parameters:
               6     6.301 (22)      [  6.40 (50) ]  
 
 Settings:
-  svdcut = (1e-15,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 3/0.0)
 
 E1/E0 = 1.9994(11)   E2/E0 = 3.000(11)
 a1/a0 = 0.9996(25)   a2/a0 = 1.005(28)
@@ -1294,7 +1294,7 @@ different values of <tt class="docutils literal"><span class="pre">z</span></tt>
 It returns the corresponding fit and the value of <tt class="docutils literal"><span class="pre">z</span></tt>.</p>
 <p>This code generates the following output when <tt class="docutils literal"><span class="pre">nexp=7</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = 233.98    itns = 1
+  chi2/dof [dof] = 0.77 [15]    Q = 0.71    logGBF = 233.98
 
 Parameters:
             a 0    0.4026 (40)      [ 0.500 (95) ]  *
@@ -1313,7 +1313,7 @@ Parameters:
               6     6.303 (22)      [  6.40 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 1/0.0)
 
 E1/E0 = 1.9993(10)   E2/E0 = 3.0015(94)
 a1/a0 = 0.9995(25)   a2/a0 = 1.011(17)
@@ -1334,7 +1334,7 @@ discussed in the previous section, one using just two terms in the fit
 function and one using three terms:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 2
 Least Square Fit:
-  chi2/dof [dof] = 0.47 [15]    Q = 0.96    logGBF = 254.15    itns = 6
+  chi2/dof [dof] = 0.47 [15]    Q = 0.96    logGBF = 254.15
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -1343,12 +1343,12 @@ Parameters:
               1   1.80036 (50)      [  1.90 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
 
 
 ************************************* nexp = 3
 Least Square Fit:
-  chi2/dof [dof] = 0.5 [15]    Q = 0.94    logGBF = 243.12    itns = 4
+  chi2/dof [dof] = 0.5 [15]    Q = 0.94    logGBF = 243.12
 
 Parameters:
             a 0    0.4018 (40)      [  0.50 (50) ]  
@@ -1359,7 +1359,7 @@ Parameters:
               2     2.700 (10)      [  2.80 (50) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
 </pre></div>
 </div>
 <p>Measured by their <tt class="docutils literal"><span class="pre">chi**2</span></tt>s, the two fits are almost equally good. The
@@ -1390,11 +1390,11 @@ extract such information using <a class="reference internal" href="gvar.html#gva
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">1.9994(11)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]))</span>
-<span class="go">0.000419219538523</span>
+<span class="go">0.000419224371208</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]))</span>
-<span class="go">0.000158871440271</span>
+<span class="go">0.000158887614987</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-<span class="go">0.000952553004005</span>
+<span class="go">0.000953276447811</span>
 </pre></div>
 </div>
 <p>This shows that the total uncertainty in <tt class="docutils literal"><span class="pre">E[1]/E[0]</span></tt>, 0.00106, is
@@ -1405,8 +1405,10 @@ specified by <tt class="docutils literal"><span class="pre">prior['E']</span></t
 They require dictionaries of output results and inputs, and use the
 keys from the dictionaries to label columns and rows, respectively, in
 an error-budget table:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;E1/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;E2/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-         <span class="s">&#39;a1/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;a2/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="s">&#39;E1/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;E2/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+          <span class="s">&#39;a1/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;a2/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+          <span class="p">}</span>
 <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;E&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">],</span> <span class="s">&#39;a&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="s">&#39;y&#39;</span><span class="p">:</span><span class="n">y</span><span class="p">}</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
@@ -1480,7 +1482,7 @@ a new, modified dependent variable <tt class="docutils literal"><span class="pre
 <p>We know everything on the right-hand side of this equation: we have exact
 values for <tt class="docutils literal"><span class="pre">y</span></tt> and we have <em>a priori</em> estimates for the <tt class="docutils literal"><span class="pre">a[i]</span></tt> and
 <tt class="docutils literal"><span class="pre">E[i]</span></tt> with <tt class="docutils literal"><span class="pre">i&gt;0</span></tt>. So given means and standard deviations for every
-<tt class="docutils literal"><span class="pre">i&gt;0</span></tt> parameter, and the exact <tt class="docutils literal"><span class="pre">y</span></tt>, we can in principle determine a
+<tt class="docutils literal"><span class="pre">i&gt;0</span></tt> parameter, and the exact <tt class="docutils literal"><span class="pre">y</span></tt>, we can determine a
 mean and standard deviation for <tt class="docutils literal"><span class="pre">ymod</span></tt>. The strategy then is to compute
 the corresponding <tt class="docutils literal"><span class="pre">ymod</span></tt> for every <tt class="docutils literal"><span class="pre">y</span></tt> and <tt class="docutils literal"><span class="pre">x</span></tt> pair, and then fit
 <tt class="docutils literal"><span class="pre">ymod</span></tt> versus <tt class="docutils literal"><span class="pre">x</span></tt> to the <em>single</em> exponential <tt class="docutils literal"><span class="pre">a[0]*exp(-E[0]*t)</span></tt>.
@@ -1506,7 +1508,7 @@ terms, which is close enough to infinity):</p>
             <span class="n">ymod_prior</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_prior</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">nexp</span><span class="p">:]</span>
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">(</span><span class="n">ymod_prior</span><span class="p">)</span>   <span class="c"># make fit data</span>
         <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">fit_prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>          <span class="c"># print the fit results</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>          <span class="c"># print the fit results</span>
         <span class="k">print</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">fit</span><span class="o">.</span><span class="n">chi2</span><span class="o">/</span><span class="n">fit</span><span class="o">.</span><span class="n">dof</span><span class="o">&lt;</span><span class="mf">1.</span><span class="p">:</span>
             <span class="n">p0</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span>             <span class="c"># starting point for next fit (opt.)</span>
@@ -1526,8 +1528,8 @@ correct the exact data, which comes from a new <tt class="docutils literal"><spa
 the number of exponentials kept in the fit (and <tt class="docutils literal"><span class="pre">20-nexp</span></tt> is the number
 pushed into the modified dependent variable <tt class="docutils literal"><span class="pre">ymod</span></tt>):</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 1
-Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.051 [10]    Q = 1    logGBF = 97.499    itns = 5
+Least Square Fit:
+  chi2/dof [dof] = 0.051 [10]    Q = 1    logGBF = 97.499
 
 Parameters:
             a 0    0.4009 (14)      [  0.50 (50) ]  
@@ -1548,12 +1550,12 @@ Fit:
       2.8    0.0323 (47)    0.032223 (58)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
 
 
 ************************************* nexp = 2
-Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = 99.041    itns = 3
+Least Square Fit:
+  chi2/dof [dof] = 0.053 [10]    Q = 1    logGBF = 99.041
 
 Parameters:
             a 0    0.4002 (13)      [  0.50 (50) ]  
@@ -1576,12 +1578,12 @@ Fit:
       2.8    0.03479 (40)    0.034784 (72)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 3/0.0)
 
 
 ************************************* nexp = 3
-Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.845    itns = 4
+Least Square Fit:
+  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.844
 
 Parameters:
             a 0   0.39998 (93)      [  0.50 (50) ]  
@@ -1606,12 +1608,12 @@ Fit:
       2.8    0.034983 (33)    0.034982 (13)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
 
 
 ************************************* nexp = 4
-Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.841    itns = 4
+Least Square Fit:
+  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.842
 
 Parameters:
             a 0   0.39995 (77)      [  0.50 (50) ]  
@@ -1630,22 +1632,22 @@ Fit:
       1.2       0.2027 (32)      0.20297 (97)  
       1.4       0.1573 (13)      0.15737 (42)  
       1.6      0.12378 (54)      0.12381 (18)  
-      1.8      0.09853 (22)     0.098540 (78)  
+      1.8      0.09853 (22)     0.098540 (79)  
         2     0.079153 (93)     0.079155 (34)  
       2.2     0.064051 (39)     0.064051 (15)  
-      2.4     0.052134 (16)    0.0521344 (64)  
-      2.6    0.0426348 (67)    0.0426347 (29)  
-      2.8    0.0349985 (28)    0.0349985 (13)  
+      2.4     0.052134 (16)    0.0521344 (66)  
+      2.6    0.0426348 (67)    0.0426347 (30)  
+      2.8    0.0349985 (28)    0.0349985 (14)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
 
 
 E1/E0 = 1.999(24)   E2/E0 = 3.00(21)
 a1/a0 = 0.997(77)   a2/a0 = 1.01(25)
 </pre></div>
 </div>
-<p>Here we use <tt class="docutils literal"><span class="pre">fit.format(10)</span></tt> to print out a table of <tt class="docutils literal"><span class="pre">x</span></tt> and
+<p>Here we use <tt class="docutils literal"><span class="pre">fit.format(maxline=True)</span></tt> to print out a table of <tt class="docutils literal"><span class="pre">x</span></tt> and
 <tt class="docutils literal"><span class="pre">y</span></tt> (actually <tt class="docutils literal"><span class="pre">ymod</span></tt>) values, together with the value of the
 fit function using the best-fit parameters. There are several things
 to notice:</p>
@@ -1699,39 +1701,39 @@ has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
 for example, with an <em>SVD</em> cut of 1e-19, instead of 1e-15, we would have
 obtained the following output:</p>
-<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 100.46    itns = 5
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.847
 
 Parameters:
-            a 0   0.39994 (77)      [  0.50 (50) ]
-              1     0.398 (32)      [  0.50 (50) ]
-              2      0.40 (10)      [  0.50 (50) ]
-              3      0.40 (15)      [  0.50 (50) ]
-            E 0   0.89997 (30)      [  1.00 (50) ]
-              1     1.799 (23)      [  1.90 (54) ]
-              2      2.70 (19)      [  2.80 (57) ]
-              3      3.61 (28)      [  3.70 (61) ]
+            a 0   0.39994 (77)      [  0.50 (50) ]  
+              1     0.398 (32)      [  0.50 (50) ]  
+              2      0.40 (10)      [  0.50 (50) ]  
+              3      0.40 (15)      [  0.50 (50) ]  
+            E 0   0.89997 (30)      [  1.00 (50) ]  
+              1     1.799 (23)      [  1.90 (54) ]  
+              2      2.70 (19)      [  2.80 (57) ]  
+              3      3.61 (28)      [  3.70 (61) ]  
 
 Fit:
-     x[k]              y[k]         f(x[k],p)
----------------------------------------------
-        1       0.2656 (78)        0.267 (16)
-      1.2       0.2027 (32)       0.2030 (74)
-      1.4       0.1573 (13)       0.1574 (34)
-      1.6      0.12378 (54)       0.1238 (15)
-      1.8      0.09853 (22)      0.09854 (67)
-        2     0.079153 (93)      0.07915 (29)
-      2.2     0.064051 (39)      0.06405 (12)
-      2.4     0.052134 (16)     0.052134 (41)
-      2.6    0.0426348 (67)    0.0426347 (92)
-      2.8    0.0349985 (28)    0.0349985 (40)
+     x[k]              y[k]        f(x[k],p)
+--------------------------------------------
+        1       0.2656 (78)      0.2666 (57)  
+      1.2       0.2027 (32)      0.2030 (23)  
+      1.4       0.1573 (13)     0.15737 (92)  
+      1.6      0.12378 (54)     0.12381 (35)  
+      1.8      0.09853 (22)     0.09854 (12)  
+        2     0.079153 (93)    0.079155 (37)  
+      2.2     0.064051 (39)    0.064051 (18)  
+      2.4     0.052134 (16)    0.052134 (20)  
+      2.6    0.0426348 (67)    0.042635 (19)  
+      2.8    0.0349985 (28)    0.034998 (17)  
 
 Settings:
-  svdcut = (1e-19,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-19/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
 
 
-E1/E0 = 2.00(72)   E2/E0 = 3.0(6.1)
-a1/a0 = 1.0(2.3)   a2/a0 = 1.0(6.8)
+E1/E0 = 2.00(49)   E2/E0 = 3.0(3.8)
+a1/a0 = 1.0(1.5)   a2/a0 = 1.0(3.3)
 </pre></div>
 </div>
 <p>The standard deviations quoted for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, <em>etc.</em> are much too large
@@ -1744,7 +1746,7 @@ from the curvature of the <tt class="docutils literal"><span class="pre">chi**2<
 are related back to the standard deviations of the input data and priors
 used in the fit. The two should agree, but they will not agree if the
 covariance matrix for the input <tt class="docutils literal"><span class="pre">y</span></tt> data is too ill-conditioned.</p>
-<p>The inverse of the <tt class="docutils literal"><span class="pre">y</span></tt> covariance matrix is used in the <tt class="docutils literal"><span class="pre">chi**2</span></tt>
+<p>The inverse of the <tt class="docutils literal"><span class="pre">y</span></tt>&#8211;<tt class="docutils literal"><span class="pre">prior</span></tt> covariance matrix is used in the <tt class="docutils literal"><span class="pre">chi**2</span></tt>
 function that is minimized by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>. Given the
 finite precision of computer hardware, it is impossible to compute this
 inverse accurately if the matrix is singular or almost singular, and in
@@ -1756,28 +1758,27 @@ range to be handled with the 16&#8211;18 digits of precision available in normal
 double precision computation. The smallest eigenvalues and their
 eigenvectors are likely to be quite inaccurate, as is any method for
 computing the inverse matrix.</p>
-<p>The standard solution to this common problem in least-squares fitting is
+<p>One solution to this common problem in least-squares fitting is
 to introduce an <em>SVD</em> cut, here called <tt class="docutils literal"><span class="pre">svdcut</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Then the inverse of the <tt class="docutils literal"><span class="pre">y</span></tt> covariance matrix is computed from its
-eigenvalues and eigenvectors, but with any eigenvalue smaller than
-<tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest eigenvalue replaced by the cutoff (that is,
-by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest eigenvalue). This limits the singularity of
-the covariance matrix, leading to improved numerical stability. The cost is
-less precision in the final results since we are in effect decreasing the
+<p>This regulates the singularity of the covariance matrix by, in effect,
+replacing its smallest eigenvalues with <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest
+eigenvalue. The cost is less precision in the final results
+since we are decreasing the
 precision of the input <tt class="docutils literal"><span class="pre">y</span></tt> data. This is a conservative move, but numerical
-stability is worth the tradeoff.</p>
-<p>Note that taking <tt class="docutils literal"><span class="pre">svdcut=-1e-15</span></tt>, with a
-minus sign, causes the problematic modes to be dropped. This is a more
-conventional implementation of <em>SVD</em> cuts, but here it results in much less
-precision than using <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (giving, for example, 1.993(69)
-for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, which is almost three times less precise). Dropping modes is
-equivalent to setting the corresponding variances to infinity, which is
-(obviously) much more conservative and less realistic than setting them equal
-to the <em>SVD</em>-cutoff variance.</p>
-<p>The error budget is interesting in this case. There is no contribution from
+stability is worth the tradeoff. The listing shows that 2 eigenvalues are
+modified when <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (see entry for <tt class="docutils literal"><span class="pre">svdcut/n</span></tt>); no
+eigenvalues are changed when <tt class="docutils literal"><span class="pre">svdcut=1e-19</span></tt>.</p>
+<p>The <em>SVD</em> cut is actually applied to the correlation matrix,
+which is the covariance matrix rescaled by standard deviations so that
+all diagonal elements equal 1. This helps mitigate problems caused by
+large scale differences between different variables. Any eigenvalue smaller
+than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest eigenvalue is replaced by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times
+the largest eigenvalue. Thus larger values for <tt class="docutils literal"><span class="pre">svdcut</span></tt> affect larger
+numbers of eigenmodes and increase errors in the final results.</p>
+<p>The error budget is different in this case. There is no contribution from
 the original <tt class="docutils literal"><span class="pre">y</span></tt> data since it was exact. So all statistical uncertainty
 comes from the priors in <tt class="docutils literal"><span class="pre">max_prior</span></tt>, and from the <em>SVD</em> cut, which
 contributes since it modifies the effective variances of several eigenmodes of
@@ -1801,18 +1802,18 @@ code,</p>
 Partial % Errors:
                          E2/E0     E1/E0     a2/a0     a1/a0
 ------------------------------------------------------------
-                  a:      3.76      0.71     11.80      4.39
+                  a:      3.73      0.70     11.75      4.35
                 svd:      0.29      0.10      0.13      0.55
-                  E:      5.87      0.99     22.35      6.30
+                  E:      5.90      1.00     22.43      6.33
 ------------------------------------------------------------
-              total:      6.98      1.22     25.27      7.70
+              total:      6.99      1.23     25.32      7.70
 </pre></div>
 </div>
-<p>Here the contribution from the <em>SVD</em> cut is almost negligible.</p>
-<p>Note that covariance matrices are rescaled so that all diagonal
-elements equal one before the <em>SVD</em> cut is applied. This means,
-among other things, that uncorrelated errors &#8212; that is, diagonal sub-matrices
-of the covariance matrix &#8212; are unaffected by <em>SVD</em> cuts. Applying an <em>SVD</em>
+<p>Here the contribution from the <em>SVD</em> cut is almost negligible, which might
+not be the case in other applications.</p>
+<p>The <em>SVD</em> cut is applied separately to each block diagonal sub-matrix of the
+correlation matrix. This means, among other things, that errors for
+uncorrelated data are unaffected by the <em>SVD</em> cut. Applying an <em>SVD</em>
 cut of 1e-4, for example, to the following singular covariance matrix,</p>
 <div class="highlight-python"><div class="highlight"><pre>[[  1.0   1.0   0.0  ]
  [  1.0   1.0   0.0  ]
@@ -1825,12 +1826,19 @@ cut of 1e-4, for example, to the following singular covariance matrix,</p>
  [  0.0      0.0      1e-20]]
 </pre></div>
 </div>
-<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> uses a default value for <tt class="docutils literal"><span class="pre">svdcut</span></tt> of 1e-15,
-and applies <em>SVD</em> cuts to the covariance matrices from both the fit data and
-the prior.  This default can be overridden as shown above, but for many
+<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> uses a default value for <tt class="docutils literal"><span class="pre">svdcut</span></tt> of 1e-15.
+This default is overridden as shown above, but for many
 problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong positive correlations between different parts of the fit
 data or prior.  Then much larger <tt class="docutils literal"><span class="pre">svdcut</span></tt>s may be needed.</p>
+<p>Note that taking <tt class="docutils literal"><span class="pre">svdcut=-1e-15</span></tt>, with a
+minus sign, causes the problematic modes to be dropped. This is a more
+conventional implementation of <em>SVD</em> cuts, but here it results in much less
+precision than using <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (giving, for example, 1.993(69)
+for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, which is almost three times less precise). Dropping modes is
+equivalent to setting the corresponding variances to infinity, which is
+(obviously) much more conservative and less realistic than setting them equal
+to the <em>SVD</em>-cutoff variance.</p>
 <p>The method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.check_roundoff" title="lsqfit.nonlinear_fit.check_roundoff"><tt class="xref py py-func docutils literal"><span class="pre">lsqfit.nonlinear_fit.check_roundoff()</span></tt></a> can be used to check
 for roundoff errors by adding the line <tt class="docutils literal"><span class="pre">fit.check_roundoff()</span></tt> after the
 fit. It generates a warning if roundoff looks to be a problem. This check
@@ -1880,9 +1888,9 @@ the <tt class="docutils literal"><span class="pre">main()</span></tt> subroutine
 <p>The results are consistent with the results obtained directly from the fit
 (when using <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt>):</p>
 <div class="highlight-python"><div class="highlight"><pre>Bootstrap results:
-E1/E0 = 1.999(17)   E2/E1 = 2.98(18)
-a1/a0 = 0.995(55)   a2/a0 = 0.97(28)
-E1 = 1.799(16)   a1 = 0.398(23)
+E1/E0 = 1.998(18)   E2/E1 = 2.96(16)
+a1/a0 = 0.988(60)   a2/a0 = 0.93(22)
+E1 = 1.798(16)   a1 = 0.395(25)
 </pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms our previous error estimates
@@ -1960,18 +1968,82 @@ results more complicated.)</p>
 <p>In the present example, the output from the three simulations is:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* simulation
 Least Square Fit:
-  chi2/dof [dof] = 0.27 [15]    Q = 1    logGBF = 228.78    itns = 46
+  chi2/dof [dof] = 0.43 [15]    Q = 0.97    logGBF = 227.47
 
 Parameters:
-            a 0    0.3968 (40)      [  0.50 (50) ]  
-              1    0.3983 (41)      [  0.50 (50) ]  
-              2     0.390 (12)      [  0.50 (50) ]  
-              3     0.453 (45)      [  0.50 (50) ]  
-              4      0.15 (15)      [  0.50 (50) ]  
-              5      0.72 (31)      [  0.50 (50) ]  
-              6      0.71 (42)      [  0.50 (50) ]  
-            E 0   0.89969 (51)      [  1.00 (50) ]  
-              1    1.8011 (11)      [  1.90 (50) ]  
+            a 0    0.4064 (40)      [  0.50 (50) ]  
+              1    0.4049 (42)      [  0.50 (50) ]  
+              2     0.414 (12)      [  0.50 (50) ]  
+              3     0.354 (46)      [  0.50 (50) ]  
+              4      0.57 (16)      [  0.50 (50) ]  
+              5      0.35 (31)      [  0.50 (50) ]  
+              6      0.38 (42)      [  0.50 (50) ]  
+            E 0   0.90123 (50)      [  1.00 (50) ]  
+              1    1.7997 (11)      [  1.90 (50) ]  
+              2     2.699 (10)      [  2.80 (50) ]  
+              3     3.599 (14)      [  3.70 (50) ]  
+              4     4.499 (17)      [  4.60 (50) ]  
+              5     5.399 (20)      [  5.50 (50) ]  
+              6     6.299 (22)      [  6.40 (50) ]  
+
+Settings:
+  svdcut/n = None/0    reltol/abstol = 0.0001/0    (itns/time = 40/0.0)
+
+E1/E0 = 1.9969(11)   E2/E0 = 2.995(11)
+a1/a0 = 0.9963(26)   a2/a0 = 1.019(28)
+
+Simulated Fit Values - Exact Values:
+E1/E0: -0.0025(11)   E2/E0: -0.005(11)
+a1/a0: -0.0033(26)   a2/a0: 0.014(28)
+
+Parameter chi2/dof [dof] = 2.12 [4]   Q = 0.1
+
+************************************* simulation
+Least Square Fit:
+  chi2/dof [dof] = 0.26 [15]    Q = 1    logGBF = 228.77
+
+Parameters:
+            a 0    0.4013 (40)      [  0.50 (50) ]  
+              1    0.3992 (42)      [  0.50 (50) ]  
+              2     0.410 (12)      [  0.50 (50) ]  
+              3     0.344 (46)      [  0.50 (50) ]  
+              4      0.58 (16)      [  0.50 (50) ]  
+              5      0.33 (31)      [  0.50 (50) ]  
+              6      0.37 (42)      [  0.50 (50) ]  
+            E 0   0.90029 (51)      [  1.00 (50) ]  
+              1    1.7980 (11)      [  1.90 (50) ]  
+              2     2.696 (10)      [  2.80 (50) ]  
+              3     3.596 (14)      [  3.70 (50) ]  
+              4     4.496 (17)      [  4.60 (50) ]  
+              5     5.396 (20)      [  5.50 (50) ]  
+              6     6.296 (22)      [  6.40 (50) ]  
+
+Settings:
+  svdcut/n = None/0    reltol/abstol = 0.0001/0    (itns/time = 50/0.1)
+
+E1/E0 = 1.9971(11)   E2/E0 = 2.995(11)
+a1/a0 = 0.9949(26)   a2/a0 = 1.021(28)
+
+Simulated Fit Values - Exact Values:
+E1/E0: -0.0023(11)   E2/E0: -0.005(11)
+a1/a0: -0.0047(26)   a2/a0: 0.016(28)
+
+Parameter chi2/dof [dof] = 1.73 [4]   Q = 0.1
+
+************************************* simulation
+Least Square Fit:
+  chi2/dof [dof] = 0.82 [15]    Q = 0.66    logGBF = 224.63
+
+Parameters:
+            a 0    0.4016 (40)      [  0.50 (50) ]  
+              1    0.4028 (41)      [  0.50 (50) ]  
+              2     0.397 (12)      [  0.50 (50) ]  
+              3     0.438 (45)      [  0.50 (50) ]  
+              4      0.24 (15)      [  0.50 (50) ]  
+              5      0.65 (31)      [  0.50 (50) ]  
+              6      0.64 (42)      [  0.50 (50) ]  
+            E 0   0.90021 (51)      [  1.00 (50) ]  
+              1    1.8015 (11)      [  1.90 (50) ]  
               2     2.703 (10)      [  2.80 (50) ]  
               3     3.603 (14)      [  3.70 (50) ]  
               4     4.503 (17)      [  4.60 (50) ]  
@@ -1979,80 +2051,16 @@ Parameters:
               6     6.303 (22)      [  6.40 (50) ]  
 
 Settings:
-  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = None/0    reltol/abstol = 0.0001/0    (itns/time = 36/0.0)
 
-E1/E0 = 2.0019(11)   E2/E0 = 3.005(11)
-a1/a0 = 1.0040(25)   a2/a0 = 0.984(28)
-
-Simulated Fit Values - Exact Values:
-E1/E0: 0.0025(11)   E2/E0: 0.005(11)
-a1/a0: 0.0044(25)   a2/a0: -0.021(28)
-
-Parameter chi2/dof [dof] = 1.78 [4]   Q = 0.1
-
-************************************* simulation
-Least Square Fit:
-  chi2/dof [dof] = 0.73 [15]    Q = 0.76    logGBF = 225.31    itns = 25
-
-Parameters:
-            a 0    0.4034 (40)      [  0.50 (50) ]  
-              1    0.4037 (42)      [  0.50 (50) ]  
-              2     0.403 (12)      [  0.50 (50) ]  
-              3     0.412 (46)      [  0.50 (50) ]  
-              4      0.34 (16)      [  0.50 (50) ]  
-              5      0.56 (31)      [  0.50 (50) ]  
-              6      0.57 (42)      [  0.50 (50) ]  
-            E 0   0.90024 (51)      [  1.00 (50) ]  
-              1    1.8005 (11)      [  1.90 (50) ]  
-              2     2.701 (10)      [  2.80 (50) ]  
-              3     3.601 (14)      [  3.70 (50) ]  
-              4     4.501 (17)      [  4.60 (50) ]  
-              5     5.401 (20)      [  5.50 (50) ]  
-              6     6.301 (22)      [  6.40 (50) ]  
-
-Settings:
-  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-E1/E0 = 2.0000(11)   E2/E0 = 3.001(11)
-a1/a0 = 1.0007(25)   a2/a0 = 0.999(28)
+E1/E0 = 2.0012(11)   E2/E0 = 3.003(11)
+a1/a0 = 1.0032(25)   a2/a0 = 0.989(28)
 
 Simulated Fit Values - Exact Values:
-E1/E0: 0.0006(11)   E2/E0: 0.0007(111)
-a1/a0: 0.0011(25)   a2/a0: -0.006(28)
+E1/E0: 0.0018(11)   E2/E0: 0.003(11)
+a1/a0: 0.0036(25)   a2/a0: -0.016(28)
 
-Parameter chi2/dof [dof] = 0.13 [4]   Q = 1.0
-
-************************************* simulation
-Least Square Fit:
-  chi2/dof [dof] = 0.92 [15]    Q = 0.54    logGBF = 223.86    itns = 2
-
-Parameters:
-            a 0    0.4003 (40)      [  0.50 (50) ]  
-              1    0.4002 (42)      [  0.50 (50) ]  
-              2     0.402 (12)      [  0.50 (50) ]  
-              3     0.390 (46)      [  0.50 (50) ]  
-              4      0.41 (16)      [  0.50 (50) ]  
-              5      0.49 (31)      [  0.50 (50) ]  
-              6      0.50 (42)      [  0.50 (50) ]  
-            E 0   0.90040 (51)      [  1.00 (50) ]  
-              1    1.8003 (11)      [  1.90 (50) ]  
-              2     2.701 (10)      [  2.80 (50) ]  
-              3     3.601 (14)      [  3.70 (50) ]  
-              4     4.501 (17)      [  4.60 (50) ]  
-              5     5.401 (20)      [  5.50 (50) ]  
-              6     6.301 (22)      [  6.40 (50) ]  
-
-Settings:
-  svdcut = (None,None)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-E1/E0 = 1.9995(11)   E2/E0 = 2.999(11)
-a1/a0 = 0.9996(26)   a2/a0 = 1.004(28)
-
-Simulated Fit Values - Exact Values:
-E1/E0: 0.00009(107)   E2/E0: -0.0006(111)
-a1/a0: 4(2557)e-06   a2/a0: -0.0009(281)
-
-Parameter chi2/dof [dof] = 0.14 [4]   Q = 1.0
+Parameter chi2/dof [dof] = 1.02 [4]   Q = 0.4
 </pre></div>
 </div>
 <p>The simulations show that the fit values usually agree with the correct
@@ -2085,20 +2093,20 @@ definition of the fit function itself.</p>
 <p><a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> provides a decorator, <a class="reference internal" href="lsqfit.html#lsqfit.transform_p" title="lsqfit.transform_p"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.transform_p</span></tt></a>, for fit
 functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior <tt class="docutils literal"><span class="pre">prior</span></tt>
-for  a fit, the decorator is used in the following way: for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+for  a fit, the decorator is used in the following way:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
 <p>when the parameter argument is the first argument of the fit function, or</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@lsqfit.transform_p</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">has_x</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">fitfcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
    <span class="o">...</span>
 </pre></div>
 </div>
-<p>when the parameter argument is the second argument of the fit function (see
-the <a class="reference internal" href="lsqfit.html#lsqfit.transform_p" title="lsqfit.transform_p"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.transform_p</span></tt></a> documentation for more detail). Consider any
+<p>when the parameter argument is the second argument of the
+fit function. Consider any
 parameter <tt class="docutils literal"><span class="pre">p['XX']</span></tt> used in <tt class="docutils literal"><span class="pre">fitfcn</span></tt>. The prior  distribution for that
 parameter can now be turned into a log-normal distribution  by replacing
 <tt class="docutils literal"><span class="pre">prior['XX']</span></tt> with <tt class="docutils literal"><span class="pre">prior['logXX']</span></tt> (or <tt class="docutils literal"><span class="pre">prior['log(XX)'']</span></tt>) when
@@ -2136,13 +2144,13 @@ use the following fitting code:</p>
 <p>where we are assuming <em>a priori</em> information that suggests
 the average is around 0.02. The output from this code is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = 5.3431    itns = 2
+  chi2/dof [dof] = 0.84 [20]    Q = 0.67    logGBF = 5.3431
 
 Parameters:
               a   0.004 (18)     [ 0.020 (20) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 
 a = 0.004(18)
 </pre></div>
@@ -2170,13 +2178,13 @@ containing just the variables to be transformed: here,
 <tt class="docutils literal"><span class="pre">&#64;lsqfit.transform_p(['loga'],</span> <span class="pre">0)</span></tt>.</p>
 <p>The result from this fit is</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.252    itns = 12
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.252
 
 Parameters:
            loga   -4.44 (97)     [ -3.9 (1.0) ]  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 12/0.0)
 
 a = 0.012(11)
 </pre></div>
@@ -2299,23 +2307,26 @@ uncertainty in the fit function evaluated with the best-fit parameters:</p>
 <tt class="docutils literal"><span class="pre">'0.5351(54)'</span></tt>, <em>etc.</em> into <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Running the code gives the
 following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit (no prior):
-  chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
+  chi2/dof [dof] = 1.2e-26 [0]    Q = 0    logGBF = None
 
 Parameters:
-              0    0.742 (39)     [ 1.0 +- inf ]
-              1    -3.86 (59)     [ 1.0 +- inf ]
-              2    21.5 (2.4)     [ 1.0 +- inf ]
-              3   -39.1 (3.7)     [ 1.0 +- inf ]
-              4    25.8 (1.9)     [ 1.0 +- inf ]
+              0    0.742 (39)     [   1 +- inf ]  
+              1    -3.86 (59)     [   1 +- inf ]  
+              2    21.5 (2.4)     [   1 +- inf ]  
+              3   -39.1 (3.7)     [   1 +- inf ]  
+              4    25.8 (1.9)     [   1 +- inf ]  
 
 Fit:
      x[k]           y[k]      f(x[k],p)
 ---------------------------------------
-      0.1    0.5351 (54)    0.5351 (54)
-      0.3    0.6762 (67)    0.6762 (67)
-      0.5    0.9227 (91)    0.9227 (91)
-      0.7     1.380 (13)     1.380 (13)
-     0.95     4.014 (40)     4.014 (40)
+      0.1    0.5351 (54)    0.5351 (54)  
+      0.3    0.6762 (67)    0.6762 (67)  
+      0.5    0.9227 (91)    0.9227 (91)  
+      0.7     1.380 (13)     1.380 (13)  
+     0.95     4.014 (40)     4.014 (40)  
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 </pre></div>
 </div>
 <p>This is a &#8220;perfect&#8221; fit in that the fit function agrees exactly with
@@ -2377,43 +2388,43 @@ but agrees with the fit to within its 1% errors):</p>
 <a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
 <p>The fit code output is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508
 
 Parameters:
-              0   0.489 (17)     [  0.0 (1.0) ]
-              1    0.40 (20)     [  0.0 (1.0) ]
-              2    0.60 (64)     [  0.0 (1.0) ]
-              3    0.44 (80)     [  0.0 (1.0) ]
-              4    0.28 (87)     [  0.0 (1.0) ]
-              5    0.19 (87)     [  0.0 (1.0) ]
-              6    0.16 (90)     [  0.0 (1.0) ]
-              7    0.16 (93)     [  0.0 (1.0) ]
-              8    0.17 (95)     [  0.0 (1.0) ]
-              9    0.18 (96)     [  0.0 (1.0) ]
-             10    0.19 (97)     [  0.0 (1.0) ]
-             11    0.19 (97)     [  0.0 (1.0) ]
-             12    0.19 (97)     [  0.0 (1.0) ]
-             13    0.19 (97)     [  0.0 (1.0) ]
-             14    0.18 (97)     [  0.0 (1.0) ]
-             15    0.18 (97)     [  0.0 (1.0) ]
-               .
-               .
-               .
-             88    0.0 (1.0)     [  0.0 (1.0) ]
-             89    0.0 (1.0)     [  0.0 (1.0) ]
-             90    0.0 (1.0)     [  0.0 (1.0) ]
+              0      0.489 (17)      [  0.0 (1.0) ]  
+              1       0.40 (20)      [  0.0 (1.0) ]  
+              2       0.60 (64)      [  0.0 (1.0) ]  
+              3       0.44 (80)      [  0.0 (1.0) ]  
+              4       0.28 (87)      [  0.0 (1.0) ]  
+              5       0.19 (87)      [  0.0 (1.0) ]  
+              6       0.16 (90)      [  0.0 (1.0) ]  
+              7       0.16 (93)      [  0.0 (1.0) ]  
+              8       0.17 (95)      [  0.0 (1.0) ]  
+              9       0.18 (96)      [  0.0 (1.0) ]  
+             10       0.19 (97)      [  0.0 (1.0) ]  
+             11       0.19 (97)      [  0.0 (1.0) ]  
+             12       0.19 (97)      [  0.0 (1.0) ]  
+             13       0.19 (97)      [  0.0 (1.0) ]  
+             14       0.18 (97)      [  0.0 (1.0) ]  
+             15       0.18 (97)      [  0.0 (1.0) ]  
+                .
+                .
+                .
+             88   0.004 (1.000)      [  0.0 (1.0) ]  
+             89   0.004 (1.000)      [  0.0 (1.0) ]  
+             90   0.004 (1.000)      [  0.0 (1.0) ]  
 
 Fit:
      x[k]           y[k]      f(x[k],p)
 ---------------------------------------
-      0.1    0.5351 (54)    0.5349 (54)
-      0.3    0.6762 (67)    0.6768 (65)
-      0.5    0.9227 (91)    0.9219 (87)
-      0.7     1.380 (13)     1.381 (13)
-     0.95     4.014 (40)     4.014 (40)
+      0.1    0.5351 (54)    0.5349 (54)  
+      0.3    0.6762 (67)    0.6768 (65)  
+      0.5    0.9227 (91)    0.9219 (87)  
+      0.7     1.380 (13)     1.381 (13)  
+     0.95     4.014 (40)     4.014 (40)  
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 </pre></div>
 </div>
 <p>This is a much more plausible fit than than the 5-parameter fit, and gives an
@@ -2432,12 +2443,13 @@ these parameters.</p>
 narrower priors. Setting <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(3)'])</span></tt> gives an excellent
 fit,</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993    itns = 2
+  chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993
 
 Parameters:
-              0   0.490 (33)     [  0.0 (3.0) ]
-              1    0.38 (48)     [  0.0 (3.0) ]
-              2    0.6 (1.8)     [  0.0 (3.0) ]
+              0      0.490 (33)      [  0.0 (3.0) ]  
+              1       0.38 (48)      [  0.0 (3.0) ]  
+              2       0.6 (1.8)      [  0.0 (3.0) ]  
+              3       0.5 (2.4)      [  0.0 (3.0) ]  
               ...
 </pre></div>
 </div>
@@ -2452,16 +2464,19 @@ likely to come from a world with parameters of order one than from one with
 parameters of order three. Put another way it says that
 the size of the fluctuations in the data
 are more consistent with coefficients of order one than with coefficients of
-order three. The <tt class="docutils literal"><span class="pre">logGBF</span></tt> values argue for the original prior.</p>
+order three &#8212; there would have been larger fluctuations in the data that
+are actually seen had the coefficients been of order <tt class="docutils literal"><span class="pre">0(3)</span></tt>.
+The <tt class="docutils literal"><span class="pre">logGBF</span></tt> values argue for the original prior.</p>
 <p>Narrower priors, <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0.0(3)'])</span></tt>, give a poor fit,
 and also a less optimal <tt class="docutils literal"><span class="pre">logGBF</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058    itns = 2
+  chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058
 
 Parameters:
-              0   0.484 (11)     [  0.00 (30) ]  *
-              1   0.454 (98)     [  0.00 (30) ]  *
-              2    0.50 (23)     [  0.00 (30) ]  *
+              0    0.484 (11)     [  0.00 (30) ]  *
+              1    0.454 (98)     [  0.00 (30) ]  *
+              2     0.50 (23)     [  0.00 (30) ]  *
+              3     0.40 (25)     [  0.00 (30) ]  *
               ...
 </pre></div>
 </div>
@@ -2484,6 +2499,9 @@ using the code</p>
               total:      3.48
 </pre></div>
 </div>
+<p>The table shows that the final 3.5% error comes from a 2.7% error due
+to uncertainties in <tt class="docutils literal"><span class="pre">y</span></tt> and a 2.2% error from uncertainties in the
+prior (added in quadrature).</p>
 </div>
 <div class="section" id="marginalization">
 <h3>Marginalization<a class="headerlink" href="#marginalization" title="Permalink to this headline">¶</a></h3>
@@ -2527,28 +2545,30 @@ above are easily modified to implement this idea:</p>
 </pre></div>
 </div>
 <p>Running this code give:</p>
-<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (input data correlated with prior):
-  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508
 
 Parameters:
-              0   0.489 (17)     [  0.0 (1.0) ]
+              0   0.489 (17)     [  0.0 (1.0) ]  
 
 Fit:
      x[k]         y[k]     f(x[k],p)
 ------------------------------------
-      0.1    0.54 (10)    0.489 (17)
-      0.3    0.68 (31)    0.489 (17)
-      0.5    0.92 (58)    0.489 (17)
-      0.7    1.38 (98)    0.489 (17)
+      0.1    0.54 (10)    0.489 (17)  
+      0.3    0.68 (31)    0.489 (17)  
+      0.5    0.92 (58)    0.489 (17)  
+      0.7    1.38 (98)    0.489 (17)  
      0.95    4.0 (3.0)    0.489 (17)  *
 
 Settings:
-  svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 </pre></div>
 </div>
-<p>Remarkably this one-parameter fit gives results for <tt class="docutils literal"><span class="pre">p[0]</span></tt> that are identical (to
+<p>Remarkably this one-parameter fit gives results for <tt class="docutils literal"><span class="pre">p[0]</span></tt>
+that are identical (to
 machine precision) to our 91-parameter fit above. The 90 parameters for
-<tt class="docutils literal"><span class="pre">n&gt;0</span></tt> are said to have been <em>marginalized</em> in this fit. Marginalizing a parameter
+<tt class="docutils literal"><span class="pre">n&gt;0</span></tt> are said to have been <em>marginalized</em> in this fit.
+Marginalizing a parameter
 in this way has no effect if the fit function is linear in that parameter.
 Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
@@ -2646,7 +2666,7 @@ larger errors.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.7 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

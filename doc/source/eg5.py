@@ -7,11 +7,13 @@ Created by Peter Lepage on 2010-01-04.
 Copyright (c) 2010-13 G. Peter Lepage. All rights reserved.
 """
 
+#### run with USE_SVD = True and also with USE_SVD = False
+
 USE_SVD = True
 DO_BOOTSTRAP = True
 DO_ERRORBUDGET = True
 
-SVDCUT = (1e-15,1e-15) if USE_SVD else 1e-19
+SVDCUT = 1e-15 if USE_SVD else 1e-19
 
 import sys
 import tee

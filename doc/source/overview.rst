@@ -43,7 +43,7 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
       
    # do the fit   
    fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn)
-   print(fit.format(100))     # print standard summary of fit
+   print(fit.format(maxline=True))     # print standard summary of fit
    
    p = fit.p                  # best-fit values for parameters
    outputs = dict(a=p['a'], b=p['b'])
@@ -136,7 +136,7 @@ There are several things worth noting from this example:
      variables --- quantities with means and a covariance matrix. These are
      represented by objects of type :class:`gvar.GVar` in the code; module
      :mod:`gvar` has a variety of tools for creating and manipulating
-     Gaussian random variables.
+     Gaussian random variables (also see below).
      
    * The input data is stored in a dictionary (``y``) whose values can
      be |GVar|\s or arrays of |GVar|\s. The use of a dictionary allows for
@@ -205,7 +205,7 @@ The input data for a fit are represented
 by a collection of |GVar|\s that specify both the values and possible 
 errors in the input values. The result of a fit is a collection of
 |GVar|\s specifying the best-fit values for the fit parameters and the 
-estimated uncertainty in those values. 
+estimated uncertainties in those values. 
 
 There are three important things to know about |GVar|\s, in addition
 to knowing how to create them (see :ref:`creating-gaussian-variables`):
@@ -588,7 +588,7 @@ There are several things to notice here:
 Finally we inspect the fit's quality point by point. The input data are
 compared with results from the fit function, evaluated with the best-fit
 parameters, in the following table (obtained in the code by printing the
-output from ``fit.format(100)``\)::
+output from ``fit.format(maxline=True)``\)::
 
    Fit:
         x[k]               y[k]          f(x[k],p)
@@ -699,11 +699,11 @@ The result of the new fit (to one piece of new data) is:
 .. literalinclude:: eg1a.out
 
 Parameters ``a[0]`` and ``E[0]`` are essentially unchanged by the new 
-information, but ``a[i]`` and ``E[i]`` are more precise for ``i=2`` 
-and ``i=3``, as is ``a[1]/a[0]``, of course. 
+information, but ``a[i]`` and ``E[i]`` are more precise for ``i=1``, ``2`` 
+and ``3``, as is ``a[1]/a[0]``, of course. 
 It might seem odd that ``E[1]``, for example, is changed at 
 all, since the fit function, ``ratio(p)``, makes no mention of it. This 
-is not surprising, however, since ``ratio(p)`` does depend up ``a[1]``,
+is not surprising, however, since ``ratio(p)`` does depend upon ``a[1]``,
 and ``a[1]`` is strongly correlated with ``E[1]`` through the prior. It
 is important to include all parameters from the first fit as 
 parameters in the new fit in order to capture the impact of the new 
@@ -1028,8 +1028,10 @@ They require dictionaries of output results and inputs, and use the
 keys from the dictionaries to label columns and rows, respectively, in
 an error-budget table::
 
-   outputs = {'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],         
-            'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0]}
+   outputs = {
+             'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],         
+             'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0],
+             }
    inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
    print(fit.fmt_values(outputs))
    print(fit.fmt_errorbudget(outputs, inputs))
@@ -1093,7 +1095,7 @@ a new, modified dependent variable ``ymod``, equal to just
 We know everything on the right-hand side of this equation: we have exact
 values for ``y`` and we have *a priori* estimates for the ``a[i]`` and
 ``E[i]`` with ``i>0``. So given means and standard deviations for every
-``i>0`` parameter, and the exact ``y``, we can in principle determine a
+``i>0`` parameter, and the exact ``y``, we can determine a
 mean and standard deviation for ``ymod``. The strategy then is to compute
 the corresponding ``ymod`` for every ``y`` and ``x`` pair, and then fit
 ``ymod`` versus ``x`` to the *single* exponential ``a[0]*exp(-E[0]*t)``.
@@ -1121,7 +1123,7 @@ terms, which is close enough to infinity)::
                ymod_prior[k] = max_prior[k][nexp:]
            x, y = make_data(ymod_prior)   # make fit data
            fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=fit_prior, p0=p0)
-           print(fit.format(10))          # print the fit results
+           print(fit.format(maxline=True))          # print the fit results
            print()
            if fit.chi2/fit.dof<1.:
                p0 = fit.pmean             # starting point for next fit (opt.)
@@ -1142,7 +1144,7 @@ pushed into the modified dependent variable ``ymod``):
 
 .. literalinclude:: eg5a.out
 
-Here we use ``fit.format(10)`` to print out a table of ``x`` and 
+Here we use ``fit.format(maxline=True)`` to print out a table of ``x`` and 
 ``y`` (actually ``ymod``) values, together with the value of the 
 fit function using the best-fit parameters. There are several things
 to notice:
@@ -1209,7 +1211,7 @@ are related back to the standard deviations of the input data and priors
 used in the fit. The two should agree, but they will not agree if the
 covariance matrix for the input ``y`` data is too ill-conditioned.
 
-The inverse of the ``y`` covariance matrix is used in the ``chi**2``
+The inverse of the ``y``--``prior`` covariance matrix is used in the ``chi**2``
 function that is minimized by :class:`lsqfit.nonlinear_fit`. Given the
 finite precision of computer hardware, it is impossible to compute this
 inverse accurately if the matrix is singular or almost singular, and in
@@ -1222,30 +1224,29 @@ double precision computation. The smallest eigenvalues and their
 eigenvectors are likely to be quite inaccurate, as is any method for
 computing the inverse matrix.
 
-The standard solution to this common problem in least-squares fitting is 
+One solution to this common problem in least-squares fitting is 
 to introduce an *SVD* cut, here called ``svdcut``::
 
    fit = nonlinear_fit(data=(x, ymod), fcn=f, prior=prior, p0=p0, svdcut=1e-15)
    
-Then the inverse of the ``y`` covariance matrix is computed from its
-eigenvalues and eigenvectors, but with any eigenvalue smaller than
-``svdcut`` times the largest eigenvalue replaced by the cutoff (that is,
-by ``svdcut`` times the largest eigenvalue). This limits the singularity of
-the covariance matrix, leading to improved numerical stability. The cost is
-less precision in the final results since we are in effect decreasing the
+This regulates the singularity of the covariance matrix by, in effect,
+replacing its smallest eigenvalues with ``svdcut`` times the largest
+eigenvalue. The cost is less precision in the final results 
+since we are decreasing the
 precision of the input ``y`` data. This is a conservative move, but numerical
-stability is worth the tradeoff.
+stability is worth the tradeoff. The listing shows that 2 eigenvalues are
+modified when ``svdcut=1e-15`` (see entry for ``svdcut/n``); no
+eigenvalues are changed when ``svdcut=1e-19``.
 
-Note that taking ``svdcut=-1e-15``, with a
-minus sign, causes the problematic modes to be dropped. This is a more
-conventional implementation of *SVD* cuts, but here it results in much less
-precision than using ``svdcut=1e-15`` (giving, for example, 1.993(69)
-for ``E1/E0``, which is almost three times less precise). Dropping modes is
-equivalent to setting the corresponding variances to infinity, which is
-(obviously) much more conservative and less realistic than setting them equal
-to the *SVD*\-cutoff variance.
+The *SVD* cut is actually applied to the correlation matrix,
+which is the covariance matrix rescaled by standard deviations so that 
+all diagonal elements equal 1. This helps mitigate problems caused by
+large scale differences between different variables. Any eigenvalue smaller
+than ``svdcut`` times the largest eigenvalue is replaced by ``svdcut`` times
+the largest eigenvalue. Thus larger values for ``svdcut`` affect larger 
+numbers of eigenmodes and increase errors in the final results.
 
-The error budget is interesting in this case. There is no contribution from
+The error budget is different in this case. There is no contribution from
 the original ``y`` data since it was exact. So all statistical uncertainty
 comes from the priors in ``max_prior``, and from the *SVD* cut, which
 contributes since it modifies the effective variances of several eigenmodes of
@@ -1263,12 +1264,12 @@ which gives:
 
 .. literalinclude:: eg5d.out
    
-Here the contribution from the *SVD* cut is almost negligible.
+Here the contribution from the *SVD* cut is almost negligible, which might
+not be the case in other applications.
 
-Note that covariance matrices are rescaled so that all diagonal 
-elements equal one before the *SVD* cut is applied. This means,
-among other things, that uncorrelated errors --- that is, diagonal sub-matrices
-of the covariance matrix --- are unaffected by *SVD* cuts. Applying an *SVD*
+The *SVD* cut is applied separately to each block diagonal sub-matrix of the 
+correlation matrix. This means, among other things, that errors for
+uncorrelated data are unaffected by the *SVD* cut. Applying an *SVD*
 cut of 1e-4, for example, to the following singular covariance matrix, ::
 
   [[  1.0   1.0   0.0  ]
@@ -1281,12 +1282,20 @@ gives a new, non-singular matrix::
    [  0.9999   1.0001   0.0  ]
    [  0.0      0.0      1e-20]]
 
-:class:`lsqfit.nonlinear_fit` uses a default value for ``svdcut`` of 1e-15,
-and applies *SVD* cuts to the covariance matrices from both the fit data and
-the prior.  This default can be overridden as shown above, but for many
+:class:`lsqfit.nonlinear_fit` uses a default value for ``svdcut`` of 1e-15.
+This default is overridden as shown above, but for many
 problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong positive correlations between different parts of the fit
 data or prior.  Then much larger ``svdcut``\s may be needed.
+
+Note that taking ``svdcut=-1e-15``, with a
+minus sign, causes the problematic modes to be dropped. This is a more
+conventional implementation of *SVD* cuts, but here it results in much less
+precision than using ``svdcut=1e-15`` (giving, for example, 1.993(69)
+for ``E1/E0``, which is almost three times less precise). Dropping modes is
+equivalent to setting the corresponding variances to infinity, which is
+(obviously) much more conservative and less realistic than setting them equal
+to the *SVD*\-cutoff variance.
 
 The method :func:`lsqfit.nonlinear_fit.check_roundoff` can be used to check
 for roundoff errors by adding the line ``fit.check_roundoff()`` after the
@@ -1450,20 +1459,20 @@ definition of the fit function itself.
 :mod:`lsqfit` provides a decorator, :class:`lsqfit.transform_p`, for fit
 functions that makes this possible. This decorator only works for fit
 functions that use dictionaries for their parameters. Given a prior ``prior``
-for  a fit, the decorator is used in the following way: for example, ::
+for  a fit, the decorator is used in the following way::
    
-   @lsqfit.transform_p(prior.keys(), 0)
+   @lsqfit.transform_p(prior.keys())
    def fitfcn(p):
       ...
 
 when the parameter argument is the first argument of the fit function, or ::
 
-   @lsqfit.transform_p(prior.keys(), 1)
+   @lsqfit.transform_p(prior.keys(), has_x=True)
    def fitfcn(x, p):
       ...
 
-when the parameter argument is the second argument of the fit function (see
-the :class:`lsqfit.transform_p` documentation for more detail). Consider any
+when the parameter argument is the second argument of the 
+fit function. Consider any
 parameter ``p['XX']`` used in ``fitfcn``. The prior  distribution for that
 parameter can now be turned into a log-normal distribution  by replacing
 ``prior['XX']`` with ``prior['logXX']`` (or ``prior['log(XX)'']``) when
@@ -1657,26 +1666,9 @@ This fit was generated using the following code::
 
 Note that here the function ``gv.gvar`` converts the strings 
 ``'0.5351(54)'``, *etc.* into |GVar|\s. Running the code gives the 
-following output::
+following output:
 
-   Least Square Fit (no prior):
-     chi2/dof [dof] = 4.8e-27 [0]    Q = 0    logGBF = None    itns = 2
-
-   Parameters:
-                 0    0.742 (39)     [ 1.0 +- inf ]  
-                 1    -3.86 (59)     [ 1.0 +- inf ]  
-                 2    21.5 (2.4)     [ 1.0 +- inf ]  
-                 3   -39.1 (3.7)     [ 1.0 +- inf ]  
-                 4    25.8 (1.9)     [ 1.0 +- inf ]  
-
-   Fit:
-        x[k]           y[k]      f(x[k],p)
-   ---------------------------------------
-         0.1    0.5351 (54)    0.5351 (54)  
-         0.3    0.6762 (67)    0.6762 (67)  
-         0.5    0.9227 (91)    0.9227 (91)  
-         0.7     1.380 (13)     1.380 (13)  
-        0.95     4.014 (40)     4.014 (40)  
+.. literalinclude:: eg-appendix1a.out
 
 This is a "perfect" fit in that the fit function agrees exactly with 
 the data; the ``chi**2`` for the fit is zero. The 5-parameter fit 
@@ -1741,46 +1733,9 @@ but agrees with the fit to within its 1% errors):
 .. image:: appendix_2.*
    :width: 80%
    
-The fit code output is::
+The fit code output is:
 
-   Least Square Fit:
-     chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
-
-   Parameters:
-                 0   0.489 (17)     [  0.0 (1.0) ]  
-                 1    0.40 (20)     [  0.0 (1.0) ]  
-                 2    0.60 (64)     [  0.0 (1.0) ]  
-                 3    0.44 (80)     [  0.0 (1.0) ]  
-                 4    0.28 (87)     [  0.0 (1.0) ]  
-                 5    0.19 (87)     [  0.0 (1.0) ]  
-                 6    0.16 (90)     [  0.0 (1.0) ]  
-                 7    0.16 (93)     [  0.0 (1.0) ]  
-                 8    0.17 (95)     [  0.0 (1.0) ]  
-                 9    0.18 (96)     [  0.0 (1.0) ]  
-                10    0.19 (97)     [  0.0 (1.0) ]  
-                11    0.19 (97)     [  0.0 (1.0) ]  
-                12    0.19 (97)     [  0.0 (1.0) ]  
-                13    0.19 (97)     [  0.0 (1.0) ]  
-                14    0.18 (97)     [  0.0 (1.0) ]  
-                15    0.18 (97)     [  0.0 (1.0) ]  
-                  .
-                  .
-                  .
-                88    0.0 (1.0)     [  0.0 (1.0) ]  
-                89    0.0 (1.0)     [  0.0 (1.0) ]  
-                90    0.0 (1.0)     [  0.0 (1.0) ]  
-
-   Fit:
-        x[k]           y[k]      f(x[k],p)
-   ---------------------------------------
-         0.1    0.5351 (54)    0.5349 (54)  
-         0.3    0.6762 (67)    0.6768 (65)  
-         0.5    0.9227 (91)    0.9219 (87)  
-         0.7     1.380 (13)     1.381 (13)  
-        0.95     4.014 (40)     4.014 (40)  
-
-   Settings:
-     svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
+.. literalinclude:: eg-appendix1b.out
 
 This is a much more plausible fit than than the 5-parameter fit, and gives an
 extrapolated value of ``p[0]=0.489(17)``. The original data points were
@@ -1797,16 +1752,9 @@ Bayes Factor
 
 We can test our priors for this fit by re-doing the fit with broader and 
 narrower priors. Setting ``prior = gv.gvar(91 * ['0(3)'])`` gives an excellent
-fit, ::
+fit, 
 
-  Least Square Fit:
-    chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993    itns = 2
-
-  Parameters:
-                0   0.490 (33)     [  0.0 (3.0) ]  
-                1    0.38 (48)     [  0.0 (3.0) ]  
-                2    0.6 (1.8)     [  0.0 (3.0) ]  
-                ... 
+.. literalinclude:: eg-appendix1d.out
 
 but with a very small ``chi2/dof`` and somewhat larger errors on the best-fit
 estimates for the parameters. The logarithm of the (Gaussian) Bayes Factor,
@@ -1819,19 +1767,14 @@ likely to come from a world with parameters of order one than from one with
 parameters of order three. Put another way it says that
 the size of the fluctuations in the data 
 are more consistent with coefficients of order one than with coefficients of 
-order three. The ``logGBF`` values argue for the original prior.
+order three --- in the latter case, there would have been larger 
+fluctuations in the data than are actually seen. 
+The ``logGBF`` values argue for the original prior.
 
 Narrower priors, ``prior = gv.gvar(91 * ['0.0(3)'])``, give a poor fit, 
-and also a less optimal ``logGBF``::
+and also a less optimal ``logGBF``:
 
-  Least Square Fit:
-    chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058    itns = 2
-
-  Parameters:
-                0   0.484 (11)     [  0.00 (30) ]  *
-                1   0.454 (98)     [  0.00 (30) ]  *
-                2    0.50 (23)     [  0.00 (30) ]  *
-                ...
+.. literalinclude:: eg-appendix1e.out
 
 The priors are responsible for about half of the final error in our best
 estimate of ``p[0]`` (with priors of ``0(1)``); the rest comes from the
@@ -1842,16 +1785,13 @@ using the code ::
     outputs = dict(p0=fit.p[0])
     print(gv.fmt_errorbudget(inputs=inputs, outputs=outputs))
 
-which prints the following table::
+which prints the following table:
 
-  Partial % Errors:
-                              p0
-  ------------------------------
-                    y:      2.67
-                prior:      2.23
-  ------------------------------
-                total:      3.48
+.. literalinclude:: eg-appendix1g.out
 
+The table shows that the final 3.5% error comes from a 2.7% error due
+to uncertainties in ``y`` and a 2.2% error from uncertainties in the 
+prior (added in quadrature).
 
 Marginalization
 .................
@@ -1894,29 +1834,15 @@ above are easily modified to implement this idea::
    fit = lsqfit.nonlinear_fit(data=(x, ymod), prior=priormod, fcn=f)
    print(fit.format(maxline=True))
 
-Running this code give::
+Running this code give:
 
-  Least Square Fit (input data correlated with prior):
-    chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508    itns = 2
+.. literalinclude:: eg-appendix1c.out
 
-  Parameters:
-                0   0.489 (17)     [  0.0 (1.0) ]  
-
-  Fit:
-       x[k]         y[k]     f(x[k],p)
-  ------------------------------------
-        0.1    0.54 (10)    0.489 (17)  
-        0.3    0.68 (31)    0.489 (17)  
-        0.5    0.92 (58)    0.489 (17)  
-        0.7    1.38 (98)    0.489 (17)  
-       0.95    4.0 (3.0)    0.489 (17)  *
-
-  Settings:
-    svdcut = (1e-15,1e-15)   svdnum = (None,None)    reltol/abstol = 0.0001/0
-
-Remarkably this one-parameter fit gives results for ``p[0]`` that are identical (to 
+Remarkably this one-parameter fit gives results for ``p[0]`` 
+that are identical (to 
 machine precision) to our 91-parameter fit above. The 90 parameters for
-``n>0`` are said to have been *marginalized* in this fit. Marginalizing a parameter
+``n>0`` are said to have been *marginalized* in this fit. 
+Marginalizing a parameter
 in this way has no effect if the fit function is linear in that parameter. 
 Marginalization has almost no effect for nonlinear fits as well, 
 provided the fit data have small errors (in which case the parameters are 

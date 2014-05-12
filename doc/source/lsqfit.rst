@@ -126,15 +126,12 @@ This leads immediately to the relationship above.
 
 The data's covariance matrix :math:`\mathrm{cov}_y` is sometimes rather
 singular, making it difficult to invert. This problem is dealt with using
-an *svd* cut: the covariance matrix is diagonalized, some number of the
+an *SVD* cut: the covariance matrix is diagonalized, some number of the
 smallest (and therefore least-well determined) eigenvalues and their
 eigenvectors are discarded, and the inverse matrix is reconstituted from
 the eigenmodes that remain. (Instead of discarding modes one can replace
 their eigenvalues by the smallest eigenvalue that is retained; this is less
-conservative and sometimes leads to more accurate results.) Note that the
-covariance matrix has at most :math:`N` non-zero eigenvalues when it is
-estimated from :math:`N` random samples; zero-modes should always be
-discarded.
+conservative and usually leads to more accurate results.) 
 
 nonlinear_fit Objects
 ---------------------  
@@ -202,7 +199,7 @@ nonlinear_fit Objects
       budgets. ``fit.p`` and ``fit.palt`` give the same means and normally
       give the same errors for each parameter. They differ only when the
       input data's covariance matrix is too singular to invert accurately
-      (because of roundoff error), in which case an *svd* cut is advisable.
+      (because of roundoff error), in which case an *SVD* cut is advisable.
    
    .. attribute:: transformed_p
 
@@ -225,17 +222,19 @@ nonlinear_fit Objects
       
    .. attribute:: svdcorrection
       
-      A dictionary containing the (flattened) *svd* corrections, if any, to
-      the fit data ``y`` and the prior ``prior``. For example, ``fit.y``
-      is obtained by adding ``fit.svdcorrection['y']`` to to the
-      (flattened) input ``y`` data. Similarly ``fit.prior`` is the input
-      prior plus ``fit.svdcorrection['prior']``. When there is no *svd*
-      correction, the entries are set equal to ``None``. When the input
-      data and prior are correlated, ``fit.svdcorrection['all']`` contains
-      the correction for the concatenated data and prior. There are no
-      entries for keys ``'y'`` and ``'prior'`` in this case. There is also
-      no entry for key ``'prior'`` when there is no prior.
-      
+      An array containing the (flattened) *SVD* corrections, if any, added
+      to the fit data ``y`` and the prior ``prior``. 
+   
+   .. attribute:: svdn
+
+      The number of eignemodes modified (and/or deleted) by the *SVD* cut.
+
+   .. attribute:: nblocks
+
+      A dictionary where ``nblocks[s]`` equals the number of block-diagonal
+      sub-matrices of the ``y``--``prior`` covariance matrix that are size
+      ``s``-by-``s``. This is sometimes useful for debugging. 
+
    .. attribute:: time
    
       CPU time (in secs) taken by fit.
@@ -246,7 +245,7 @@ nonlinear_fit Objects
    .. attribute:: prior
    
       Prior used in the fit. This may differ from the input prior if an
-      *svd* cut is used (``svdcut>0``). It is either a dictionary
+      *SVD* cut is used. It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input. Equals ``None`` if no prior was specified.
       
@@ -261,7 +260,7 @@ nonlinear_fit Objects
    .. attribute:: y
    
       Fit data used in the fit. This may differ from the input data if
-      an *svd* cut is used (``svdcut>0``). It is either a dictionary
+      an *SVD* cut is used. It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input.
 
@@ -310,9 +309,9 @@ Utility Classes
 
    .. automethod:: priorkey
 
-.. autoclass:: lsqfit.multifit(x0,n,f,reltol=1e-4,abstol=0,maxit=1000,alg='lmsder',analyzer=None)
+.. autoclass:: lsqfit.multifit(x0, n, f, reltol=1e-4, abstol=0, maxit=1000, alg='lmsder', analyzer=None)
 
-.. autoclass:: lsqfit.multiminex(x0,f,tol=1e-4,maxit=1000,step=1,alg='nmsimplex2',analyzer=None)
+.. autoclass:: lsqfit.multiminex(x0, f, tol=1e-4, maxit=1000, step=1, alg='nmsimplex2', analyzer=None)
    
 Requirements
 ------------
