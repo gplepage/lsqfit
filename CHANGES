@@ -1,3 +1,9 @@
+Version ???
+===========
+
+- gvar.cspline.CSpline functions now return scalars rather than 0-D numpy
+  arrays when given scalar arguments.
+  
 Version 4.8 - 2014-05-12
 ========================
 This release has a reworked framework for SVD cuts. The new framework is 

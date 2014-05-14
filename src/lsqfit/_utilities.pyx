@@ -617,8 +617,10 @@ def _build_chiv_chivw(fdata, fcn, prior):
     Also builds ``chivw``.
     """
     nw = sum(len(wgts) for iw, wgts in fdata.inv_wgts)
+    niw = sum(len(iw) for iw, wgts in fdata.inv_wgts)
     if prior is not None:
         def chiv(p, fd=fdata):
+            cdef Py_ssize_t i1, i2
             cdef numpy.ndarray[numpy.long_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
@@ -629,10 +631,14 @@ def _build_chiv_chivw(fdata, fcn, prior):
             else:
                 ans = numpy.zeros(nw, float)
             iw, wgts = fd.inv_wgts[0]
-            if len(iw) > 0:
-                ans[iw] = wgts * delta[iw]
+            i1 = 0
+            i2 = len(iw)
+            if i2 > 0:
+                ans[i1:i2] = wgts * delta[iw]
             for iw, wgt in fd.inv_wgts[1:]:
-                ans[iw] = dot(wgt, delta[iw])
+                i1 = i2
+                i2 += len(wgt)
+                ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
             cdef numpy.ndarray[numpy.long_t, ndim=1] iw
@@ -642,9 +648,9 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray ans, delta
             delta = numpy.concatenate((fcn(p), p)) - fd.mean
             if isinstance(delta[0], gvar.GVar):
-                ans = numpy.zeros(nw, object)
+                ans = numpy.zeros(niw, object)
             else:
-                ans = numpy.zeros(nw, float)
+                ans = numpy.zeros(niw, float)
             iw, wgts = fd.inv_wgts[0]
             if len(iw) > 0:
                 ans[iw] = wgts ** 2 * delta[iw]  
@@ -657,6 +663,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
         chiv.nf = nw 
     else:
         def chiv(p, fd=fdata):
+            cdef Py_ssize_t i1, i2
             cdef numpy.ndarray[numpy.long_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
@@ -667,10 +674,14 @@ def _build_chiv_chivw(fdata, fcn, prior):
             else:
                 ans = numpy.zeros(nw, float)
             iw, wgts = fd.inv_wgts[0]
-            if len(iw) > 0:
-                ans[iw] = wgts * delta[iw]
+            i1 = 0
+            i2 = len(iw)
+            if i2 > 0:
+                ans[i1:i2] = wgts * delta[iw]
             for iw, wgt in fd.inv_wgts[1:]:
-                ans[iw] = dot(wgt, delta[iw])
+                i1 = i2
+                i2 += len(wgt)
+                ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
             cdef numpy.ndarray[numpy.long_t, ndim=1] iw
@@ -680,9 +691,9 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray ans, delta
             delta = fcn(p) - fd.mean
             if isinstance(delta[0], gvar.GVar):
-                ans = numpy.zeros(nw, object)
+                ans = numpy.zeros(niw, object)
             else:
-                ans = numpy.zeros(nw, float)
+                ans = numpy.zeros(niw, float)
             iw, wgts = fd.inv_wgts[0]
             if len(iw) > 0:
                 ans[iw] = wgts ** 2 * delta[iw]  

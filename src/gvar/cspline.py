@@ -135,7 +135,7 @@ class CSpline:
         a = k1 * (x2 - x1) - (y2 - y1)
         b = - k2 * (x2 - x1) + (y2 - y1)
         ans = (1 - t) * y1 + t * y2 + t * (1-t) * (a * (1 - t) + b * t)
-        return ans.reshape(xshape)
+        return ans.reshape(xshape) if xshape != () else ans[0]
 
     def integ(self, x):
         x = numpy.asarray(x)
@@ -163,7 +163,7 @@ class CSpline:
             + t ** 3 * (1 / 3. - t / 4.) * b
             )
         ans += self.intydx[i]
-        return ans.reshape(xshape)
+        return ans.reshape(xshape) if xshape != () else ans[0]
 
     def D(self, x):
         x = numpy.asarray(x)
@@ -189,7 +189,7 @@ class CSpline:
             + (1 - 2 * t) * (a * (1 - t) + b * t) / (x2 - x1)
             + t * (1 - t) * (b - a) / (x2 - x1)
             )
-        return ans.reshape(xshape)
+        return ans.reshape(xshape) if xshape != () else ans[0]
 
     def D2(self, x):
         x = numpy.asarray(x)
@@ -211,7 +211,7 @@ class CSpline:
         a = k1 * (x2 - x1) - (y2 - y1)
         b = - k2 * (x2 - x1) + (y2 - y1)
         ans = 2 * (b - 2 * a + (a - b) * 3 * t) / (x2 - x1) ** 2
-        return ans.reshape(xshape)
+        return ans.reshape(xshape) if xshape != () else ans[0]
 
 def tri_diag_solve(a, b, c, d):
     """ Solve a[i] * x[i-1] + b[i] * x[i] + c[i] * x[i+1] = d[i] for x[i]

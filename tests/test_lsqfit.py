@@ -514,6 +514,20 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 self.assertEqual(fit.nblocks[2], 2)
             else:
                 self.assertEqual(fit.nblocks[4], 1)
+
+        # negative cut
+        x, dx = gvar(['1(1)', '0.01(1)'])
+        data = np.array([(x+dx)/2, (x-dx)/20.])
+        # g, wgts = svd([(x+dx)/2, (x-dx)/20.], svdcut=-0.2 ** 2, wgts=-1)
+        prior = gv.gvar(['1(10)', '0.05(50)'])
+        def f(p):
+            return p
+        fit = nonlinear_fit(data=data, prior=prior, fcn=f, svdcut=-0.2 ** 2)
+        g = fit.p
+        self.assertEqual((g[0]+g[1]*10).fmt(1), '1.0(1.0)')
+        self.assertEqual(fit.dof, 1)
+        self.assertEqual(fit.svdn, 1)
+
             
     
     def test_logGBF(self):

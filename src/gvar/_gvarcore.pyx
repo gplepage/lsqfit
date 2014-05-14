@@ -46,12 +46,8 @@ from numpy import arcsinh, arccosh, arctanh
 # from re import compile as _compile
 import copy
 
-try:
-    import powerseries
-    _ARRAY_TYPES = [numpy.ndarray,powerseries.PowerSeries]
-except:
-    _ARRAY_TYPES = [numpy.ndarray]
-   
+import gvar.powerseries
+_ARRAY_TYPES = [numpy.ndarray, gvar.powerseries.PowerSeries]   
 
 # GVar 
 cdef class GVar:
