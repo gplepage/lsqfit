@@ -1,5 +1,8 @@
-Version ???
-===========
+Version 4.8.1 - 2014-05-14
+===========================
+Bug fix.
+
+- fixed negative svdcuts (which one shouldn't use anyway), which were broken. 
 
 - gvar.cspline.CSpline functions now return scalars rather than 0-D numpy
   arrays when given scalar arguments.
