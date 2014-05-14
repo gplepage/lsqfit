@@ -42,7 +42,7 @@ A simple analyzer class is:
 
 Power Series
 --------------
-.. automodule:: powerseries
+.. automodule:: gvar.powerseries
     :synopsis: Power series arithmetic and evaluation.
 
 .. autoclass:: gvar.powerseries.PowerSeries

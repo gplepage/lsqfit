@@ -126,7 +126,7 @@ This leads immediately to the relationship above.
 
 The data's covariance matrix :math:`\mathrm{cov}_y` is sometimes rather
 singular, making it difficult to invert. This problem is dealt with using
-an *SVD* cut: the covariance matrix is diagonalized, some number of the
+an SVD cut: the covariance matrix is diagonalized, some number of the
 smallest (and therefore least-well determined) eigenvalues and their
 eigenvectors are discarded, and the inverse matrix is reconstituted from
 the eigenmodes that remain. (Instead of discarding modes one can replace
@@ -199,7 +199,7 @@ nonlinear_fit Objects
       budgets. ``fit.p`` and ``fit.palt`` give the same means and normally
       give the same errors for each parameter. They differ only when the
       input data's covariance matrix is too singular to invert accurately
-      (because of roundoff error), in which case an *SVD* cut is advisable.
+      (because of roundoff error), in which case an SVD cut is advisable.
    
    .. attribute:: transformed_p
 
@@ -222,12 +222,12 @@ nonlinear_fit Objects
       
    .. attribute:: svdcorrection
       
-      An array containing the (flattened) *SVD* corrections, if any, added
+      An array containing the (flattened) SVD corrections, if any, added
       to the fit data ``y`` and the prior ``prior``. 
    
    .. attribute:: svdn
 
-      The number of eignemodes modified (and/or deleted) by the *SVD* cut.
+      The number of eignemodes modified (and/or deleted) by the SVD cut.
 
    .. attribute:: nblocks
 
@@ -245,7 +245,7 @@ nonlinear_fit Objects
    .. attribute:: prior
    
       Prior used in the fit. This may differ from the input prior if an
-      *SVD* cut is used. It is either a dictionary
+      SVD cut is used. It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input. Equals ``None`` if no prior was specified.
       
@@ -260,7 +260,7 @@ nonlinear_fit Objects
    .. attribute:: y
    
       Fit data used in the fit. This may differ from the input data if
-      an *SVD* cut is used. It is either a dictionary
+      an SVD cut is used. It is either a dictionary
       (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
       depending upon the input.
 

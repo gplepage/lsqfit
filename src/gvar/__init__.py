@@ -183,7 +183,7 @@ def chi2(g1, g2=None, svdcut=1e-15, nocorr=False, fmt=False):
 
     ``chi**2`` is computed from the inverse of the covariance matrix
     of ``g1-g2``. The matrix inversion can be sensitive to roundoff 
-    errors. In such cases, *SVD* cuts can be applied by setting
+    errors. In such cases, SVD cuts can be applied by setting
     parameters ``svdcut``; see the documentation 
     for :func:`gvar.svd`, which is used to apply the cut.
 
@@ -302,7 +302,7 @@ def svd(g, svdcut=1e-15, wgts=False):
     their correlation matrix less singular than that of the 
     original ``g``: each eigenvalue ``eig`` of the correlation matrix is 
     replaced by ``max(eig, svdcut * max_eig)`` where ``max_eig`` is 
-    the largest eigenvalue. This *SVD* cut, which is applied separately
+    the largest eigenvalue. This SVD cut, which is applied separately
     to each block-diagonal sub-matrix of the correlation matrix, 
     increases the variance of the eigenmodes with eigenvalues smaller
     than ``svdcut * max_eig``.

@@ -337,8 +337,8 @@ of the differential equation at that point.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-powerseries">
-<span id="power-series"></span><h2>Power Series<a class="headerlink" href="#module-powerseries" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-gvar.powerseries">
+<span id="power-series"></span><h2>Power Series<a class="headerlink" href="#module-gvar.powerseries" title="Permalink to this headline">¶</a></h2>
 <p>This module provides tools for manipulating power series approximations
 of functions. A function&#8217;s power series is specified by the coefficients in
 its Taylor expansion with respect to an independent variable, say <tt class="docutils literal"><span class="pre">x</span></tt>:</p>
@@ -362,19 +362,19 @@ expressions and (sufficiently differentiable) functions of power series
 return new power series.</p>
 <div class="section" id="power-series-arithmetic">
 <h3>Power series arithmetic<a class="headerlink" href="#power-series-arithmetic" title="Permalink to this headline">¶</a></h3>
-<p>Class <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> provides a numerical implementation of the power series
+<p>Class <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> provides a numerical implementation of the power series
 calculus. <tt class="docutils literal"><span class="pre">PowerSeries([f0,f1,f2,f3...])</span></tt> is a numerical representation of 
 a power series with coefficients <tt class="docutils literal"><span class="pre">f0,</span> <span class="pre">f1,</span> <span class="pre">f2,</span> <span class="pre">f3...</span></tt> (as in <tt class="docutils literal"><span class="pre">f(x)</span></tt> 
 above). Thus, for example, we can define a 4th-order power series 
 approximation <tt class="docutils literal"><span class="pre">f</span></tt> to <tt class="docutils literal"><span class="pre">exp(x)=1+x+x**2/2+...</span></tt> using</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">powerseries</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gvar.powerseries</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">PowerSeries</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mf">6.</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mf">24.</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span>             <span class="c"># print the coefficients</span>
 <span class="go">[ 1.          1.          0.5         0.16666667  0.04166667]</span>
 </pre></div>
 </div>
-<p>Arithmetic expressions involving instances of class <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> are
-themselves <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> as in, for example,</p>
+<p>Arithmetic expressions involving instances of class <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> are
+themselves <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> as in, for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="mi">1</span><span class="o">/</span><span class="n">f</span>           <span class="c"># power series for exp(-x)</span>
 <span class="go">[ 1.         -1.          0.5        -0.16666667  0.04166667]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">log</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>        <span class="c"># power series for x</span>
@@ -385,24 +385,24 @@ themselves <tt class="xref py py-class docutils literal"><span class="pre">Power
 </div>
 <p>The standard arithmetic operators (<tt class="docutils literal"><span class="pre">+,-,*,/,=,**</span></tt>) are supported, as are
 the usual elementary functions (<tt class="docutils literal"><span class="pre">exp,</span> <span class="pre">log,</span> <span class="pre">sin,</span> <span class="pre">cos,</span> <span class="pre">tan</span> <span class="pre">...</span></tt>). Different
-<tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> can be combined arithmetically to create new 
-<tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt>; the order of the result is that of the operand with the 
+<a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> can be combined arithmetically to create new 
+<a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a>; the order of the result is that of the operand with the 
 lowest order.</p>
-<p><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> can be differentiated and integrated:</p>
+<p><a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> can be differentiated and integrated:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span>     <span class="c"># derivative of exp(x)</span>
 <span class="go">[ 1.          1.          0.5         0.16666667]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="o">.</span><span class="n">integ</span><span class="p">()</span>     <span class="c"># integral of exp(x) (from x=0)</span>
 <span class="go">[ 0.          1.          0.5         0.16666667  0.04166667  0.00833333]</span>
 </pre></div>
 </div>
-<p>Each <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> represents a function. The <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> for
+<p>Each <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> represents a function. The <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> for
 a function of a function is easily obtained. For example, assume <tt class="docutils literal"><span class="pre">f</span></tt> 
 represents function <tt class="docutils literal"><span class="pre">f(x)=exp(x)</span></tt>, as above, and <tt class="docutils literal"><span class="pre">g</span></tt> 
 represents <tt class="docutils literal"><span class="pre">g(x)=log(1+x)</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">PowerSeries</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="mf">4.</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Then <tt class="docutils literal"><span class="pre">f(g)</span></tt> gives the <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> for <tt class="docutils literal"><span class="pre">exp(log(1+x))</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">x</span></tt>:</p>
+<p>Then <tt class="docutils literal"><span class="pre">f(g)</span></tt> gives the <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> for <tt class="docutils literal"><span class="pre">exp(log(1+x))</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">+</span> <span class="pre">x</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">f</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 <span class="go">[  1.0000e+00   1.0000e+00   0.0000e+00  -2.7755e-17 -7.6327e-17]</span>
 </pre></div>
@@ -435,15 +435,15 @@ be a <tt class="docutils literal"><span class="pre">float</span></tt>).</p>
 </div>
 <div class="section" id="taylor-expansions-of-python-functions">
 <h3>Taylor expansions of Python functions<a class="headerlink" href="#taylor-expansions-of-python-functions" title="Permalink to this headline">¶</a></h3>
-<p><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> can be used to compute Taylor series for more-or-less
+<p><a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> can be used to compute Taylor series for more-or-less
 arbitrary pure-Python functions provided the functions are locally analytic
 (or at least sufficiently differentiable). To compute the <tt class="docutils literal"><span class="pre">N</span></tt>-th order
 expansion of a Python function <tt class="docutils literal"><span class="pre">g(x)</span></tt>, first create a <tt class="docutils literal"><span class="pre">N</span></tt>-th order
-<tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> variable that represents the expansion parameter: say,
+<a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> variable that represents the expansion parameter: say,
 <tt class="docutils literal"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">PowerSeries([0.,1.],order=N)</span></tt>. The Taylor series for function <tt class="docutils literal"><span class="pre">g</span></tt> 
-is then given by <tt class="docutils literal"><span class="pre">g_taylor</span> <span class="pre">=</span> <span class="pre">g(x)</span></tt> which is a <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> instance.
+is then given by <tt class="docutils literal"><span class="pre">g_taylor</span> <span class="pre">=</span> <span class="pre">g(x)</span></tt> which is a <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> instance.
 For example, consider:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">powerseries</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gvar.powerseries</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>           <span class="c"># an example of a Python function</span>
 <span class="gp">... </span>    <span class="k">return</span> <span class="mf">0.5</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">x</span><span class="p">)</span>
 <span class="gp">... </span>
@@ -475,13 +475,13 @@ is too long. Omitting <tt class="docutils literal"><span class="pre">c</span></t
 all of whose coefficients are zero. Individual series
 coefficients are accessed using array/list notation: for example,
 the 3rd-order coefficient of <tt class="docutils literal"><span class="pre">PowerSeries</span> <span class="pre">p</span></tt> is <tt class="docutils literal"><span class="pre">p[3]</span></tt>. The
-order of <tt class="docutils literal"><span class="pre">p</span></tt> is <tt class="docutils literal"><span class="pre">p.order</span></tt>. <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> should work
+order of <tt class="docutils literal"><span class="pre">p</span></tt> is <tt class="docutils literal"><span class="pre">p.order</span></tt>. <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> should work
 for coefficients of any data type that supports ordinary arithmetic.</p>
-<p>Arithmetic expressions of <tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> variables yield new
-<tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> results that represent the power series 
+<p>Arithmetic expressions of <a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> variables yield new
+<a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> results that represent the power series 
 expansion of the expression. Expressions can include the standard 
 mathematical functions (<tt class="docutils literal"><span class="pre">log,</span> <span class="pre">exp,</span> <span class="pre">sqrt,</span> <span class="pre">sin,</span> <span class="pre">cos,</span> <span class="pre">tan...</span></tt>). 
-<tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt> can also be differentiated (<tt class="docutils literal"><span class="pre">p.deriv()</span></tt>)
+<a class="reference internal" href="#gvar.powerseries.PowerSeries" title="gvar.powerseries.PowerSeries"><tt class="xref py py-class docutils literal"><span class="pre">PowerSeries</span></tt></a> can also be differentiated (<tt class="docutils literal"><span class="pre">p.deriv()</span></tt>)
 and integrated (<tt class="docutils literal"><span class="pre">p.integ()</span></tt>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -558,7 +558,7 @@ integrating from point <em>x0</em>, is returned.</p>
 <li><a class="reference internal" href="#">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a><ul>
 <li><a class="reference internal" href="#cubic-splines">Cubic Splines</a></li>
 <li><a class="reference internal" href="#ordinary-differential-equations">Ordinary Differential Equations</a></li>
-<li><a class="reference internal" href="#module-powerseries">Power Series</a><ul>
+<li><a class="reference internal" href="#module-gvar.powerseries">Power Series</a><ul>
 <li><a class="reference internal" href="#power-series-arithmetic">Power series arithmetic</a></li>
 <li><a class="reference internal" href="#numerical-evaluation-of-power-series">Numerical evaluation of power series</a></li>
 <li><a class="reference internal" href="#taylor-expansions-of-python-functions">Taylor expansions of Python functions</a></li>

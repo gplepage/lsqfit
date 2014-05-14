@@ -409,8 +409,8 @@ class nonlinear_fit(object):
         Optionally, it will also list the best-fit values for the 
         fit parameters together with the prior for each (in ``[]`` on 
         each line). It can also list all of the data and the corresponding
-        values from the fit. At the end it lists the *SVD* cut, 
-        the number of eigenmodes modified by the *SVD* cut, the relative 
+        values from the fit. At the end it lists the SVD cut, 
+        the number of eigenmodes modified by the SVD cut, the relative 
         and absolute tolerances used in the fit, and the time in seconds
         needed to do the fit. 
                         

@@ -1696,10 +1696,10 @@ mean and standard deviation).</p>
 </div>
 <div class="section" id="svd-cuts-and-roundoff-error">
 <h2>SVD Cuts and Roundoff Error<a class="headerlink" href="#svd-cuts-and-roundoff-error" title="Permalink to this headline">¶</a></h2>
-<p>All of the fits discussed above have (default) <em>SVD</em> cuts of 1e-15. This
+<p>All of the fits discussed above have (default) SVD cuts of 1e-15. This
 has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
-for example, with an <em>SVD</em> cut of 1e-19, instead of 1e-15, we would have
+for example, with an SVD cut of 1e-19, instead of 1e-15, we would have
 obtained the following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.847
@@ -1759,7 +1759,7 @@ double precision computation. The smallest eigenvalues and their
 eigenvectors are likely to be quite inaccurate, as is any method for
 computing the inverse matrix.</p>
 <p>One solution to this common problem in least-squares fitting is
-to introduce an <em>SVD</em> cut, here called <tt class="docutils literal"><span class="pre">svdcut</span></tt>:</p>
+to introduce an SVD cut, here called <tt class="docutils literal"><span class="pre">svdcut</span></tt>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1771,7 +1771,7 @@ precision of the input <tt class="docutils literal"><span class="pre">y</span></
 stability is worth the tradeoff. The listing shows that 2 eigenvalues are
 modified when <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (see entry for <tt class="docutils literal"><span class="pre">svdcut/n</span></tt>); no
 eigenvalues are changed when <tt class="docutils literal"><span class="pre">svdcut=1e-19</span></tt>.</p>
-<p>The <em>SVD</em> cut is actually applied to the correlation matrix,
+<p>The SVD cut is actually applied to the correlation matrix,
 which is the covariance matrix rescaled by standard deviations so that
 all diagonal elements equal 1. This helps mitigate problems caused by
 large scale differences between different variables. Any eigenvalue smaller
@@ -1780,9 +1780,9 @@ the largest eigenvalue. Thus larger values for <tt class="docutils literal"><spa
 numbers of eigenmodes and increase errors in the final results.</p>
 <p>The error budget is different in this case. There is no contribution from
 the original <tt class="docutils literal"><span class="pre">y</span></tt> data since it was exact. So all statistical uncertainty
-comes from the priors in <tt class="docutils literal"><span class="pre">max_prior</span></tt>, and from the <em>SVD</em> cut, which
+comes from the priors in <tt class="docutils literal"><span class="pre">max_prior</span></tt>, and from the SVD cut, which
 contributes since it modifies the effective variances of several eigenmodes of
-the covariance matrix. The <em>SVD</em> contribution can be obtained from
+the covariance matrix. The SVD contribution can be obtained from
 <tt class="docutils literal"><span class="pre">fit.svdcorrection</span></tt> so the full error budget is constructed by the following
 code,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;E1/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;E2/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -1809,11 +1809,11 @@ Partial % Errors:
               total:      6.99      1.23     25.32      7.70
 </pre></div>
 </div>
-<p>Here the contribution from the <em>SVD</em> cut is almost negligible, which might
+<p>Here the contribution from the SVD cut is almost negligible, which might
 not be the case in other applications.</p>
-<p>The <em>SVD</em> cut is applied separately to each block diagonal sub-matrix of the
+<p>The SVD cut is applied separately to each block diagonal sub-matrix of the
 correlation matrix. This means, among other things, that errors for
-uncorrelated data are unaffected by the <em>SVD</em> cut. Applying an <em>SVD</em>
+uncorrelated data are unaffected by the SVD cut. Applying an SVD
 cut of 1e-4, for example, to the following singular covariance matrix,</p>
 <div class="highlight-python"><div class="highlight"><pre>[[  1.0   1.0   0.0  ]
  [  1.0   1.0   0.0  ]
@@ -1833,12 +1833,12 @@ when there are strong positive correlations between different parts of the fit
 data or prior.  Then much larger <tt class="docutils literal"><span class="pre">svdcut</span></tt>s may be needed.</p>
 <p>Note that taking <tt class="docutils literal"><span class="pre">svdcut=-1e-15</span></tt>, with a
 minus sign, causes the problematic modes to be dropped. This is a more
-conventional implementation of <em>SVD</em> cuts, but here it results in much less
+conventional implementation of SVD cuts, but here it results in much less
 precision than using <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (giving, for example, 1.993(69)
 for <tt class="docutils literal"><span class="pre">E1/E0</span></tt>, which is almost three times less precise). Dropping modes is
 equivalent to setting the corresponding variances to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal
-to the <em>SVD</em>-cutoff variance.</p>
+to the SVD-cutoff variance.</p>
 <p>The method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.check_roundoff" title="lsqfit.nonlinear_fit.check_roundoff"><tt class="xref py py-func docutils literal"><span class="pre">lsqfit.nonlinear_fit.check_roundoff()</span></tt></a> can be used to check
 for roundoff errors by adding the line <tt class="docutils literal"><span class="pre">fit.check_roundoff()</span></tt> after the
 fit. It generates a warning if roundoff looks to be a problem. This check
@@ -2213,11 +2213,11 @@ roundoff errors in the matrix inversions of the covariance matrices.</p>
 <tt class="docutils literal"><span class="pre">chi**2</span></tt>s (<em>e.g.</em>, <tt class="docutils literal"><span class="pre">1e78</span></tt>). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
-<tt class="docutils literal"><span class="pre">chi**2</span></tt>. One fix is to include <em>SVD</em> cuts in the fit by setting, for
+<tt class="docutils literal"><span class="pre">chi**2</span></tt>. One fix is to include SVD cuts in the fit by setting, for
 example, <tt class="docutils literal"><span class="pre">svdcut=(1e-14,1e-14)</span></tt> in the call to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a>.
 These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.</p>
-<p>Even if the <em>SVD</em> cuts work in such a case, the question remains as to why one
+<p>Even if the SVD cuts work in such a case, the question remains as to why one
 of the covariance matrices has a zero mode. A common cause is if the same
 <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> was used for more than one prior. For example, one might
 think that</p>
@@ -2247,7 +2247,7 @@ to the combination <tt class="docutils literal"><span class="pre">a-b</span></tt
 </pre></div>
 </div>
 <p>This zero mode upsets <tt class="xref py py-func docutils literal"><span class="pre">nonlinear_fit()</span></tt>. If <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> are meant to
-fluctuate together then an <em>SVD</em> cut as above will give correct results (with
+fluctuate together then an SVD cut as above will give correct results (with
 <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> being forced equal to several decimal places, depending upon
 the cut). Of course, simply replacing <tt class="docutils literal"><span class="pre">b</span></tt> by <tt class="docutils literal"><span class="pre">a</span></tt> in the fit function would
 be even better. If, on the other hand, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt> were not meant to

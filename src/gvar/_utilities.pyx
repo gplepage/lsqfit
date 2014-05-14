@@ -696,7 +696,7 @@ class SVD(object):
     ..  attribute:: nmod
 
         The first ``nmod`` eigenvalues in ``self.val`` were modified by
-        the *SVD* cut (equals 0 unless ``svdcut > 0``).
+        the SVD cut (equals 0 unless ``svdcut > 0``).
 
     ..  attribute:: eigen_range 
         

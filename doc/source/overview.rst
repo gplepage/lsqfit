@@ -1192,10 +1192,10 @@ to notice:
 
 SVD Cuts and Roundoff Error
 -----------------------------
-All of the fits discussed above have (default) *SVD* cuts of 1e-15. This
+All of the fits discussed above have (default) SVD cuts of 1e-15. This
 has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
-for example, with an *SVD* cut of 1e-19, instead of 1e-15, we would have
+for example, with an SVD cut of 1e-19, instead of 1e-15, we would have
 obtained the following output:
 
 .. literalinclude:: eg5b.out
@@ -1225,7 +1225,7 @@ eigenvectors are likely to be quite inaccurate, as is any method for
 computing the inverse matrix.
 
 One solution to this common problem in least-squares fitting is 
-to introduce an *SVD* cut, here called ``svdcut``::
+to introduce an SVD cut, here called ``svdcut``::
 
    fit = nonlinear_fit(data=(x, ymod), fcn=f, prior=prior, p0=p0, svdcut=1e-15)
    
@@ -1238,7 +1238,7 @@ stability is worth the tradeoff. The listing shows that 2 eigenvalues are
 modified when ``svdcut=1e-15`` (see entry for ``svdcut/n``); no
 eigenvalues are changed when ``svdcut=1e-19``.
 
-The *SVD* cut is actually applied to the correlation matrix,
+The SVD cut is actually applied to the correlation matrix,
 which is the covariance matrix rescaled by standard deviations so that 
 all diagonal elements equal 1. This helps mitigate problems caused by
 large scale differences between different variables. Any eigenvalue smaller
@@ -1248,9 +1248,9 @@ numbers of eigenmodes and increase errors in the final results.
 
 The error budget is different in this case. There is no contribution from
 the original ``y`` data since it was exact. So all statistical uncertainty
-comes from the priors in ``max_prior``, and from the *SVD* cut, which
+comes from the priors in ``max_prior``, and from the SVD cut, which
 contributes since it modifies the effective variances of several eigenmodes of
-the covariance matrix. The *SVD* contribution can be obtained from
+the covariance matrix. The SVD contribution can be obtained from
 ``fit.svdcorrection`` so the full error budget is constructed by the following
 code, ::
 
@@ -1264,12 +1264,12 @@ which gives:
 
 .. literalinclude:: eg5d.out
    
-Here the contribution from the *SVD* cut is almost negligible, which might
+Here the contribution from the SVD cut is almost negligible, which might
 not be the case in other applications.
 
-The *SVD* cut is applied separately to each block diagonal sub-matrix of the 
+The SVD cut is applied separately to each block diagonal sub-matrix of the 
 correlation matrix. This means, among other things, that errors for
-uncorrelated data are unaffected by the *SVD* cut. Applying an *SVD*
+uncorrelated data are unaffected by the SVD cut. Applying an SVD
 cut of 1e-4, for example, to the following singular covariance matrix, ::
 
   [[  1.0   1.0   0.0  ]
@@ -1290,12 +1290,12 @@ data or prior.  Then much larger ``svdcut``\s may be needed.
 
 Note that taking ``svdcut=-1e-15``, with a
 minus sign, causes the problematic modes to be dropped. This is a more
-conventional implementation of *SVD* cuts, but here it results in much less
+conventional implementation of SVD cuts, but here it results in much less
 precision than using ``svdcut=1e-15`` (giving, for example, 1.993(69)
 for ``E1/E0``, which is almost three times less precise). Dropping modes is
 equivalent to setting the corresponding variances to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal
-to the *SVD*\-cutoff variance.
+to the SVD\-cutoff variance.
 
 The method :func:`lsqfit.nonlinear_fit.check_roundoff` can be used to check
 for roundoff errors by adding the line ``fit.check_roundoff()`` after the
@@ -1567,12 +1567,12 @@ Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
-``chi**2``. One fix is to include *SVD* cuts in the fit by setting, for
+``chi**2``. One fix is to include SVD cuts in the fit by setting, for
 example, ``svdcut=(1e-14,1e-14)`` in the call to :class:`lsqfit.nonlinear_fit`.
 These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.
 
-Even if the *SVD* cuts work in such a case, the question remains as to why one
+Even if the SVD cuts work in such a case, the question remains as to why one
 of the covariance matrices has a zero mode. A common cause is if the same
 :class:`gvar.GVar` was used for more than one prior. For example, one might
 think that ::
@@ -1602,7 +1602,7 @@ to the combination ``a-b``; it is all 1\s in this case::
    0.0
 
 This zero mode upsets :func:`nonlinear_fit`. If ``a`` and ``b`` are meant to
-fluctuate together then an *SVD* cut as above will give correct results (with
+fluctuate together then an SVD cut as above will give correct results (with
 ``a`` and ``b`` being forced equal to several decimal places, depending upon
 the cut). Of course, simply replacing ``b`` by ``a`` in the fit function would
 be even better. If, on the other hand, ``a`` and ``b`` were not meant to

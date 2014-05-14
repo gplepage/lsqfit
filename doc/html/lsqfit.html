@@ -190,7 +190,7 @@ from the minimum condition for the fit, which defines (implicitly)
 This leads immediately to the relationship above.</p>
 <p>The data&#8217;s covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
 singular, making it difficult to invert. This problem is dealt with using
-an <em>SVD</em> cut: the covariance matrix is diagonalized, some number of the
+an SVD cut: the covariance matrix is diagonalized, some number of the
 smallest (and therefore least-well determined) eigenvalues and their
 eigenvectors are discarded, and the inverse matrix is reconstituted from
 the eigenmodes that remain. (Instead of discarding modes one can replace
@@ -396,7 +396,7 @@ and, therefore, <tt class="docutils literal"><span class="pre">fit.palt</span></
 budgets. <tt class="docutils literal"><span class="pre">fit.p</span></tt> and <tt class="docutils literal"><span class="pre">fit.palt</span></tt> give the same means and normally
 give the same errors for each parameter. They differ only when the
 input data&#8217;s covariance matrix is too singular to invert accurately
-(because of roundoff error), in which case an <em>SVD</em> cut is advisable.</p>
+(because of roundoff error), in which case an SVD cut is advisable.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -427,14 +427,14 @@ the fit.</p>
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
 <tt class="descname">svdcorrection</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p>An array containing the (flattened) <em>SVD</em> corrections, if any, added
+<dd><p>An array containing the (flattened) SVD corrections, if any, added
 to the fit data <tt class="docutils literal"><span class="pre">y</span></tt> and the prior <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdn">
 <tt class="descname">svdn</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of eignemodes modified (and/or deleted) by the <em>SVD</em> cut.</p>
+<dd><p>The number of eignemodes modified (and/or deleted) by the SVD cut.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -457,7 +457,7 @@ in particular attributes:</p>
 <dt id="lsqfit.nonlinear_fit.prior">
 <tt class="descname">prior</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prior used in the fit. This may differ from the input prior if an
-<em>SVD</em> cut is used. It is either a dictionary
+SVD cut is used. It is either a dictionary
 (<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) or an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>),
 depending upon the input. Equals <tt class="docutils literal"><span class="pre">None</span></tt> if no prior was specified.</p>
 </dd></dl>
@@ -476,7 +476,7 @@ argument: so <tt class="docutils literal"><span class="pre">f(p)</span></tt> rat
 <dt id="lsqfit.nonlinear_fit.y">
 <tt class="descname">y</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit data used in the fit. This may differ from the input data if
-an <em>SVD</em> cut is used. It is either a dictionary
+an SVD cut is used. It is either a dictionary
 (<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>) or an array (<tt class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></tt>),
 depending upon the input.</p>
 </dd></dl>

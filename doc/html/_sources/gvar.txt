@@ -627,7 +627,7 @@ other |GVar|\s come from:
 
 .. autofunction:: gvar.fmt_values(outputs, ndecimal=None)
 
-The following function applies an *SVD* cut to the correlation matrix 
+The following function applies an SVD cut to the correlation matrix 
 of a set of |GVar|\s:
 
 .. autofunction:: gvar.svd
