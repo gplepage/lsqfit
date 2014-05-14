@@ -809,7 +809,7 @@ overlap are used. Also setting <tt class="docutils literal"><span class="pre">g2
 elements by zeros.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is computed from the inverse of the covariance matrix
 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>. The matrix inversion can be sensitive to roundoff 
-errors. In such cases, <em>SVD</em> cuts can be applied by setting
+errors. In such cases, SVD cuts can be applied by setting
 parameters <tt class="docutils literal"><span class="pre">svdcut</span></tt>; see the documentation 
 for <a class="reference internal" href="#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a>, which is used to apply the cut.</p>
 <p>The return value is the <tt class="docutils literal"><span class="pre">chi**2</span></tt>. Extra data is stored in 
@@ -1048,7 +1048,7 @@ a copy of <tt class="docutils literal"><span class="pre">g</span></tt> whose <a 
 their correlation matrix less singular than that of the 
 original <tt class="docutils literal"><span class="pre">g</span></tt>: each eigenvalue <tt class="docutils literal"><span class="pre">eig</span></tt> of the correlation matrix is 
 replaced by <tt class="docutils literal"><span class="pre">max(eig,</span> <span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig)</span></tt> where <tt class="docutils literal"><span class="pre">max_eig</span></tt> is 
-the largest eigenvalue. This <em>SVD</em> cut, which is applied separately
+the largest eigenvalue. This SVD cut, which is applied separately
 to each block-diagonal sub-matrix of the correlation matrix, 
 increases the variance of the eigenmodes with eigenvalues smaller
 than <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">*</span> <span class="pre">max_eig</span></tt>.</p>
@@ -1698,7 +1698,7 @@ diagonal elements. <tt class="docutils literal"><span class="pre">D</span></tt> 
 <dt id="gvar.SVD.nmod">
 <tt class="descname">nmod</tt><a class="headerlink" href="#gvar.SVD.nmod" title="Permalink to this definition">¶</a></dt>
 <dd><p>The first <tt class="docutils literal"><span class="pre">nmod</span></tt> eigenvalues in <tt class="docutils literal"><span class="pre">self.val</span></tt> were modified by
-the <em>SVD</em> cut (equals 0 unless <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></tt>).</p>
+the SVD cut (equals 0 unless <tt class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></tt>).</p>
 </dd></dl>
 
 <dl class="attribute">
