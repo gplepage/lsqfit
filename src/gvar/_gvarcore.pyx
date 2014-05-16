@@ -634,8 +634,15 @@ class GVarFactory:
         2*x.shape``; the result has the same shape as ``x``. Returns a
         |BufferDict| if ``x`` and ``xcov`` are dictionaries, where the
         keys in ``xcov`` are ``(k1,k2)`` for any keys ``k1`` and ``k2``
-        in ``x``. The layout for ``xcov`` is compatible with that  
-        produced by :func:`gvar.evalcov` with a dictionary argument.
+        in ``x``. Returns a single |GVar| if ``x`` is a number and 
+        ``xcov`` is a one-by-one matrix. The layout for ``xcov`` is 
+        compatible with that produced by :func:`gvar.evalcov` for 
+        a single |GVar|, an array of |GVar|\s, or a dictionary whose
+        values are |GVar|\s and/or arrays of |GVar|\s. Therefore 
+        ``gvar.gvar(gvar.mean(g), gvar.evalcov(g))`` creates |GVar|\s
+        with the same means and covariance matrix as the |GVar|\s 
+        in ``g`` provided ``g`` is a single |GVar|, or an array or 
+        dictionary of |GVar|\s.
         
     .. function:: gvar((x,xsdev))
         
@@ -674,7 +681,7 @@ class GVarFactory:
             assert isinstance(cov,smat),"cov not type gvar.smat"
             self.cov = cov
 
-    def __call__(self,*args):
+    def __call__(self, *args):
         cdef Py_ssize_t nx,i,nd
         cdef svec der
         cdef smat cov
@@ -719,7 +726,10 @@ class GVarFactory:
 
                 if len(x.shape)==0:
                     # single gvar from x and xsdev 
-                    if len(xsdev.shape)!=0:
+                    if xsdev.shape == (1, 1):
+                        # xsdev is actually a variance (1x1 matrix)
+                        xsdev = c_sqrt(abs(xsdev[0, 0])) 
+                    elif len(xsdev.shape) != 0:
                         raise ValueError("x and xsdev different shapes.")
                     idx = self.cov.append_diag(numpy.array([xsdev**2]))
                     der = svec(1)

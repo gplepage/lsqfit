@@ -18,6 +18,8 @@ from ._gvarcore cimport GVar
 import numpy
 cimport numpy
 import warnings
+import pickle
+import json
 
 from libc.math cimport  log, exp, lgamma
 
@@ -356,7 +358,60 @@ def evalcov(g):
         for b in range(a):
             ans[a,b] = ga.d.dot(covd[b])
             ans[b,a] = ans[a,b]
-    return ans.reshape(2*g_shape)
+    return ans.reshape(2*g_shape) if g_shape != () else ans.reshape(1,1)
+
+def dump(g, outputfile):
+    """ pickle a collection ``g`` of |GVar|\s in file ``outputfile``.
+
+    The |GVar|\s are recovered using :func:`gvar.load`.
+
+    :param g: A |GVar|, array of |GVar|\s, or dictionary whose values
+        are |GVar|\s and/or arrays of |GVar|\s.
+    :param outputfile: The name of a file or a file object in which the 
+        pickled |GVar|\s are stored.
+    :type outputfile: string or file-like object
+    """
+    if isinstance(outputfile, str):
+        outputfile = open(outputfile, 'wb')
+    pickle.dump((mean(g), evalcov(g)), outputfile)
+
+def dumps(g):
+    """ pickle a collection ``g`` of |GVar|\s and return as a string.
+
+    The |GVar|\s are recovered using :func:`gvar.loads`.
+
+    :param g: A |GVar|, array of |GVar|\s, or dictionary whose values
+        are |GVar|\s and/or arrays of |GVar|\s.
+    """
+    return pickle.dumps((mean(g), evalcov(g)))
+
+def load(inputfile):
+    """ Load and return pickled |GVar|\s from file ``inputfile``.
+
+    This function recovers |GVar|\s pickled with :func:`gvar.dump`.
+
+    :param outputfile: The name of the file or a file object in which the 
+        pickled |GVar|\s are stored.
+    :type outputfile: string or file-like object
+    :returns: The reconstructed |GVar|, or array or dictionary of 
+        |GVar|\s.
+    """
+    if isinstance(inputfile, str):
+        inputfile = open(inputfile, 'rb')
+    return _gvar.gvar(pickle.load(inputfile))
+
+def loads(inputstring):
+    """ Load and return pickled |GVar|\s from string ``inputstring``.
+
+    This function recovers |GVar|\s pickled with :func:`gvar.dumps`.
+    
+    :param inputstring: A string containing |GVar|\s pickled using 
+        :func:`gvar.dumps`.
+    :type outputfile: string 
+    :returns: The reconstructed |GVar|, or array or dictionary of 
+        |GVar|\s.
+    """
+    return _gvar.gvar(pickle.loads(inputstring))
 
 def disassemble(numpy.ndarray garray):
     cdef GVar g

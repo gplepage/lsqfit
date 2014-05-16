@@ -19,6 +19,7 @@ test-gvar.py
 import os
 import unittest
 import collections
+import pickle
 import numpy as np
 import random
 import gvar as gv
@@ -1238,6 +1239,23 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assert_arraysclose((b[1]-b[0]).sdev,1.0)
         self.assert_arraysclose((a[1]-a[0]).sdev,5.0)
     
+    def test_pickle(self):
+        """ pickle strategies """
+        for g in ['1(5)', [['2(1)'], ['3(2)']], dict(a='4(2)', b=['5(5)', '6(9)'])]:
+            g1 = gvar(g)
+            gtuple = (mean(g1), evalcov(g1))
+            gpickle = pickle.dumps(gtuple)
+            gtuple = pickle.loads(gpickle)
+            g2 = gvar(gtuple)
+            self.assertEqual(str(g1), str(g2))
+            dump(g1, 'outputfile.p')            
+            g3 = load('outputfile.p')
+            self.assertEqual(str(g1), str(g3))
+            gstr = dumps(g1)
+            g4 = loads(gstr)
+            self.assertEqual(str(g1), str(g4))
+
+
     def test_gammaQ(self):
         " gammaQ(a, x) "
         cases = [

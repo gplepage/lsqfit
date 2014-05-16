@@ -346,41 +346,47 @@ is obtained by adding the ``x`` and ``y`` contributions in quadrature.
 
 .. _storing-gvars-for-later-use:
 
-Storing |GVar|\s for Later Use: |BufferDict|\s
+Storing |GVar|\s for Later Use; |BufferDict|\s
 --------------------------------------------------
 Storing |GVar|\s in a file for later use is complicated by the need to 
 capture the covariances between different |GVar|\s as well as their 
-means. To save an array or dictionary ``g`` of |GVar|\s, for example,
+means. To pickle an array or dictionary ``g`` of |GVar|\s, for example,
 we might use ::
 
-    >>> gmean = gvar.mean(g) 
-    >>> gcov = gvar.evalcov(g)
+    >>> gtuple = (gvar.mean(g), gvar.evalcov(g))
+    >>> import pickle
+    >>> pickle.dump(gtuple, open('outputfile.p', 'wb'))
 
-to extract the means and covariance matrix into arrays/dictionaries of 
-floats which then can be saved using standard methods. To reassemble
-the |GVar|\s we use::
+to extract the means and covariance matrix into a tuple which then 
+is saved in file ``'output.p'`` using Python's standard :mod:`pickle` 
+module. To reassemble the |GVar|\s we use::
 
-    >>> g = gvar.gvar(gmean, gcov)
+    >>> g = gvar.gvar(pickle.load('outputfile.p', 'rb'))
 
-This procedure preserves the correlations between different elements 
-of the original array/dictionary ``g``, but ignores their correlations
-with any other |GVar|\s. So it is important to include all |GVar|\s of 
-interest in a single array or dictionary (``g``) before saving them.
+where :func:`pickle.load` reads ``gtuple`` back in, and :func:`gvar.gvar`
+converts it back into a collection of |GVar|\s. The correlations between
+different |GVar|\s  in the original array/dictionary ``g`` are preserved here,
+but their correlations with other |GVar|\s are lost. So it is important to
+include all |GVar|\s of  interest in a single array or dictionary before
+saving them.
 
-This process is simplified if the |GVar|\s that need saving are all
+This recipe works for ``g``\s that are: single |GVar|\s, arrays of |GVar|\s
+(any shape), or dictionaries whose values are |GVar|\s and/or arrays  of
+|GVar|\s. For convenience, it is implemented in functions :func:`gvar.dump`, 
+:func:`gvar.dumps`, :func:`gvar.load`, and :func:`gvar.loads`.
+
+Pickling is simplified if the |GVar|\s that need saving are all
 in a |BufferDict| since these can be serialized and saved to a file
-using Python's standard :mod:`pickle` module. So if ``g`` is a 
+again using Python's :mod:`pickle` module. So if ``g`` is a 
 |BufferDict| containing |GVar|\s (and/or arrays of |GVar|\s), ::
 
     >>> import pickle
-    >>> with open('gfile.p', 'wb') as ofile:
-    ...     pickle.dump(g, ofile)
+    >>> pickle.dump(g, open('outputfile.p', 'wb'))
 
-saves the contents of ``g`` to a file named ``gfile.p``. 
+saves the contents of ``g`` to a file named ``outputfile.p``. 
 The |GVar|\s are retrieved using::
 
-    >>> with open('gfile.p', 'rb') as ifile:
-    ...     g = pickle.load(ifile)
+    >>> g = pickle.load(open('outputfile.p', 'rb'))
 
 |BufferDict|\s also have methods that allow saving their contents 
 using Python's :mod:`json` module rather than :mod:`pickle`.
@@ -603,6 +609,16 @@ matrices and correlation/comparison information can be extracted from arrays
 .. autofunction:: gvar.chi2(g1, g2, svdcut=1e-15)
 
 .. autofunction:: gvar.fmt_chi2(f)
+
+|GVar|\s can be stored (pickled) and retrieved from files (or strings) using:
+
+.. autofunction:: gvar.dump(g, outputfile)
+
+.. autofunction:: gvar.dumps(g)
+
+.. autofunction:: gvar.load(inputfile)
+
+.. autofunction:: gvar.loads(inputstring)
 
 |GVar|\s contain information about derivatives with respect to the *independent*
 |GVar|\s from which they were constructed. This information can be extracted using:

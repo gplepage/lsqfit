@@ -17,39 +17,47 @@ using :func:`gvar.gvar`: for example, ::
 This module contains tools for creating and manipulating gaussian random
 variables including:
     
-    - ``mean(g)`` --- extract means
+    - ``mean(g)`` --- extract means.
     
-    - ``sdev(g)`` --- extract standard deviations
+    - ``sdev(g)`` --- extract standard deviations.
     
-    - ``var(g)`` --- extract variances
+    - ``var(g)`` --- extract variances.
 
     - ``chi2(g1, g2)`` --- ``chi**2`` of ``g1-g2``.
     
-    - ``evalcov(g)`` --- compute covariance matrix
+    - ``evalcov(g)`` --- compute covariance matrix.
 
-    - ``evalcorr(g)`` --- compute correlation matrix
+    - ``evalcorr(g)`` --- compute correlation matrix.
     
-    - ``fmt_values(g)`` --- create table of values for printing
+    - ``fmt_values(g)`` --- create table of values for printing.
     
-    - ``fmt_errorbudget(g)`` --- create error-budget table for printing
+    - ``fmt_errorbudget(g)`` --- create error-budget table for printing.
 
-    - ``fmt_chi2(f)`` --- format chi**2 information in f as string for printing
+    - ``fmt_chi2(f)`` --- format chi**2 information in f as string for printing.
     
-    - class ``BufferDict`` --- ordered dictionary with data buffer
+    - class ``BufferDict`` --- ordered dictionary with data buffer.
+
+    - ``dump(g, outputfile)`` --- pickle a collection of |GVar|\s in file.
+
+    - ``dumps(g)`` --- pickle a collection of |GVar|s in a string.
+
+    - ``load(inputfile)`` --- reconstitute a collection of |GVar|\s from a file.
+
+    - ``loads(inputstr)`` --- reconstitute a collection of |GVar|\s from a string.
     
-    - ``raniter(g,N)`` --- iterator for random numbers
+    - ``raniter(g,N)`` --- iterator for random numbers.
     
-    - ``bootstrap_iter(g,N)`` --- bootstrap iterator
+    - ``bootstrap_iter(g,N)`` --- bootstrap iterator.
     
-    - ``svd(g)`` --- SVD modification of correlation matrix
+    - ``svd(g)`` --- SVD modification of correlation matrix.
     
-    - ``dataset.bin_data(data)`` --- bin random sample data
+    - ``dataset.bin_data(data)`` --- bin random sample data.
     
-    - ``dataset.avg_data(data)`` --- estimate means of random sample data
+    - ``dataset.avg_data(data)`` --- estimate means of random sample data.
     
-    - ``dataset.bootstrap_iter(data,N)`` --- bootstrap random sample data
+    - ``dataset.bootstrap_iter(data,N)`` --- bootstrap random sample data.
     
-    - class ``dataset.Dataset`` --- class for collecting random sample data
+    - class ``dataset.Dataset`` --- class for collecting random sample data.
 
 There are also sub-modules that implement some standard numerical analysis 
 tools for use with |GVar|\s (or ``float``\s):

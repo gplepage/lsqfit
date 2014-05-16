@@ -376,38 +376,43 @@ but only 0.2% of the 1.25% uncertainty in <tt class="docutils literal"><span cla
 is obtained by adding the <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt> contributions in quadrature.</p>
 </div>
 <div class="section" id="storing-gvars-for-later-use-bufferdicts">
-<span id="storing-gvars-for-later-use"></span><h2>Storing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s for Later Use: <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s<a class="headerlink" href="#storing-gvars-for-later-use-bufferdicts" title="Permalink to this headline">¶</a></h2>
+<span id="storing-gvars-for-later-use"></span><h2>Storing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s for Later Use; <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s<a class="headerlink" href="#storing-gvars-for-later-use-bufferdicts" title="Permalink to this headline">¶</a></h2>
 <p>Storing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in a file for later use is complicated by the need to
 capture the covariances between different <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s as well as their
-means. To save an array or dictionary <tt class="docutils literal"><span class="pre">g</span></tt> of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, for example,
+means. To pickle an array or dictionary <tt class="docutils literal"><span class="pre">g</span></tt> of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, for example,
 we might use</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gmean</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gcov</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">gtuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">gvar</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">g</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">gtuple</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>to extract the means and covariance matrix into arrays/dictionaries of
-floats which then can be saved using standard methods. To reassemble
-the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s we use:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">gmean</span><span class="p">,</span> <span class="n">gcov</span><span class="p">)</span>
+<p>to extract the means and covariance matrix into a tuple which then
+is saved in file <tt class="docutils literal"><span class="pre">'output.p'</span></tt> using Python&#8217;s standard <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt>
+module. To reassemble the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s we use:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>This procedure preserves the correlations between different elements
-of the original array/dictionary <tt class="docutils literal"><span class="pre">g</span></tt>, but ignores their correlations
-with any other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. So it is important to include all <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s of
-interest in a single array or dictionary (<tt class="docutils literal"><span class="pre">g</span></tt>) before saving them.</p>
-<p>This process is simplified if the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that need saving are all
+<p>where <tt class="xref py py-func docutils literal"><span class="pre">pickle.load()</span></tt> reads <tt class="docutils literal"><span class="pre">gtuple</span></tt> back in, and <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a>
+converts it back into a collection of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. The correlations between
+different <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s  in the original array/dictionary <tt class="docutils literal"><span class="pre">g</span></tt> are preserved here,
+but their correlations with other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are lost. So it is important to
+include all <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s of  interest in a single array or dictionary before
+saving them.</p>
+<p>This recipe works for <tt class="docutils literal"><span class="pre">g</span></tt>s that are: single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
+(any shape), or dictionaries whose values are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays  of
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. For convenience, it is implemented in functions <a class="reference internal" href="#gvar.dump" title="gvar.dump"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dump()</span></tt></a>,
+<a class="reference internal" href="#gvar.dumps" title="gvar.dumps"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dumps()</span></tt></a>, <a class="reference internal" href="#gvar.load" title="gvar.load"><tt class="xref py py-func docutils literal"><span class="pre">gvar.load()</span></tt></a>, and <a class="reference internal" href="#gvar.loads" title="gvar.loads"><tt class="xref py py-func docutils literal"><span class="pre">gvar.loads()</span></tt></a>.</p>
+<p>Pickling is simplified if the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s that need saving are all
 in a <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> since these can be serialized and saved to a file
-using Python&#8217;s standard <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module. So if <tt class="docutils literal"><span class="pre">g</span></tt> is a
+again using Python&#8217;s <tt class="xref py py-mod docutils literal"><span class="pre">pickle</span></tt> module. So if <tt class="docutils literal"><span class="pre">g</span></tt> is a
 <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s),</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;gfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ofile</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">ofile</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>saves the contents of <tt class="docutils literal"><span class="pre">g</span></tt> to a file named <tt class="docutils literal"><span class="pre">gfile.p</span></tt>.
+<p>saves the contents of <tt class="docutils literal"><span class="pre">g</span></tt> to a file named <tt class="docutils literal"><span class="pre">outputfile.p</span></tt>.
 The <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are retrieved using:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;gfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ifile</span><span class="p">:</span>
-<span class="gp">... </span>    <span class="n">g</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ifile</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p><a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>s also have methods that allow saving their contents
@@ -616,8 +621,15 @@ covariance matrix given by array <tt class="docutils literal"><span class="pre">
 <span class="pre">2*x.shape</span></tt>; the result has the same shape as <tt class="docutils literal"><span class="pre">x</span></tt>. Returns a
 <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> if <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">xcov</span></tt> are dictionaries, where the
 keys in <tt class="docutils literal"><span class="pre">xcov</span></tt> are <tt class="docutils literal"><span class="pre">(k1,k2)</span></tt> for any keys <tt class="docutils literal"><span class="pre">k1</span></tt> and <tt class="docutils literal"><span class="pre">k2</span></tt>
-in <tt class="docutils literal"><span class="pre">x</span></tt>. The layout for <tt class="docutils literal"><span class="pre">xcov</span></tt> is compatible with that  
-produced by <a class="reference internal" href="#gvar.evalcov" title="gvar.evalcov"><tt class="xref py py-func docutils literal"><span class="pre">gvar.evalcov()</span></tt></a> with a dictionary argument.</p>
+in <tt class="docutils literal"><span class="pre">x</span></tt>. Returns a single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> if <tt class="docutils literal"><span class="pre">x</span></tt> is a number and 
+<tt class="docutils literal"><span class="pre">xcov</span></tt> is a one-by-one matrix. The layout for <tt class="docutils literal"><span class="pre">xcov</span></tt> is 
+compatible with that produced by <a class="reference internal" href="#gvar.evalcov" title="gvar.evalcov"><tt class="xref py py-func docutils literal"><span class="pre">gvar.evalcov()</span></tt></a> for 
+a single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, an array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or a dictionary whose
+values are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Therefore 
+<tt class="docutils literal"><span class="pre">gvar.gvar(gvar.mean(g),</span> <span class="pre">gvar.evalcov(g))</span></tt> creates <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s
+with the same means and covariance matrix as the <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s 
+in <tt class="docutils literal"><span class="pre">g</span></tt> provided <tt class="docutils literal"><span class="pre">g</span></tt> is a single <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, or an array or 
+dictionary of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
 </dd></dl>
 
 <dl class="function">
@@ -842,6 +854,82 @@ agree. Also called the <em>p-value</em>.</p>
 <p>Assumes <tt class="docutils literal"><span class="pre">f</span></tt> has attributes <tt class="docutils literal"><span class="pre">chi2</span></tt>, <tt class="docutils literal"><span class="pre">dof</span></tt> and <tt class="docutils literal"><span class="pre">Q</span></tt>. The 
 logarithm of the Bayes factor will also be printed if <tt class="docutils literal"><span class="pre">f</span></tt> has
 attribute <tt class="docutils literal"><span class="pre">logGBF</span></tt>.</p>
+</dd></dl>
+
+<p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s can be stored (pickled) and retrieved from files (or strings) using:</p>
+<dl class="function">
+<dt id="gvar.dump">
+<tt class="descclassname">gvar.</tt><tt class="descname">dump</tt><big>(</big><em>g</em>, <em>outputfile</em><big>)</big><a class="headerlink" href="#gvar.dump" title="Permalink to this definition">¶</a></dt>
+<dd><p>pickle a collection <tt class="docutils literal"><span class="pre">g</span></tt> of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s in file <tt class="docutils literal"><span class="pre">outputfile</span></tt>.</p>
+<p>The <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are recovered using <a class="reference internal" href="#gvar.load" title="gvar.load"><tt class="xref py py-func docutils literal"><span class="pre">gvar.load()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>g</strong> &#8211; A <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or dictionary whose values
+are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</li>
+<li><strong>outputfile</strong> (<em>string or file-like object</em>) &#8211; The name of a file or a file object in which the 
+pickled <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are stored.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gvar.dumps">
+<tt class="descclassname">gvar.</tt><tt class="descname">dumps</tt><big>(</big><em>g</em><big>)</big><a class="headerlink" href="#gvar.dumps" title="Permalink to this definition">¶</a></dt>
+<dd><p>pickle a collection <tt class="docutils literal"><span class="pre">g</span></tt> of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and return as a string.</p>
+<p>The <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are recovered using <a class="reference internal" href="#gvar.loads" title="gvar.loads"><tt class="xref py py-func docutils literal"><span class="pre">gvar.loads()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>g</strong> &#8211; A <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, array of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or dictionary whose values
+are <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gvar.load">
+<tt class="descclassname">gvar.</tt><tt class="descname">load</tt><big>(</big><em>inputfile</em><big>)</big><a class="headerlink" href="#gvar.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and return pickled <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s from file <tt class="docutils literal"><span class="pre">inputfile</span></tt>.</p>
+<p>This function recovers <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s pickled with <a class="reference internal" href="#gvar.dump" title="gvar.dump"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dump()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outputfile</strong> (<em>string or file-like object</em>) &#8211; The name of the file or a file object in which the 
+pickled <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s are stored.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The reconstructed <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, or array or dictionary of 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gvar.loads">
+<tt class="descclassname">gvar.</tt><tt class="descname">loads</tt><big>(</big><em>inputstring</em><big>)</big><a class="headerlink" href="#gvar.loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and return pickled <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s from string <tt class="docutils literal"><span class="pre">inputstring</span></tt>.</p>
+<p>This function recovers <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s pickled with <a class="reference internal" href="#gvar.dumps" title="gvar.dumps"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dumps()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>inputstring</strong> &#8211; A string containing <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s pickled using 
+<a class="reference internal" href="#gvar.dumps" title="gvar.dumps"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dumps()</span></tt></a>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The reconstructed <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>, or array or dictionary of 
+<a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s contain information about derivatives with respect to the <em>independent</em>
@@ -1763,7 +1851,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
 <li><a class="reference internal" href="#creating-gaussian-variables">Creating Gaussian Variables</a></li>
 <li><a class="reference internal" href="#gvar-arithmetic-and-functions"><tt class="docutils literal"><span class="pre">gvar.GVar</span></tt> Arithmetic and Functions</a></li>
 <li><a class="reference internal" href="#error-budgets-from-gvars">Error Budgets from <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s</a></li>
-<li><a class="reference internal" href="#storing-gvars-for-later-use-bufferdicts">Storing <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s for Later Use: <tt class="docutils literal"><span class="pre">gvar.BufferDict</span></tt>s</a></li>
+<li><a class="reference internal" href="#storing-gvars-for-later-use-bufferdicts">Storing <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s for Later Use; <tt class="docutils literal"><span class="pre">gvar.BufferDict</span></tt>s</a></li>
 <li><a class="reference internal" href="#random-number-generators">Random Number Generators</a></li>
 <li><a class="reference internal" href="#limitations">Limitations</a></li>
 <li><a class="reference internal" href="#optimizations">Optimizations</a></li>

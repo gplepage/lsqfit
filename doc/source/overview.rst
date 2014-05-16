@@ -319,7 +319,7 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
         1.627(34)
 
       |BufferDict|\s were created specifically to handle |GVar|\s, 
-      although they can be useful with other data types as well. 
+      although they can be quite useful with other data types as well. 
       The values in a pickled |BufferDict| can be individual |GVar|\s or 
       arbitrary :mod:`numpy` arrays of |GVar|\s. See 
       :ref:`storing-gvars-for-later-use` for more information.
