@@ -374,6 +374,7 @@ def dump(g, outputfile):
     if isinstance(outputfile, str):
         outputfile = open(outputfile, 'wb')
     pickle.dump((mean(g), evalcov(g)), outputfile)
+    outputfile.close()
 
 def dumps(g):
     """ pickle a collection ``g`` of |GVar|\s and return as a string.
@@ -398,7 +399,9 @@ def load(inputfile):
     """
     if isinstance(inputfile, str):
         inputfile = open(inputfile, 'rb')
-    return _gvar.gvar(pickle.load(inputfile))
+    ans = _gvar.gvar(pickle.load(inputfile))
+    inputfile.close()
+    return ans
 
 def loads(inputstring):
     """ Load and return pickled |GVar|\s from string ``inputstring``.

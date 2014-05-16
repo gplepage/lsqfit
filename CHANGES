@@ -1,6 +1,6 @@
-Version 4.8.2
-=================
-Very small addition to facilitate pickling and other serialization. Changed
+Version 4.8.2 - 2014-05-16
+==========================
+Very small additions to facilitate pickling and other serialization of GVars. Changed
 gvar.evalcov and gvar.gvar so that newg = gvar.gvar(gvar.mean(g), gvar.evalcov(g))
 for some array or dictionary g containing GVars creates a new array/dictionary
 with the same means and covariance matrix. Added better documentation 
