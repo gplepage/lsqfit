@@ -626,7 +626,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
             delta = numpy.concatenate((fcn(p), p)) - fd.mean
-            if isinstance(delta[0], gvar.GVar):
+            if delta.dtype == object:
                 ans = numpy.zeros(nw, object)
             else:
                 ans = numpy.zeros(nw, float)
@@ -647,7 +647,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
             cdef numpy.ndarray ans, delta
             delta = numpy.concatenate((fcn(p), p)) - fd.mean
-            if isinstance(delta[0], gvar.GVar):
+            if delta.dtype == object: 
                 ans = numpy.zeros(niw, object)
             else:
                 ans = numpy.zeros(niw, float)
@@ -669,7 +669,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
             delta = fcn(p) - fd.mean
-            if isinstance(delta[0], gvar.GVar):
+            if delta.dtype == object:
                 ans = numpy.zeros(nw, object)
             else:
                 ans = numpy.zeros(nw, float)
@@ -690,7 +690,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
             cdef numpy.ndarray ans, delta
             delta = fcn(p) - fd.mean
-            if isinstance(delta[0], gvar.GVar):
+            if delta.dtype == object:
                 ans = numpy.zeros(niw, object)
             else:
                 ans = numpy.zeros(niw, float)

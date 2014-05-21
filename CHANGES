@@ -1,3 +1,9 @@
+Version 4.8.3 - 2014-05-21
+==========================
+Bug fix: the new svd system didn't work with older versions of numpy (earlier
+than 1.8). It now does. The problem was in lsqfit; gvar was fine.
+There was a related issue in gvar.cspline which is also fixed.
+
 Version 4.8.2 - 2014-05-16
 ==========================
 Very small additions to facilitate pickling and other serialization of GVars. Changed

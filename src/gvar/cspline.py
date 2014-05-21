@@ -72,10 +72,18 @@ class CSpline:
         self.warn = warn
 
         # solve for dydx
-        a = numpy.zeros(y.shape, object)
-        b = numpy.zeros(y.shape, object)
-        c = numpy.zeros(y.shape, object)
-        d = numpy.zeros(y.shape, object)
+        if x.dtype == object or y.dtype == object:
+            a = numpy.zeros(y.shape, object)
+            b = numpy.zeros(y.shape, object)
+            c = numpy.zeros(y.shape, object)
+            d = numpy.zeros(y.shape, object)
+            self.intydx = numpy.zeros(y.shape, object)
+        else:
+            a = numpy.zeros(y.shape, float)
+            b = numpy.zeros(y.shape, float)
+            c = numpy.zeros(y.shape, float)
+            d = numpy.zeros(y.shape, float)
+            self.intydx = numpy.zeros(y.shape, float)
         for i in range(1, len(y)-1):
             # m[i, i - 1] 
             a[i] = 1. / (x[i] - x[i - 1])
@@ -109,7 +117,6 @@ class CSpline:
         self.y = y
         self.dydx = numpy.array(tri_diag_solve(a, b, c, d))
         self.n = len(self.x)
-        self.intydx = numpy.zeros(y.shape, object)
         ydx = self.integ(self.x)
         self.intydx[0] = ydx[0]
         for i in range(1, self.n):
