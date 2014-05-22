@@ -362,6 +362,29 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(ans['c'].mean, 4.09802, places=4)
         self.assertAlmostEqual(ans['c'].sdev, 0.995037, places=4)
 
+    def test_wavg_prior(self):
+        """ wavg with a prior """
+        # numbers
+        prior = gv.gvar('1(1)')
+        data = gv.gvar(['2(2)', '3(3)'])
+        ans = wavg(data, prior=prior)
+        self.assertAlmostEqual(ans.mean, 1.3469387755102)
+        self.assertAlmostEqual(ans.sdev, 0.857142857142857)
+        # arrays
+        prior = gv.gvar([['1(1)']])
+        data = gv.gvar([[['2(2)']], [['3(3)']]])
+        ans = wavg(data, prior=prior)
+        self.assertAlmostEqual(ans[0, 0].mean, 1.3469387755102)
+        self.assertAlmostEqual(ans[0, 0].sdev, 0.857142857142857)
+        self.assertEqual(ans.shape, (1,1))
+        # dictionaries
+        prior = gv.gvar(dict(a=['1(1)']))
+        data = gv.gvar([dict(a=['2(2)']), dict(a=['3(3)'])])
+        ans = wavg(data, prior=prior)
+        self.assertAlmostEqual(ans['a'][0].mean, 1.3469387755102)
+        self.assertAlmostEqual(ans['a'][0].sdev, 0.857142857142857)
+        self.assertEqual(ans['a'].shape, (1,))
+
     def test_noprior(self):
         """ fit without prior """
         def avg(x): # compute of avg of sequence

@@ -378,25 +378,32 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         ans.fit = wavg.fit
         return ans
     if hasattr(dataseq[0], 'keys'):
-        keylist = []
-        data = [] if prior is None else [prior]
-        p = gvar.BufferDict() if prior is None else gvar.asbufferdict(prior)
+        data = {}
+        keys = []
+        if prior is not None:
+            dataseq = [prior] + list(dataseq)
         for dataseq_i in dataseq:
-            keys = list(dataseq_i.keys())
-            for k in keys:
-                data.append(numpy.asarray(dataseq_i[k]).flat)
-                if k not in p:
-                    p[k] = dataseq_i[k]
-            keylist += list(keys)
-        data = numpy.concatenate(data)
-        p0 = gvar.BufferDict(p, buf=(gvar.mean(p.buf) + gvar.sdev(p.buf)/10.))
+            for k in dataseq_i:
+                if k in data:
+                    data[k].append(dataseq_i[k])
+                else:
+                    data[k] = [dataseq_i[k]]
+                    keys.append(k)
+        data = gvar.BufferDict(data, keys=keys)
+        p0 = gvar.BufferDict()
+        for k in data:
+            p0[k] = gvar.mean(data[k][0]) + gvar.sdev(data[k][0]) / 10.
         def fcn(p):
-            return numpy.concatenate([numpy.asarray(p[k]).flat for k in keylist])
+            ans = gvar.BufferDict()
+            for k in data:
+                ans[k] = len(data[k]) * [p[k]]
+            return ans
     else:
         p = numpy.asarray(dataseq[0])
         data = [] if prior is None else [prior]
-        data += [numpy.asarray(dataseqi).flatten() for dataseqi in dataseq]
-        p0 = gvar.mean(data[0]) + gvar.sdev(data[0]) / 10.
+        data += [dataseqi for dataseqi in dataseq]
+        p0 = numpy.asarray(gvar.mean(data[0]) + gvar.sdev(data[0]) / 10.)
+        data = numpy.array(data)
         def fcn(p):
             return len(data) * [p]
     fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **kargs)
@@ -406,12 +413,12 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
     wavg.time = fit.time
     wavg.svdcorrection = fit.svdcorrection
     wavg.fit = fit
-    if p.shape is None:
-        return BufferDictWAvg(gvar.BufferDict(p, buf=fit.p.flat), fit)
-    elif p.shape == ():
+    if p0.shape is None:
+        return BufferDictWAvg(gvar.BufferDict(p0, buf=fit.p.flat), fit)
+    elif p0.shape == ():
         return GVarWAvg(fit.p.flat[0], fit)
     else:
-        return ArrayWAvg(fit.p.reshape(p.shape), fit)
+        return ArrayWAvg(fit.p.reshape(p0.shape), fit)
 
 # if __name__ == '__main__':
 #     pass
