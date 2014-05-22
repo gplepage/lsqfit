@@ -1288,6 +1288,16 @@ problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong positive correlations between different parts of the fit
 data or prior.  Then much larger ``svdcut``\s may be needed.
 
+The SVD cut is applied to both the data and the prior. It is possible to 
+apply SVD cuts to either of these separately using :func:`gvar.svd` before
+the fit: for example, ::
+
+  ymod = gv.svd(ymod, svdcut=1e-10)
+  prior = gv.svd(prior, svdcut=1e-12)
+  fit = nonlinear_fit(data=(x, ymod), fcn=f, prior=prior, p0=p0, svdcut=None)
+
+applies different SVD cuts to the prior and data.  
+
 Note that taking ``svdcut=-1e-15``, with a
 minus sign, causes the problematic modes to be dropped. This is a more
 conventional implementation of SVD cuts, but here it results in much less
