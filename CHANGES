@@ -1,5 +1,6 @@
 Version ???
-===========
+===========================
+
 - lsqfit.wavg now works with priors. The old code didn't work.
 
 Version 4.8.3 - 2014-05-21

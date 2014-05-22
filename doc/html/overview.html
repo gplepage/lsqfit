@@ -1831,6 +1831,15 @@ This default is overridden as shown above, but for many
 problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong positive correlations between different parts of the fit
 data or prior.  Then much larger <tt class="docutils literal"><span class="pre">svdcut</span></tt>s may be needed.</p>
+<p>The SVD cut is applied to both the data and the prior. It is possible to
+apply SVD cuts to either of these separately using <a class="reference internal" href="gvar.html#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a> before
+the fit: for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ymod</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">ymod</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>applies different SVD cuts to the prior and data.</p>
 <p>Note that taking <tt class="docutils literal"><span class="pre">svdcut=-1e-15</span></tt>, with a
 minus sign, causes the problematic modes to be dropped. This is a more
 conventional implementation of SVD cuts, but here it results in much less
