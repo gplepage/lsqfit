@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.8.3 documentation</title>
+    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.8.4 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.3',
+        VERSION:     '4.8.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.3 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8.4 documentation" href="index.html" />
     <link rel="next" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
     <link rel="prev" title="gvar - Gaussian Random Variables" href="gvar.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8.4 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -432,10 +432,10 @@ bins of binsize 2 we use:</p>
 <span class="go">[0.95, 0.93]</span>
 </pre></div>
 </div>
-<p>Finally the keys read from a data file are restricted to those listed
-in keyword <tt class="docutils literal"><span class="pre">keys</span></tt> and those that are matched (or partially matched)
-by regular expression <tt class="docutils literal"><span class="pre">grep</span></tt> if one or the other of these is
-specified: for example,</p>
+<p>The keys read from a data file are restricted to those listed in keyword
+<tt class="docutils literal"><span class="pre">keys</span></tt> and those that are matched (or partially matched) by regular
+expression <tt class="docutils literal"><span class="pre">grep</span></tt> if one or other of these is specified: for
+example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
 <span class="go">[&#39;s&#39;, &#39;v&#39;]</span>
@@ -450,6 +450,17 @@ specified: for example,</p>
 <span class="go">[]</span>
 </pre></div>
 </div>
+<p><a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a>s can also be constructed from dictionaries, other 
+<a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a>s, or lists of key-data tuples. For example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_binned</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_v</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;v&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>reads data from file <tt class="docutils literal"><span class="pre">'datafile'</span></tt> into <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a> <tt class="docutils literal"><span class="pre">data</span></tt>,
+and then creates a new <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a> with the data binned 
+(<tt class="docutils literal"><span class="pre">data_binned</span></tt>), and another that only containes the data with 
+key <tt class="docutils literal"><span class="pre">'v'</span></tt> (<tt class="docutils literal"><span class="pre">data_v</span></tt>).</p>
 <p>The main attributes and methods are:</p>
 <dl class="attribute">
 <dt id="gvar.dataset.Dataset.samplesize">
@@ -652,7 +663,7 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.3 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

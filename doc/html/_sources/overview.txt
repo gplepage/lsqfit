@@ -199,7 +199,7 @@ methods for dealing with such behavior.)
 One of the most distinctive features of :mod:`lsqfit` is that it is 
 built around a class, |GVar|, of objects that can be used to 
 represent arbitrarily complicated Gaussian distributions
---- that is, *Gaussian random variables* that specify the means and 
+--- that is, they represent *Gaussian random variables* that specify the means and 
 covariance matrix of the probability distributions. 
 The input data for a fit are represented
 by a collection of |GVar|\s that specify both the values and possible 
@@ -234,7 +234,7 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
          [ 0.01      0.010001]]
 
       These off-diagonal elements imply that ``a`` and ``b`` are strongly
-      correlated, which means that ``b / a`` or ``b - a`` will have 
+      correlated, which means that ``b/a`` or ``b-a`` will have 
       much smaller uncertainties than ``a`` or ``b`` separately. The 
       correlation coefficient for ``a`` and ``b`` is 0.99995::
 
