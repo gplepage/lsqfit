@@ -19,7 +19,7 @@ import numpy
 
 import gvar as _gvar
 
-## tools for random data: Dataset, avg_data, bin_data ## 
+# tools for random data: Dataset, avg_data, bin_data
  
 def _vec_median(v, spread=False, noerror=False):
     """ estimate the median, with errors, of data in 1-d vector ``v``. 
@@ -48,7 +48,7 @@ def _vec_median(v, spread=False, noerror=False):
     if not spread:
         sdev = sdev/nv**0.5
     return _gvar.gvar(median,sdev)
-##
+
     
 def bin_data(data, binsize=2):
     """ Bin random data.
@@ -70,30 +70,30 @@ def bin_data(data, binsize=2):
     exist. Over-binning erases useful information.
     """
     if hasattr(data,'keys'):
-        ## data is a dictionary ##
+        # data is a dictionary
         if not data:
             return Dataset()
         newdata = {}
         for k in data:
             newdata[k] = bin_data(data[k],binsize=binsize)
         return newdata
-        ##
-    ## data is a list ##
+
+    # data is a list
     if len(data) == 0:
         return []
-    ## force data into a numpy array of floats ##
+    # force data into a numpy array of floats
     try:
         data = numpy.asarray(data,float)
     except ValueError:
         raise ValueError("Inconsistent array shapes or data types in data.")
-    ##
+
     nd = data.shape[0] - data.shape[0]%binsize
     accum = 0.0
     for i in range(binsize):
         accum += data[i:nd:binsize]
     return list(accum/float(binsize))
-    ##
-##
+
+
         
 def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn=True):
     """ Average random data to estimate mean.
@@ -171,7 +171,7 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn
         median = True
         spread = True
     if hasattr(data,'keys'):
-        ## data is a dictionary ##
+        # data is a dictionary
         if not data:
             return _gvar.BufferDict()
         newdata = []                    # data repacked as a list of arrays
@@ -196,19 +196,19 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn
             bd, 
             buf=avg_data(newdata, median=median, spread=spread, noerror=noerror)
             )
-        ##
-    ## data is list ## 
+
+    # data is list
     if len(data) == 0:
         return None
-    ## force data into a numpy array of floats ##
+    # force data into a numpy array of floats
     try:
         data = numpy.asarray(data,float)
     except ValueError:
         raise ValueError("Inconsistent array shapes or data types in data.")
-    ##
+
     # avg_data.nmeas = len(data)
     if median:
-        ## use median and spread ## 
+        # use median and spread
         if len(data.shape)==1:
             return _vec_median(data,spread=spread, noerror=noerror)
         else:
@@ -227,9 +227,9 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn
                 D = _gvar.sdev(ans).reshape(ans.size)/numpy.diag(cov)**0.5 
             cov = ((cov*D).transpose()*D).transpose()
             return _gvar.gvar(_gvar.mean(ans),cov.reshape(ans.shape+ans.shape))
-        ##
+
     else:
-        ## use mean and standard deviation ##
+        # use mean and standard deviation
         means = data.mean(axis=0)
         if noerror:
             return means
@@ -244,9 +244,9 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn
         if cov.shape==() and means.shape==():
             cov = cov**0.5
         return _gvar.gvar(means, cov.reshape(means.shape+means.shape))
-        ##
-    ##
-##
+
+
+
  
 def autocorr(data):
     """ Compute autocorrelation in random data. 
@@ -277,21 +277,21 @@ def autocorr(data):
     number of random samples in ``data`` (up to logarithms).
     """
     if hasattr(data,'keys'):
-        ## data is a dictionary ## 
+        # data is a dictionary
         ans = dict()
         for k in data:
             ans[k] = autocorr(data[k])
-        ##
+
         return ans
-    ## data is an array ## 
+    # data is an array
     if numpy.ndim(data) < 1 or len(data) < 2:
         raise ValueError("Need at least two samples to compute autocorr.")
-    ## force data into a numpy array of floats ##
+    # force data into a numpy array of floats
     try:
         data = numpy.asarray(data,float)
     except ValueError:
         raise ValueError("Inconsistent array shapes or data types in data.")
-    ##  
+
     datat = data.transpose()
     ans = numpy.zeros(datat.shape,float)
     idxlist = numpy.ndindex(datat.shape[:-1])  
@@ -300,8 +300,8 @@ def autocorr(data):
         dft = numpy.fft.fft(f-f.mean())
         ans[idx] = numpy.fft.ifft(dft*dft.conjugate()).real/f.var()/len(f)
     return ans.transpose()
-    ##       
-##
+
+
     
 def bootstrap_iter(data, n=None):
     """ Create iterator that returns bootstrap copies of ``data``.
@@ -350,7 +350,7 @@ def bootstrap_iter(data, n=None):
     maximum if ``n is None``.
     """
     if hasattr(data,'keys'):
-        ## data is a dictionary ##
+        # data is a dictionary
         if not data:
             return
         ns = min(len(data[k]) for k in data)  # number of samples
@@ -365,26 +365,24 @@ def bootstrap_iter(data, n=None):
             for k in datadict:
                 ans[k] = datadict[k][idx]
             yield ans
-        ##
     else:
-        ## data is an array ##
+        # data is an array
         if len(data) == 0:
             return
-        ## force data into a numpy array of floats ##
+        # force data into a numpy array of floats
         try:
             data = numpy.asarray(data,float)
         except ValueError:
             raise ValueError( #
                 "Inconsistent array shapes or data types in data.")
-        ##
         ns = len(data)
         ct = 0
         while (n is None) or (ct<n):
             ct += 1
             idx = numpy.random.random_integers(0,ns-1,ns)
             yield data[idx]
-        ##
-##
+
+
 
 try:
     from collections import OrderedDict as _BASE_DICT
@@ -466,11 +464,11 @@ class Dataset(_BASE_DICT):
         >>> print(data['s'])
         [0.95, 0.93]
         
-    Finally the keys read from a data file are restricted to those listed
-    in keyword ``keys`` and those that are matched (or partially matched)
-    by regular expression ``grep`` if one or the other of these is
-    specified: for example, ::
-        
+    The keys read from a data file are restricted to those listed in keyword
+    ``keys`` and those that are matched (or partially matched) by regular
+    expression ``grep`` if one or other of these is specified: for
+    example, ::
+
         >>> data = Dataset('datafile')
         >>> print([k for k in a])
         ['s', 'v']
@@ -483,11 +481,23 @@ class Dataset(_BASE_DICT):
         >>> data = Dataset('datafile',keys=['v'],grep='[^v]')
         >>> print([k for k in a])
         []
+
+    :class:`Dataset`\s can also be constructed from dictionaries, other 
+    :class:`Dataset`\s, or lists of key-data tuples. For example, ::
+
+        >>> data = Dataset('datafile')
+        >>> data_binned = Dataset(data, binsize=2)
+        >>> data_v = Dataset(data, keys=['v'])
+
+    reads data from file ``'datafile'`` into :class:`Dataset` ``data``,
+    and then creates a new :class:`Dataset` with the data binned 
+    (``data_binned``), and another that only containes the data with 
+    key ``'v'`` (``data_v``).
     """
     def __init__(self, *args, **kargs):
         cdef Py_ssize_t binsize
-        super(Dataset, self).__init__()
         if not args:
+            super(Dataset, self).__init__()
             return
         elif len(args)>1:
             raise TypeError("Expected at most 1 argument, got %d."%len(args))
@@ -495,12 +505,30 @@ class Dataset(_BASE_DICT):
             binsize = int(kargs.get('nbin',1))   # for legacy code
         else:
             binsize = int(kargs.get('binsize',1))
-        if binsize>1: 
-            acc = {}
         keys = set(kargs.get('keys',[]))
         grep = kargs.get('grep',None)
         if grep is not None:
             grep = re.compile(grep)
+        try:
+            # args[0] = Dataset or dictionary
+            super(Dataset, self).__init__(args[0])
+            if grep is not None:
+                for k in self:
+                    if grep.search(k) is None:
+                        del self[k]
+            if keys:
+                for k in self:
+                    if k not in keys:
+                        del self[k]
+            if binsize > 1:
+                for k in self:
+                    self[k] = bin_data(self[k])
+            return
+        except ValueError:
+            # args[0] = files
+            super(Dataset, self).__init__()
+        if binsize>1: 
+            acc = {}
         for line in fileinput.input(args[0]):
             f = line.split()
             if len(f)<2 or f[0][0]=='#':
@@ -527,14 +555,14 @@ class Dataset(_BASE_DICT):
                     d = numpy.sum(acc[k],axis=0)/float(binsize)
                     del acc[k]
                     self.append(k,d)
-    ##
+ 
     def toarray(self):
         """ Copy ``self`` but with ``self[k]`` as numpy arrays. """
         ans = dict()
         for k in self:
             ans[k] = numpy.array(self[k],float)
         return ans
-    ##
+
     def append(self,*args,**kargs):
         """ Append data to dataset. 
             
@@ -555,7 +583,7 @@ class Dataset(_BASE_DICT):
         if len(args)>2 or (args and kargs):
             raise ValueError("Too many arguments.")
         if len(args)==2:
-            ## append(k,m) ##
+            # append(k,m)
             k = args[0]
             try:
                 d = numpy.asarray(args[1],float)
@@ -571,17 +599,15 @@ class Dataset(_BASE_DICT):
                     (k,d.shape,self[k][0].shape))
             else:
                 self[k].append(d)
-            ##
             return
         if len(args)==1:
-            ## append(kmdict) ##
+            # append(kmdict)
             kargs = args[0]
             if not hasattr(kargs,'keys'):
                 raise ValueError("Argument not a dictionary.")
-            ##
         for k in kargs:
             self.append(k,kargs[k])
-    ##
+
     def extend(self,*args,**kargs):
         """ Add batched data to dataset. 
             
@@ -612,7 +638,7 @@ class Dataset(_BASE_DICT):
         if len(args)>2 or (args and kargs):
             raise ValueError("Too many arguments.")
         if len(args)==2:
-            ## extend(k,m) ## 
+            # extend(k,m)
             k = args[0]
             try:
                 d = [numpy.asarray(di,float) for di in args[1]]
@@ -632,17 +658,15 @@ class Dataset(_BASE_DICT):
                     (k,d[0].shape,self[k][0].shape))
             else:
                 self[k].extend(d)
-            ##
             return
         if len(args)==1:
-            ## extend(kmdict) ##
+            # extend(kmdict)
             kargs = args[0]
             if not hasattr(kargs,'keys'):
                 raise ValueError("Argument not a dictionary.")
-            ##
         for k in kargs:
             self.extend(k,kargs[k])
-    ##           
+
     def slice(self,sl):
         """ Create new dataset with ``self[k] -> self[k][sl].``
             
@@ -657,7 +681,7 @@ class Dataset(_BASE_DICT):
         for k in self:
             ans[k] = self[k][sl]
         return ans
-    ##
+
     def grep(self,rexp):
         """ Create new dataset containing items whose keys match ``rexp``.
             
@@ -686,7 +710,7 @@ class Dataset(_BASE_DICT):
             if prog.search(k) is not None:
                 ans[k] = self[k]
         return ans
-    ##
+
     def trim(self):
         """ Create new dataset where all entries have same sample size. """
         ns = self.samplesize
@@ -694,10 +718,10 @@ class Dataset(_BASE_DICT):
         for k in self:
             ans[k] = self[k][:ns]
         return ans
-    ##
+
     def _get_samplesize(self):
         return min([len(self[k]) for k in self])
-    ##
+
     samplesize = property(_get_samplesize,
                           doc="Smallest number of samples for any key.")
     def arrayzip(self, template):
@@ -738,7 +762,7 @@ class Dataset(_BASE_DICT):
         scalars or arrays (of any shape, so long as all have the same
         shape).
         """
-        ## regularize and test the template ##
+        # regularize and test the template
         template = numpy.array(template, dtype=numpy.object)
         template_shape = template.shape
         template_flat = template.flat
@@ -753,7 +777,6 @@ class Dataset(_BASE_DICT):
         if not all(numpy.shape(self[k]) == shape for k in template_flat[1:]):
             raise ValueError(           #
                 "Different shapes for different elements in template.")
-        ##
         n_sample = shape[0]
         ans_shape = shape[:1] + template_shape + shape[1:]
         ans = numpy.zeros(ans_shape, float)
@@ -761,8 +784,8 @@ class Dataset(_BASE_DICT):
         for i,k in enumerate(template_flat):
             ans[:, i, :] = numpy.reshape(self[k], (n_sample,-1))
         return ans.reshape(ans_shape)
-    ##
-## 
+
+
     
-##
+
 

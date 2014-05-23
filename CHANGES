@@ -1,7 +1,16 @@
-Version ???
+Version 4.8.4 - 2014-05-23
 ===========================
+Small bug fixes.
 
-- lsqfit.wavg now works with priors. The old code didn't work.
+- gvar.dataset.Dataset objects now work with Python's pickle. Also
+  Dataset objects can now be initialized from other Dataset object, or from
+  dictionaries, or lists of key-data tuples (like dictionaries).
+
+- lsqfit.wavg now works with priors.
+
+- Removed calls to C's lgamma function because it isn't available to 
+  old C compilers. Use Python's math.lgamma instead, which should always be 
+  available.
 
 Version 4.8.3 - 2014-05-21
 ==========================

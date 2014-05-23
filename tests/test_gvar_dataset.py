@@ -16,6 +16,7 @@ test-dataset.py
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+import pickle
 import os
 import unittest
 import warnings
@@ -30,7 +31,7 @@ FAST = False
 class ArrayTests(object):
     def __init__(self):
         pass
-    ##
+
     def assert_gvclose(self,x,y,rtol=1e-5,atol=1e-8,prt=False):
         """ asserts that the means and sdevs of all x and y are close """
         if hasattr(x,'keys') and hasattr(y,'keys'): 
@@ -49,7 +50,7 @@ class ArrayTests(object):
         for xi,yi in zip(x,y):
             self.assertGreater(atol+rtol*abs(yi.mean),abs(xi.mean-yi.mean))
             self.assertGreater(10*(atol+rtol*abs(yi.sdev)),abs(xi.sdev-yi.sdev))
-    ##
+
     def assert_arraysclose(self,x,y,rtol=1e-5,prt=False):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = np.array(x).flatten()
@@ -61,20 +62,20 @@ class ArrayTests(object):
             print(y)
             print(max_val,max_rdiff,rtol)
         self.assertAlmostEqual(max_rdiff,0.0,delta=rtol)
-    ##
+
     def assert_arraysequal(self,x,y):
         self.assertSequenceEqual(np.shape(x),np.shape(y))
         x = [float(xi) for xi in np.array(x).flatten()]
         y = [float(yi) for yi in np.array(y).flatten()]
         self.assertSequenceEqual(x,y)
-    ##
-##
+
+
 
 class test_dataset(unittest.TestCase,ArrayTests):
     def setUp(self): pass
-    ##
+
     def tearDown(self): pass
-    ##
+
     def test_bin_data(self):
         """ bin_data """
         self.assertEqual(bin_data([1,2,3,4]),[1.5,3.5])
@@ -97,7 +98,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
             bd = bin_data([[1,2],[[3,4]]])
         self.assertEqual(bin_data([]),[])
         self.assertEqual(bin_data(dict()),Dataset())
-    ##
+
     def test_avg_data(self):
         """ avg_data """
         self.assertTrue(avg_data([]) is None)
@@ -202,7 +203,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(mean['s'],2.0)
         self.assertEqual(mean['v'].shape,(2,))
         self.assert_arraysclose(mean['v'], [2,2])
-    ##
+
     def test_autocorr(self):
         """ dataset.autocorr """
         N = 10000
@@ -223,7 +224,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         ac_c = autocorr(c)
         self.assert_arraysequal(ac_c['a'],ac_a)
         self.assert_arraysequal(ac_c['b'],ac_b)
-    ##
+
     def test_dataset_append(self):
         """ Dataset.append() """
         data = Dataset()
@@ -263,7 +264,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         data.append(dict(s=1,v=[10,100]))
         self.assertEqual(data['s'],[1.])
         self.assert_arraysequal(data['v'],[[10.,100.]])
-    ##
+
     def test_dataset_extend(self):
         """ Dataset.extend """
         data = Dataset()
@@ -311,7 +312,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         data.extend('v',[[10.,100.],[20.,200.]])
         self.assert_arraysequal(data['s'],[1.,2.])
         self.assert_arraysequal(data['v'],[[10.,100.],[20.,200.]])
-    ##
+
     def test_dataset_init(self):
         """ Dataset() """
         fin = ['test-gvar.input1','test-gvar.input2']
@@ -347,11 +348,52 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertTrue('a' not in data)
         self.assertTrue('s' in data)
         self.assertEqual(data['s'],[1,2,3])
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TypeError): 
             data = Dataset("xxx.input1","xxx.input2")
         os.remove(fin[0])
         os.remove(fin[1])
-    ##  
+    
+    def test_dataset_init2(self):
+        """ init from dictionaries or datasets """
+        def assert_dset_equal(d1, d2):
+            for k in d1:
+                assert k in d2, 'key mismatch'
+            for k in d2:
+                assert k in d1, 'key mismatch'
+                self.assertTrue(np.all(np.array(d1[k]) == np.array(d2[k])))
+        data = Dataset(dict(a=[[1.,3.], [3.,4.]], b=[1., 2.])) 
+        data_reduced = Dataset(dict(a=[[1.,3.], [3.,4.]]))
+        data_binned = Dataset(dict(a=[[2.,3.5]], b=[1.5])) 
+        data_empty = Dataset()
+        self.assertEqual(data['a'], [[1.,3.], [3.,4.]])
+        self.assertEqual(data['b'], [1., 2.])
+        assert_dset_equal(data, Dataset(data))
+        assert_dset_equal(data_reduced, Dataset(data,keys=['a']))
+        assert_dset_equal(data, 
+            Dataset([('a', [[1.,3.], [3.,4.]]), ('b', [1., 2.])])
+            )
+        assert_dset_equal(data, 
+            Dataset([['a', [[1.,3.], [3.,4.]]], ['b', [1., 2.]]])
+            )
+        assert_dset_equal(data_reduced, Dataset(data, keys=['a']))
+        assert_dset_equal(data_reduced, Dataset(data, grep='[^b]'))
+        assert_dset_equal(data_empty, Dataset(data, grep='[^b]', keys=['b']))
+        assert_dset_equal(data_binned, Dataset(data, binsize=2))
+        assert_dset_equal(
+            Dataset(data_binned, keys=['a']), 
+            Dataset(data, binsize=2, keys=['a'])
+            )
+        assert_dset_equal(
+            Dataset(data_binned, keys=['a']), 
+            Dataset(data, binsize=2, grep='[^b]')
+            )
+        assert_dset_equal(
+            Dataset(data_binned, keys=['a']), 
+            Dataset(data, binsize=2, grep='[^b]', keys=['a'])
+            )
+        s = pickle.dumps(data)
+        assert_dset_equal(data, pickle.loads(s))
+
     def test_dataset_toarray(self):
         """ Dataset.toarray """
         data = Dataset()
@@ -361,7 +403,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(data['v'],[[1,2],[2,3]])
         self.assertEqual(data['s'].shape,(2,))
         self.assertEqual(data['v'].shape,(2,2))
-    ##
+
     def test_dataset_slice(self):
         """ Dataset.slice """
         data = Dataset()
@@ -369,7 +411,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         ndata = data.slice(slice(0,None,2))
         self.assert_arraysequal(ndata['a'],[1,3])
         self.assert_arraysequal(ndata['b'],[[1],[3]])
-    ##
+
     def test_dataset_grep(self):
         """ Dataset.grep """
         data = Dataset()
@@ -381,13 +423,13 @@ class test_dataset(unittest.TestCase,ArrayTests):
         ndata = data.grep("b")
         self.assertTrue('aa' not in ndata and 'ab' in ndata)
         self.assert_arraysequal(ndata['ab'],data['ab'])
-    ##
+
     def test_dataset_samplesize(self):
         """ Dataset.samplesize """
         data = Dataset()
         data.extend(aa=[1,2,3,4],ab=[[1],[2],[3]])
         self.assertEqual(data.samplesize,3)
-    ##
+
     def test_dataset_trim(self):
         """ Dataset.trim """
         data = Dataset()
@@ -398,7 +440,7 @@ class test_dataset(unittest.TestCase,ArrayTests):
         self.assertEqual(ndata.samplesize,2)
         self.assert_arraysequal(ndata['a'],[1,2])
         self.assert_arraysequal(ndata['b'],[10,20])
-    ##
+
     def test_dataset_arrayzip(self):
         """ Dataset.arrayzip """
         data = Dataset()
@@ -408,18 +450,18 @@ class test_dataset(unittest.TestCase,ArrayTests):
         with self.assertRaises(ValueError):
             data.append(a=4)
             a = data.arrayzip(['a','b'])
-    ##
+
     def test_dataset_bootstrap_iter(self):
         """ bootstrap_iter(data_dict) """
-        ## make data ##
+        # make data
         N = 100
         a0 = dict(n=gvar(1,1),a=[gvar(2,2),gvar(100,100)])
         dset = Dataset()
         for ai in raniter(a0,30):
             dset.append(ai)
         a = avg_data(dset)
-        ##
-        ## do bootstrap -- calculate means ##
+
+        # do bootstrap -- calculate means
         bs_mean = Dataset()
         for ai in bootstrap_iter(dset,N):
             for k in ai:
@@ -429,14 +471,14 @@ class test_dataset(unittest.TestCase,ArrayTests):
                         x in numpy.asarray(dset[k]), 
                         "Bootstrap element not in original dataset.")
         a_bs = avg_data(bs_mean,bstrap=True)
-        ##
-        ## 6 sigma tests ##
+
+        # 6 sigma tests
         an_mean = a['n'].mean
         an_sdev = a['n'].sdev
         self.assertGreater(6*an_sdev/N**0.5,abs(an_mean-a_bs['n'].mean))
         self.assertGreater(6*an_sdev/N**0.5,abs(an_sdev-a_bs['n'].sdev))
-        ##
-    ##
+
+
     def test_array_bootstrap_iter(self):
         """ bootstrap_iter(data_array) """
         N = 100
@@ -447,8 +489,8 @@ class test_dataset(unittest.TestCase,ArrayTests):
                 self.assertTrue(    #
                     x in numpy.asarray(a0), 
                     "Bootstrap element not in original dataset.")        
-    ##
-##
+
+
 
 if __name__ == '__main__':
 	unittest.main()

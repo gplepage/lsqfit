@@ -20,8 +20,9 @@ cimport numpy
 import warnings
 import pickle
 import json
+from math import lgamma 
 
-from libc.math cimport  log, exp, lgamma
+from libc.math cimport  log, exp  # don't put lgamma here -- old C compilers don't have it
 
 from ._svec_smat import svec, smat
 from ._svec_smat cimport svec, smat
