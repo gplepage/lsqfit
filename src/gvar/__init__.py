@@ -478,7 +478,7 @@ def svd(g, svdcut=1e-15, wgts=False):
         tmp = []
         for iw, wgts in i_wgts:
             tmp.append(
-                (numpy.array(iw, int), numpy.array(wgts, float))
+                (numpy.array(iw, numpy.intp), numpy.array(wgts, numpy.double))
                 )
         i_wgts = tmp
         return (g, i_wgts)

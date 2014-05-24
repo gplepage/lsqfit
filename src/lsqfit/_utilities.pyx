@@ -621,7 +621,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
     if prior is not None:
         def chiv(p, fd=fdata):
             cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
@@ -641,7 +641,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
                 ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
-            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
@@ -664,7 +664,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
     else:
         def chiv(p, fd=fdata):
             cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
@@ -684,7 +684,7 @@ def _build_chiv_chivw(fdata, fcn, prior):
                 ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
-            cdef numpy.ndarray[numpy.long_t, ndim=1] iw
+            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
             cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
             cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
@@ -705,17 +705,3 @@ def _build_chiv_chivw(fdata, fcn, prior):
             return ans
         chiv.nf = nw 
     return chiv, chivw
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
