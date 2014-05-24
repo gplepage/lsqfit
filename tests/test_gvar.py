@@ -1031,7 +1031,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(
                 invcov.dot(cov), np.eye(*cov.shape), atol=atol
                 )
-            np.testing.assert_allclose(svd.logdet, np.log(np.linalg.det(cov)))
+            np.testing.assert_allclose(svd.logdet, np.log(np.linalg.det(cov)), atol=atol)
         # diagonal
         f = gvar(['1(2)', '3(4)'])
         g, wgts = svd(f, svdcut=0.9, wgts=-1)
@@ -1056,8 +1056,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         gp = svd(x[p], svdcut=0.5)
         self.assertEqual(svd.nmod, 4)
         invp = np.argsort(p)
-        np.testing.assert_allclose(evalcov(g), evalcov(gp[invp]))
-        np.testing.assert_allclose(mean(g), mean(gp[invp]))
+        np.testing.assert_allclose(evalcov(g), evalcov(gp[invp]), atol=1e-7)
+        np.testing.assert_allclose(mean(g), mean(gp[invp]), atol=1e-7)
 
 
         # cov[i,i] independent of i, cov[i,j] != 0
@@ -1076,7 +1076,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         g, wgts = svd([(x+dx)/2, (x-dx)/20.], svdcut=-0.2 ** 2, wgts=-1)
         y = g[0] + g[1] * 10
         dy = g[0] - g[1] * 10
-        np.testing.assert_allclose(evalcov([y, dy]), [[1, 0], [0, 0]])
+        np.testing.assert_allclose(evalcov([y, dy]), [[1, 0], [0, 0]], atol=1e-7)
         test_gvar(y, x)
         test_gvar(dy, gvar('0(0)'))
         self.assertEqual(svd.dof, 1)
@@ -1129,7 +1129,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         test_gvar(dy, dx)
         test_gvar(g[0], g2)
         test_gvar(g[2], g4)
-        np.testing.assert_allclose(evalcov(g.flat), evalcov(orig_g))
+        np.testing.assert_allclose(evalcov(g.flat), evalcov(orig_g), atol=1e-7)
 
         # bufferdict
         g = {}
