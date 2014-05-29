@@ -1,3 +1,8 @@
+Version 4.8.5 - 2014-05-29
+==========================
+
+- Bug fix so recent changes in lsqfit don't cause crashes on Windows systems.
+
 Version 4.8.4 - 2014-05-23
 ===========================
 Small bug fixes.
