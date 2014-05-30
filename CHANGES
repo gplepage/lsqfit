@@ -1,3 +1,11 @@
+Version 4.8.5.1 - 2014-05-30
+==========================
+This release is almost identical to the previous release. It is mainly to do
+with getting the software registered properly online.
+
+- Small improvement to the user interface in gvar.ode. It now works with 
+  vectors of x values, returning vectors of y values.
+
 Version 4.8.5 - 2014-05-29
 ==========================
 

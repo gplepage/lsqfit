@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Numerical Analysis Modules in gvar &mdash; lsqfit 4.8.5 documentation</title>
+    <title>Numerical Analysis Modules in gvar &mdash; lsqfit 4.8.5.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.5',
+        VERSION:     '4.8.5.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.5 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 4.8.5.1 documentation" href="index.html" />
     <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
     <link rel="prev" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -159,6 +159,17 @@ by the following code for integrating <tt class="docutils literal"><span class="
 from <tt class="docutils literal"><span class="pre">x=0</span></tt> to <tt class="docutils literal"><span class="pre">x=1</span></tt> starting with <tt class="docutils literal"><span class="pre">y=y0</span></tt> at <tt class="docutils literal"><span class="pre">x=0</span></tt>; the result
 is <tt class="docutils literal"><span class="pre">y1=exp(1)</span></tt>, of course. Similarly the second call to <tt class="docutils literal"><span class="pre">odeint</span></tt>
 continues the integration from <tt class="docutils literal"><span class="pre">x=1</span></tt> to <tt class="docutils literal"><span class="pre">x=2</span></tt>, giving <tt class="docutils literal"><span class="pre">y2=exp(2)</span></tt>.</p>
+<p>If the <tt class="docutils literal"><span class="pre">interval</span></tt> is a list with more than two entries,
+then <tt class="docutils literal"><span class="pre">odeint(y0,</span> <span class="pre">interval=[x0,</span> <span class="pre">x1,</span> <span class="pre">x2</span> <span class="pre">...])</span></tt> in the example above
+returns an array of solutions for points <tt class="docutils literal"><span class="pre">x1,</span> <span class="pre">x2</span> <span class="pre">...</span></tt>. So the example
+above could have been written equivalently as</p>
+<div class="highlight-python"><div class="highlight"><pre>...
+
+odeint = Integrator(deriv=f,  tol=1e-8)
+y0 = 1.
+y1, y2 ... = odeint(y0, interval=[0, 1., 2. ...])
+</pre></div>
+</div>
 <p>An alternative interface creates a new function which is the 
 solution of the differential equation for specific initial conditions.
 The code above could be rewritten:</p>
@@ -174,7 +185,9 @@ The code above could be rewritten:</p>
 where: a) <tt class="docutils literal"><span class="pre">y(x0)</span> <span class="pre">=</span> <span class="pre">y0</span></tt>; and b) <tt class="docutils literal"><span class="pre">y(x)</span></tt> uses the integator to 
 integrate the differential equation to point <tt class="docutils literal"><span class="pre">x</span></tt> starting 
 from  the last point at which <tt class="docutils literal"><span class="pre">y</span></tt> was evaluated 
-(or from <tt class="docutils literal"><span class="pre">x0</span></tt> for the first call to <tt class="docutils literal"><span class="pre">y(x)</span></tt>).</p>
+(or from <tt class="docutils literal"><span class="pre">x0</span></tt> for the first call to <tt class="docutils literal"><span class="pre">y(x)</span></tt>). The function can
+also be called with an array of <tt class="docutils literal"><span class="pre">x</span></tt> values, in which case an 
+array containing the corresponding <tt class="docutils literal"><span class="pre">y</span></tt> values is returned.</p>
 <p>The integrator uses an adaptive Runge-Kutta algorithm that adjusts
 the integrator&#8217;s step size to obtain relative accuracy <tt class="docutils literal"><span class="pre">tol</span></tt> in the solution.
 An initial step size can be set in the <tt class="xref py py-class docutils literal"><span class="pre">Integrator</span></tt> by specifying
@@ -271,9 +284,11 @@ and/or <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span
 </div>
 <p>The first call to <tt class="docutils literal"><span class="pre">odeint</span></tt> integrates from <tt class="docutils literal"><span class="pre">x=x0</span></tt> to <tt class="docutils literal"><span class="pre">x=x1</span></tt>,
 returning <tt class="docutils literal"><span class="pre">y1=y(x1)</span></tt>. The second call continues the integration
-to <tt class="docutils literal"><span class="pre">x=x2</span></tt>, returning <tt class="docutils literal"><span class="pre">y2=y(x2)</span></tt>. Any of the initial parameters
-can be reset in the calls to <tt class="docutils literal"><span class="pre">odeint</span></tt>: for example,</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">y2</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">),</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+to <tt class="docutils literal"><span class="pre">x=x2</span></tt>, returning <tt class="docutils literal"><span class="pre">y2=y(x2)</span></tt>. Multiple integration points
+can be specified in <tt class="docutils literal"><span class="pre">interval</span></tt>, in which case a list of the 
+corresponding <tt class="docutils literal"><span class="pre">y</span></tt> values is returned: for example,</p>
+<div class="highlight-python"><div class="highlight"><pre>odeint = DictIntegrator(deriv=f,  tol=1e-8)
+y1, y2 ... = odeint(y0, interval=[x0, x1, x2 ...])
 </pre></div>
 </div>
 <p>The integrator uses an adaptive Runge-Kutta algorithm that adjusts
@@ -606,7 +621,7 @@ integrating from point <em>x0</em>, is returned.</p>
         <li class="right" >
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
