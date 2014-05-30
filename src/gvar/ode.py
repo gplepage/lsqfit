@@ -42,6 +42,18 @@ class Integrator(object):
     is ``y1=exp(1)``, of course. Similarly the second call to ``odeint``
     continues the integration from ``x=1`` to ``x=2``, giving ``y2=exp(2)``.
 
+    If the ``interval`` is a list with more than two entries,
+    then ``odeint(y0, interval=[x0, x1, x2 ...])`` in the example above
+    returns an array of solutions for points ``x1, x2 ...``. So the example
+    above could have been written equivalently as ::
+
+        ...
+
+        odeint = Integrator(deriv=f,  tol=1e-8)
+        y0 = 1.
+        y1, y2 ... = odeint(y0, interval=[0, 1., 2. ...])
+
+
     An alternative interface creates a new function which is the 
     solution of the differential equation for specific initial conditions.
     The code above could be rewritten::
@@ -57,7 +69,9 @@ class Integrator(object):
     where: a) ``y(x0) = y0``; and b) ``y(x)`` uses the integator to 
     integrate the differential equation to point ``x`` starting 
     from  the last point at which ``y`` was evaluated 
-    (or from ``x0`` for the first call to ``y(x)``).
+    (or from ``x0`` for the first call to ``y(x)``). The function can
+    also be called with an array of ``x`` values, in which case an 
+    array containing the corresponding ``y`` values is returned.
 
     The integrator uses an adaptive Runge-Kutta algorithm that adjusts
     the integrator's step size to obtain relative accuracy ``tol`` in the solution.
@@ -141,6 +155,14 @@ class Integrator(object):
 
     def __call__(self, y0, interval):
         """ Integrate from ``x0`` to ``x1`` where ``interval=(x0,x1)`` and ``y0=y(x0)``. """
+        if len(interval) > 2:
+            ans = []
+            xlast = interval[0]
+            ylast = y0
+            for x in interval[1:]:
+                y = self(ylast, interval=(xlast,x))
+                ans.append(y)
+            return numpy.array(ans)
         if self.deriv is None or interval[1] == interval[0]:
             return y0
         tol = abs(self.tol)
@@ -198,11 +220,22 @@ class Integrator(object):
         return y
 
     def solution(self, x0, y0):
-        """ Create a solution function ``y(x)`` such that ``y(x0) = y0``. """
+        """ Create a solution function ``y(x)`` such that ``y(x0) = y0``. 
+
+        A list of solution values ``[y(x0), y(x1) ...]`` is returned if the
+        function is called with a list ``[x0, x1 ...]`` of ``x`` values.
+        """
         def soln(x):
-            soln.y = self(soln.y, interval=(soln.x, x))
-            soln.x = x
-            return soln.y
+            if numpy.size(x) > 1:
+                x = [soln.x] + list(x)
+                ans = self(soln.y, interval=x)
+                soln.x = x[-1]
+                soln.y = ans[-1]
+                return ans
+            else:
+                soln.y = self(soln.y, interval=(soln.x, x))
+                soln.x = x
+                return soln.y
         soln.x = x0
         soln.y = y0
         return soln
@@ -263,10 +296,12 @@ class DictIntegrator(Integrator):
 
     The first call to ``odeint`` integrates from ``x=x0`` to ``x=x1``,
     returning ``y1=y(x1)``. The second call continues the integration
-    to ``x=x2``, returning ``y2=y(x2)``. Any of the initial parameters
-    can be reset in the calls to ``odeint``: for example, ::
+    to ``x=x2``, returning ``y2=y(x2)``. Multiple integration points
+    can be specified in ``interval``, in which case a list of the 
+    corresponding ``y`` values is returned: for example, ::
 
-        y2 = odeint(y1, interval=(x1, x2), tol=1e-10)
+        odeint = DictIntegrator(deriv=f,  tol=1e-8)
+        y1, y2 ... = odeint(y0, interval=[x0, x1, x2 ...])
     
     The integrator uses an adaptive Runge-Kutta algorithm that adjusts
     the integrator's step size to obtain relative accuracy ``tol`` in the solution.
@@ -308,9 +343,15 @@ class DictIntegrator(Integrator):
     """
     def __init__(self, **args):
         super(DictIntegrator, self).__init__(**args)
-    def __call__(self, y0, interval, **kargs):
-        for i in kargs:
-            self[i] = kargs[i]
+    def __call__(self, y0, interval):
+        if len(interval) > 2:
+            ans = []
+            xlast = interval[0]
+            ylast = y0
+            for x in interval[1:]:
+                y = self(ylast, interval=(xlast,x))
+                ans.append(y)
+            return ans
         if not isinstance(y0, gvar.BufferDict):
             y0 = gvar.BufferDict(y0)
         deriv_orig = self.deriv

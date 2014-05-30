@@ -63,6 +63,8 @@ class test_ode(unittest.TestCase,ArrayTests):
         y1 = odeint(y0, (0, 1))
         exact = numpy.exp(1)
         self.assertAlmostEqual(y1, exact)
+        yN = odeint(y0, [0.0, 0.5, 1.0])
+        self.assert_arraysclose(yN, numpy.exp([0.5, 1.0]))
     
     def test_gvar_scalar(self):
         # exponential with errors
@@ -85,6 +87,29 @@ class test_ode(unittest.TestCase,ArrayTests):
         y1 = odeint(y0, (0, 1))
         exact = [numpy.sin(1), numpy.cos(1)]
         self.assert_arraysclose(y1, exact)
+        yN = odeint(y0, [0., 0.5, 1.0])
+        self.assert_arraysclose(
+            yN, 
+            [[numpy.sin(0.5), numpy.cos(0.5)], [numpy.sin(1.0), numpy.cos(1.0)]],
+            )
+
+    def test_vector_dict(self):
+        # harmonic oscillator with vectors
+        def f(x, y):
+            deriv = {}
+            deriv['y'] = y['dydx']
+            deriv['dydx'] = - y['y']
+            return deriv
+        odeint = ode.DictIntegrator(deriv=f, h=1, tol=1e-10)
+        y0 = dict(y=0., dydx=1.)
+        y1 = odeint(y0, (0, 1))
+        exact = [numpy.sin(1), numpy.cos(1)]
+        self.assert_arraysclose([y1['y'], y1['dydx']], exact)
+        yN = odeint(y0, [0., 0.5, 1.0])
+        self.assert_arraysclose(
+            [[yN[0]['y'], yN[0]['dydx']], [yN[1]['y'], yN[1]['dydx']]], 
+            [[numpy.sin(0.5), numpy.cos(0.5)], [numpy.sin(1.0), numpy.cos(1.0)]],
+            )
 
     def test_gvar_dict(self):
         # harmonic oscillator with dictionaries and errors
@@ -127,6 +152,19 @@ class test_ode(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(y(1.5), np.exp(1.5))
         self.assertEqual(y.x, 1.5)
         self.assertAlmostEqual(y.y, np.exp(1.5))
+        self.assert_arraysclose(y([2.0, 2.5]), np.exp([2.0, 2.5]))
+        self.assertAlmostEqual(y.x, 2.5)
+        self.assertAlmostEqual(y.y, np.exp(2.5))
+
+    def test_solution_dict(self):
+        def f(x, y):
+            return dict(y=y['y'])
+        y = ode.DictIntegrator(deriv=f, h=1, tol=1e-13).solution(0., dict(y=1.))
+        y1 = y(1.)
+        self.assertAlmostEqual(y1['y'], np.exp(1.))
+        yN = y([0.5, 1.])
+        self.assertAlmostEqual(yN[0]['y'], np.exp(0.5))
+        self.assertAlmostEqual(yN[1]['y'], np.exp(1.0))
 
 class test_cspline(unittest.TestCase,ArrayTests):
     def setUp(self): pass
