@@ -53,6 +53,9 @@ variable. The prior ``prior`` could also be represented by an array
 instead of a dictionary.
     
 The :mod:`lsqfit` tutorial contains extended explanations and examples.
+The first appendix in the paper at http://arxiv.org/abs/arXiv:1406.2279
+provides conceptual background on the techniques used in this 
+module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
@@ -595,7 +598,7 @@ class nonlinear_fit(object):
             )
         if pstyle == 'm':
             settings = ""
-        if self.alg != "lmsder":
+        elif self.alg != "lmsder":
             settings += "  alg = %s\n" % self.alg
         
         if maxline <= 0 or self.data is None:
@@ -1134,13 +1137,13 @@ def _unpack_data(data, prior, svdcut):
     function of only the parameters: ``fcn(p)`` --- no ``x``. (This is also
     assumed if ``x = False``.)
     
-    Output data in ``fdata`` is: ``fdata.mean`` containing the mean
-    values of ``y.flat`` and ``prior.flat`` (if there is a prior); 
-    ``fdata.svdcorrection``  containing the *svd* correction to ``y.flat`` 
-    and ``prior.flat``; ``fdata.logdet`` containing the logarithem of the 
-    determinant of the covariance matrix of ``y.flat`` and ``prior.flat``;
-    and ``fdata.inv_wgts`` containing a representation of the inverse
-    of the covariance matrix, after *svd* cuts (see :func:`gvar.svd` 
+    Output data in ``fdata`` is: ``fdata.mean`` containing the mean values of
+    ``y.flat`` and ``prior.flat`` (if there is a prior);
+    ``fdata.svdcorrection``  containing the sum of the *svd* corrections to
+    ``y.flat`` and ``prior.flat``; ``fdata.logdet`` containing  the logarithm
+    of the  determinant of the covariance matrix of ``y.flat`` and
+    ``prior.flat``; and ``fdata.inv_wgts`` containing a representation of the
+    inverse of the covariance matrix, after *svd* cuts (see :func:`gvar.svd`
     for a description of the format).
     """
     # unpack data tuple 
@@ -1165,7 +1168,7 @@ def _unpack_data(data, prior, svdcut):
         fdata = _FDATA(
             mean=_gvar.mean(data.flat), 
             inv_wgts=inv_wgts,
-            svdcorrection=_gvar.svd.correction,
+            svdcorrection=numpy.sum(_gvar.svd.correction),
             logdet=_gvar.svd.logdet,
             nblocks=_gvar.svd.nblocks,
             svdn=_gvar.svd.nmod,

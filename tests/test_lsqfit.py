@@ -639,8 +639,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10., 2.])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
-        self.assertEqual(len(fdata.svdcorrection), 3)
-        sumsvd = np.sum(fdata.svdcorrection)
+        sumsvd = fdata.svdcorrection
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
         
@@ -654,8 +653,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10., 2.])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
-        self.assertEqual(len(fdata.svdcorrection), 3)
-        sumsvd = np.sum(fdata.svdcorrection)
+        sumsvd = fdata.svdcorrection
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
 
@@ -669,8 +667,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10.])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25])
-        self.assertEqual(len(fdata.svdcorrection), 2)
-        sumsvd = np.sum(fdata.svdcorrection)
+        sumsvd = fdata.svdcorrection
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
 

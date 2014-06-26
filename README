@@ -32,8 +32,14 @@ numbers and so may occasionally --- less than 1 in 100 runs --- fail due to
 rare multi-sigma fluctuations; rerun the tests if they do fail.) Some
 examples are give in the examples/ subdirectory.
 
+Versioning: Version numbers for lsqfit are now (5.0 and later) based upon
+*semantic  versioning* (http://semver.org). Incompatible changes will be
+signaled by incrementing the major version number, where version numbers have
+the form major.minor.patch. The minor number signals new features, and  the
+patch number bug fixes.
+
 # Created by G. Peter Lepage (Cornell University) 2008
-# Copyright (c) 2008-2013 G. Peter Lepage
+# Copyright (c) 2008-2014 G. Peter Lepage
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

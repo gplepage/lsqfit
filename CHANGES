@@ -1,5 +1,38 @@
+Version 5.0
+======================
+A minor upgrade to provide functionality for other libraries. The first 
+change is not backwards compatible, but is unlikely to break much or any
+code (except mine).
+
+- fit.svdcorrection is now the sum of all svdcorrections, not a vector. The
+  sum is all that is needed to construct error budgets, which is the 
+  only use for fit.svdcorrection. The sum is easier to manipulate -- for 
+  example, two svdcorrections can now be added to give a composite 
+  svdcorrection (as opposed to concatenated before).
+
+- Fixed innocuous bug in lsqfit.nonlinear_fit.format().
+
+- gvar.dataset.Dataset.slice can now apply slices to multiple dimensions.
+
+- Added __format__ to gvar.GVar. This converts the GVar to a string 
+  and then applies the format to the string. This was needed to make 
+  python3 and python2 function similarly in certain situations. 
+
+- More polishing of the documentation (especially about svd).
+
+- Beginning with this version of lsqfit, version numbers will be consistent
+  with the rules of "semantic versioning" (http://semver.org). The most 
+  important consequence is that any change that is *not* backwards compatible 
+  with the current interface (as defined by the documentation) will be signaled
+  by a change in the major version number, where the full version number has the 
+  format major.minor.patch (so the major version number is 5 for version 5.0). 
+  A side effect of this is that increases in the major version number can 
+  be triggered by relatively obscure changes in the interface that will have
+  no effect whatsoever on almost all existing codes. The current move to 5.0
+  is an example.
+
 Version 4.8.5.1 - 2014-05-30
-==========================
+============================
 This release is almost identical to the previous release. It is mainly to do
 with getting the software registered properly online.
 

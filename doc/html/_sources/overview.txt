@@ -1230,7 +1230,7 @@ to introduce an SVD cut, here called ``svdcut``::
    fit = nonlinear_fit(data=(x, ymod), fcn=f, prior=prior, p0=p0, svdcut=1e-15)
    
 This regulates the singularity of the covariance matrix by, in effect,
-replacing its smallest eigenvalues with ``svdcut`` times the largest
+replacing its smallest eigenvalues with a larger, minimum
 eigenvalue. The cost is less precision in the final results 
 since we are decreasing the
 precision of the input ``y`` data. This is a conservative move, but numerical
@@ -1238,20 +1238,24 @@ stability is worth the tradeoff. The listing shows that 2 eigenvalues are
 modified when ``svdcut=1e-15`` (see entry for ``svdcut/n``); no
 eigenvalues are changed when ``svdcut=1e-19``.
 
-The SVD cut is actually applied to the correlation matrix,
-which is the covariance matrix rescaled by standard deviations so that 
-all diagonal elements equal 1. This helps mitigate problems caused by
-large scale differences between different variables. Any eigenvalue smaller
-than ``svdcut`` times the largest eigenvalue is replaced by ``svdcut`` times
-the largest eigenvalue. Thus larger values for ``svdcut`` affect larger 
-numbers of eigenmodes and increase errors in the final results.
+The SVD cut is actually applied to the correlation matrix, which is the
+covariance matrix rescaled by standard deviations so that  all diagonal
+elements equal 1. Working with the correlation matrix rather than the
+covariance matrix helps mitigate problems caused by large scale differences
+between different variables. Eigenvalues of the correlation matrix that are
+smaller than a minimum eigenvalue, equal to ``svdcut`` times the largest
+eigenvalue,  are replaced by the minimum eigenvalue, while leaving their
+eigenvectors unchanged. This defines a new, less singular correlation matrix
+from which a new, less singular covariance matrix is constructed. Larger 
+values of ``svdcut`` affect larger numbers of eigenmodes and increase errors
+in the final results. 
 
-The error budget is different in this case. There is no contribution from
-the original ``y`` data since it was exact. So all statistical uncertainty
+The error budget is different in the example above. There is no contribution from
+the original ``y`` data since it is exact. So all statistical uncertainty
 comes from the priors in ``max_prior``, and from the SVD cut, which
 contributes since it modifies the effective variances of several eigenmodes of
-the covariance matrix. The SVD contribution can be obtained from
-``fit.svdcorrection`` so the full error budget is constructed by the following
+the correlation matrix. The SVD contribution to the error can be obtained from
+``fit.svdcorrection``, so the full error budget is constructed by the following
 code, ::
 
    outputs = {'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],         
@@ -1276,16 +1280,18 @@ cut of 1e-4, for example, to the following singular covariance matrix, ::
    [  1.0   1.0   0.0  ]
    [  0.0   0.0   1e-20]],
 
-gives a new, non-singular matrix::
+gives a new, non-singular matrix ::
 
   [[  1.0001   0.9999   0.0  ]
    [  0.9999   1.0001   0.0  ]
    [  0.0      0.0      1e-20]]
 
+where only the upper right sub-matrix is different. 
+
 :class:`lsqfit.nonlinear_fit` uses a default value for ``svdcut`` of 1e-15.
-This default is overridden as shown above, but for many
+This default can be overridden, as shown above, but for many
 problems it is a good choice. Roundoff errors become more accute, however,
-when there are strong positive correlations between different parts of the fit
+when there are strong correlations between different parts of the fit
 data or prior.  Then much larger ``svdcut``\s may be needed.
 
 The SVD cut is applied to both the data and the prior. It is possible to 
@@ -1305,7 +1311,7 @@ precision than using ``svdcut=1e-15`` (giving, for example, 1.993(69)
 for ``E1/E0``, which is almost three times less precise). Dropping modes is
 equivalent to setting the corresponding variances to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal
-to the SVD\-cutoff variance.
+to the SVD-cutoff variance.
 
 The method :func:`lsqfit.nonlinear_fit.check_roundoff` can be used to check
 for roundoff errors by adding the line ``fit.check_roundoff()`` after the

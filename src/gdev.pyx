@@ -23,8 +23,10 @@ GDevFactory = GVarFactory
 switch_gdev = switch_gvar
 restore_gdev = restore_gvar
 gdev_factory = gvar_factory
-asgdev = asgvar
 valder_var = valder
+
+def asgdev(g):
+    return g 
 
 def rebuild(g, corr=0.0, gdev=gdev):
     return _gvar.rebuild(g, corr=corr, gvar=gdev)

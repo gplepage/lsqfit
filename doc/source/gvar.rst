@@ -577,7 +577,7 @@ covariances. Note that the previous :func:`gvar.gvar` can be restored using
 :func:`gvar.restore_gvar`.
 
 
-Utilities
+Functions
 ----------
 The function used to create Gaussian variable objects is:
 
@@ -606,7 +606,7 @@ matrices and correlation/comparison information can be extracted from arrays
 
 .. autofunction:: gvar.uncorrelated(g1, g2)
 
-.. autofunction:: gvar.chi2(g1, g2, svdcut=1e-15)
+.. autofunction:: gvar.chi2(g1, g2, svdcut=1e-15, fmt=False)
 
 .. autofunction:: gvar.fmt_chi2(f)
 
@@ -671,8 +671,8 @@ replace :func:`gvar.gvar`):
 expressions (the error message "Incompatible GVars." results). 
 
    
-Classes
--------
+:class:`gvar.GVar` Objects
+---------------------------
 The fundamental class for representing Gaussian variables is:
 
 .. autoclass:: gvar.GVar
@@ -716,6 +716,8 @@ The fundamental class for representing Gaussian variables is:
    
    .. automethod:: dotder(v)
 
+Other Classes
+-------------
 The following class is a specialized form of an ordered dictionary for
 holding |GVar|\s (or other scalars) and arrays of |GVar|\s (or other
 scalars) that supports Python pickling:

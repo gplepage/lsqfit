@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 4.8.5.1 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.5.1',
+        VERSION:     '5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 5.0 documentation" href="index.html" />
     <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1764,26 +1764,30 @@ to introduce an SVD cut, here called <tt class="docutils literal"><span class="p
 </pre></div>
 </div>
 <p>This regulates the singularity of the covariance matrix by, in effect,
-replacing its smallest eigenvalues with <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest
+replacing its smallest eigenvalues with a larger, minimum
 eigenvalue. The cost is less precision in the final results
 since we are decreasing the
 precision of the input <tt class="docutils literal"><span class="pre">y</span></tt> data. This is a conservative move, but numerical
 stability is worth the tradeoff. The listing shows that 2 eigenvalues are
 modified when <tt class="docutils literal"><span class="pre">svdcut=1e-15</span></tt> (see entry for <tt class="docutils literal"><span class="pre">svdcut/n</span></tt>); no
 eigenvalues are changed when <tt class="docutils literal"><span class="pre">svdcut=1e-19</span></tt>.</p>
-<p>The SVD cut is actually applied to the correlation matrix,
-which is the covariance matrix rescaled by standard deviations so that
-all diagonal elements equal 1. This helps mitigate problems caused by
-large scale differences between different variables. Any eigenvalue smaller
-than <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest eigenvalue is replaced by <tt class="docutils literal"><span class="pre">svdcut</span></tt> times
-the largest eigenvalue. Thus larger values for <tt class="docutils literal"><span class="pre">svdcut</span></tt> affect larger
-numbers of eigenmodes and increase errors in the final results.</p>
-<p>The error budget is different in this case. There is no contribution from
-the original <tt class="docutils literal"><span class="pre">y</span></tt> data since it was exact. So all statistical uncertainty
+<p>The SVD cut is actually applied to the correlation matrix, which is the
+covariance matrix rescaled by standard deviations so that  all diagonal
+elements equal 1. Working with the correlation matrix rather than the
+covariance matrix helps mitigate problems caused by large scale differences
+between different variables. Eigenvalues of the correlation matrix that are
+smaller than a minimum eigenvalue, equal to <tt class="docutils literal"><span class="pre">svdcut</span></tt> times the largest
+eigenvalue,  are replaced by the minimum eigenvalue, while leaving their
+eigenvectors unchanged. This defines a new, less singular correlation matrix
+from which a new, less singular covariance matrix is constructed. Larger
+values of <tt class="docutils literal"><span class="pre">svdcut</span></tt> affect larger numbers of eigenmodes and increase errors
+in the final results.</p>
+<p>The error budget is different in the example above. There is no contribution from
+the original <tt class="docutils literal"><span class="pre">y</span></tt> data since it is exact. So all statistical uncertainty
 comes from the priors in <tt class="docutils literal"><span class="pre">max_prior</span></tt>, and from the SVD cut, which
 contributes since it modifies the effective variances of several eigenmodes of
-the covariance matrix. The SVD contribution can be obtained from
-<tt class="docutils literal"><span class="pre">fit.svdcorrection</span></tt> so the full error budget is constructed by the following
+the correlation matrix. The SVD contribution to the error can be obtained from
+<tt class="docutils literal"><span class="pre">fit.svdcorrection</span></tt>, so the full error budget is constructed by the following
 code,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;E1/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;E2/E0&#39;</span><span class="p">:</span><span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
            <span class="s">&#39;a1/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;a2/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]}</span>
@@ -1820,16 +1824,17 @@ cut of 1e-4, for example, to the following singular covariance matrix,</p>
  [  0.0   0.0   1e-20]],
 </pre></div>
 </div>
-<p>gives a new, non-singular matrix:</p>
+<p>gives a new, non-singular matrix</p>
 <div class="highlight-python"><div class="highlight"><pre>[[  1.0001   0.9999   0.0  ]
  [  0.9999   1.0001   0.0  ]
  [  0.0      0.0      1e-20]]
 </pre></div>
 </div>
+<p>where only the upper right sub-matrix is different.</p>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><tt class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></tt></a> uses a default value for <tt class="docutils literal"><span class="pre">svdcut</span></tt> of 1e-15.
-This default is overridden as shown above, but for many
+This default can be overridden, as shown above, but for many
 problems it is a good choice. Roundoff errors become more accute, however,
-when there are strong positive correlations between different parts of the fit
+when there are strong correlations between different parts of the fit
 data or prior.  Then much larger <tt class="docutils literal"><span class="pre">svdcut</span></tt>s may be needed.</p>
 <p>The SVD cut is applied to both the data and the prior. It is possible to
 apply SVD cuts to either of these separately using <a class="reference internal" href="gvar.html#gvar.svd" title="gvar.svd"><tt class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></tt></a> before
@@ -2675,7 +2680,7 @@ larger errors.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

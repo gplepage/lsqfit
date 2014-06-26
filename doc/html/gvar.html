@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 4.8.5.1 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.5.1',
+        VERSION:     '5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 5.0 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -594,8 +594,8 @@ of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="
 covariances. Note that the previous <a class="reference internal" href="#gvar.gvar" title="gvar.gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></tt></a> can be restored using
 <a class="reference internal" href="#gvar.restore_gvar" title="gvar.restore_gvar"><tt class="xref py py-func docutils literal"><span class="pre">gvar.restore_gvar()</span></tt></a>.</p>
 </div>
-<div class="section" id="utilities">
-<h2>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <p>The function used to create Gaussian variable objects is:</p>
 <dl class="function">
 <dt id="gvar.gvar">
@@ -800,7 +800,7 @@ of <tt class="docutils literal"><span class="pre">g1</span></tt> or <tt class="d
 
 <dl class="function">
 <dt id="gvar.chi2">
-<tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em>, <em>svdcut=1e-15</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">chi2</tt><big>(</big><em>g1</em>, <em>g2</em>, <em>svdcut=1e-15</em>, <em>fmt=False</em><big>)</big><a class="headerlink" href="#gvar.chi2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chi**2 of <tt class="docutils literal"><span class="pre">g1-g2</span></tt>.</p>
 <p><tt class="docutils literal"><span class="pre">chi**2</span></tt> is a measure of whether the multi-dimensional 
 Gaussian distributions <tt class="docutils literal"><span class="pre">g1</span></tt> and <tt class="docutils literal"><span class="pre">g2</span></tt> (dictionaries or arrays) 
@@ -1355,8 +1355,8 @@ internally.</p>
 <p><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s created by different functions cannot be combined in arithmetic
 expressions (the error message &#8220;Incompatible GVars.&#8221; results).</p>
 </div>
-<div class="section" id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gvar-gvar-objects">
+<h2><a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> Objects<a class="headerlink" href="#gvar-gvar-objects" title="Permalink to this headline">¶</a></h2>
 <p>The fundamental class for representing Gaussian variables is:</p>
 <dl class="class">
 <dt id="gvar.GVar">
@@ -1504,6 +1504,9 @@ variables from which <tt class="docutils literal"><span class="pre">self</span><
 
 </dd></dl>
 
+</div>
+<div class="section" id="other-classes">
+<h2>Other Classes<a class="headerlink" href="#other-classes" title="Permalink to this headline">¶</a></h2>
 <p>The following class is a specialized form of an ordered dictionary for
 holding <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (or other scalars) and arrays of <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s (or other
 scalars) that supports Python pickling:</p>
@@ -1855,8 +1858,9 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
 <li><a class="reference internal" href="#random-number-generators">Random Number Generators</a></li>
 <li><a class="reference internal" href="#limitations">Limitations</a></li>
 <li><a class="reference internal" href="#optimizations">Optimizations</a></li>
-<li><a class="reference internal" href="#utilities">Utilities</a></li>
-<li><a class="reference internal" href="#classes">Classes</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#gvar-gvar-objects"><tt class="docutils literal"><span class="pre">gvar.GVar</span></tt> Objects</a></li>
+<li><a class="reference internal" href="#other-classes">Other Classes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -1900,7 +1904,7 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

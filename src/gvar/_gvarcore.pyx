@@ -68,7 +68,11 @@ cdef class GVar:
 
     def __copy__(self):
         return self
-        
+    
+    def __format__(self, fmt=None):
+        """ Convert to string and format the string """
+        return format(str(self), fmt)
+
     def __str__(self):
         """ Return string representation of ``self``.
 

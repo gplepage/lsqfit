@@ -245,8 +245,6 @@ def avg_data(data, median=False, spread=False, bstrap=False, noerror=False, warn
             cov = cov**0.5
         return _gvar.gvar(means, cov.reshape(means.shape+means.shape))
 
-
-
  
 def autocorr(data):
     """ Compute autocorrelation in random data. 
@@ -394,7 +392,7 @@ class Dataset(_BASE_DICT):
         
     This dictionary class simplifies the collection of random data. The
     random data are stored in a dictionary, with each piece of random data
-    being a number or an array of numbers. For example, consider a
+    being a number or a :mod:`numpy` array of numbers. For example, consider a
     situation where there are four random values for a scalar ``s`` and
     four random values for vector ``v``. These can be collected as
     follows::
@@ -456,7 +454,7 @@ class Dataset(_BASE_DICT):
         >>> print(data['s'])
         [ 1.1, 0.8, 0.95, 0.91]
         
-    Data can be binned while reading it in, which might be useful if there
+    Data can be binned while reading it in, which might be useful if
     the data set is huge. To bin the data contained in file ``datafile`` in
     bins of binsize 2 we use::
         
@@ -502,11 +500,11 @@ class Dataset(_BASE_DICT):
         elif len(args)>1:
             raise TypeError("Expected at most 1 argument, got %d."%len(args))
         if 'nbin' in kargs and 'binsize' not in kargs:
-            binsize = int(kargs.get('nbin',1))   # for legacy code
-        else:
+            binsize = int(kargs.get('nbin', 1))   # for legacy code
+        else: 
             binsize = int(kargs.get('binsize',1))
         keys = set(kargs.get('keys',[]))
-        grep = kargs.get('grep',None)
+        grep = kargs.get('grep', None)
         if grep is not None:
             grep = re.compile(grep)
         try:
@@ -541,23 +539,23 @@ class Dataset(_BASE_DICT):
             if len(f)==2:
                 d = eval(f[1])
             elif f[1][0] in "[(":
-                d = eval(" ".join(f[1:]),{},{})
+                d = eval(" ".join(f[1:]), {}, {})
             else: # except (NameError,SyntaxError):
                 try:
                     d = [float(x) for x in f[1:]]
                 except ValueError:
                     raise ValueError('Bad input line: "%s"'%line[:-1])
             if binsize<=1:
-                self.append(k,d)
+                self.append(k, d)
             else:
-                acc.setdefault(k,[]).append(d)
+                acc.setdefault(k, []).append(d)
                 if len(acc[k])==binsize:
-                    d = numpy.sum(acc[k],axis=0)/float(binsize)
+                    d = numpy.sum(acc[k], axis=0)/float(binsize)
                     del acc[k]
-                    self.append(k,d)
+                    self.append(k, d)
  
     def toarray(self):
-        """ Copy ``self`` but with ``self[k]`` as numpy arrays. """
+        """ Create dictionary ``d`` where ``d[k]=numpy.array(self[k])`` for all ``k``. """
         ans = dict()
         for k in self:
             ans[k] = numpy.array(self[k],float)
@@ -583,30 +581,31 @@ class Dataset(_BASE_DICT):
         if len(args)>2 or (args and kargs):
             raise ValueError("Too many arguments.")
         if len(args)==2:
-            # append(k,m)
+            # append(k, m)
             k = args[0]
             try:
                 d = numpy.asarray(args[1],float)
             except ValueError:
-                raise ValueError("Can't convert data to an array.")
+                raise ValueError("Unreadable data: " + str(args[1]))
             if d.shape==():
                 d = d.flat[0]
             if k not in self:
                 self[k] = [d]
             elif d.shape!=self[k][0].shape:
-                raise ValueError(     #
+                raise ValueError(
                     "Shape mismatch between samples %s: %s,%s"%
-                    (k,d.shape,self[k][0].shape))
+                    (k, d.shape, self[k][0].shape)
+                    )
             else:
                 self[k].append(d)
             return
         if len(args)==1:
             # append(kmdict)
             kargs = args[0]
-            if not hasattr(kargs,'keys'):
+            if not hasattr(kargs, 'keys'):
                 raise ValueError("Argument not a dictionary.")
         for k in kargs:
-            self.append(k,kargs[k])
+            self.append(k, kargs[k])
 
     def extend(self,*args,**kargs):
         """ Add batched data to dataset. 
@@ -635,7 +634,7 @@ class Dataset(_BASE_DICT):
             data_extra = Dataset("file2")
             data.extend(data_extra)   # data now contains all of data_extra
         """
-        if len(args)>2 or (args and kargs):
+        if len(args) > 2 or (args and kargs):
             raise ValueError("Too many arguments.")
         if len(args)==2:
             # extend(k,m)
@@ -667,7 +666,7 @@ class Dataset(_BASE_DICT):
         for k in kargs:
             self.extend(k,kargs[k])
 
-    def slice(self,sl):
+    def slice(self, sl):
         """ Create new dataset with ``self[k] -> self[k][sl].``
             
         Parameter ``sl`` is a slice object that is applied to every
@@ -676,7 +675,19 @@ class Dataset(_BASE_DICT):
         other sample for each quantity in the dataset. Setting 
         ``sl = slice(100,None)`` discards the first 100 samples for 
         each quantity.
+
+        If parameter ``sl`` is a tuple of slice objects, these
+        are applied to successive indices of ``self[k]``. An exception
+        is called if the number of slice objects exceeds the number 
+        of dimensions for any ``self[k]``.
         """
+        if isinstance(sl, tuple) and len(sl) > 1:
+            ans = Dataset()
+            s0 = sl[0]
+            s1 = sl[1:]
+            for k  in self:
+                ans[k] = [d[s1] for d in self[k][s0]]
+            return ans
         ans = Dataset()
         for k in self:
             ans[k] = self[k][sl]

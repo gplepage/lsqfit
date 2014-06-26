@@ -4,7 +4,7 @@
 simple.py
 
 """
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012-14 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

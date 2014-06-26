@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 4.8.5.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.5.1',
+        VERSION:     '5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 5.0 documentation" href="index.html" />
     <link rel="prev" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -107,95 +107,10 @@ convenient in simpler fits. Then the approximate <tt class="docutils literal"><s
 function <tt class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></tt> must be an array with the same shape as the dependent
 variable. The prior <tt class="docutils literal"><span class="pre">prior</span></tt> could also be represented by an array 
 instead of a dictionary.</p>
-<p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> tutorial contains extended explanations and examples.</p>
-</div>
-<div class="section" id="formal-background">
-<h2>Formal Background<a class="headerlink" href="#formal-background" title="Permalink to this headline">¶</a></h2>
-<p>The formal structure structure of a least-squares problem involves
-fitting input data <img class="math" src="_images/math/ec62fe89a2cfa3e0993899eaa4237367667f3ebf.png" alt="y_i" style="vertical-align: -4px"/> with functions <img class="math" src="_images/math/40a2b604e99fd43b836e70a47c4af98fa9b3dbf4.png" alt="f_i(p)" style="vertical-align: -4px"/> by adjusting
-fit parameters <img class="math" src="_images/math/ed4aa5bfaca4d391ba4f4c15c86179aa00fea00a.png" alt="p_a" style="vertical-align: -4px"/> to minimize</p>
-<div class="math">
-<p><img src="_images/math/f40042363f566fef59580698e379748a42ff8777.png" alt="\chi^2 &amp;\equiv \sum_{ij} \Delta y(p)_i\,(\mathrm{cov}_y^{-1})_{ij}\,
-\Delta y(p)_j  \\
-&amp;\equiv (\Delta y(p))^\mathrm{T}\cdot \mathrm{cov}_y^{-1}\cdot
-\Delta y(p)"/></p>
-</div><p>where <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is the covariance matrix for the input data
-and</p>
-<div class="math">
-<p><img src="_images/math/7cfc9a8da0a30784fe3b8622dd1e0cb7c8ec38b7.png" alt="\Delta y(p)_i \equiv f_i(p) - y_i."/></p>
-</div><p>There are generally two types of input data &#8212; actual data and
-prior information for each fit parameter &#8212; but we lump these together
-here since they enter in the same way (that is, the sums over <img class="math" src="_images/math/62494ad46772c68b86d00123a1ea8f195a7864b2.png" alt="i" style="vertical-align: 0px"/>
-and <img class="math" src="_images/math/976b652be33ea6b747a03babbb113160506846d0.png" alt="j" style="vertical-align: -4px"/> are over all data and priors).</p>
-<p>The best-fit values <img class="math" src="_images/math/fc4affc28fb114163c14165a1fb24a5c540a7963.png" alt="\overline{p}_a" style="vertical-align: -4px"/> for the fit parameters are those
-that minimize <img class="math" src="_images/math/143d854fb865a4fb5147d3cc5d31426941bdd597.png" alt="\chi^2" style="vertical-align: -4px"/>:</p>
-<div class="math">
-<p><img src="_images/math/f58680b6ccfa686d3fd52533f7695c225c84cc6f.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}
-\cdot\mathrm{cov}_y^{-1}\cdot
-\Delta y(\overline{p}) = 0"/></p>
-</div><p>where the derivatives are <img class="math" src="_images/math/a99e208376ed9d408e7dffe3e6d624dfa400c2e2.png" alt="\partial_a = \partial/\partial
-\overline{p}_a" style="vertical-align: -5px"/>. The covariance matrix <img class="math" src="_images/math/72f2f5202feb882926834030925accc55f1e7ab1.png" alt="\mathrm{cov}_p" style="vertical-align: -6px"/> for these is
-obtained (approximately) from</p>
-<div class="math">
-<p><img src="_images/math/b7d11d4d11f6d0b877c276173a29943b1c1f77e3.png" alt="(\mathrm{cov^{-1}_p})_{ab} \equiv
-(\partial_a \Delta y(\overline p))^\mathrm{T}
-\cdot \mathrm{cov}^{-1}_y \cdot
-(\partial_b\Delta y(\overline p))."/></p>
-</div><p>Consequently the variance for any function <img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/> of the
-best-fit parameters is given by (approximately)</p>
-<div class="math">
-<p><img src="_images/math/6b7b025185bc3193cae031d023cd22da436816e9.png" alt="\sigma^2_{g} = (\partial g(\overline p))^\mathrm{T} \cdot
-\mathrm{cov}_p \cdot \partial g(\overline p)"/></p>
-</div><p>The definition of the covariance matrix implies that it and any variance
-<img class="math" src="_images/math/e4cf161bcc4d03d4a1c3f4441bcba57966672964.png" alt="\sigma^2_g" style="vertical-align: -8px"/> derived from it depend linearly (approximately) on the
-elements of the input data covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, at
-least when errors are small:</p>
-<div class="math">
-<p><img src="_images/math/16a5fda0992cfb22803ea1711d8814cd1c64e78b.png" alt="\sigma^2_g \approx \sum_{ij} c(\overline p)_{ij} \,
- (\mathrm{cov}_y)_{ij}"/></p>
-</div><p>This allows us to associate different portions of the output error
-<img class="math" src="_images/math/e4cf161bcc4d03d4a1c3f4441bcba57966672964.png" alt="\sigma^2_g" style="vertical-align: -8px"/> with different parts of the input error
-<img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/>, creating an &#8220;error budget&#8221; for
-<img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/>.
-Such information helps pinpoint the input errors that most affect the
-output errors for any particular quantity  <img class="math" src="_images/math/3985d3b8e9822d6dafd5436f37d08a10b9113004.png" alt="g(\overline p)" style="vertical-align: -4px"/>,
-and also indicates how those output errors might change for a given change
-in input error.</p>
-<p>The relationship between the input and output errors is only
-approximately linear because the coefficients in the expansion depend upon
-the best-fit values for the parameters, and these depend upon the input
-errors &#8212; but only weakly when errors are small. Neglecting such variation
-in the parameters, the error budget for any quantity is easily computed
-using</p>
-<div class="math">
-<p><img src="_images/math/6248c44731bcc8df420d1adf355431b57aec1e6d.png" alt="\frac{\partial (\mathrm{cov}_p)_{ab}}{\partial (\mathrm{cov}_y)_{ij}}
- = D_{ai}\,D_{bj}"/></p>
-</div><p>where</p>
-<div class="math">
-<p><img src="_images/math/e2e0fc02079c67ed3070a4042d363e1f3e8dd724.png" alt="D_{ai} \equiv (\mathrm{cov}_p \cdot \partial \Delta y \cdot
-   \mathrm{cov}_y^{-1})_{ai}"/></p>
-</div><p>and, trivially,
-<img class="math" src="_images/math/ec3bade7b995767184074bd4bf6629ae26f0c3b9.png" alt="\mathrm{cov}_p = D\cdot\mathrm{cov}_y\cdot D^\mathrm{T}" style="vertical-align: -6px"/>.</p>
-<p>This last formula suggests that</p>
-<div class="math">
-<p><img src="_images/math/990366a65b1942a67e5f80464888ece41a9ceb73.png" alt="\frac{\partial \overline{p}_a}{\partial y_i} = D_{ai}."/></p>
-</div><p>This relationship is true in the limit of small errors, as is easily derived
-from the minimum condition for the fit, which defines (implicitly)
-<img class="math" src="_images/math/17df9cad4087304b9a125bceb586b4cca0513a83.png" alt="\overline{p}_a(y)" style="vertical-align: -4px"/>: Differentiating with respect to
-<img class="math" src="_images/math/ec62fe89a2cfa3e0993899eaa4237367667f3ebf.png" alt="y_i" style="vertical-align: -4px"/> we obtain</p>
-<div class="math">
-<p><img src="_images/math/4344a120976bf6bcdd2c7bff8b213ee6d88acb75.png" alt="(\partial_a \Delta y(\overline{p}))^\mathrm{T}\cdot\mathrm{cov}_y^{-1}\cdot
-\frac{\partial\Delta y(\overline{p})}{\partial y_i} = 0"/></p>
-</div><p>where we have ignored terms suppressed by a factor of <img class="math" src="_images/math/a9c518b3071d03b1f8e0f098883f804c13aa8e73.png" alt="\Delta y(p)" style="vertical-align: -4px"/>.
-This leads immediately to the relationship above.</p>
-<p>The data&#8217;s covariance matrix <img class="math" src="_images/math/459a88976853e33e9a8ca59dfe83119955686c96.png" alt="\mathrm{cov}_y" style="vertical-align: -6px"/> is sometimes rather
-singular, making it difficult to invert. This problem is dealt with using
-an SVD cut: the covariance matrix is diagonalized, some number of the
-smallest (and therefore least-well determined) eigenvalues and their
-eigenvectors are discarded, and the inverse matrix is reconstituted from
-the eigenmodes that remain. (Instead of discarding modes one can replace
-their eigenvalues by the smallest eigenvalue that is retained; this is less
-conservative and usually leads to more accurate results.)</p>
+<p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><tt class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></tt></a> tutorial contains extended explanations and examples.
+The first appendix in the paper at <a class="reference external" href="http://arxiv.org/abs/arXiv:1406.2279">http://arxiv.org/abs/arXiv:1406.2279</a>
+provides conceptual background on the techniques used in this 
+module for fits and, especially, error budgets.</p>
 </div>
 <div class="section" id="nonlinear-fit-objects">
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
@@ -427,8 +342,8 @@ the fit.</p>
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
 <tt class="descname">svdcorrection</tt><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p>An array containing the (flattened) SVD corrections, if any, added
-to the fit data <tt class="docutils literal"><span class="pre">y</span></tt> and the prior <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
+<dd><p>The sum of all SVD corrections, if any, added to the fit
+data <tt class="docutils literal"><span class="pre">y</span></tt> or the prior <tt class="docutils literal"><span class="pre">prior</span></tt>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -964,8 +879,8 @@ of freedom even if the model used to construct <tt class="docutils literal"><spa
 </dd></dl>
 
 </div>
-<div class="section" id="utility-classes">
-<h2>Utility Classes<a class="headerlink" href="#utility-classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="other-classes">
+<h2>Other Classes<a class="headerlink" href="#other-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.transform_p">
 <em class="property">class </em><tt class="descclassname">lsqfit.</tt><tt class="descname">transform_p</tt><big>(</big><em>priorkeys</em>, <em>has_x=False</em><big>)</big><a class="headerlink" href="#lsqfit.transform_p" title="Permalink to this definition">¶</a></dt>
@@ -1224,10 +1139,9 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
   <ul>
 <li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">lsqfit</span></tt> - Nonlinear Least Squares Fitting</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#formal-background">Formal Background</a></li>
 <li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#utility-classes">Utility Classes</a></li>
+<li><a class="reference internal" href="#other-classes">Other Classes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -1265,7 +1179,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

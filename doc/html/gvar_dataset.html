@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 4.8.5.1 documentation</title>
+    <title>gvar.dataset - Random Data Sets &mdash; lsqfit 5.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4.8.5.1',
+        VERSION:     '5.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 4.8.5.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 5.0 documentation" href="index.html" />
     <link rel="next" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
     <link rel="prev" title="gvar - Gaussian Random Variables" href="gvar.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -365,7 +365,7 @@ multidimensional distributions:</p>
 <dd><p>Dictionary for collecting random data.</p>
 <p>This dictionary class simplifies the collection of random data. The
 random data are stored in a dictionary, with each piece of random data
-being a number or an array of numbers. For example, consider a
+being a number or a <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array of numbers. For example, consider a
 situation where there are four random values for a scalar <tt class="docutils literal"><span class="pre">s</span></tt> and
 four random values for vector <tt class="docutils literal"><span class="pre">v</span></tt>. These can be collected as
 follows:</p>
@@ -424,7 +424,7 @@ code:</p>
 <span class="go">[ 1.1, 0.8, 0.95, 0.91]</span>
 </pre></div>
 </div>
-<p>Data can be binned while reading it in, which might be useful if there
+<p>Data can be binned while reading it in, which might be useful if
 the data set is huge. To bin the data contained in file <tt class="docutils literal"><span class="pre">datafile</span></tt> in
 bins of binsize 2 we use:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">,</span><span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -550,6 +550,10 @@ Setting <tt class="docutils literal"><span class="pre">sl</span> <span class="pr
 other sample for each quantity in the dataset. Setting 
 <tt class="docutils literal"><span class="pre">sl</span> <span class="pre">=</span> <span class="pre">slice(100,None)</span></tt> discards the first 100 samples for 
 each quantity.</p>
+<p>If parameter <tt class="docutils literal"><span class="pre">sl</span></tt> is a tuple of slice objects, these
+are applied to successive indices of <tt class="docutils literal"><span class="pre">self[k]</span></tt>. An exception
+is called if the number of slice objects exceeds the number 
+of dimensions for any <tt class="docutils literal"><span class="pre">self[k]</span></tt>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -601,7 +605,7 @@ shape).</p>
 <dl class="method">
 <dt id="gvar.dataset.Dataset.toarray">
 <tt class="descname">toarray</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.toarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy <tt class="docutils literal"><span class="pre">self</span></tt> but with <tt class="docutils literal"><span class="pre">self[k]</span></tt> as numpy arrays.</p>
+<dd><p>Create dictionary <tt class="docutils literal"><span class="pre">d</span></tt> where <tt class="docutils literal"><span class="pre">d[k]=numpy.array(self[k])</span></tt> for all <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -663,7 +667,7 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 4.8.5.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 5.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
