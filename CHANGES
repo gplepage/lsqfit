@@ -1,3 +1,9 @@
+Version 5.0-1 - 2014-06-30
+===========================
+
+- Fixed bug in gvar.ranseed which caused it to crash under python3 in 
+  certain circumstances.
+
 Version 5.0 - 2014-06-26
 =========================
 A minor upgrade to provide functionality for other libraries. The first 

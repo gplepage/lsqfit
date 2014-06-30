@@ -835,8 +835,7 @@ class SVD(object):
             self.val = val
             self.vec = vec
             self.delta = dely if (self.D is None or dely is None) else dely/self.D
-            return 
-            
+            return             
         else:
             # discard modes with eigenvalues < valmin 
             for i in range(len(val)): 
@@ -882,11 +881,11 @@ def valder(v):
         
     The |GVar|\s created by ``valder(v)`` have means equal to the
     values ``v[i]`` and standard deviations of zero. If ``v`` is
-    one-dimensional, for example, ``valder(v)`` is functionally 
+    one-dimensional, for example, ``vd = valder(v)`` is functionally 
     equivalent to::
         
         newgvar = gvar.gvar_factory()
-        numpy.array([newgvar(vi,0.0) for vi in v])
+        vd = numpy.array([newgvar(vi,0.0) for vi in v])
         
     The use of ``newgvar`` to create the |GVar|\s means that these
     variables are incompatible with those created by ``gvar.gvar``. 
@@ -896,7 +895,7 @@ def valder(v):
     is the derivative of ``x`` with respect to ``vd.flat[i]``.
         
     In general, the shape of the array returned by ``valder`` is the
-    same as that of ``vv``.
+    same as that of ``v``.
     """
     try:
         v = numpy.asarray(v,float)

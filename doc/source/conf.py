@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'lsqfit'
-copyright = u'2009-2013, G. P. Lepage'
+copyright = u'2009-2014, G. P. Lepage'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
