@@ -124,8 +124,7 @@ def mean(g):
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
 
-    ``g`` is returned unchanged if it contains something other than
-    |GVar|\s.
+    Elements of ``g`` that are not |GVar|\s are left unchanged.
     """
     cdef Py_ssize_t i
     cdef GVar gi
@@ -139,10 +138,11 @@ def mean(g):
         g = numpy.asarray(g)
     buf = numpy.zeros(g.size,float)
     try:
-        for i,gi in enumerate(g.flat):
+        for i, gi in enumerate(g.flat):
             buf[i] = gi.v
     except TypeError:
-        return g
+        for i, ogi in enumerate(g.flat):
+            buf[i] = ogi.mean if isinstance(ogi, GVar) else ogi
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 
 def fmt(g, ndecimal=None, sep='', d=None):
@@ -174,6 +174,8 @@ def sdev(g):
         
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
+
+    The deviation is set to 0.0 for elements of ``g`` that are not |GVar|\s.
     """
     cdef Py_ssize_t i
     cdef GVar gi
@@ -186,8 +188,12 @@ def sdev(g):
     else:
         g = numpy.asarray(g)
     buf = numpy.zeros(g.size,float)
-    for i,gi in enumerate(g.flat):
-        buf[i] = gi.sdev
+    try:
+        for i,gi in enumerate(g.flat):
+            buf[i] = gi.sdev
+    except TypeError:
+        for i, ogi in enumerate(g.flat):
+            buf[i] = ogi.sdev if isinstance(ogi, GVar) else 0.0
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 
 def deriv(g, GVar x):
@@ -235,6 +241,8 @@ def var(g):
         
     ``g`` can be a |GVar|, an array of |GVar|\s, or a dictionary containing
     |GVar|\s or arrays of |GVar|\s. Result has the same layout as ``g``.
+
+    The variance is set to 0.0 for elements of ``g`` that are not |GVar|\s.
     """
     cdef Py_ssize_t i
     cdef GVar gi
@@ -247,8 +255,12 @@ def var(g):
     else:
         g = numpy.asarray(g)
     buf = numpy.zeros(g.size,float)
-    for i,gi in enumerate(g.flat):
-        buf[i] = gi.var
+    try:
+        for i,gi in enumerate(g.flat):
+            buf[i] = gi.var
+    except TypeError:
+        for i, ogi in enumerate(g.flat):
+            buf[i] = ogi.var if isinstance(ogi, GVar) else 0.0
     return BufferDict(g,buf=buf) if g.shape is None else buf.reshape(g.shape)
 
 def uncorrelated(g1,g2):

@@ -1,5 +1,11 @@
-Version 5.0-1 - 2014-06-30
+Version 5.0.1 - 2014-09-13
 ===========================
+This is a very minor bug fix.
+
+- Modified gvar.mean(g), gvar.sdev(g), gvar.var(g) so that g can 
+  include elements that are not GVars. These elements are assumed to 
+  have zero error, so their value is their mean. This means, for 
+  example, that g can be all GVars or all floats or a mixture.
 
 - Fixed bug in gvar.ranseed which caused it to crash under python3 in 
   certain circumstances.

@@ -723,6 +723,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
                     self.assertEqual(x[k],y[k])
                 else:
                     self.assertTrue(all(x[k]==y[k]))
+        # dictionaries of GVars
         a = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
         a_mean = dict(x=1.,y=np.array([3.,5.]))
         a_sdev = dict(x=2.,y=np.array([4.,6.]))
@@ -730,16 +731,26 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         compare(a_mean,mean(a))
         compare(a_sdev,sdev(a))
         compare(a_var,var(a))
+        # arrays of GVars
         b = np.array([gvar(1,2),gvar(3,4),gvar(5,6)])
         b_mean = np.array([1.,3.,5.])
         b_sdev = np.array([2.,4.,6.])
         self.assertTrue(all(b_mean==mean(b)))
         self.assertTrue(all(b_sdev==sdev(b)))
         self.assertTrue(all(b_sdev**2==var(b)))
+        # single GVar
         self.assertEqual(mean(gvar(1,2)),1.)
         self.assertEqual(sdev(gvar(1,2)),2.)
         self.assertEqual(var(gvar(1,2)),4.)
-    
+        # single non-GVar
+        self.assertEqual(mean(1.25), 1.25)
+        self.assertEqual(sdev(1.25), 0.0)
+        self.assertEqual(var(1.25), 0.0)
+        b = np.array([gvar(1,2), 3.0, gvar(5,6)])
+        self.assertTrue(all(mean(b)==[1., 3., 5.]))
+        self.assertTrue(all(sdev(b)==[2., 0., 6.]))
+        self.assertTrue(all(var(b)==[4., 0., 36.]))
+
     def test_uncorrelated(self):
         """ uncorrelated(g1, g2) """
         a = dict(x=gvar(1,2),y=np.array([gvar(3,4),gvar(5,6)]))
