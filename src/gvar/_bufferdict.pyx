@@ -29,14 +29,14 @@ import gvar as _gvar
 BUFFERDICTDATA = collections.namedtuple('BUFFERDICTDATA',['slice','shape'])
 """ Data type for BufferDict._data[k]. Note shape==None implies a scalar. """
     
-class BufferDict(collections.MutableMapping):
-    """ Dictionary whose data is packed into a 1-d buffer (numpy.array).
+class BufferDict(collections.OrderedDict): 
+    """ Ordered dictionary whose data are packed into a 1-d buffer (numpy.array).
         
-    A |BufferDict| object is a dictionary-like object whose values must
+    A |BufferDict| object is an ordered dictionary whose values must
     either be scalars or arrays (like :mod:`numpy` arrays, with arbitrary
     shapes). The scalars and arrays are assembled into different parts of a
     single one-dimensional buffer. The various scalars and arrays are
-    retrieved using keys, as in a dictionary: *e.g.*,
+    retrieved using keys: *e.g.*,
         
         >>> a = BufferDict()
         >>> a['scalar'] = 0.0
@@ -64,14 +64,14 @@ class BufferDict(collections.MutableMapping):
                         ('tensor',[[3.,4.],[5.,6.]])])
         
     where in the second case the order of the keys is preserved in ``a``
-    (that is, ``BufferDict`` is an ordered dictionary).
+    (since ``BufferDict`` is an ordered dictionary).
         
     The keys and associated shapes in a |BufferDict| can be transferred to a
     different buffer, creating a new |BufferDict|: *e.g.*, using ``a`` from
     above,
         
         >>> buf = numpy.array([0.,10.,20.,30.,40.,50.,60.])
-        >>> b = BufferDict(a,buf=buf)       # clone a but with new buffer
+        >>> b = BufferDict(a, buf=buf)          # clone a but with new buffer
         >>> print(b['tensor'])
         [[ 30.  40.]
          [ 50.  60.]]
@@ -127,14 +127,10 @@ class BufferDict(collections.MutableMapping):
         if len(args)==0:
             # kargs are dictionary entries 
             self._buf = numpy.array([],int)
-            self._keys = []
-            self._data = {}
             for k in sorted(kargs):
                 self[k] = kargs[k]
         elif len(args) == 1 and 'keys' in kargs and len(kargs) == 1:
             self._buf = numpy.array([],int)
-            self._keys = []
-            self._data = {}
             try:
                 for k in kargs['keys']:
                     self[k] = args[0][k] 
@@ -153,20 +149,22 @@ class BufferDict(collections.MutableMapping):
                 raise ValueError("Bad arguments for BufferDict.")
             if isinstance(bd, BufferDict):
                 # make copy of BufferDict bd, possibly with new buffer 
-                self._keys = copy.copy(bd._keys)
-                self._data = copy.copy(bd._data)
+                # copy keys, slices and shapes
+                for k in bd:
+                    super(BufferDict, self).__setitem__(
+                        k, super(BufferDict, bd).__getitem__(k)
+                        )
+                # copy buffer or use new one
                 self._buf = (numpy.array(bd._buf) if buf is None 
                              else numpy.asarray(buf))
                 if bd.size != self.size:
                     raise ValueError("buf is wrong size --- %s not %s"
                                      % (self.size, bd.size))
-                if self._buf.ndim!=1:
+                if self._buf.ndim != 1:
                     raise ValueError("buf must be 1-d, not shape = %s"
                                      % (self._buf.shape,))
             elif buf is None:
                 self._buf = numpy.array([],int)
-                self._keys = []
-                self._data = {}
                 # add initial data  
                 if hasattr(bd,"keys"):
                     # bd a dictionary 
@@ -184,39 +182,37 @@ class BufferDict(collections.MutableMapping):
                 raise ValueError(
                     "bd must be a BufferDict in BufferDict(bd,buf), not %s"
                                     % str(type(bd)))
-    
+
     def __getstate__(self):
         """ Capture state for pickling when elements are GVars. """
-        if len(self._buf)<1:
-            return self.__dict__.copy()
-        odict = self.__dict__.copy()
-        if isinstance(self._buf[0],_gvar.GVar):
-            buf = odict['_buf']
-            del odict['_buf']
-            odict['_buf.mean'] = _gvar.mean(buf)
-            odict['_buf.cov'] = _gvar.evalcov(buf)
-        data = odict['_data']
-        del odict['_data']
-        odict['_data.tuple'] = {}
-        for k in data:
-            odict['_data.tuple'][k] = (data[k].slice,data[k].shape)
-        return odict
+        state = {}
+        buf = self._buf
+        if len(self._buf) > 0 and isinstance(self._buf[0], _gvar.GVar):
+            state['buf'] = ( _gvar.mean(buf),  _gvar.evalcov(buf))
+        else:
+            state['buf'] = numpy.asarray(buf)
+        layout = collections.OrderedDict()
+        od = super(BufferDict, self)
+        for k in self:
+            layout[k] = (od.__getitem__(k).slice, od.__getitem__(k).shape)
+        state['layout'] = layout
+        return state
     
-    def __setstate__(self,odict):
+    def __setstate__(self, state):
         """ Restore state when unpickling when elements are GVars. """
-        if '_buf.mean' in odict:
-            buf = _gvar.gvar(odict['_buf.mean'],odict['_buf.cov'])
-            del odict['_buf.mean']
-            del odict['_buf.cov']
-            odict['_buf'] = buf
-        if '_data.tuple' in odict:
-            data = odict['_data.tuple']
-            del odict['_data.tuple']
-            odict['_data'] = {}
-            for k in data:
-                odict['_data'][k] = BUFFERDICTDATA(slice=data[k][0],
-                                                    shape=data[k][1])
-        self.__dict__.update(odict)
+        layout = state['layout']
+        buf = state['buf']
+        if isinstance(buf, tuple):
+            buf = _gvar.gvar(*buf)
+        for k in layout:
+            super(BufferDict, self).__setitem__(
+                k, 
+                BUFFERDICTDATA(slice=layout[k][0], shape=layout[k][1])
+                )
+        self._buf = buf
+
+    def __reduce_ex__(self, dummy):
+        return (BufferDict, (), self.__getstate__())
     
     def add(self,k,v):
         """ Augment buffer with data ``v``, indexed by key ``k``.
@@ -235,11 +231,11 @@ class BufferDict(collections.MutableMapping):
     
     def __getitem__(self,k):
         """ Return piece of buffer corresponding to key ``k``. """
-        if k not in self._data:
+        if not super(BufferDict, self).__contains__(k):
             raise KeyError("undefined key: %s" % str(k))
-        if isinstance(self._buf,list):
+        if isinstance(self._buf, list):
             self._buf = numpy.array(self._buf)
-        d = self._data[k]
+        d = super(BufferDict, self).__getitem__(k)
         ans = self._buf[d.slice]
         return ans if d.shape is None else ans.reshape(d.shape)
     
@@ -253,17 +249,16 @@ class BufferDict(collections.MutableMapping):
             v = numpy.asarray(v)
             if v.shape==():
                 # add single piece of data 
-                self._data[k] = BUFFERDICTDATA(slice=len(self._buf),shape=None)
+                super(BufferDict, self).__setitem__(k, BUFFERDICTDATA(slice=len(self._buf),shape=None))
                 self._buf = numpy.append(self._buf,v)
             else:
                 # add array 
                 n = numpy.size(v)
                 i = len(self._buf)
-                self._data[k] = BUFFERDICTDATA(slice=slice(i,i+n),shape=tuple(v.shape))
+                super(BufferDict, self).__setitem__(k, BUFFERDICTDATA(slice=slice(i,i+n),shape=tuple(v.shape)))
                 self._buf = numpy.append(self._buf,v)
-            self._keys.append(k)
         else:
-            d = self._data[k]
+            d = super(BufferDict, self).__getitem__(k)
             if d.shape is None:
                 try:
                     self._buf[d.slice] = v
@@ -280,19 +275,7 @@ class BufferDict(collections.MutableMapping):
     
     def __delitem__(self,k):
         raise NotImplementedError("Cannot delete items from BufferDict.")
-    
-    def __len__(self):
-        """ Number of keys. """
-        return len(self._keys)
-    
-    def __iter__(self):
-        """ Iterator over the keys. """
-        return iter(self._keys)
-    
-    def __contains__(self,k):
-        """ True if k is a key in ``self``. """
-        return k in self._data
-    
+                
     def __str__(self):
         ans = "{"
         for k in self:
@@ -348,11 +331,11 @@ class BufferDict(collections.MutableMapping):
     size = property(_getsize,doc='Size of buffer array.')
     def slice(self,k):
         """ Return slice/index in ``self.flat`` corresponding to key ``k``."""
-        return self._data[k].slice
+        return super(BufferDict, self).__getitem__(k).slice
     
     def isscalar(self,k):
         """ Return ``True`` if ``self[k]`` is scalar else ``False``."""
-        return self._data[k].shape is None
+        return super(BufferDict, self).__getitem__(k).shape is None
     
     def dump(self, fobj, use_json=False):
         """ Serialize |BufferDict| in file object ``fobj``.
