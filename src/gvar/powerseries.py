@@ -175,6 +175,7 @@ class PowerSeries(object):
     :type order: integer     
     """
     def __init__(self,c=None, order=None):
+        self.__array_priority__ = 100.
         if isinstance(c, PowerSeries):
             c = numpy.array(c.c)
         if order is None:
@@ -206,9 +207,9 @@ class PowerSeries(object):
     # coeff = property(_getcoeff,
     #             doc="Copy of power series coefficients (numpy.array).")
     
-    def __getitem__(self,i):
-        """ Return C{i}th coefficient of power series. """
-        return self.c[i]
+    # def __getitem__(self,i):
+    #     """ Return C{i}th coefficient of power series. """
+    #     return self.c[i]
     
     def __setitem__(self,i,val):
         """ Set C{i}th coefficient of power series equal to C{val}. """
@@ -269,7 +270,7 @@ class PowerSeries(object):
                     tot = tot - ans[i]*x.c[n-i]
                 ans[n] = tot/x.c[0]
         except ZeroDivisionError:
-            if self[0]==x[0] and len(self.c)>1 and len(x.c)>1:
+            if self.c[0]==x.c[0] and len(self.c)>1 and len(x.c)>1:
                 # strip off matching overall factor of x from denom and num
                 return PowerSeries(self.c[1:])/PowerSeries(x.c[1:])
             else:
@@ -290,7 +291,7 @@ class PowerSeries(object):
                     tot = tot - ans[i]*x.c[n-i]
                 ans[n] = tot/x.c[0]
         except ZeroDivisionError:
-            if self[0]==x[0] and len(self.c)>1 and len(x.c)>1:
+            if self.c[0]==x.c[0] and len(self.c)>1 and len(x.c)>1:
                 # strip off matching overall factor of x from denom and num
                 return PowerSeries(self.c[1:])/PowerSeries(x.c[1:])
             else:
@@ -513,7 +514,7 @@ class PowerSeries(object):
             if self.order > 0:
                 return PowerSeries(self.c[1:]*range(1,len(self.c)))
             else:
-                return PowerSeries([0. * self[0]])
+                return PowerSeries([0. * self.c[0]])
         elif n>1:
             return self.deriv().deriv(n-1)
         elif n==0:
@@ -537,7 +538,7 @@ class PowerSeries(object):
                 ans = PowerSeries([0.*self.c[0]] + 
                     [x/(i+1.) for i,x in enumerate(self.c)])
             if x0 is not None:
-                return PowerSeries([ans[0]-ans(x0)]+list(ans.c[1:]))
+                return PowerSeries([ans.c[0]-ans(x0)]+list(ans.c[1:]))
             else:
                 return ans
         elif n>1:
