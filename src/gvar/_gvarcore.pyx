@@ -41,7 +41,7 @@ cdef extern from "math.h":
 
 import numpy
 from numpy import sin, cos, tan, exp, log, sqrt, fabs
-from numpy import sinh, cosh, tanh, arcsin, arccos, arctan
+from numpy import sinh, cosh, tanh, arcsin, arccos, arctan, arctan2
 from numpy import arcsinh, arccosh, arctanh
 # from re import compile as _compile
 import copy
@@ -342,6 +342,29 @@ cdef class GVar:
 
     def atan(self):
         return self.arctan()
+
+    def arctan2(yy, xx):
+        # following code by Matt Wingate 10/2014
+        # returns angle in (-pi, pi]
+        if type(xx) in _ARRAY_TYPES:
+            return NotImplemented   # let ndarray handle it
+        if xx > 0.0:
+            return numpy.arctan(yy / xx)
+        elif xx < 0.0:
+            return (
+                numpy.arctan(yy / xx) + numpy.pi 
+                if yy >= 0 else 
+                numpy.arctan(yy / xx) - numpy.pi
+                )
+        else:
+            return (
+                numpy.pi / 2 - numpy.arctan(xx / yy) 
+                if yy >= 0 else 
+                - numpy.pi / 2 - numpy.arctan(xx / yy) 
+                )
+
+    def atan2(yy, xx):
+        return yy.arctan2(xx)
 
     def sinh(self):
         return GVar(c_sinh(self.v),self.d.mul(c_cosh(self.v)),self.cov)
@@ -827,7 +850,6 @@ class GVarFactory:
                     xxa[:] = x
                     if all(type(xxai)==tuple for xxai in xxa.flat):
                         return self(xa[...,0],xa[...,1])
-
                 return numpy.array([xai if isinstance(xai,GVar) else self(xai) 
                                     for xai in xa.flat]).reshape(xa.shape)
 
