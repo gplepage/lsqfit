@@ -296,13 +296,13 @@ class test_powerseries(unittest.TestCase, PowerSeriesTests):
         x = PowerSeries(order=self.order)
         y = PowerSeries(numpy.zeros(self.order + 1, object), order=self.order)
         self.assertEqual(len(x.c), len(y.c))
-        for xi, yi in zip(x, y):
+        for xi, yi in zip(x.c, y.c):
             self.assertEqual(xi, yi)
         for i in range(self.order + 1):
-            self.assertEqual(x[i], y[i])
+            self.assertEqual(x.c[i], y.c[i])
         y = PowerSeries(self.exp_x)      
         for i in range(self.order + 1):
-            y[i] *= 2
+            y.c[i] *= 2
         self.assert_close(y, 2 * self.exp_x)
         self.assert_close(PowerSeries(), PowerSeries([0.]))
         with self.assertRaises(ValueError):

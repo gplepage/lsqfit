@@ -367,7 +367,7 @@ class test_gvar2(unittest.TestCase,ArrayTests):
     def t_fcn(self,f,df):
         """ tester for test_fcn """
         gdict = dict(globals())
-        gdict['x'] = x          # with CGVar
+        gdict['x'] = x          # with GVar
         fx = eval(f,gdict)
         gdict['x'] = x.mean     # with float
         fxm = eval(f,gdict)
@@ -389,6 +389,19 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         for f,df in flist:
             self.label = f
             self.t_fcn(f,df)
+        # arctan2 tests
+        x = gvar('0.5(0.5)')
+        y = gvar('2(2)')
+        f = arctan2(y, x)
+        fc = arctan(y / x)
+        self.assertAlmostEqual(f.mean, fc.mean)
+        self.assertAlmostEqual(f.sdev, fc.sdev)
+        self.assertAlmostEqual(arctan2(y, x).mean, numpy.arctan2(y.mean, x.mean))
+        self.assertAlmostEqual(arctan2(y, -x).mean, numpy.arctan2(y.mean, -x.mean))
+        self.assertAlmostEqual(arctan2(-y, -x).mean, numpy.arctan2(-y.mean, -x.mean))
+        self.assertAlmostEqual(arctan2(-y, x).mean, numpy.arctan2(-y.mean, x.mean))
+        self.assertAlmostEqual(arctan2(y, x*0).mean, numpy.arctan2(y.mean, 0))
+        self.assertAlmostEqual(arctan2(-y, x*0).mean, numpy.arctan2(-y.mean, 0))
 
     def test_gvar_function(self):
         """ gvar_function(x, f, dfdx) """
@@ -598,6 +611,18 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         ])
         self.assertEqual(tmp,out,"fmt_value output wrong")
     
+    def test_errorbudget_warnings(self):
+        """ fmt_errorbudget(...verify=True) """
+        a, b, c = gvar(3 * ['1.0(1)'])
+        b , c = (b+c) / 2., (b-c) /2.
+        outputs = dict(sum=a+b+c)
+        warnings.simplefilter('error')
+        fmt_errorbudget(outputs=outputs, inputs=dict(a=a, b=b), verify=True)
+        with self.assertRaises(UserWarning):
+            fmt_errorbudget(outputs=outputs, inputs=dict(a=a, b=b, c=c), verify=True)
+        with self.assertRaises(UserWarning):
+            fmt_errorbudget(outputs=outputs, inputs=dict(a=a), verify=True)
+
     def test_der(self):
         """ x.der """ 
         global x,y
@@ -793,8 +818,8 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         with self.assertRaises(ValueError):
             deriv(f, x+y)
         f = BufferDict(a=2 * x + 3 * y, b=4 * x)
-        self.assertEqual(deriv(f, x), dict(a=2., b=4.))
-        self.assertEqual(deriv(f, y), dict(a=3., b=0.))
+        self.assertEqual(deriv(f, x), BufferDict([('a',2.), ('b',4.)])) # dict(a=2., b=4.))
+        self.assertEqual(deriv(f, y), BufferDict([('a',3.), ('b',0.)])) # dict(a=3., b=0.))
         with self.assertRaises(ValueError):
             deriv(f, x+y)
 
