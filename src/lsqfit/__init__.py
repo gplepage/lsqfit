@@ -684,7 +684,7 @@ class nonlinear_fit(object):
             if self.p0.shape is not None:
                 pickle.dump(numpy.array(self.pmean), f)
             else:
-                pickle.dump(dict(self.pmean), f) # dump as a dict
+                pickle.dump(collections.OrderedDict(self.pmean), f) # dump as a dict
     
     def simulated_fit_iter(self, n, pexact=None, bootstrap=False, **kargs):
         """ Iterator that returns simulation copies of a fit.
