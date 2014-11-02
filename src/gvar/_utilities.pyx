@@ -525,7 +525,10 @@ def fmt_values(outputs, ndecimal=None, ndigit=None):
         ans += "%19s: %-20s\n" % (vk,outputs[vk].fmt(ndecimal))
     return ans
 
-def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndigit=None):
+def fmt_errorbudget(
+    outputs, inputs, ndecimal=2, percent=True, colwidth=10, 
+    verify=False, ndigit=None
+    ):
     """ Tabulate error budget for ``outputs[ko]`` due to ``inputs[ki]``.
        
     For each output ``outputs[ko]``, ``fmt_errorbudget`` computes the
@@ -535,7 +538,7 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
     rows labeled by ``ko`` and ``ki``, respectively. If a |GVar| in
     ``inputs[ki]`` is correlated with other |GVar|\s, the contribution from
     the others is included in the ``ki`` contribution as well (since
-    contributions from correlated |GVar|\s cannot be resolved). The table
+    contributions from correlated |GVar|\s cannot be distinguished). The table
     is returned as a string.
         
     :param outputs: Dictionary of |GVar|\s for which an error budget 
@@ -551,6 +554,12 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
     :type percent: boolean
     :param colwidth: Width of each column.
     :type colwidth: positive integer
+    :param verify: If ``True``, a warning is issued if: 1) different inputs are 
+        correlated (and therefore double count errors); or 
+        2) the sum (in quadrature) of partial errors is not equal to the
+        total error to within 1% (and the error budget is incomplete or 
+        overcomplete). No checking is done if ``verify==False`` (default).
+    :type verify: boolean
     :returns: A table (``str``) containing the error budget. 
         Output variables are labeled by the keys in ``outputs``
         (columns); sources of uncertainty are labeled by the keys in
@@ -567,6 +576,26 @@ def fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10, ndig
                 inputs_ki = [inputs_ki]
             err[ko,ki] = outputs[ko].partialvar(*inputs_ki)**0.5                
     
+    # verify?
+    if verify:
+        # correlated inputs?
+        unprocessed_keys = set(inputs.keys())
+        for ki1 in inputs.keys():
+            unprocessed_keys.discard(ki1)
+            for ki2 in unprocessed_keys:
+                if not uncorrelated(inputs[ki1], inputs[ki2]):
+                    warnings.warn("{} and {} double count errors".format(
+                        ki1, ki2
+                        ))
+        # anything missing?
+        for ko in outputs:
+            totvar = 0.0
+            for ki in inputs:
+                totvar += err[ko, ki] ** 2
+            if abs(totvar - outputs[ko].var) > 0.01 * outputs[ko].var:
+                warnings.warn("{} partial error {}  !=  total error {}".format(
+                    ko, totvar ** 0.5, outputs[ko].sdev
+                    ))
     # form table 
     w = colwidth
     w0 = w if w > 20 else 20
