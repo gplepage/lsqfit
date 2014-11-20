@@ -23,10 +23,10 @@ equation of motion (Newton's Law) for a pendulum.
 
 from __future__ import print_function   # makes this work for python2 and 3
 
-MAKE_PLOT = False
+MAKE_PLOT = True
 
-import math
-
+import tee
+import sys
 import numpy as np
 try:
     import pylab as plt
@@ -35,38 +35,49 @@ except:
 
 import gvar as gv 
 import lsqfit
+STDOUT = sys.stdout 
 
 def main():
     # pendulum data exhibits experimental error in ability to measure theta
-    t = [ 0.1, 0.2, 0.3, 0.4,  0.5, 0.6,  0.7,  0.8,  0.9, 1.]
+    t = gv.gvar([ 
+        '0.10(1)', '0.20(1)', '0.30(1)', '0.40(1)',  '0.50(1)', 
+        '0.60(1)',  '0.70(1)',  '0.80(1)',  '0.90(1)', '1.00(1)'
+        ])
     theta = gv.gvar([
         '1.477(79)', '0.791(79)', '-0.046(79)', '-0.852(79)', 
         '-1.523(79)', '-1.647(79)', '-1.216(79)', '-0.810(79)', 
         '0.185(79)', '0.832(79)'
         ])
 
+    for t_n, theta_n in zip(t, theta):
+        print("{}  {:>10}".format(t_n.fmt(2), theta_n.fmt(3)))
     # prior: assume experimental error in ability to specify theta(0)
     prior = gv.BufferDict()
-    prior['g/l'] = (2 * math.pi) ** 2 * gv.gvar(1, 0.1)
-    prior['theta(0)'] = gv.gvar(math.pi / 2., 0.05)
+    prior['g/l'] = gv.gvar('40(20)')
+    prior['theta(0)'] = gv.gvar('1.571(50)')
+    prior['t'] = t
 
     # fit function: use class Pendulum object to integrate pendulum motion
-    def fitfcn(p, t=t):
+    def fitfcn(p, t=None):
+        if t is None:
+            t = p['t']
         pendulum = Pendulum(p['g/l'])
         return pendulum(p['theta(0)'], t)
 
     # do the fit and print results
     fit = lsqfit.nonlinear_fit(data=theta, prior=prior, fcn=fitfcn)
+    sys.stdout = tee.tee(STDOUT, open('case-pendulum.out', 'w'))
     print(fit.format(maxline=True))
-    print('fit/exact for (g/l) =', fit.p['g/l'] / (2*math.pi) ** 2)
-    print('fit/exact for theta(0) =', fit.p['theta(0)'] / (math.pi / 2.))
+    sys.stdout = STDOUT
+    print('fit/exact for (g/l) =', fit.p['g/l'] / (2*np.pi) ** 2)
+    print('fit/exact for theta(0) =', fit.p['theta(0)'] / (np.pi / 2.))
     
     if MAKE_PLOT:
         # make figure (saved to file pendulum.pdf)
         plt.figure(figsize=(4,3))
         # start plot with data
         plt.errorbar(
-            x=t, y=gv.mean(theta), yerr=gv.sdev(theta),
+            x=gv.mean(t), xerr=gv.sdev(t), y=gv.mean(theta), yerr=gv.sdev(theta),
             fmt='k.',
             )
         # use best-fit function to add smooth curve for 100 points

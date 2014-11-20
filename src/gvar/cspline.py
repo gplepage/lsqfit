@@ -1,3 +1,5 @@
+""" Cubic splines for GVars. """
+
 # Created by G. Peter Lepage (Cornell University) on 2014-04-27.
 # Copyright (c) 2014 G. Peter Lepage. 
 #

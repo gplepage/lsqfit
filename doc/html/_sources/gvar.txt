@@ -227,8 +227,8 @@ denominator::
 
 The :mod:`gvar` module defines versions of the standard Python mathematical
 functions that work with |GVar| arguments. These include:
-``exp, log, sqrt, sin, cos, tan, arcsin, arccos, arctan, sinh, cosh, tanh,
-arcsinh, arccosh, arctanh``. Numeric functions defined 
+``exp, log, sqrt, sin, cos, tan, arcsin, arccos, arctan, arctan2, sinh, cosh, 
+tanh, arcsinh, arccosh, arctanh``. Numeric functions defined 
 entirely in Python (*i.e.*, pure-Python functions) 
 will likely also work with |GVar|\s.
 
@@ -639,7 +639,7 @@ The following two functions that are useful for tabulating results
 and for analyzing where the errors in a |GVar| constructed from 
 other |GVar|\s come from:
 
-.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, colwidth=10)
+.. autofunction:: gvar.fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True, verify=False, colwidth=10)
 
 .. autofunction:: gvar.fmt_values(outputs, ndecimal=None)
 

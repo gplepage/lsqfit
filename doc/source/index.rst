@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 2
    
    overview.rst
+   case-extrapolation.rst
+   case-pendulum.rst
    gvar.rst
    gvar_dataset.rst
    gvar_other.rst

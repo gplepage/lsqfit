@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 5.0.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 6.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '5.0.1',
+        VERSION:     '6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 5.0.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
     <link rel="prev" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 5.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -453,7 +453,7 @@ combination <tt class="docutils literal"><span class="pre">(ko,ki)</span></tt> a
 rows labeled by <tt class="docutils literal"><span class="pre">ko</span></tt> and <tt class="docutils literal"><span class="pre">ki</span></tt>, respectively. If a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in
 <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt> is correlated with other <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the contribution from
 the others is included in the <tt class="docutils literal"><span class="pre">ki</span></tt> contribution as well (since
-contributions from correlated <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be resolved). The table
+contributions from correlated <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be distinguished). The table
 is returned as a string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -470,6 +470,11 @@ deviations of each <tt class="docutils literal"><span class="pre">outputs[ko]</s
 <li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <tt class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></tt>; otherwise
 tabulate the errors themselves.</li>
 <li><strong>colwidth</strong> (<em>positive integer</em>) &#8211; Width of each column.</li>
+<li><strong>verify</strong> (<em>boolean</em>) &#8211; If <tt class="docutils literal"><span class="pre">True</span></tt>, a warning is issued if: 1) different inputs are 
+correlated (and therefore double count errors); or 
+2) the sum (in quadrature) of partial errors is not equal to the
+total error to within 0.1% of the error (and the error budget is incomplete or 
+overcomplete). No checking is done if <tt class="docutils literal"><span class="pre">verify==False</span></tt> (default).</li>
 </ul>
 </td>
 </tr>
@@ -1179,12 +1184,12 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 5.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2014, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

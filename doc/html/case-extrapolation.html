@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Case Study: Simple Extrapolation &mdash; lsqfit 6.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '6.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
+    <link rel="next" title="Case Study: Pendulum" href="case-pendulum.html" />
+    <link rel="prev" title="Overview and Tutorial" href="overview.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head>
+  <body>
+
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview and Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="case-study-simple-extrapolation">
+<h1>Case Study: Simple Extrapolation<a class="headerlink" href="#case-study-simple-extrapolation" title="Permalink to this headline">¶</a></h1>
+<p>In this case study, we examine a simple extrapolation problem. We show first
+how <em>not</em> to solve this problem. A better solution follows, together with
+a discussion of priors and Bayes factors. Finally a very simple,
+alternative solution, using marginalization, is described.</p>
+<div class="section" id="the-problem">
+<h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
+<p>Consider a problem where we have five pieces of uncorrelated data for a
+function <tt class="docutils literal"><span class="pre">y(x)</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>x[i]       y(x[i])
+----------------------
+0.1        0.5351 (54)
+0.3        0.6762 (67)
+0.5        0.9227 (91)
+0.7        1.3803(131)
+0.95       4.0145(399)
+</pre></div>
+</div>
+<p>We know that <tt class="docutils literal"><span class="pre">y(x)</span></tt> has a Taylor expansion in <tt class="docutils literal"><span class="pre">x</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>y(x) = sum_n=0..inf p[n] x**n
+</pre></div>
+</div>
+<p>The challenge is to extract a reliable estimate for <tt class="docutils literal"><span class="pre">y(0)=p[0]</span></tt> from the
+data &#8212; that is, the challenge is to fit the data and use
+the fit to extrapolate the data to <tt class="docutils literal"><span class="pre">x=0</span></tt>.</p>
+</div>
+<div class="section" id="a-bad-solution">
+<h2>A Bad Solution<a class="headerlink" href="#a-bad-solution" title="Permalink to this headline">¶</a></h2>
+<p>One approach that is certainly wrong is to fit the data with
+a power series expansion for
+<tt class="docutils literal"><span class="pre">y(x)</span></tt> that is truncated after five terms (<tt class="docutils literal"><span class="pre">n&lt;=4</span></tt>) &#8212;
+there are only five pieces of data and such a fit would have five
+parameters.
+This approach gives the following fit, where the gray band shows the 1-sigma
+uncertainty in the fit function evaluated with the best-fit parameters:</p>
+<a class="reference internal image-reference" href="_images/appendix_1.png"><img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" /></a>
+<p>This fit was generated using the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="c"># fit data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
+   <span class="s">&#39;0.5351(54)&#39;</span><span class="p">,</span> <span class="s">&#39;0.6762(67)&#39;</span><span class="p">,</span> <span class="s">&#39;0.9227(91)&#39;</span><span class="p">,</span> <span class="s">&#39;1.3803(131)&#39;</span><span class="p">,</span> <span class="s">&#39;4.0145(399)&#39;</span>
+   <span class="p">])</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+   <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+<span class="n">p0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mf">5.</span><span class="p">)</span>              <span class="c"># starting value for chi**2 minimization</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that here the function <tt class="docutils literal"><span class="pre">gv.gvar</span></tt> converts the strings
+<tt class="docutils literal"><span class="pre">'0.5351(54)'</span></tt>, <em>etc.</em> into <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s. Running the code gives the
+following output:</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit (no prior):
+  chi2/dof [dof] = 1.2e-26 [0]    Q = 0    logGBF = None
+
+Parameters:
+              0    0.742 (39)     [   1 +- inf ]  
+              1    -3.86 (59)     [   1 +- inf ]  
+              2    21.5 (2.4)     [   1 +- inf ]  
+              3   -39.1 (3.7)     [   1 +- inf ]  
+              4    25.8 (1.9)     [   1 +- inf ]  
+
+Fit:
+     x[k]           y[k]      f(x[k],p)
+---------------------------------------
+      0.1    0.5351 (54)    0.5351 (54)  
+      0.3    0.6762 (67)    0.6762 (67)  
+      0.5    0.9227 (91)    0.9227 (91)  
+      0.7     1.380 (13)     1.380 (13)  
+     0.95     4.014 (40)     4.014 (40)  
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+</pre></div>
+</div>
+<p>This is a &#8220;perfect&#8221; fit in that the fit function agrees exactly with
+the data; the <tt class="docutils literal"><span class="pre">chi**2</span></tt> for the fit is zero. The 5-parameter fit
+gives a fairly precise answer for <tt class="docutils literal"><span class="pre">p[0]</span></tt>
+(<tt class="docutils literal"><span class="pre">0.74(4)</span></tt>), but the curve looks oddly stiff. Also some of the
+best-fit values for the coefficients are quite
+large (<em>e.g.</em>, <tt class="docutils literal"><span class="pre">p[3]=</span> <span class="pre">-39(4)</span></tt>), perhaps unreasonably large.</p>
+</div>
+<div class="section" id="a-better-solution-priors">
+<h2>A Better Solution &#8212; Priors<a class="headerlink" href="#a-better-solution-priors" title="Permalink to this headline">¶</a></h2>
+<p>The problem with a 5-parameter fit is that there is no reason to neglect
+terms in the expansion of <tt class="docutils literal"><span class="pre">y(x)</span></tt> with <tt class="docutils literal"><span class="pre">n&gt;4</span></tt>. Whether or not
+extra terms are important depends entirely on how large we
+expect the coefficients <tt class="docutils literal"><span class="pre">p[n]</span></tt> for <tt class="docutils literal"><span class="pre">n&gt;4</span></tt> to be. The extrapolation
+problem is impossible without some idea of the size of these
+parameters; we need extra information.</p>
+<p>In this case that extra information is obviously connected to questions
+of convergence of the Taylor expansion we are using to model <tt class="docutils literal"><span class="pre">y(x)</span></tt>.
+Let&#8217;s assume we know, from previous work, that the <tt class="docutils literal"><span class="pre">p[n]</span></tt> are of
+order one. Then we would need to keep at least 91 terms in the
+Taylor expansion if we wanted the terms we dropped to be small compared
+with the 1% data errors at <tt class="docutils literal"><span class="pre">x=0.95</span></tt>. So a possible fitting function
+would be:</p>
+<div class="highlight-python"><div class="highlight"><pre>y(x; N) = sum_n=0..N p[n] x**n
+</pre></div>
+</div>
+<p>with <tt class="docutils literal"><span class="pre">N=90</span></tt>.</p>
+<p>Fitting a 91-parameter formula to five pieces of data is also impossible.
+Here, however, we have extra (<em>prior</em>) information: each coefficient is order
+one, which we make specific by saying that they equal 0±1. We include
+these <em>a priori</em> estimates for the parameters as extra data that must be
+fit, together with our original data. So we are
+actually fitting 91+5 pieces of data with 91 parameters.</p>
+<p>The prior information is introduced into the fit as a <em>prior</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="c"># fit data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
+   <span class="s">&#39;0.5351(54)&#39;</span><span class="p">,</span> <span class="s">&#39;0.6762(67)&#39;</span><span class="p">,</span> <span class="s">&#39;0.9227(91)&#39;</span><span class="p">,</span> <span class="s">&#39;1.3803(131)&#39;</span><span class="p">,</span> <span class="s">&#39;4.0145(399)&#39;</span>
+   <span class="p">])</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+   <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+<span class="c"># 91-parameter prior for the fit</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that a starting value <tt class="docutils literal"><span class="pre">p0</span></tt> is not needed when a prior is specified.
+This code also gives an excellent fit, with a <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of
+freedom of <tt class="docutils literal"><span class="pre">0.35</span></tt> (note that the data point at <tt class="docutils literal"><span class="pre">x=0.95</span></tt> is off the chart,
+but agrees with the fit to within its 1% errors):</p>
+<a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
+<p>The fit code output is:</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508
+
+Parameters:
+              0      0.489 (17)      [  0.0 (1.0) ]  
+              1       0.40 (20)      [  0.0 (1.0) ]  
+              2       0.60 (64)      [  0.0 (1.0) ]  
+              3       0.44 (80)      [  0.0 (1.0) ]  
+              4       0.28 (87)      [  0.0 (1.0) ]  
+              5       0.19 (87)      [  0.0 (1.0) ]  
+              6       0.16 (90)      [  0.0 (1.0) ]  
+              7       0.16 (93)      [  0.0 (1.0) ]  
+              8       0.17 (95)      [  0.0 (1.0) ]  
+              9       0.18 (96)      [  0.0 (1.0) ]  
+             10       0.19 (97)      [  0.0 (1.0) ]  
+             11       0.19 (97)      [  0.0 (1.0) ]  
+             12       0.19 (97)      [  0.0 (1.0) ]  
+             13       0.19 (97)      [  0.0 (1.0) ]  
+             14       0.18 (97)      [  0.0 (1.0) ]  
+             15       0.18 (97)      [  0.0 (1.0) ]  
+                .
+                .
+                .
+             88   0.004 (1.000)      [  0.0 (1.0) ]  
+             89   0.004 (1.000)      [  0.0 (1.0) ]  
+             90   0.004 (1.000)      [  0.0 (1.0) ]  
+
+Fit:
+     x[k]           y[k]      f(x[k],p)
+---------------------------------------
+      0.1    0.5351 (54)    0.5349 (54)  
+      0.3    0.6762 (67)    0.6768 (65)  
+      0.5    0.9227 (91)    0.9219 (87)  
+      0.7     1.380 (13)     1.381 (13)  
+     0.95     4.014 (40)     4.014 (40)  
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+</pre></div>
+</div>
+<p>This is a much more plausible fit than than the 5-parameter fit, and gives an
+extrapolated value of <tt class="docutils literal"><span class="pre">p[0]=0.489(17)</span></tt>. The original data points were
+created using  a Taylor expansion with random coefficients, but
+with <tt class="docutils literal"><span class="pre">p[0]</span></tt> set equal to <tt class="docutils literal"><span class="pre">0.5</span></tt>. So this fit to the five data points (plus
+91 <em>a priori</em> values for the <tt class="docutils literal"><span class="pre">p[n]</span></tt> with <tt class="docutils literal"><span class="pre">n&lt;91</span></tt>) gives the correct
+result.  Increasing the number of terms further would have no effect since the
+last terms added are having no impact, and so end up equal to the prior value
+&#8212;  the fit data are not sufficiently precise to add new information about
+these parameters.</p>
+</div>
+<div class="section" id="bayes-factors">
+<h2>Bayes Factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline">¶</a></h2>
+<p>We can test our priors for this fit by re-doing the fit with broader and
+narrower priors. Setting <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(3)'])</span></tt> gives an excellent
+fit,</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.039 [5]    Q = 1    logGBF = -5.0993
+
+Parameters:
+              0      0.490 (33)      [  0.0 (3.0) ]  
+              1       0.38 (48)      [  0.0 (3.0) ]  
+              2       0.6 (1.8)      [  0.0 (3.0) ]  
+              3       0.5 (2.4)      [  0.0 (3.0) ]  
+              ...
+</pre></div>
+</div>
+<p>but with a very small <tt class="docutils literal"><span class="pre">chi2/dof</span></tt> and somewhat larger errors on the best-fit
+estimates for the parameters. The logarithm of the (Gaussian) Bayes Factor,
+<tt class="docutils literal"><span class="pre">logGBF</span></tt>, can be used to compare fits with different priors. It is the
+logarithm of the probability that our data would come from parameters
+generated at random using the prior. The exponential of <tt class="docutils literal"><span class="pre">logGBF</span></tt> is
+more than 100 times larger with the original priors of <tt class="docutils literal"><span class="pre">0(1)</span></tt> than with
+priors of <tt class="docutils literal"><span class="pre">0(3)</span></tt>. This says that our data is more than 100 times more
+likely to come from a world with parameters of order one than from one with
+parameters of order three. Put another way it says that
+the size of the fluctuations in the data
+are more consistent with coefficients of order one than with coefficients of
+order three &#8212; in the latter case, there would have been larger
+fluctuations in the data than are actually seen.
+The <tt class="docutils literal"><span class="pre">logGBF</span></tt> values argue for the original prior.</p>
+<p>Narrower priors, <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0.0(3)'])</span></tt>, give a poor fit,
+and also a less optimal <tt class="docutils literal"><span class="pre">logGBF</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 3.7 [5]    Q = 0.0024    logGBF = -3.3058
+
+Parameters:
+              0    0.484 (11)     [  0.00 (30) ]  *
+              1    0.454 (98)     [  0.00 (30) ]  *
+              2     0.50 (23)     [  0.00 (30) ]  *
+              3     0.40 (25)     [  0.00 (30) ]  *
+              ...
+</pre></div>
+</div>
+<p>Setting <tt class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(20)'])</span></tt> gives a very wide prior and
+a rather strange looking fit:</p>
+<a class="reference internal image-reference" href="_images/appendix_4.png"><img alt="_images/appendix_4.png" src="_images/appendix_4.png" style="width: 80%;" /></a>
+<p>Here fit errors are comparable to the data errors at the data points, as you
+would expect, but balloon up in between. This is an example of
+<em>over fitting</em>: the data are not sufficiently accurate to fit the
+number of parameters used. Specifically the priors are too broad.
+Again the Bayes Factor signals the problem: <tt class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">-14.479</span></tt> here, which
+means that our data are roughly a million times (<tt class="docutils literal"><span class="pre">=exp(14)</span></tt>) more
+likely to to come from a world with coefficients of order one than
+from one with coefficients of order twenty. Over fitting becomes
+worse as the prior width is further increased &#8212; meaningful priors are
+necessary in order to fit this data with 91 parameters.</p>
+<p>The priors are responsible for about half of the final error in our best
+estimate of <tt class="docutils literal"><span class="pre">p[0]</span></tt> (with priors of <tt class="docutils literal"><span class="pre">0(1)</span></tt>); the rest comes from the
+uncertainty in the data. This can be  established by creating an error budget
+using the code</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">p0</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>which prints the following table:</p>
+<div class="highlight-python"><div class="highlight"><pre>Partial % Errors:
+                            p0
+------------------------------
+                  y:      2.67
+              prior:      2.23
+------------------------------
+              total:      3.48
+</pre></div>
+</div>
+<p>The table shows that the final 3.5% error comes from a 2.7% error due
+to uncertainties in <tt class="docutils literal"><span class="pre">y</span></tt> and a 2.2% error from uncertainties in the
+prior (added in quadrature).</p>
+<p>Bayes Factors are generally quite useful for testing priors and especially
+the widths of the priors. The width that maximizes <tt class="docutils literal"><span class="pre">logGBF</span></tt> is the
+one most consistent with the fluctuations in the data. Typically the
+priors one uses should be at least as wide; otherwise one must explain
+why the data are showing larger fluctuations than the priors suggest.</p>
+</div>
+<div class="section" id="another-solution-marginalization">
+<h2>Another Solution &#8212; Marginalization<a class="headerlink" href="#another-solution-marginalization" title="Permalink to this headline">¶</a></h2>
+<p>There is a second, equivalent way of fitting this data that illustrates the
+idea of <em>marginalization.</em> We really only care about parameter <tt class="docutils literal"><span class="pre">p[0]</span></tt> in
+our fit. This suggests that we remove <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms from the data <em>before</em>
+we do the fit:</p>
+<div class="highlight-python"><div class="highlight"><pre>ymod[i] = y[i] - sum_n=1...inf prior[n] * x[i] ** n
+</pre></div>
+</div>
+<p>Before the fit, our best estimate for the parameters is from the priors. We
+use these to create an estimate for the correction to each data point
+coming from <tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms in <tt class="docutils literal"><span class="pre">y(x)</span></tt>. This new data, <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
+should be fit with
+a new fitting function, <tt class="docutils literal"><span class="pre">ymod(x)</span> <span class="pre">=</span> <span class="pre">p[0]</span></tt> &#8212; that is, it should be fit
+to a constant, independent of <tt class="docutils literal"><span class="pre">x[i]</span></tt>. The last three lines of the code
+above are easily modified to implement this idea:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="c"># fit data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
+   <span class="s">&#39;0.5351(54)&#39;</span><span class="p">,</span> <span class="s">&#39;0.6762(67)&#39;</span><span class="p">,</span> <span class="s">&#39;0.9227(91)&#39;</span><span class="p">,</span> <span class="s">&#39;1.3803(131)&#39;</span><span class="p">,</span> <span class="s">&#39;4.0145(399)&#39;</span>
+   <span class="p">])</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">])</span>
+
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+   <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">pn</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">n</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+
+<span class="c"># prior for the fit</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">91</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
+
+<span class="c"># marginalize all but one parameter (p[0])</span>
+<span class="n">priormod</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>                       <span class="c"># restrict fit to p[0]</span>
+<span class="n">ymod</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">prior</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">priormod</span><span class="p">))</span>  <span class="c"># correct y</span>
+
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">priormod</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Running this code give:</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508
+
+Parameters:
+              0   0.489 (17)     [  0.0 (1.0) ]  
+
+Fit:
+     x[k]         y[k]     f(x[k],p)
+------------------------------------
+      0.1    0.54 (10)    0.489 (17)  
+      0.3    0.68 (31)    0.489 (17)  
+      0.5    0.92 (58)    0.489 (17)  
+      0.7    1.38 (98)    0.489 (17)  
+     0.95    4.0 (3.0)    0.489 (17)  *
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+</pre></div>
+</div>
+<p>Remarkably this one-parameter fit gives results for <tt class="docutils literal"><span class="pre">p[0]</span></tt>
+that are identical (to
+machine precision) to our 91-parameter fit above. The 90 parameters for
+<tt class="docutils literal"><span class="pre">n&gt;0</span></tt> are said to have been <em>marginalized</em> in this fit.
+Marginalizing a parameter
+in this way has no effect if the fit function is linear in that parameter.
+Marginalization has almost no effect for nonlinear fits as well,
+provided the fit data have small errors (in which case the parameters are
+effectively linear). The fit here is:</p>
+<a class="reference internal image-reference" href="_images/appendix_3.png"><img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" /></a>
+<p>The constant is consistent with all of the data in <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>,
+even at <tt class="docutils literal"><span class="pre">x[i]=0.95</span></tt>, because <tt class="docutils literal"><span class="pre">ymod[i]</span></tt> has much larger errors for
+larger <tt class="docutils literal"><span class="pre">x[i]</span></tt> because of the correction terms.</p>
+<p>Fitting to a constant is equivalent to doing a weighted average of the
+data plus the prior, so our fit can be replaced by an average:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lsqfit</span><span class="o">.</span><span class="n">wavg</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ymod</span><span class="p">)</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">priormod</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This again gives <tt class="docutils literal"><span class="pre">0.489(17)</span></tt> for our final result.
+Note that the central value for this average is below the central
+values for every data point in <tt class="docutils literal"><span class="pre">ymod[i]</span></tt>. This is a consequence of large
+positive correlations introduced into <tt class="docutils literal"><span class="pre">ymod</span></tt> when we remove the
+<tt class="docutils literal"><span class="pre">n&gt;0</span></tt> terms. These correlations are captured automatically in our code,
+and are essential &#8212; removing the correlations between different
+<tt class="docutils literal"><span class="pre">ymod</span></tt>s results in a final answer, <tt class="docutils literal"><span class="pre">0.564(97)</span></tt>, which has a much
+larger error.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Case Study: Simple Extrapolation</a><ul>
+<li><a class="reference internal" href="#the-problem">The Problem</a></li>
+<li><a class="reference internal" href="#a-bad-solution">A Bad Solution</a></li>
+<li><a class="reference internal" href="#a-better-solution-priors">A Better Solution &#8212; Priors</a></li>
+<li><a class="reference internal" href="#bayes-factors">Bayes Factors</a></li>
+<li><a class="reference internal" href="#another-solution-marginalization">Another Solution &#8212; Marginalization</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Overview and Tutorial</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="case-pendulum.html"
+                        title="next chapter">Case Study: Pendulum</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Overview and Tutorial"
+             >previous</a> |</li>
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2009-2014, G. P. Lepage.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

@@ -11,9 +11,11 @@ import collections
 # 1d.out - cut 4-end
 # 1e.out - cut 4-end
 
-MAKE_PLOTS = False
+MAKE_PLOTS = True # False
 N = 91
 STDOUT = sys.stdout
+OUTDIR = ''
+OUTDIR = 'tmp/'
 
 def main():
 	bad_analysis()
@@ -33,7 +35,7 @@ def make_data():
 	return x, y
 
 def bad_analysis():
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1a.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1a.out', 'w'))
 	x, y = make_data()
 	p0 = np.ones(5.)              # starting value for chi**2 minimization
 	fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
@@ -42,7 +44,7 @@ def bad_analysis():
 	return fit
 
 def good_analysis():
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1b.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1b.out', 'w'))
 	x, y = make_data()
 	prior = gv.gvar(N * ['0(1)'])   # prior for the fit
 	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
@@ -51,14 +53,14 @@ def good_analysis():
 	inputs = gv.BufferDict(prior=prior)
 	for xi, yi in zip(x, y):
 		inputs['y(%.2f)' % xi] = yi
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1g.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1g.out', 'w'))
 	inputs = dict(prior=prior, y=y)
 	outputs = dict(p0=fit.p[0])
 	print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
 	return fit
 
 def marginalized_analysis():
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1c.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1c.out', 'w'))
 	x, y = make_data()
 	prior = gv.gvar(91 * ['0(1)'])   # prior for the fit
 	ymod = y - (f(x, prior) - f(x, prior[:1]))
@@ -76,12 +78,18 @@ def marginalized_analysis():
 def prior_analysis():
 	x, y = make_data()
 	# loose prior
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1d.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1d.out', 'w'))
 	prior = gv.gvar(91 * ['0(3)'])   # prior for the fit
 	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 	print fit.format(maxline=True)
+	# really loose prior
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1h.out', 'w'))
+	prior = gv.gvar(91 * ['0(20)'])   # prior for the fit
+	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
+	print fit.format(maxline=True)
+	make_plot(x, y, fit, xmax=0.96)
 	# tight prior
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1e.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1e.out', 'w'))
 	prior = gv.gvar(91 * ['0.0(3)'])   # prior for the fit
 	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 	print fit.format(maxline=True)
@@ -91,18 +99,18 @@ def test_fit():
 	fit = good_analysis()
 	sp0 = []
 	q = []
-	sys.stdout = tee.tee(STDOUT, open('eg-appendix1f.out', 'w'))
+	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1f.out', 'w'))
 	for sfit in fit.simulated_fit_iter(20):
 		# print sfit.format(maxline=-1), sfit.p[0] - sfit.pexact[0]
 		sp0.append(sfit.pmean[0])
 		q.append(sfit.Q)
 	print(np.average(sp0), np.std(sp0), np.average(q))
 
-def make_plot(x, y, fit, ylabel='y(x)'):
+def make_plot(x, y, fit, ylabel='y(x)', xmax=1.0):
 	if not MAKE_PLOTS:
 		return
 	plt.errorbar(x, gv.mean(y), gv.sdev(y), fmt='bo')
-	x = np.arange(0., 1., 0.01)
+	x = np.arange(0., xmax, 0.01)
 	yfit = f(x, fit.p)
 	plt.plot(x, gv.mean(yfit), 'k--')
 	yplus = gv.mean(yfit) + gv.sdev(yfit)

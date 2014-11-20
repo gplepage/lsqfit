@@ -1,3 +1,5 @@
+""" Differential equation integrator for GVars. """
+
 # Created by G. Peter Lepage (Cornell University) on 2014-04-27.
 # Copyright (c) 2014 G. Peter Lepage. 
 #
@@ -165,15 +167,15 @@ class Integrator(object):
             return numpy.array(ans)
         if self.deriv is None or interval[1] == interval[0]:
             return y0
-        tol = abs(self.tol)
+        tol = numpy.fabs(self.tol)
         self.nbad = 0
         self.ngood = 0
         x0, x1 = interval
 
         h = self.h if (self.h is not None and self.h != 0) else (x1 - x0)
-        h = abs(h)
+        h = numpy.fabs(h)
         xdir = 1 if x1 > x0 else -1
-        hmin = 0.0 if self.hmin is None else abs(self.hmin)
+        hmin = 0.0 if self.hmin is None else numpy.fabs(self.hmin)
         x = x0
         y = numpy.asarray(y0)
         y_shape = y.shape
@@ -181,8 +183,8 @@ class Integrator(object):
             hold = h
             xold = x
             yold = y
-            if h > abs(x - x1):
-                h = abs(x - x1)
+            if h > numpy.fabs(x - x1):
+                h = numpy.fabs(x - x1)
             x, y, yerr = rk5_stepper(xold, h*xdir, yold, self.deriv, errors=True)
             if self.delta is not None:
                 delta = self.delta(yerr, y, y-yold)

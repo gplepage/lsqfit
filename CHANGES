@@ -1,3 +1,43 @@
+Version 6.0 - 2014-11-01
+========================
+
+This upgrade deals with some issues created by the most recent update  to
+numpy (v1.9.0). The verion number increases to 6 because a (very minor) part
+of the gvar.powerseries interface had to change (and therefore by the rules of
+semantic versioning one must  increase the major verion number). BufferDicts
+are also subtly changed, though in a way that shouldn't affect much code.
+A couple of enhancements are included as well.
+
+- gvar.BufferDicts are now derived from collections.OrderedDict. This is 
+  a consequence of the numpy change, but it is probably a good idea anyway.
+  The interface is the same but pickling has changed. This means that 
+  BufferDicts pickled with the old software cannot be unpickled with 
+  the new. A very minimal module, oldbufferdict.py, is included in lsqfit
+  for converting old pickled data to the new format; see documentation
+  inside the file. Data stored using json is unaffected.
+
+- The power series coefficents of gvar.powerseries.PowerSeries variable 
+  p are now accessed via attribute c: p.c[0], p.c[1] etc. Formerly one 
+  could access the coefficients using array notation --- p[0] for p.c[0],
+  etc --- but this no longer works with numpy. The old notation was a bad
+  idea in any case.
+
+- gvar.fmt_errorbudget has a new option called verify. Set verify=True 
+  to have the code check that the error budget is complete and has no
+  double counting of errors; a warning is issued if this is not the case.
+
+- Added arctan2 to the list of functions that work with GVars,
+  using code from Matt Wingate. (NB, the documentation shows how to 
+  create additional functions (eg, erf(x)) using gvar_function.)
+
+- Obscure bug fix in gvar.ode.Integrator allows GVars as the 
+  independent variables.
+
+- Rearranged documentation now includes case studies. These are self
+  contained examples that are extensively annotated (and relatively simple). 
+  There are only two at the moment but more are forthcoming.
+
+
 Version 5.0.1 - 2014-09-13
 ===========================
 This is a very minor bug fix.

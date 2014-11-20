@@ -557,7 +557,7 @@ def fmt_errorbudget(
     :param verify: If ``True``, a warning is issued if: 1) different inputs are 
         correlated (and therefore double count errors); or 
         2) the sum (in quadrature) of partial errors is not equal to the
-        total error to within 1% (and the error budget is incomplete or 
+        total error to within 0.1% of the error (and the error budget is incomplete or 
         overcomplete). No checking is done if ``verify==False`` (default).
     :type verify: boolean
     :returns: A table (``str``) containing the error budget. 
@@ -592,7 +592,7 @@ def fmt_errorbudget(
             totvar = 0.0
             for ki in inputs:
                 totvar += err[ko, ki] ** 2
-            if abs(totvar - outputs[ko].var) > 0.01 * outputs[ko].var:
+            if abs(totvar - outputs[ko].var) > 0.001 * outputs[ko].var:
                 warnings.warn("{} partial error {}  !=  total error {}".format(
                     ko, totvar ** 0.5, outputs[ko].sdev
                     ))

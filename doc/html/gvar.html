@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>gvar - Gaussian Random Variables &mdash; lsqfit 5.0.1 documentation</title>
+    <title>gvar - Gaussian Random Variables &mdash; lsqfit 6.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '5.0.1',
+        VERSION:     '6.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 5.0.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
     <link rel="next" title="gvar.dataset - Random Data Sets" href="gvar_dataset.html" />
-    <link rel="prev" title="Overview and Tutorial" href="overview.html" />
+    <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -48,9 +48,9 @@
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview and Tutorial"
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 5.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -267,8 +267,8 @@ denominator:</p>
 </div>
 <p>The <a class="reference internal" href="#module-gvar" title="gvar: Correlated Gaussian random variables."><tt class="xref py py-mod docutils literal"><span class="pre">gvar</span></tt></a> module defines versions of the standard Python mathematical
 functions that work with <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> arguments. These include:
-<tt class="docutils literal"><span class="pre">exp,</span> <span class="pre">log,</span> <span class="pre">sqrt,</span> <span class="pre">sin,</span> <span class="pre">cos,</span> <span class="pre">tan,</span> <span class="pre">arcsin,</span> <span class="pre">arccos,</span> <span class="pre">arctan,</span> <span class="pre">sinh,</span> <span class="pre">cosh,</span> <span class="pre">tanh,</span>
-<span class="pre">arcsinh,</span> <span class="pre">arccosh,</span> <span class="pre">arctanh</span></tt>. Numeric functions defined
+<tt class="docutils literal"><span class="pre">exp,</span> <span class="pre">log,</span> <span class="pre">sqrt,</span> <span class="pre">sin,</span> <span class="pre">cos,</span> <span class="pre">tan,</span> <span class="pre">arcsin,</span> <span class="pre">arccos,</span> <span class="pre">arctan,</span> <span class="pre">arctan2,</span> <span class="pre">sinh,</span> <span class="pre">cosh,</span>
+<span class="pre">tanh,</span> <span class="pre">arcsinh,</span> <span class="pre">arccosh,</span> <span class="pre">arctanh</span></tt>. Numeric functions defined
 entirely in Python (<em>i.e.</em>, pure-Python functions)
 will likely also work with <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s.</p>
 <p>Numeric functions implemented by modules using low-level languages like C
@@ -1058,7 +1058,7 @@ and for analyzing where the errors in a <a class="reference internal" href="#gva
 other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s come from:</p>
 <dl class="function">
 <dt id="gvar.fmt_errorbudget">
-<tt class="descclassname">gvar.</tt><tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em>, <em>colwidth=10</em><big>)</big><a class="headerlink" href="#gvar.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">gvar.</tt><tt class="descname">fmt_errorbudget</tt><big>(</big><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em>, <em>verify=False</em>, <em>colwidth=10</em><big>)</big><a class="headerlink" href="#gvar.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tabulate error budget for <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt> due to <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt>.</p>
 <p>For each output <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>, <tt class="docutils literal"><span class="pre">fmt_errorbudget</span></tt> computes the
 contributions to <tt class="docutils literal"><span class="pre">outputs[ko]</span></tt>&#8216;s standard deviation coming from the
@@ -1067,7 +1067,7 @@ combination <tt class="docutils literal"><span class="pre">(ko,ki)</span></tt> a
 rows labeled by <tt class="docutils literal"><span class="pre">ko</span></tt> and <tt class="docutils literal"><span class="pre">ki</span></tt>, respectively. If a <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> in
 <tt class="docutils literal"><span class="pre">inputs[ki]</span></tt> is correlated with other <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, the contribution from
 the others is included in the <tt class="docutils literal"><span class="pre">ki</span></tt> contribution as well (since
-contributions from correlated <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be resolved). The table
+contributions from correlated <a class="reference internal" href="#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s cannot be distinguished). The table
 is returned as a string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1084,6 +1084,11 @@ deviations of each <tt class="docutils literal"><span class="pre">outputs[ko]</s
 <li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <tt class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></tt>; otherwise
 tabulate the errors themselves.</li>
 <li><strong>colwidth</strong> (<em>positive integer</em>) &#8211; Width of each column.</li>
+<li><strong>verify</strong> (<em>boolean</em>) &#8211; If <tt class="docutils literal"><span class="pre">True</span></tt>, a warning is issued if: 1) different inputs are 
+correlated (and therefore double count errors); or 
+2) the sum (in quadrature) of partial errors is not equal to the
+total error to within 0.1% of the error (and the error budget is incomplete or 
+overcomplete). No checking is done if <tt class="docutils literal"><span class="pre">verify==False</span></tt> (default).</li>
 </ul>
 </td>
 </tr>
@@ -1514,12 +1519,12 @@ scalars) that supports Python pickling:</p>
 <dl class="class">
 <dt id="gvar.BufferDict">
 <em class="property">class </em><tt class="descclassname">gvar.</tt><tt class="descname">BufferDict</tt><a class="headerlink" href="#gvar.BufferDict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dictionary whose data is packed into a 1-d buffer (numpy.array).</p>
-<p>A <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> object is a dictionary-like object whose values must
+<dd><p>Ordered dictionary whose data are packed into a 1-d buffer (numpy.array).</p>
+<p>A <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> object is an ordered dictionary whose values must
 either be scalars or arrays (like <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> arrays, with arbitrary
 shapes). The scalars and arrays are assembled into different parts of a
 single one-dimensional buffer. The various scalars and arrays are
-retrieved using keys, as in a dictionary: <em>e.g.</em>,</p>
+retrieved using keys: <em>e.g.</em>,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">BufferDict</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;scalar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">[</span><span class="s">&#39;vector&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span><span class="mf">2.</span><span class="p">]</span>
@@ -1547,12 +1552,12 @@ retrieved using keys, as in a dictionary: <em>e.g.</em>,</p>
 </pre></div>
 </div>
 <p>where in the second case the order of the keys is preserved in <tt class="docutils literal"><span class="pre">a</span></tt>
-(that is, <tt class="docutils literal"><span class="pre">BufferDict</span></tt> is an ordered dictionary).</p>
+(since <tt class="docutils literal"><span class="pre">BufferDict</span></tt> is an ordered dictionary).</p>
 <p>The keys and associated shapes in a <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a> can be transferred to a
 different buffer, creating a new <a class="reference internal" href="#gvar.BufferDict" title="gvar.BufferDict"><tt class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></tt></a>: <em>e.g.</em>, using <tt class="docutils literal"><span class="pre">a</span></tt> from
 above,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">buf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">10.</span><span class="p">,</span><span class="mf">20.</span><span class="p">,</span><span class="mf">30.</span><span class="p">,</span><span class="mf">40.</span><span class="p">,</span><span class="mf">50.</span><span class="p">,</span><span class="mf">60.</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">buf</span><span class="o">=</span><span class="n">buf</span><span class="p">)</span>       <span class="c"># clone a but with new buffer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">buf</span><span class="o">=</span><span class="n">buf</span><span class="p">)</span>          <span class="c"># clone a but with new buffer</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="s">&#39;tensor&#39;</span><span class="p">])</span>
 <span class="go">[[ 30.  40.]</span>
 <span class="go"> [ 50.  60.]]</span>
@@ -1868,8 +1873,8 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="overview.html"
-                        title="previous chapter">Overview and Tutorial</a></p>
+  <p class="topless"><a href="case-pendulum.html"
+                        title="previous chapter">Case Study: Pendulum</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gvar_dataset.html"
                         title="next chapter"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a></p>
@@ -1903,14 +1908,14 @@ also uses the <tt class="xref py py-mod docutils literal"><span class="pre">nump
           <a href="gvar_dataset.html" title="gvar.dataset - Random Data Sets"
              >next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview and Tutorial"
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 5.0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2009-2014, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>
