@@ -3,7 +3,7 @@ build in place: python setup.py build_ext --inplace
 install in ddd: python setup.py install --install-lib ddd
 
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-14 G. Peter Lepage.
+Copyright (c) 2011-15 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,15 +34,10 @@ except ImportError:
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '6.0'
+LSQFIT_VERSION = '6.1'
 
 # create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
-    version_file.write(
-        "# File created by lsqfit setup.py\nversion = '%s'\n" 
-        % LSQFIT_VERSION
-        )
-with open("src/gvar/_version.py","w") as version_file:
     version_file.write(
         "# File created by lsqfit setup.py\nversion = '%s'\n" 
         % LSQFIT_VERSION
@@ -61,19 +56,14 @@ ext_args = dict(
     extra_link_args=[] # ['-framework','vecLib'], # for Mac OSX ?
     )
 
-ext_modules = [     #
-    Extension("gvar._gvarcore", ["src/gvar/_gvarcore.pyx"], **ext_args),
-    Extension( "gvar._svec_smat", ["src/gvar/_svec_smat.pyx"], **ext_args),
-    Extension("gvar._utilities", ["src/gvar/_utilities.pyx"], **ext_args),
-    Extension("gvar.dataset", ["src/gvar/dataset.pyx"], **ext_args),
-    Extension("gvar._bufferdict", ["src/gvar/_bufferdict.pyx"], **ext_args),
+ext_modules = [
     Extension("lsqfit._utilities", ["src/lsqfit/_utilities.pyx"],  **ext_args),
     ]
 
 # packages
-packages = ["gvar", "lsqfit"]
-package_dir = {"lsqfit":"src/lsqfit", "gvar":"src/gvar"}
-package_data = {"gvar":['../gvar.pxd']}
+packages = ["lsqfit"]
+package_dir = {"lsqfit":"src/lsqfit"}
+package_data = {}
 
 setup(name='lsqfit',
     version=LSQFIT_VERSION,
@@ -88,21 +78,20 @@ setup(name='lsqfit',
     license='GPLv3+',
     platforms='Any',
     long_description="""\
-    These packages facilitate least-squares fitting of noisy data by
+    This package facilitate least-squares fitting of noisy data by
     multi-dimensional, nonlinear functions of arbitrarily many
-    parameters. The central package is :mod:`lsqfit` which provides
-    the fitting capability. :mod:`lsqfit` makes heavy use of package
-    :mod:`gvar`, which provides tools for the analysis of error
-    propagation, and also for the creation of complicated
-    multi-dimensional gaussian distributions. :mod:`lsqfit` supports
-    Bayesian priors for the fit parameters, with arbitrarily
-    complicated multidimensional gaussian distributions. It uses
+    parameters. :mod:`lsqfit` provides the fitting capability;
+    it makes heavy use of package :mod:`gvar`, which provides tools for 
+    the analysis of error propagation, and also for the creation of 
+    complicated multi-dimensional gaussian distributions. 
+    :mod:`lsqfit` supports Bayesian priors for the fit parameters, with 
+    arbitrarily complicated multidimensional Gaussian distributions. It uses
     automatic differentiation to compute gradients, greatly simplifying
     the design of fit functions.
 
-    These packages use the Gnu Scientific Library (GSL) to do the
-    fitting, numpy for efficient array arithmetic, and cython to
-    compile efficient core routines and interface code.
+    In addition to :mod:`gvar`, this package uses the Gnu Scientific 
+    Library (GSL) to do the fitting, numpy for efficient array arithmetic, 
+    and cython to compile efficient core routines and interface code.
     """ 
     ,
     classifiers = [                     #
