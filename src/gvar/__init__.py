@@ -24,6 +24,8 @@ variables including:
     - ``var(g)`` --- extract variances.
 
     - ``chi2(g1, g2)`` --- ``chi**2`` of ``g1-g2``.
+
+    - ``equivalent(g1, g2)`` --- |GVar|\s the same in ``g1`` and ``g2``?
     
     - ``evalcov(g)`` --- compute covariance matrix.
 
@@ -62,11 +64,16 @@ variables including:
 There are also sub-modules that implement some standard numerical analysis 
 tools for use with |GVar|\s (or ``float``\s):
 
-    - ``cspline`` --- cubic splines for 1-d data
+    - ``cspline`` --- cubic splines for 1-d data.
 
-    - ``ode`` --- integration of systems of ordinary differential equations
+    - ``ode`` --- integration of systems of ordinary differential equations;
+        one dimensional integrals.
 
-    - ``powerseries`` --- power series representation of functions
+    - ``linalg`` --- basic linear algebra.
+
+    - ``powerseries`` --- power series representation of functions.
+
+    - ``root`` --- root-finding for one-dimensional functions.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
@@ -96,7 +103,9 @@ from ._version import version as __version__
 from . import dataset
 from . import ode 
 from . import cspline
+from . import linalg
 from . import powerseries
+from . import root
 
 try:
     # use lsqfit's gammaQ if available; otherwise use one in ._utilities
@@ -279,6 +288,107 @@ def chi2(g1, g2=None, svdcut=1e-15, nocorr=False, fmt=False):
     chi2.Q = gammaQ(chi2.dof/2., ans/2.)
     chi2.chi2 = ans
     return ans if fmt == False else fmt_chi2(chi2)
+
+def equivalent(g1, g2, rtol=1e-10, atol=1e-10):
+    """ Determine whether ``g1`` and ``g2`` contain equivalent |GVar|\s.
+
+    This compares summs and differences of |GVar|\s stored in ``g1`` 
+    and ``g2`` to see if they agree with tolerances. Operationally, 
+    agreement means that::
+
+        abs(diff) < abs(summ) / 2 * rtol + atol
+
+    where ``diff`` and ``summ` are the difference and sum of the 
+    mean values (``g.mean``) or derivatives (``g.der``) associated with 
+    each pair of |GVar|\s. 
+
+    |GVar|\s that are equivalent are effectively interchangeable both
+    respect to their means and also with respect to their covariances with 
+    any other |GVar| (including ones not in ``g1`` and ``g2``).
+
+    ``g1`` and ``g2`` can be individual |GVar|\s or arrays of |GVar|\s 
+    or dictionaries whose values are |GVar|\s and/or arrays of |GVar|\s.
+    Comparisons are made only for shared keys when they are dictionaries.
+    Array dimensions must match between ``g1`` and ``g2``, but the shapes
+    can be different; comparisons are made for the parts of the arrays that 
+    overlap in shape.
+
+    :param g1: A |GVar| or an array of |GVar|\s or a dictionary of 
+        |GVar|\s and/or arrays of |GVar|\s.
+    :param g2: A |GVar| or an array of |GVar|\s or a dictionary of 
+        |GVar|\s and/or arrays of |GVar|\s.
+    :param rtol: Relative tolerance with which mean values and derivatives
+        must agree with each other. Default is ``1e-10``.
+    :param atol: Absolute tolerance within which mean values and derivatives
+        must agree with each other. Default is ``1e-10``.
+    """
+    atol = abs(atol)
+    rtol = abs(rtol)
+    if hasattr(g1, 'keys') and hasattr(g2, 'keys'):
+        # g1 and g2 are dictionaries
+        g1 = BufferDict(g1)
+        g2 = BufferDict(g2)
+        diff = BufferDict()
+        summ = BufferDict()
+        keys = set(g1.keys())
+        keys = keys.intersection(g2.keys())
+        for k in keys:
+            g1k = g1[k]
+            g2k = g2[k]
+            shape = tuple(
+                [min(s1,s2) for s1, s2 in zip(numpy.shape(g1k), numpy.shape(g2k))]
+                )
+            diff[k] = numpy.zeros(shape, object)
+            summ[k] = numpy.zeros(shape, object)
+            if len(shape) == 0:
+                diff[k] = g1k - g2k
+                summ[k] = g1k + g2k
+            else:
+                for i in numpy.ndindex(shape):
+                    diff[k][i] = g1k[i] - g2k[i]
+                    summ[k][i] = g1k[i] + g2k[i]
+        diff = diff.buf
+        summ = summ.buf
+    elif not hasattr(g1, 'keys') and not hasattr(g2, 'keys'):
+        # g1 and g2 are arrays or scalars
+        g1 = numpy.asarray(g1)
+        g2 = numpy.asarray(g2)
+        shape = tuple(
+            [min(s1,s2) for s1, s2 in zip(numpy.shape(g1), numpy.shape(g2))]
+            )
+        diff = numpy.zeros(shape, object)
+        summ = numpy.zeros(shape, object)
+        if len(shape) == 0:
+            diff = numpy.array(g1 - g2)
+            summ = numpy.array(g1 + g2)
+        else:
+            for i in numpy.ndindex(shape):
+                diff[i] = g1[i] - g2[i]
+                summ[i] = g1[i] + g2[i]
+        diff = diff.flatten()
+        summ = summ.flatten()
+    else:
+        # g1 and g2 are something else
+        raise ValueError(
+            'cannot compare types ' + str(type(g1)) + ' ' +
+            str(type(g2))
+            )
+    if diff.size == 0:
+        return True
+
+    avgg = summ / 2.
+    # check means
+    dmean = mean(diff)
+    amean = mean(avgg)
+    if not numpy.all(numpy.abs(dmean) < (numpy.abs(amean) * rtol + atol)):
+        return False
+
+    # check derivatives
+    for ai, di in zip(avgg, diff):
+        if not numpy.all(numpy.abs(di.der) < (numpy.abs(ai.der) * rtol + atol)):
+            return False
+    return True
+
 
 def fmt_chi2(f):
     """ Return string containing ``chi**2/dof``, ``dof`` and ``Q`` from ``f``.

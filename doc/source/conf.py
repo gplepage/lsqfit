@@ -26,7 +26,7 @@ import lsqfit
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.jsmath']
 # jsmath_path = '/usr/local/share/jsmath/easy/load.js'
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
-extensions = ['sphinx.ext.autodoc','sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
+extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
 pngmath_use_preview = True
 
 # Add any paths that contain templates here, relative to this directory.

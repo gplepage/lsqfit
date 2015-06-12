@@ -365,6 +365,71 @@ class DictIntegrator(Integrator):
         ans = super(DictIntegrator, self).__call__(y0.buf, interval)
         self.deriv = deriv_orig
         return gvar.BufferDict(y0, buf=ans)
+
+def integral(fcn, interval, fcnshape=None, tol=1e-8):
+    """ Compute integral of ``fcn(x)`` on interval.
+
+    Given a function ``fcn(x)`` the call ::
+
+        result = integral(fcn, interval=(x0, x1))
+
+    calculates the integral of ``fcn(x)`` from ``x0`` to ``x1``. 
+    For example::
+
+        >>> def fcn(x):
+        ...    return math.sin(x) ** 2 / math.pi
+        >>> result = integral(fcn, (0, math.pi))
+        >>> print(result)
+        0.500000002834
+
+    Function ``fcn(x)`` can return a scalar or an array (any shape): 
+    for example, ::
+
+        >>> def fcn(x):
+        ...    return np.array([1., x, x**3])
+
+        >>> result = integral(fcn, (0,1))
+        >>> print(result)
+        [1. 0.5 0.25]
+
+    The function can also return dictionaries whose values are
+    scalars or arrays: for example, ::
+
+        >>> def fcn(x):
+        ...    return dict(x=x, x3=x**3)
+        >>> result = integral(fcn, (0,1))
+        >>> print(result)
+        {'x': 0.5,'x3': 0.25}
+
+    :param fcn: Function of scalar variable ``x`` that returns the integrand. 
+        The return value should be either a scalar or an array, or a
+        dictionary whose values are scalars and/or arrays.
+    :param interval: Contains the interval ``(x0,x1)`` over which the integral
+        is computed.
+    :param fcnshape: Contains the shape of the array returned by ``f(x)`` or
+        ``()`` if the function returns a scalar. Setting ``fshape=None`` 
+        (the default) results in an extra function evaluation to determine 
+        the shape.
+    :param tol: Relative accuracy of result.
+    """
+    if fcnshape is None:
+        fx0 = fcn(interval[0])
+        if hasattr(fx0, 'keys'):
+            fx0 = gvar.BufferDict(fx0)
+            fcnshape = None
+        else:
+            fcnshape = numpy.shape(fx0)
+    if fcnshape is None:
+        def deriv(x, y, fcn=fcn):
+            return gvar.BufferDict(fcn(x)).buf 
+        y0 = fx0.buf * 0.0
+    else:
+        def deriv(x, y, fcn=fcn):
+            return fcn(x)
+        y0 = 0.0 if fcnshape == () else numpy.zeros(fcnshape, float)
+    odeint = Integrator(deriv=deriv, tol=tol)
+    ans = odeint(y0, interval=interval)
+    return ans if fcnshape is not None else gvar.BufferDict(fx0, buf=ans)
         
 class Solution:
     """ ODE analyzer for storing intermediate values.

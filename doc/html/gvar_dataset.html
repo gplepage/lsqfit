@@ -33,9 +33,9 @@
 <![endif]-->
 
   </head>
-  <body>
+  <body role="document">
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -50,20 +50,20 @@
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="gvar-dataset-random-data-sets">
-<h1><a class="reference internal" href="#module-gvar.dataset" title="gvar.dataset: Tools for analyzing collections of random samples."><tt class="xref py py-mod docutils literal"><span class="pre">gvar.dataset</span></tt></a> - Random Data Sets<a class="headerlink" href="#gvar-dataset-random-data-sets" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="#module-gvar.dataset" title="gvar.dataset: Tools for analyzing collections of random samples."><code class="xref py py-mod docutils literal"><span class="pre">gvar.dataset</span></code></a> - Random Data Sets<a class="headerlink" href="#gvar-dataset-random-data-sets" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-gvar.dataset"></span><div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-gvar.dataset" title="gvar.dataset: Tools for analyzing collections of random samples."><tt class="xref py py-mod docutils literal"><span class="pre">gvar.dataset</span></tt></a> contains a several tools for collecting and analyzing
+<p><a class="reference internal" href="#module-gvar.dataset" title="gvar.dataset: Tools for analyzing collections of random samples."><code class="xref py py-mod docutils literal"><span class="pre">gvar.dataset</span></code></a> contains a several tools for collecting and analyzing
 random samples from arbitrary distributions. The random samples are
 represented by lists of numbers or arrays, where each number/array is a new
 sample from the underlying distribution. For example, six samples from a
@@ -82,33 +82,33 @@ by dictionaries whose values are lists of numbers or arrays: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">random_numbers</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">random_arrays</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where list elements <tt class="docutils literal"><span class="pre">random_dict['n'][i]</span></tt> and <tt class="docutils literal"><span class="pre">random_dict['a'][i]</span></tt> are
-part of the same multidimensional sample for every <tt class="docutils literal"><span class="pre">i</span></tt> &#8212; that is, the
+<p>where list elements <code class="docutils literal"><span class="pre">random_dict['n'][i]</span></code> and <code class="docutils literal"><span class="pre">random_dict['a'][i]</span></code> are
+part of the same multidimensional sample for every <code class="docutils literal"><span class="pre">i</span></code> &#8212; that is, the
 lists for different keys in the dictionary are synchronized one with the
 other.</p>
 <p>With large samples, we typically want to estimate the mean value of the
-underlying distribution. This is done using <a class="reference internal" href="#gvar.dataset.avg_data" title="gvar.dataset.avg_data"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></tt></a>:
+underlying distribution. This is done using <a class="reference internal" href="#gvar.dataset.avg_data" title="gvar.dataset.avg_data"><code class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></code></a>:
 for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">))</span>
 <span class="go">1.31(45)</span>
 </pre></div>
 </div>
-<p>indicates that <tt class="docutils literal"><span class="pre">1.31(45)</span></tt> is our best guess, based only upon the samples in
-<tt class="docutils literal"><span class="pre">random_numbers</span></tt>, for the mean of the distribution from which those samples
+<p>indicates that <code class="docutils literal"><span class="pre">1.31(45)</span></code> is our best guess, based only upon the samples in
+<code class="docutils literal"><span class="pre">random_numbers</span></code>, for the mean of the distribution from which those samples
 were drawn. Similarly</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_arrays</span><span class="p">))</span>
 <span class="go">[0.95(22) 1.67(25)]</span>
 </pre></div>
 </div>
 <p>indicates that the means for the two-dimensional distribution behind
-<tt class="docutils literal"><span class="pre">random_arrays</span></tt> are <tt class="docutils literal"><span class="pre">[0.95(22),</span> <span class="pre">1.67(25)]</span></tt>. <a class="reference internal" href="#gvar.dataset.avg_data" title="gvar.dataset.avg_data"><tt class="xref py py-func docutils literal"><span class="pre">avg_data()</span></tt></a> can also
+<code class="docutils literal"><span class="pre">random_arrays</span></code> are <code class="docutils literal"><span class="pre">[0.95(22),</span> <span class="pre">1.67(25)]</span></code>. <a class="reference internal" href="#gvar.dataset.avg_data" title="gvar.dataset.avg_data"><code class="xref py py-func docutils literal"><span class="pre">avg_data()</span></code></a> can also
 be applied to a dictionary whose values are lists of numbers/arrays: for
 example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_dict</span><span class="p">))</span>
 <span class="go">{&#39;a&#39;: array([0.95(22), 1.67(25)], dtype=object),&#39;n&#39;: 1.31(45)}</span>
 </pre></div>
 </div>
-<p>Class <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></tt></a> can be used to assemble dictionaries containing
+<p>Class <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></code></a> can be used to assemble dictionaries containing
 random samples. For example, imagine that the random samples above were
 originally written into a file, as they were generated:</p>
 <div class="highlight-python"><div class="highlight"><pre># file: datafile
@@ -127,9 +127,9 @@ a [ 1.242, 2.188]
 </pre></div>
 </div>
 <p>Here each line is a different random sample, either from the one-dimensional
-distribution (labeled <tt class="docutils literal"><span class="pre">n</span></tt>) or from the two-dimensional distribution (labeled
-<tt class="docutils literal"><span class="pre">a</span></tt>). Assuming the file is called <tt class="docutils literal"><span class="pre">datafile</span></tt>, this data can be read into
-a dictionary, essentially identical to the <tt class="docutils literal"><span class="pre">data</span></tt> dictionary above, using:</p>
+distribution (labeled <code class="docutils literal"><span class="pre">n</span></code>) or from the two-dimensional distribution (labeled
+<code class="docutils literal"><span class="pre">a</span></code>). Assuming the file is called <code class="docutils literal"><span class="pre">datafile</span></code>, this data can be read into
+a dictionary, essentially identical to the <code class="docutils literal"><span class="pre">data</span></code> dictionary above, using:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&quot;datafile&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">])</span>
 <span class="go">[array([ 0.494, 2.734]), array([ 0.172, 1.400]), array([ 1.571, 1.304]) ... ]</span>
@@ -138,7 +138,7 @@ a dictionary, essentially identical to the <tt class="docutils literal"><span cl
 </pre></div>
 </div>
 <p>The brackets and commas can be omitted in the input file for one-dimensional
-arrays: for example, <tt class="docutils literal"><span class="pre">datafile</span></tt> (above) could equivalently be written</p>
+arrays: for example, <code class="docutils literal"><span class="pre">datafile</span></code> (above) could equivalently be written</p>
 <div class="highlight-python"><div class="highlight"><pre># file: datafile
 n 1.739
 a 0.494 2.734
@@ -148,7 +148,7 @@ a 0.172 1.400
 </pre></div>
 </div>
 <p>Other data formats may also be easy to use. For example, a data file written
-using <tt class="docutils literal"><span class="pre">yaml</span></tt> would look like</p>
+using <code class="docutils literal"><span class="pre">yaml</span></code> would look like</p>
 <div class="highlight-python"><div class="highlight"><pre># file: datafile
 ---
 n: 1.739
@@ -161,7 +161,7 @@ a: [ 0.172, 1.400]
 .
 </pre></div>
 </div>
-<p>and could be read into a <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></tt></a> using:</p>
+<p>and could be read into a <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></code></a> using:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">yaml</span>
 
 <span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
@@ -170,15 +170,15 @@ a: [ 0.172, 1.400]
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>                      <span class="c"># d is a dictionary</span>
 </pre></div>
 </div>
-<p>Finally note that data can be binned, into bins of size <tt class="docutils literal"><span class="pre">binsize</span></tt>, using
-<a class="reference internal" href="#gvar.dataset.bin_data" title="gvar.dataset.bin_data"><tt class="xref py py-func docutils literal"><span class="pre">gvar.dataset.bin_data()</span></tt></a>. For example,
-<tt class="docutils literal"><span class="pre">gvar.dataset.bin_data(data,</span> <span class="pre">binsize=3)</span></tt> replaces every three samples in
-<tt class="docutils literal"><span class="pre">data</span></tt> by the average of those samples. This creates a dataset that is
-<tt class="docutils literal"><span class="pre">1/3</span></tt> the size of the original but has the same mean. Binning is useful
+<p>Finally note that data can be binned, into bins of size <code class="docutils literal"><span class="pre">binsize</span></code>, using
+<a class="reference internal" href="#gvar.dataset.bin_data" title="gvar.dataset.bin_data"><code class="xref py py-func docutils literal"><span class="pre">gvar.dataset.bin_data()</span></code></a>. For example,
+<code class="docutils literal"><span class="pre">gvar.dataset.bin_data(data,</span> <span class="pre">binsize=3)</span></code> replaces every three samples in
+<code class="docutils literal"><span class="pre">data</span></code> by the average of those samples. This creates a dataset that is
+<code class="docutils literal"><span class="pre">1/3</span></code> the size of the original but has the same mean. Binning is useful
 for making large datasets more manageable, and also for removing
 sample-to-sample correlations. Over-binning, however, erases statistical
 information.</p>
-<p>Class <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></tt></a> can also be used to build a dataset sample by
+<p>Class <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></code></a> can also be used to build a dataset sample by
 sample in code: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mf">1.739</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="p">[</span> <span class="mf">0.494</span><span class="p">,</span> <span class="mf">2.734</span><span class="p">])</span>
@@ -193,9 +193,9 @@ sample in code: for example,</p>
 <p>The functions defined in the module are:</p>
 <dl class="function">
 <dt id="gvar.dataset.avg_data">
-<tt class="descclassname">gvar.dataset.</tt><tt class="descname">avg_data</tt><big>(</big><em>data</em>, <em>spread=False</em>, <em>median=False</em>, <em>bstrap=False</em>, <em>noerror=False</em>, <em>warn=True</em><big>)</big><a class="headerlink" href="#gvar.dataset.avg_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gvar.dataset.</code><code class="descname">avg_data</code><span class="sig-paren">(</span><em>data</em>, <em>spread=False</em>, <em>median=False</em>, <em>bstrap=False</em>, <em>noerror=False</em>, <em>warn=True</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.avg_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Average random data to estimate mean.</p>
-<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers, a list of random arrays, or a dictionary
+<p><code class="docutils literal"><span class="pre">data</span></code> is a list of random numbers, a list of random arrays, or a dictionary
 of lists of random numbers and/or arrays: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">random_numbers</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.60</span><span class="p">,</span> <span class="mf">0.99</span><span class="p">,</span> <span class="mf">1.28</span><span class="p">,</span> <span class="mf">1.30</span><span class="p">,</span> <span class="mf">0.54</span><span class="p">,</span> <span class="mf">2.15</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">random_arrays</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">12.2</span><span class="p">,</span><span class="mf">121.3</span><span class="p">],[</span><span class="mf">13.4</span><span class="p">,</span><span class="mf">149.2</span><span class="p">],[</span><span class="mf">11.7</span><span class="p">,</span><span class="mf">135.3</span><span class="p">],</span>
@@ -203,11 +203,11 @@ of lists of random numbers and/or arrays: for example,</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">random_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">random_numbers</span><span class="p">,</span><span class="n">a</span><span class="o">=</span><span class="n">random_arrays</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>where in each case there are six random numbers/arrays. <tt class="docutils literal"><span class="pre">avg_data</span></tt>
+<p>where in each case there are six random numbers/arrays. <code class="docutils literal"><span class="pre">avg_data</span></code>
 estimates the means of the distributions from which the random
 numbers/arrays are drawn, together with the uncertainties in those
-estimates. The results are returned as a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a> or an array of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s, or a dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s and/or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s:</p>
+estimates. The results are returned as a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> or an array of
+<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, or a dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s and/or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">))</span>
 <span class="go">1.31(20)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_arrays</span><span class="p">))</span>
@@ -216,19 +216,19 @@ estimates. The results are returned as a <a class="reference internal" href="gva
 <span class="go">{&#39;a&#39;: array([11.3(1.1), 108(13)], dtype=object),&#39;n&#39;: 1.31(20)}</span>
 </pre></div>
 </div>
-<p>The arrays in <tt class="docutils literal"><span class="pre">random_arrays</span></tt> are one dimensional; in general, they
+<p>The arrays in <code class="docutils literal"><span class="pre">random_arrays</span></code> are one dimensional; in general, they
 can have any shape.</p>
-<p><tt class="docutils literal"><span class="pre">avg_data(data)</span></tt> also estimates any correlations between different 
-quantities in <tt class="docutils literal"><span class="pre">data</span></tt>. When <tt class="docutils literal"><span class="pre">data</span></tt> is a dictionary, it does this by 
-assuming that the lists of random numbers/arrays for the different 
-<tt class="docutils literal"><span class="pre">data[k]</span></tt>s are synchronized, with the first element in one list 
+<p><code class="docutils literal"><span class="pre">avg_data(data)</span></code> also estimates any correlations between different
+quantities in <code class="docutils literal"><span class="pre">data</span></code>. When <code class="docutils literal"><span class="pre">data</span></code> is a dictionary, it does this by
+assuming that the lists of random numbers/arrays for the different
+<code class="docutils literal"><span class="pre">data[k]</span></code>s are synchronized, with the first element in one list
 corresponding to the first elements in all other lists, and so on. If
-some lists are shorter than others, the longer lists are truncated to 
+some lists are shorter than others, the longer lists are truncated to
 the same length as the shortest list (discarding data samples).</p>
-<p>There are four optional arguments. If argument <tt class="docutils literal"><span class="pre">spread=True</span></tt> each
+<p>There are four optional arguments. If argument <code class="docutils literal"><span class="pre">spread=True</span></code> each
 standard deviation in the results refers to the spread in the data, not
-the uncertainty in the estimate of the mean. The former is <tt class="docutils literal"><span class="pre">sqrt(N)</span></tt>
-larger where <tt class="docutils literal"><span class="pre">N</span></tt> is the number of random numbers (or arrays) being
+the uncertainty in the estimate of the mean. The former is <code class="docutils literal"><span class="pre">sqrt(N)</span></code>
+larger where <code class="docutils literal"><span class="pre">N</span></code> is the number of random numbers (or arrays) being
 averaged:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">avg_data</span><span class="p">(</span><span class="n">random_numbers</span><span class="p">,</span><span class="n">spread</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
 <span class="go">1.31(50)</span>
@@ -239,35 +239,35 @@ averaged:</p>
 </pre></div>
 </div>
 <p>This is useful, for example, when averaging bootstrap data. The default
-value is <tt class="docutils literal"><span class="pre">spread=False</span></tt>.</p>
-<p>The second option is triggered by setting <tt class="docutils literal"><span class="pre">median=True</span></tt>. This
+value is <code class="docutils literal"><span class="pre">spread=False</span></code>.</p>
+<p>The second option is triggered by setting <code class="docutils literal"><span class="pre">median=True</span></code>. This
 replaces the means in the results by medians, while the standard
 deviations are approximated by the half-width of the interval, centered
 around the median, that contains 68% of the data. These estimates are
 more robust than the mean and standard deviation when averaging over
 small amounts of data; in particular, they are unaffected by extreme
-outliers in the data. The default is <tt class="docutils literal"><span class="pre">median=False</span></tt>.</p>
-<p>The third option is triggered by setting <tt class="docutils literal"><span class="pre">bstrap=True</span></tt>. This is
-shorthand for setting <tt class="docutils literal"><span class="pre">median=True</span></tt> and <tt class="docutils literal"><span class="pre">spread=True</span></tt>, and
+outliers in the data. The default is <code class="docutils literal"><span class="pre">median=False</span></code>.</p>
+<p>The third option is triggered by setting <code class="docutils literal"><span class="pre">bstrap=True</span></code>. This is
+shorthand for setting <code class="docutils literal"><span class="pre">median=True</span></code> and <code class="docutils literal"><span class="pre">spread=True</span></code>, and
 overrides any explicit setting for these keyword arguments. This is the
 typical choice for analyzing bootstrap data &#8212; hence its name. The
-default value is <tt class="docutils literal"><span class="pre">bstrap=False</span></tt>.</p>
-<p>The fourth option is to omit the error estimates on the averages, which 
-is triggered by setting <tt class="docutils literal"><span class="pre">noerror=True</span></tt>. Just the mean values are 
-returned. The default value is <tt class="docutils literal"><span class="pre">noerror=False</span></tt>.</p>
-<p>The final option <tt class="docutils literal"><span class="pre">warn</span></tt> determines whether or not a warning is issued when
+default value is <code class="docutils literal"><span class="pre">bstrap=False</span></code>.</p>
+<p>The fourth option is to omit the error estimates on the averages, which
+is triggered by setting <code class="docutils literal"><span class="pre">noerror=True</span></code>. Just the mean values are
+returned. The default value is <code class="docutils literal"><span class="pre">noerror=False</span></code>.</p>
+<p>The final option <code class="docutils literal"><span class="pre">warn</span></code> determines whether or not a warning is issued when
 different components of a dictionary data set have different sample sizes.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gvar.dataset.autocorr">
-<tt class="descclassname">gvar.dataset.</tt><tt class="descname">autocorr</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#gvar.dataset.autocorr" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gvar.dataset.</code><code class="descname">autocorr</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.autocorr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute autocorrelation in random data.</p>
-<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers or random arrays, or a dictionary
+<p><code class="docutils literal"><span class="pre">data</span></code> is a list of random numbers or random arrays, or a dictionary
 of lists of random numbers/arrays.</p>
-<p>When <tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers, <tt class="docutils literal"><span class="pre">autocorr(data)</span></tt> returns
-an array where <tt class="docutils literal"><span class="pre">autocorr(data)[i]</span></tt> is the correlation between
-elements in <tt class="docutils literal"><span class="pre">data</span></tt> that are separated by distance <tt class="docutils literal"><span class="pre">i</span></tt> in the list:
+<p>When <code class="docutils literal"><span class="pre">data</span></code> is a list of random numbers, <code class="docutils literal"><span class="pre">autocorr(data)</span></code> returns
+an array where <code class="docutils literal"><span class="pre">autocorr(data)[i]</span></code> is the correlation between
+elements in <code class="docutils literal"><span class="pre">data</span></code> that are separated by distance <code class="docutils literal"><span class="pre">i</span></code> in the list:
 for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">autocorr</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">]))</span>
 <span class="go">[ 1. -1.  1. -1.  1. -1.]</span>
@@ -276,25 +276,25 @@ for example,</p>
 <p>shows perfect correlation between elements separated by an even
 interval in the list, and perfect anticorrelation between elements by
 an odd interval.</p>
-<p><tt class="docutils literal"><span class="pre">autocorr(data)</span></tt> returns a list of arrays of autocorrelation
-coefficients when <tt class="docutils literal"><span class="pre">data</span></tt> is a list of random arrays. Again
-<tt class="docutils literal"><span class="pre">autocorr(data)[i]</span></tt> gives the autocorrelations for <tt class="docutils literal"><span class="pre">data</span></tt> elements
-separated by distance <tt class="docutils literal"><span class="pre">i</span></tt> in the list. Similarly <tt class="docutils literal"><span class="pre">autocorr(data)</span></tt>
-returns a dictionary when <tt class="docutils literal"><span class="pre">data</span></tt> is a dictionary.</p>
-<p><tt class="docutils literal"><span class="pre">autocorr(data)</span></tt> uses FFTs to compute the autocorrelations; the cost
+<p><code class="docutils literal"><span class="pre">autocorr(data)</span></code> returns a list of arrays of autocorrelation
+coefficients when <code class="docutils literal"><span class="pre">data</span></code> is a list of random arrays. Again
+<code class="docutils literal"><span class="pre">autocorr(data)[i]</span></code> gives the autocorrelations for <code class="docutils literal"><span class="pre">data</span></code> elements
+separated by distance <code class="docutils literal"><span class="pre">i</span></code> in the list. Similarly <code class="docutils literal"><span class="pre">autocorr(data)</span></code>
+returns a dictionary when <code class="docutils literal"><span class="pre">data</span></code> is a dictionary.</p>
+<p><code class="docutils literal"><span class="pre">autocorr(data)</span></code> uses FFTs to compute the autocorrelations; the cost
 of computing the autocorrelations should grow roughly linearly with the
-number of random samples in <tt class="docutils literal"><span class="pre">data</span></tt> (up to logarithms).</p>
+number of random samples in <code class="docutils literal"><span class="pre">data</span></code> (up to logarithms).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="gvar.dataset.bin_data">
-<tt class="descclassname">gvar.dataset.</tt><tt class="descname">bin_data</tt><big>(</big><em>data</em>, <em>binsize=2</em><big>)</big><a class="headerlink" href="#gvar.dataset.bin_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gvar.dataset.</code><code class="descname">bin_data</code><span class="sig-paren">(</span><em>data</em>, <em>binsize=2</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.bin_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bin random data.</p>
-<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers or random arrays, or a dictionary of
-lists of random numbers/arrays. <tt class="docutils literal"><span class="pre">bin_data(data,binsize)</span></tt> replaces
-consecutive groups of <tt class="docutils literal"><span class="pre">binsize</span></tt> numbers/arrays by the average of those
+<p><code class="docutils literal"><span class="pre">data</span></code> is a list of random numbers or random arrays, or a dictionary of
+lists of random numbers/arrays. <code class="docutils literal"><span class="pre">bin_data(data,binsize)</span></code> replaces
+consecutive groups of <code class="docutils literal"><span class="pre">binsize</span></code> numbers/arrays by the average of those
 numbers/arrays. The result is new data list (or dictionary) with
-<tt class="docutils literal"><span class="pre">1/binsize</span></tt> times as much random data: for example,</p>
+<code class="docutils literal"><span class="pre">1/binsize</span></code> times as much random data: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">bin_data</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">],</span><span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="go">[1.5, 3.5, 5.5]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">bin_data</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">],</span><span class="n">v</span><span class="o">=</span><span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]]),</span><span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
@@ -309,27 +309,27 @@ exist. Over-binning erases useful information.</p>
 
 <dl class="function">
 <dt id="gvar.dataset.bootstrap_iter">
-<tt class="descclassname">gvar.dataset.</tt><tt class="descname">bootstrap_iter</tt><big>(</big><em>data</em>, <em>n=None</em><big>)</big><a class="headerlink" href="#gvar.dataset.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create iterator that returns bootstrap copies of <tt class="docutils literal"><span class="pre">data</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">data</span></tt> is a list of random numbers or random arrays, or a dictionary
-of lists of random numbers/arrays. <tt class="docutils literal"><span class="pre">bootstrap_iter(data,n)</span></tt> is an
-iterator that returns <tt class="docutils literal"><span class="pre">n</span></tt> bootstrap copies of data. The random
+<code class="descclassname">gvar.dataset.</code><code class="descname">bootstrap_iter</code><span class="sig-paren">(</span><em>data</em>, <em>n=None</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create iterator that returns bootstrap copies of <code class="docutils literal"><span class="pre">data</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">data</span></code> is a list of random numbers or random arrays, or a dictionary
+of lists of random numbers/arrays. <code class="docutils literal"><span class="pre">bootstrap_iter(data,n)</span></code> is an
+iterator that returns <code class="docutils literal"><span class="pre">n</span></code> bootstrap copies of data. The random
 numbers/arrays in a bootstrap copy are drawn at random (with repetition
-allowed) from among the samples in <tt class="docutils literal"><span class="pre">data</span></tt>: for example,</p>
+allowed) from among the samples in <code class="docutils literal"><span class="pre">data</span></code>: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_iter</span> <span class="o">=</span> <span class="n">bootstrap_iter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">data_iter</span><span class="p">))</span>
 <span class="go">[ 1.1  1.1  0.5  1.9]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">data_iter</span><span class="p">))</span>
 <span class="go">[ 0.5  2.3  1.9  0.5]</span>
-<span class="go">    </span>
+
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span><span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_iter</span> <span class="o">=</span> <span class="n">bootstrap_iter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">data_iter</span><span class="p">))</span>
 <span class="go">{&#39;a&#39;: array([3, 3, 1, 2]), &#39;b&#39;: array([3, 3, 1, 2])}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">data_iter</span><span class="p">))</span>
 <span class="go">{&#39;a&#39;: array([1, 3, 3, 2]), &#39;b&#39;: array([1, 3, 3, 2])}</span>
-<span class="go">    </span>
+
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">],[</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_iter</span> <span class="o">=</span> <span class="n">bootstrap_iter</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">data_iter</span><span class="p">))</span>
@@ -345,29 +345,29 @@ allowed) from among the samples in <tt class="docutils literal"><span class="pre
 </pre></div>
 </div>
 <p>The distribution of bootstrap copies is an approximation to the
-distribution from which <tt class="docutils literal"><span class="pre">data</span></tt> was drawn. Consequently means,
+distribution from which <code class="docutils literal"><span class="pre">data</span></code> was drawn. Consequently means,
 variances and correlations for bootstrap copies should be similar to
-those in <tt class="docutils literal"><span class="pre">data</span></tt>. Analyzing variations from bootstrap copy to copy is
+those in <code class="docutils literal"><span class="pre">data</span></code>. Analyzing variations from bootstrap copy to copy is
 often useful when dealing with non-gaussian behavior or complicated
 correlations between different quantities.</p>
-<p>Parameter <tt class="docutils literal"><span class="pre">n</span></tt> specifies the maximum number of copies; there is no
-maximum if <tt class="docutils literal"><span class="pre">n</span> <span class="pre">is</span> <span class="pre">None</span></tt>.</p>
+<p>Parameter <code class="docutils literal"><span class="pre">n</span></code> specifies the maximum number of copies; there is no
+maximum if <code class="docutils literal"><span class="pre">n</span> <span class="pre">is</span> <span class="pre">None</span></code>.</p>
 </dd></dl>
 
 </div>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></tt></a> is used to assemble random samples from
+<p><a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset</span></code></a> is used to assemble random samples from
 multidimensional distributions:</p>
 <dl class="class">
 <dt id="gvar.dataset.Dataset">
-<em class="property">class </em><tt class="descclassname">gvar.dataset.</tt><tt class="descname">Dataset</tt><a class="headerlink" href="#gvar.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">gvar.dataset.</code><code class="descname">Dataset</code><a class="headerlink" href="#gvar.dataset.Dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dictionary for collecting random data.</p>
 <p>This dictionary class simplifies the collection of random data. The
 random data are stored in a dictionary, with each piece of random data
-being a number or a <tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> array of numbers. For example, consider a
-situation where there are four random values for a scalar <tt class="docutils literal"><span class="pre">s</span></tt> and
-four random values for vector <tt class="docutils literal"><span class="pre">v</span></tt>. These can be collected as
+being a number or a <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> array of numbers. For example, consider a
+situation where there are four random values for a scalar <code class="docutils literal"><span class="pre">s</span></code> and
+four random values for vector <code class="docutils literal"><span class="pre">v</span></code>. These can be collected as
 follows:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span><span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="mf">12.2</span><span class="p">,</span><span class="mf">20.6</span><span class="p">])</span>
@@ -380,19 +380,19 @@ follows:</p>
 <span class="go">[array([ 12.2,  20.6]), array([ 14.1,  19.2]), array([ 10.3,  19.7]), array([  8.2,  21. ])]</span>
 </pre></div>
 </div>
-<p>The argument to <tt class="docutils literal"><span class="pre">data.append()</span></tt> could be a dictionary: for example,
-<tt class="docutils literal"><span class="pre">dd</span> <span class="pre">=</span> <span class="pre">dict(s=1.1,v=[12.2,20.6]);</span> <span class="pre">data.append(dd)</span></tt> is equivalent
-to the first <tt class="docutils literal"><span class="pre">append</span></tt> statement above. This is useful, for 
+<p>The argument to <code class="docutils literal"><span class="pre">data.append()</span></code> could be a dictionary: for example,
+<code class="docutils literal"><span class="pre">dd</span> <span class="pre">=</span> <span class="pre">dict(s=1.1,v=[12.2,20.6]);</span> <span class="pre">data.append(dd)</span></code> is equivalent
+to the first <code class="docutils literal"><span class="pre">append</span></code> statement above. This is useful, for
 example, if the data comes from a function (that returns a dictionary).</p>
 <p>One can also append data key-by-key: for example,
-<tt class="docutils literal"><span class="pre">data.append('s',1.1);</span> <span class="pre">data.append('v',[12.2,20.6])</span></tt> 
-is equivalent to the first <tt class="docutils literal"><span class="pre">append</span></tt> in the example above. One could
+<code class="docutils literal"><span class="pre">data.append('s',1.1);</span> <span class="pre">data.append('v',[12.2,20.6])</span></code>
+is equivalent to the first <code class="docutils literal"><span class="pre">append</span></code> in the example above. One could
 also achieve this with, for example,
-<tt class="docutils literal"><span class="pre">data['s'].append(1.1);</span> <span class="pre">data['v'].append([12.2,20.6])</span></tt>, 
-since each dictionary value is a list, but <tt class="xref py py-class docutils literal"><span class="pre">gvar.Dataset</span></tt>&#8216;s
-<tt class="docutils literal"><span class="pre">append</span></tt> checks for consistency between the new data and data already
+<code class="docutils literal"><span class="pre">data['s'].append(1.1);</span> <span class="pre">data['v'].append([12.2,20.6])</span></code>,
+since each dictionary value is a list, but <code class="xref py py-class docutils literal"><span class="pre">gvar.Dataset</span></code>&#8216;s
+<code class="docutils literal"><span class="pre">append</span></code> checks for consistency between the new data and data already
 collected and so is preferable.</p>
-<p>Use <tt class="docutils literal"><span class="pre">extend</span></tt> in place of <tt class="docutils literal"><span class="pre">append</span></tt> to add data in batches: for
+<p>Use <code class="docutils literal"><span class="pre">extend</span></code> in place of <code class="docutils literal"><span class="pre">append</span></code> to add data in batches: for
 example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="p">[</span><span class="mf">1.1</span><span class="p">,</span><span class="mf">0.8</span><span class="p">],</span><span class="n">v</span><span class="o">=</span><span class="p">[[</span><span class="mf">12.2</span><span class="p">,</span><span class="mf">20.6</span><span class="p">],[</span><span class="mf">14.1</span><span class="p">,</span><span class="mf">19.2</span><span class="p">]])</span>
@@ -402,7 +402,7 @@ example,</p>
 </pre></div>
 </div>
 <p>gives the same dataset as the first example above.</p>
-<p>A <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a> can also be created from a file where
+<p>A <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Dataset</span></code></a> can also be created from a file where
 every line is a new random sample. The data in the first example
 above could have been stored in a file with the following content:</p>
 <div class="highlight-python"><div class="highlight"><pre># file: datafile
@@ -416,8 +416,8 @@ s 0.91
 v [8.2,21.0]
 </pre></div>
 </div>
-<p>Lines that begin with <tt class="docutils literal"><span class="pre">#</span></tt> are ignored. Assuming the file is called
-<tt class="docutils literal"><span class="pre">datafile</span></tt>, we create a dataset identical to that above using the
+<p>Lines that begin with <code class="docutils literal"><span class="pre">#</span></code> are ignored. Assuming the file is called
+<code class="docutils literal"><span class="pre">datafile</span></code>, we create a dataset identical to that above using the
 code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;s&#39;</span><span class="p">])</span>
@@ -425,7 +425,7 @@ code:</p>
 </pre></div>
 </div>
 <p>Data can be binned while reading it in, which might be useful if
-the data set is huge. To bin the data contained in file <tt class="docutils literal"><span class="pre">datafile</span></tt> in
+the data set is huge. To bin the data contained in file <code class="docutils literal"><span class="pre">datafile</span></code> in
 bins of binsize 2 we use:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">,</span><span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;s&#39;</span><span class="p">])</span>
@@ -433,8 +433,8 @@ bins of binsize 2 we use:</p>
 </pre></div>
 </div>
 <p>The keys read from a data file are restricted to those listed in keyword
-<tt class="docutils literal"><span class="pre">keys</span></tt> and those that are matched (or partially matched) by regular
-expression <tt class="docutils literal"><span class="pre">grep</span></tt> if one or other of these is specified: for
+<code class="docutils literal"><span class="pre">keys</span></code> and those that are matched (or partially matched) by regular
+expression <code class="docutils literal"><span class="pre">grep</span></code> if one or other of these is specified: for
 example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
@@ -450,30 +450,30 @@ example,</p>
 <span class="go">[]</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a>s can also be constructed from dictionaries, other 
-<a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a>s, or lists of key-data tuples. For example,</p>
+<p><a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Dataset</span></code></a>s can also be constructed from dictionaries, other
+<a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Dataset</span></code></a>s, or lists of key-data tuples. For example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&#39;datafile&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_binned</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">binsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data_v</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;v&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>reads data from file <tt class="docutils literal"><span class="pre">'datafile'</span></tt> into <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a> <tt class="docutils literal"><span class="pre">data</span></tt>,
-and then creates a new <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><tt class="xref py py-class docutils literal"><span class="pre">Dataset</span></tt></a> with the data binned 
-(<tt class="docutils literal"><span class="pre">data_binned</span></tt>), and another that only containes the data with 
-key <tt class="docutils literal"><span class="pre">'v'</span></tt> (<tt class="docutils literal"><span class="pre">data_v</span></tt>).</p>
+<p>reads data from file <code class="docutils literal"><span class="pre">'datafile'</span></code> into <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Dataset</span></code></a> <code class="docutils literal"><span class="pre">data</span></code>,
+and then creates a new <a class="reference internal" href="#gvar.dataset.Dataset" title="gvar.dataset.Dataset"><code class="xref py py-class docutils literal"><span class="pre">Dataset</span></code></a> with the data binned
+(<code class="docutils literal"><span class="pre">data_binned</span></code>), and another that only containes the data with
+key <code class="docutils literal"><span class="pre">'v'</span></code> (<code class="docutils literal"><span class="pre">data_v</span></code>).</p>
 <p>The main attributes and methods are:</p>
 <dl class="attribute">
 <dt id="gvar.dataset.Dataset.samplesize">
-<tt class="descname">samplesize</tt><a class="headerlink" href="#gvar.dataset.Dataset.samplesize" title="Permalink to this definition">¶</a></dt>
+<code class="descname">samplesize</code><a class="headerlink" href="#gvar.dataset.Dataset.samplesize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Smallest number of samples for any key.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.append">
-<tt class="descname">append</tt><big>(</big><em>*args</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.append" title="Permalink to this definition">¶</a></dt>
+<code class="descname">append</code><span class="sig-paren">(</span><em>*args</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append data to dataset.</p>
 <p>There are three equivalent ways of adding data to a dataset
-<tt class="docutils literal"><span class="pre">data</span></tt>: for example, each of</p>
+<code class="docutils literal"><span class="pre">data</span></code>: for example, each of</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mf">1.739</span><span class="p">,</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="mf">0.494</span><span class="p">,</span><span class="mf">2.734</span><span class="p">])</span>        <span class="c"># method 1</span>
 
 <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mf">1.739</span><span class="p">)</span>                        <span class="c"># method 2</span>
@@ -483,16 +483,16 @@ key <tt class="docutils literal"><span class="pre">'v'</span></tt> (<tt class="d
 <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>adds one new random number to <tt class="docutils literal"><span class="pre">data['n']</span></tt>, and a new
-vector to <tt class="docutils literal"><span class="pre">data['a']</span></tt>.</p>
+<p>adds one new random number to <code class="docutils literal"><span class="pre">data['n']</span></code>, and a new
+vector to <code class="docutils literal"><span class="pre">data['a']</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.extend">
-<tt class="descname">extend</tt><big>(</big><em>*args</em>, <em>**kargs</em><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.extend" title="Permalink to this definition">¶</a></dt>
+<code class="descname">extend</code><span class="sig-paren">(</span><em>*args</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.extend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add batched data to dataset.</p>
 <p>There are three equivalent ways of adding batched data, containing
-multiple samples for each quantity, to a dataset <tt class="docutils literal"><span class="pre">data</span></tt>: for
+multiple samples for each quantity, to a dataset <code class="docutils literal"><span class="pre">data</span></code>: for
 example, each of</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="p">[</span><span class="mf">1.739</span><span class="p">,</span><span class="mf">2.682</span><span class="p">],</span>
             <span class="n">a</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.494</span><span class="p">,</span><span class="mf">2.734</span><span class="p">],[</span> <span class="mf">0.172</span><span class="p">,</span> <span class="mf">1.400</span><span class="p">]])</span>  <span class="c"># method 1</span>
@@ -505,8 +505,8 @@ example, each of</p>
 <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dd</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>adds two new random numbers to <tt class="docutils literal"><span class="pre">data['n']</span></tt>, and two new 
-random vectors to <tt class="docutils literal"><span class="pre">data['a']</span></tt>.</p>
+<p>adds two new random numbers to <code class="docutils literal"><span class="pre">data['n']</span></code>, and two new
+random vectors to <code class="docutils literal"><span class="pre">data['a']</span></code>.</p>
 <p>This method can be used to merge two datasets, whether or not they
 share keys: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="s">&quot;file1&quot;</span><span class="p">)</span>
@@ -518,11 +518,11 @@ share keys: for example,</p>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.grep">
-<tt class="descname">grep</tt><big>(</big><em>rexp</em><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.grep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create new dataset containing items whose keys match <tt class="docutils literal"><span class="pre">rexp</span></tt>.</p>
-<p>Returns a new <tt class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset`</span></tt> containing only the
-items <tt class="docutils literal"><span class="pre">self[k]</span></tt> whose keys <tt class="docutils literal"><span class="pre">k</span></tt> match regular expression
-<tt class="docutils literal"><span class="pre">rexp</span></tt> (a string) according to Python module <tt class="xref py py-mod docutils literal"><span class="pre">re</span></tt>:</p>
+<code class="descname">grep</code><span class="sig-paren">(</span><em>rexp</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.grep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new dataset containing items whose keys match <code class="docutils literal"><span class="pre">rexp</span></code>.</p>
+<p>Returns a new <code class="xref py py-class docutils literal"><span class="pre">gvar.dataset.Dataset`</span></code> containing only the
+items <code class="docutils literal"><span class="pre">self[k]</span></code> whose keys <code class="docutils literal"><span class="pre">k</span></code> match regular expression
+<code class="docutils literal"><span class="pre">rexp</span></code> (a string) according to Python module <code class="xref py py-mod docutils literal"><span class="pre">re</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">[</span><span class="mf">10.</span><span class="p">,</span><span class="mf">100.</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xx</span><span class="o">=</span><span class="mf">2.</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">[</span><span class="mf">20.</span><span class="p">,</span><span class="mf">200.</span><span class="p">])</span>
@@ -536,38 +536,38 @@ items <tt class="docutils literal"><span class="pre">self[k]</span></tt> whose k
 <span class="go">{&#39;xy&#39;: [array([  10.,  100.]), array([  20.,  200.])]}</span>
 </pre></div>
 </div>
-<p>Items are retained even if <tt class="docutils literal"><span class="pre">rexp</span></tt> matches only part of the item&#8217;s
+<p>Items are retained even if <code class="docutils literal"><span class="pre">rexp</span></code> matches only part of the item&#8217;s
 key.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.slice">
-<tt class="descname">slice</tt><big>(</big><em>sl</em><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.slice" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create new dataset with <tt class="docutils literal"><span class="pre">self[k]</span> <span class="pre">-&gt;</span> <span class="pre">self[k][sl].</span></tt></p>
-<p>Parameter <tt class="docutils literal"><span class="pre">sl</span></tt> is a slice object that is applied to every
-item in the dataset to produce a new <tt class="xref py py-class docutils literal"><span class="pre">gvar.Dataset</span></tt>.
-Setting <tt class="docutils literal"><span class="pre">sl</span> <span class="pre">=</span> <span class="pre">slice(0,None,2)</span></tt>, for example, discards every
-other sample for each quantity in the dataset. Setting 
-<tt class="docutils literal"><span class="pre">sl</span> <span class="pre">=</span> <span class="pre">slice(100,None)</span></tt> discards the first 100 samples for 
+<code class="descname">slice</code><span class="sig-paren">(</span><em>sl</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new dataset with <code class="docutils literal"><span class="pre">self[k]</span> <span class="pre">-&gt;</span> <span class="pre">self[k][sl].</span></code></p>
+<p>Parameter <code class="docutils literal"><span class="pre">sl</span></code> is a slice object that is applied to every
+item in the dataset to produce a new <code class="xref py py-class docutils literal"><span class="pre">gvar.Dataset</span></code>.
+Setting <code class="docutils literal"><span class="pre">sl</span> <span class="pre">=</span> <span class="pre">slice(0,None,2)</span></code>, for example, discards every
+other sample for each quantity in the dataset. Setting
+<code class="docutils literal"><span class="pre">sl</span> <span class="pre">=</span> <span class="pre">slice(100,None)</span></code> discards the first 100 samples for
 each quantity.</p>
-<p>If parameter <tt class="docutils literal"><span class="pre">sl</span></tt> is a tuple of slice objects, these
-are applied to successive indices of <tt class="docutils literal"><span class="pre">self[k]</span></tt>. An exception
-is called if the number of slice objects exceeds the number 
-of dimensions for any <tt class="docutils literal"><span class="pre">self[k]</span></tt>.</p>
+<p>If parameter <code class="docutils literal"><span class="pre">sl</span></code> is a tuple of slice objects, these
+are applied to successive indices of <code class="docutils literal"><span class="pre">self[k]</span></code>. An exception
+is called if the number of slice objects exceeds the number
+of dimensions for any <code class="docutils literal"><span class="pre">self[k]</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.arrayzip">
-<tt class="descname">arrayzip</tt><big>(</big><em>template</em><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.arrayzip" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merge lists of random data according to <tt class="docutils literal"><span class="pre">template</span></tt>.</p>
-<p><tt class="docutils literal"><span class="pre">template</span></tt> is an array of keys in the dataset, where the shapes
-of <tt class="docutils literal"><span class="pre">self[k]</span></tt> are the same for all keys <tt class="docutils literal"><span class="pre">k</span></tt> in <tt class="docutils literal"><span class="pre">template</span></tt>.
-<tt class="docutils literal"><span class="pre">self.arrayzip(template)</span></tt> merges the lists of random
+<code class="descname">arrayzip</code><span class="sig-paren">(</span><em>template</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.arrayzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merge lists of random data according to <code class="docutils literal"><span class="pre">template</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">template</span></code> is an array of keys in the dataset, where the shapes
+of <code class="docutils literal"><span class="pre">self[k]</span></code> are the same for all keys <code class="docutils literal"><span class="pre">k</span></code> in <code class="docutils literal"><span class="pre">template</span></code>.
+<code class="docutils literal"><span class="pre">self.arrayzip(template)</span></code> merges the lists of random
 numbers/arrays associated with these keys to create a new list of
-(merged) random arrays whose layout is specified by <tt class="docutils literal"><span class="pre">template</span></tt>: 
+(merged) random arrays whose layout is specified by <code class="docutils literal"><span class="pre">template</span></code>:
 for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>  
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>            <span class="c"># three random samples each for a and b</span>
@@ -577,14 +577,14 @@ for example,</p>
 <span class="go">[[  1.  10.]</span>
 <span class="go"> [  2.  20.]</span>
 <span class="go"> [  3.  30.]]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># merge into list of (symmetric) 2x2 matrices: </span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">arrayzip</span><span class="p">([[</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">],[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">]]))</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># merge into list of (symmetric) 2x2 matrices:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">arrayzip</span><span class="p">([[</span><span class="s">&#39;b&#39;</span><span class="p">,</span><span class="s">&#39;a&#39;</span><span class="p">],[</span><span class="s">&#39;a&#39;</span><span class="p">,</span><span class="s">&#39;b&#39;</span><span class="p">]]))</span>
 <span class="go">[[[ 10.   1.]</span>
 <span class="go">  [  1.  10.]]</span>
-<span class="go">  </span>
+
 <span class="go"> [[ 20.   2.]</span>
 <span class="go">  [  2.  20.]]</span>
-<span class="go">  </span>
+
 <span class="go"> [[ 30.   3.]</span>
 <span class="go">  [  3.  30.]]]</span>
 </pre></div>
@@ -598,14 +598,14 @@ shape).</p>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.trim">
-<tt class="descname">trim</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.trim" title="Permalink to this definition">¶</a></dt>
+<code class="descname">trim</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.trim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new dataset where all entries have same sample size.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="gvar.dataset.Dataset.toarray">
-<tt class="descname">toarray</tt><big>(</big><big>)</big><a class="headerlink" href="#gvar.dataset.Dataset.toarray" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create dictionary <tt class="docutils literal"><span class="pre">d</span></tt> where <tt class="docutils literal"><span class="pre">d[k]=numpy.array(self[k])</span></tt> for all <tt class="docutils literal"><span class="pre">k</span></tt>.</p>
+<code class="descname">toarray</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gvar.dataset.Dataset.toarray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create dictionary <code class="docutils literal"><span class="pre">d</span></code> where <code class="docutils literal"><span class="pre">d[k]=numpy.array(self[k])</span></code> for all <code class="docutils literal"><span class="pre">k</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -617,11 +617,11 @@ shape).</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a><ul>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">gvar.dataset</span></code> - Random Data Sets</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes">Classes</a></li>
@@ -631,11 +631,11 @@ shape).</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="gvar.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">gvar</span></code> - Gaussian Random Variables</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gvar_other.html"
-                        title="next chapter">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a></p>
-<div id="searchbox" style="display: none">
+                        title="next chapter">Numerical Analysis Modules in <code class="docutils literal"><span class="pre">gvar</span></code></a></p>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -652,7 +652,7 @@ shape).</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -667,12 +667,12 @@ shape).</p>
         <li class="right" >
           <a href="gvar.html" title="gvar - Gaussian Random Variables"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2009-2014, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

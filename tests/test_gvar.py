@@ -458,10 +458,13 @@ class test_gvar2(unittest.TestCase,ArrayTests):
         self.assertEqual(x.fmt(3),"%.3f(%d)"%(x.mean,round(x.sdev*1000)))
         self.assertEqual(y.fmt(3),"%.3f(%.3f)"%(y.mean,round(y.sdev,3)))
         self.assertEqual(gvar(".1234(341)").fmt(), "0.123(34)")
+        self.assertEqual(gvar(" .1234(341)").fmt(), "0.123(34)")
+        self.assertEqual(gvar(".1234(341) ").fmt(), "0.123(34)")
         self.assertEqual(gvar(".1234(341)").fmt(1), "0.1(0)")
         self.assertEqual(gvar(".1234(341)").fmt(5), "0.12340(3410)")
         self.assertEqual(gvar(".1234(0)").fmt(), "0.1234(0)")
         self.assertEqual(gvar("-.1234(341)").fmt(), "-0.123(34)")
+        self.assertEqual(gvar("+.1234(341)").fmt(), "0.123(34)")
         self.assertEqual(gvar("-0.1234(341)").fmt(), "-0.123(34)")
         self.assertEqual(gvar("10(1.3)").fmt(), "10.0(1.3)")
         self.assertEqual(gvar("10.2(1.3)").fmt(), "10.2(1.3)")
@@ -1304,6 +1307,25 @@ class test_gvar2(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(gax, gv._utilities.gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gv._utilities.gammaQ(x, a), rtol=0.01)
   
+    def test_equivalent(self):
+        " equivalent(g1, g2) "
+        x = gvar(['1(1)', '2(2)'])
+        y = gvar(['1(1)', '2(2)'])
+        u = 2 ** 0.5 * np.array([[0.5, 0.5],[-0.5, 0.5]])
+        ux = u.dot(x)
+        uTy = u.T.dot(y)
+        ux_y = ux + y 
+        xnew = u.T.dot(ux_y) - uTy
+        self.assertTrue(equivalent(x, xnew))
+        self.assertTrue(not equivalent(x, y))
+        self.assertTrue(equivalent(x[0], xnew[0]))
+        d = dict(x=x, y0=y[0])
+        dnew = dict(x=xnew, y0=y[0])
+        self.assertTrue(equivalent(d, dnew))
+        dnew = dict(x=y, y0=y[0])
+        self.assertTrue(not equivalent(d, dnew))
+        dnew = dict(x=xnew, y0=x[0])
+        self.assertTrue(not equivalent(d, dnew))
           
 if __name__ == '__main__':
 	unittest.main()

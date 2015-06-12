@@ -32,9 +32,9 @@
 <![endif]-->
 
   </head>
-  <body>
+  <body role="document">
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,14 +46,14 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="N">next</a> |</li>
-        <li><a href="#">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="lsqfit-documentation">
 <h1>lsqfit Documentation<a class="headerlink" href="#lsqfit-documentation" title="Permalink to this headline">¶</a></h1>
@@ -65,11 +65,11 @@
 <li class="toctree-l2"><a class="reference internal" href="overview.html#gaussian-random-variables-and-error-propagation">Gaussian Random Variables and Error Propagation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#basic-fits">Basic Fits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#chained-fits">Chained Fits</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#x-has-error-bars"><tt class="docutils literal"><span class="pre">x</span></tt> has Error Bars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#x-has-error-bars"><code class="docutils literal"><span class="pre">x</span></code> has Error Bars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#correlated-parameters-gaussian-bayes-factor">Correlated Parameters; Gaussian Bayes Factor</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#tuning-priors-and-the-empirical-bayes-criterion">Tuning Priors and the Empirical Bayes Criterion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#partial-errors-and-error-budgets">Partial Errors and Error Budgets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-no-error-bars"><tt class="docutils literal"><span class="pre">y</span></tt> has No Error Bars</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-no-error-bars"><code class="docutils literal"><span class="pre">y</span></code> has No Error Bars</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#svd-cuts-and-roundoff-error">SVD Cuts and Roundoff Error</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#bootstrap-error-analysis">Bootstrap Error Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#testing-fits-with-simulated-data">Testing Fits with Simulated Data</a></li>
@@ -91,34 +91,37 @@
 <li class="toctree-l2"><a class="reference internal" href="case-pendulum.html#two-types-of-input-data">Two Types of Input Data</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gvar.html"><tt class="docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="gvar.html"><code class="docutils literal"><span class="pre">gvar</span></code> - Gaussian Random Variables</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#creating-gaussian-variables">Creating Gaussian Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#gvar-arithmetic-and-functions"><tt class="docutils literal"><span class="pre">gvar.GVar</span></tt> Arithmetic and Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#error-budgets-from-gvars">Error Budgets from <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#storing-gvars-for-later-use-bufferdicts">Storing <tt class="docutils literal"><span class="pre">gvar.GVar</span></tt>s for Later Use; <tt class="docutils literal"><span class="pre">gvar.BufferDict</span></tt>s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#gvar-arithmetic-and-functions"><code class="docutils literal"><span class="pre">gvar.GVar</span></code> Arithmetic and Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#error-budgets-from-gvars">Error Budgets from <code class="docutils literal"><span class="pre">gvar.GVar</span></code>s</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#storing-gvars-for-later-use-bufferdicts">Storing <code class="docutils literal"><span class="pre">gvar.GVar</span></code>s for Later Use; <code class="docutils literal"><span class="pre">gvar.BufferDict</span></code>s</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#random-number-generators">Random Number Generators</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#limitations">Limitations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#optimizations">Optimizations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#functions">Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gvar.html#gvar-gvar-objects"><tt class="docutils literal"><span class="pre">gvar.GVar</span></tt> Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar.html#gvar-gvar-objects"><code class="docutils literal"><span class="pre">gvar.GVar</span></code> Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#other-classes">Other Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar.html#requirements">Requirements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gvar_dataset.html"><tt class="docutils literal"><span class="pre">gvar.dataset</span></tt> - Random Data Sets</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="gvar_dataset.html"><code class="docutils literal"><span class="pre">gvar.dataset</span></code> - Random Data Sets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_dataset.html#classes">Classes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gvar_other.html">Numerical Analysis Modules in <tt class="docutils literal"><span class="pre">gvar</span></tt></a><ul>
+<li class="toctree-l1"><a class="reference internal" href="gvar_other.html">Numerical Analysis Modules in <code class="docutils literal"><span class="pre">gvar</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gvar_other.html#cubic-splines">Cubic Splines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar_other.html#linear-algebra">Linear Algebra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_other.html#ordinary-differential-equations">Ordinary Differential Equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar_other.html#one-dimensional-integration">One-Dimensional Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gvar_other.html#module-gvar.powerseries">Power Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gvar_other.html#root-finding">Root Finding</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="lsqfit.html"><tt class="docutils literal"><span class="pre">lsqfit</span></tt> - Nonlinear Least Squares Fitting</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="lsqfit.html"><code class="docutils literal"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#functions">Functions</a></li>
@@ -132,9 +135,9 @@
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
 </div>
 
@@ -142,7 +145,7 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
@@ -153,7 +156,7 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="overview.html"
                         title="next chapter">Overview and Tutorial</a></p>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -170,7 +173,7 @@
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -182,12 +185,12 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >next</a> |</li>
-        <li><a href="#">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="#">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2009-2014, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

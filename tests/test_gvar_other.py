@@ -77,6 +77,9 @@ class test_ode(unittest.TestCase,ArrayTests):
         exact = y0 * np.exp(gam * 2)
         self.assertAlmostEqual((y1 / exact).mean, 1.)
         self.assertGreater(1e-8, (y1 / exact).sdev)
+        self.assertTrue(
+            gv.equivalent(odeint(y1, (2, 0)), y0, rtol=1e-6, atol=1e-6)
+            )
 
     def test_vector(self):
         # harmonic oscillator with vectors
@@ -127,6 +130,9 @@ class test_ode(unittest.TestCase,ArrayTests):
         y1 = odeint(y0, (x0,x1))
         exact = dict(y=numpy.sin(w * x1), dydx=w * numpy.cos(w * x1))
         self.assert_gvclose(y1, exact)
+        self.assertTrue(
+            gv.equivalent(odeint(y1, (x1, x0)), y0, rtol=1e-6, atol=1e-6)
+            )
 
     def test_delta(self):
         def delta(yerr, y, delta_y):
@@ -141,6 +147,45 @@ class test_ode(unittest.TestCase,ArrayTests):
         exact = numpy.exp(1 + 0.1j)
         self.assertAlmostEqual(y1, exact)
 
+    def test_integral(self):
+        def f(x):
+            return 3 * x**2
+        ans = ode.integral(f, (1,2), tol=1e-10)
+        self.assertAlmostEqual(ans, 7)
+        def f(x):
+            return numpy.array([[1.], [2 * x], [3 * x**2]])
+        ans = ode.integral(f, (1, 2))
+        self.assert_arraysclose(ans, [[1], [3], [7]])
+        def f(x):
+            return dict(a=1., b=[2 * x, 3 * x**2])
+        ans = ode.integral(f, (1, 2))
+        self.assertAlmostEqual(ans['a'], 1.)
+        self.assert_arraysclose(ans['b'], [3, 7])
+
+    def test_integral_gvar(self):
+        def f(x, a=gvar(1,1)):
+            return a * 3 * x**2
+        ans = ode.integral(f, (1,2), tol=1e-10)
+        self.assertAlmostEqual(ans.mean, 7)
+        self.assertAlmostEqual(ans.sdev, 7)
+        a = gvar(1, 1)
+        def f(x, a=a):
+            return a * numpy.array([[1.], [2 * x], [3 * x**2]])
+        ans = ode.integral(f, (1, 2))
+        self.assert_arraysclose(mean(ans), [[1], [3], [7]])
+        self.assert_arraysclose(sdev(ans), [[1], [3], [7]])
+        def f(x, a=a):
+            return dict(a=a, b=[2 * a * x, 3 * a * x**2])
+        ans = ode.integral(f, (1, 2))
+        self.assertAlmostEqual(ans['a'].mean, 1.)
+        self.assert_arraysclose(mean(ans['b']), [3, 7])
+        self.assertAlmostEqual(ans['a'].sdev, 1.)
+        self.assert_arraysclose(sdev(ans['b']), [3, 7])
+        self.assertTrue(gv.equivalent(
+            ans,
+            dict(a=a, b=[3 * a, 7 * a]), 
+            rtol=1e-6, atol=1e-6)
+            )
 
     def test_solution(self):
         def f(x, y):
@@ -197,19 +242,164 @@ class test_cspline(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(self.integf(xi, x0), s.integ(xi))
 
     def test_out_of_range(self):
+        " out of range, extrap_order=3 "
         x = np.array([0, 1., 3.])
         x0 = x[0]
         y = self.f(x)
         yp= self.Df(x)
         s = cspline.CSpline(x, y, deriv=[yp[0], yp[-1]], warn=False)
-        for xi in [-1.5, -1., 0., 3., 4.]:
+        for xi in [ -1.55, -1., 0., 2., 3., 4., 6.2]:
             self.assertAlmostEqual(self.f(xi), s(xi))
             self.assertAlmostEqual(self.Df(xi), s.D(xi))
             self.assertAlmostEqual(self.D2f(xi), s.D2(xi))
             self.assertAlmostEqual(self.integf(xi, x0), s.integ(xi))
+        for xx in [s([]), s.D([]), s.D2([]), s.integ([])]:
+            self.assertEqual(list(xx), [])
 
+    def test_out_of_range0(self):
+        " out of range, extrap_order=0 "
+        x = np.array([0, 1., 3.])
+        xl = x[0]
+        xr = x[-1]
+        def f0(x):
+            if np.shape(x) == ():
+                return f0(np.array([x]))[0]
+            ans = self.f(x)
+            ans[x<xl] = self.f(xl)
+            ans[x>xr] = self.f(xr)
+            return ans
+        def Df0(x):
+            if np.shape(x) == ():
+                return Df0(np.array([x]))[0]
+            ans = self.Df(x)
+            ans[x<xl] = 0
+            ans[x>xr] = 0
+            return ans        
+        def D2f0(x):
+            if np.shape(x) == ():
+                return D2f0(np.array([x]))[0]
+            ans = self.D2f(x)
+            ans[x<xl] = 0
+            ans[x>xr] = 0
+            return ans 
+        def integf0(x):
+            if np.shape(x) == ():
+                return integf0(np.array([x]))[0]
+            ans = self.integf(x)
+            ans[x<xl] = (x[x<xl] - xl) * self.f(xl)
+            ans[x>xr] = self.integf(xr, xl) + (x[x>xr] - xr) * self.f(xr)
+            return ans       
+        y = self.f(x)
+        yp = self.Df(x)
+        s = cspline.CSpline(x, y, deriv=[yp[0], yp[-1]], extrap_order=0, warn=False)
+        for xi in [ -1.55, -1., 0., 2., 3., 4., 6.2]:
+            self.assertAlmostEqual(f0(xi), s(xi))
+            self.assertAlmostEqual(Df0(xi), s.D(xi))
+            self.assertAlmostEqual(D2f0(xi), s.D2(xi))
+            self.assertAlmostEqual(integf0(xi), s.integ(xi))
+
+    def test_out_of_range1(self):
+        " out of range, extrap_order=1 "
+        x = np.array([0, 1., 3.])
+        xl = x[0]
+        xr = x[-1]
+        def f1(x):
+            if np.shape(x) == ():
+                return f1(np.array([x]))[0]
+            ans = self.f(x)
+            ans[x<xl] = self.f(xl) + (x[x<xl] - xl) * self.Df(xl)
+            ans[x>xr] = self.f(xr) + (x[x>xr] - xr) * self.Df(xr)
+            return ans
+        def Df1(x):
+            if np.shape(x) == ():
+                return Df1(np.array([x]))[0]
+            ans = self.Df(x)
+            ans[x<xl] = self.Df(xl)
+            ans[x>xr] = self.Df(xr)
+            return ans        
+        def D2f1(x):
+            if np.shape(x) == ():
+                return D2f1(np.array([x]))[0]
+            ans = self.D2f(x)
+            ans[x<xl] = 0
+            ans[x>xr] = 0
+            return ans        
+        def integf1(x):
+            if np.shape(x) == ():
+                return integf1(np.array([x]))[0]
+            ans = self.integf(x)
+            dx = x[x<xl] - xl
+            ans[x<xl] = dx * self.f(xl) + dx**2 * self.Df(xl) / 2.
+            dx = x[x>xr] - xr
+            ans[x>xr] = self.integf(xr, xl) + dx * self.f(xr) + dx**2 * self.Df(xr) / 2.
+            return ans       
+        y = self.f(x)
+        yp = self.Df(x)
+        s = cspline.CSpline(x, y, deriv=[yp[0], yp[-1]], extrap_order=1, warn=False)
+        for xi in [-1.55, -1., 0., 2., 3., 4., 6.2]:
+            self.assertAlmostEqual(f1(xi), s(xi))
+            self.assertAlmostEqual(Df1(xi), s.D(xi))
+            self.assertAlmostEqual(D2f1(xi), s.D2(xi))
+            self.assertAlmostEqual(integf1(xi), s.integ(xi))
+
+    def test_out_of_range2(self):
+        " out of range, extrap_order=2 "
+        x = np.array([0, 1., 3.])
+        xl = x[0]
+        xr = x[-1]
+        def f2(x):
+            if np.shape(x) == ():
+                return f2(np.array([x]))[0]
+            ans = self.f(x)
+            ans[x<xl] = (
+                self.f(xl) + (x[x<xl] - xl) * self.Df(xl) 
+                + 0.5 * (x[x<xl] - xl) ** 2 * self.D2f(xl)
+                )
+            ans[x>xr] = (
+                self.f(xr) + (x[x>xr] - xr) * self.Df(xr) 
+                + 0.5 * (x[x>xr] - xr) ** 2 * self.D2f(xr)
+                )
+            return ans
+        def Df2(x):
+            if np.shape(x) == ():
+                return Df2(np.array([x]))[0]
+            ans = self.Df(x)
+            ans[x<xl] = self.Df(xl) + (x[x<xl] - xl) * self.D2f(xl)
+            ans[x>xr] = self.Df(xr) + (x[x>xr] - xr) * self.D2f(xr)
+            return ans        
+        def D2f2(x):
+            if np.shape(x) == ():
+                return D2f2(np.array([x]))[0]
+            ans = self.D2f(x)
+            ans[x<xl] = self.D2f(xl)
+            ans[x>xr] = self.D2f(xr)
+            return ans        
+        def integf2(x):
+            if np.shape(x) == ():
+                return integf2(np.array([x]))[0]
+            ans = self.integf(x)
+            dx = x[x<xl] - xl
+            ans[x<xl] = (
+                dx * self.f(xl) + dx**2 * self.Df(xl) / 2. 
+                + dx**3 * self.D2f(xl) / 6.
+                )
+            dx = x[x>xr] - xr
+            ans[x>xr] = (
+                self.integf(xr, xl) + dx * self.f(xr) 
+                + dx**2 * self.Df(xr) / 2. + dx**3 * self.D2f(xr) / 6.
+                )
+            return ans       
+        y = self.f(x)
+        yp = self.Df(x)
+        s = cspline.CSpline(x, y, deriv=[yp[0], yp[-1]], extrap_order=2, warn=False)
+        for xi in [-1.55, -1., 0., 2., 3., 4., 6.2]:
+            self.assertAlmostEqual(f2(xi), s(xi))
+            self.assertAlmostEqual(Df2(xi), s.D(xi))
+            self.assertAlmostEqual(D2f2(xi), s.D2(xi))
+            self.assertAlmostEqual(integf2(xi), s.integ(xi))
 
     def test_left_natural_bc(self):
+        # choose left bdy so that self.D2f(xl) = 0 ==> get exact fcn
         x = np.array([-0.25, 1., 3.])
         x0 = x[0]
         y = self.f(x)
@@ -223,6 +413,7 @@ class test_cspline(unittest.TestCase,ArrayTests):
             self.assertAlmostEqual(self.integf(xi, x0), s.integ(xi))
 
     def test_right_natural_bc(self):
+        # choose right bdy so that self.D2f(xr) = 0 ==> get exact fcn
         x = np.array([-3., -1. , -0.25])
         x0 = x[0]
         y = self.f(x)
@@ -416,6 +607,98 @@ class test_powerseries(unittest.TestCase, PowerSeriesTests):
             self.exp_x.integ(x0=0), 
             exp(PowerSeries(self.x, order=self.order+1)) - 1
             )
+
+class test_root(unittest.TestCase,ArrayTests):
+    def setUp(self):
+        pass
+
+    def test_search(self):
+        " root.search(fcn, x0) "
+        interval = root.search(np.sin, 0.5, incr=0.5, fac=1.)
+        np.testing.assert_allclose(interval, (3.0, 3.5))
+        self.assertEqual(root.search.nit, 6)
+        interval = root.search(np.sin, 1.0, incr=0.0, fac=1.5)
+        np.testing.assert_allclose(interval, (27./8., 9./4.))
+        with self.assertRaises(RuntimeError):
+            root.search(np.sin, 0.5, incr=0.5, fac=1., maxit=5)
+
+    def test_refine(self):
+        " root.refine(fcn, interval) "
+        def fcn(x):
+            return (x + 1) ** 3 * (x - 0.5) ** 11
+        r = root.refine(fcn, (0.1, 2.1))
+        self.assertAlmostEqual(r, 0.5)
+        r = root.refine(fcn, (2.1, 0.1))
+        self.assertAlmostEqual(r, 0.5)
+        rtol = 0.1/100000
+        nit = 0
+        for rtol in [0.1, 0.01, 0.001, 0.0001]:
+            r = root.refine(fcn, (0.1, 2.1), rtol=rtol)
+            self.assertGreater(rtol * 0.5, abs(r - 0.5))
+            self.assertGreater(root.refine.nit, nit)
+            nit = root.refine.nit
+        def f(x, w=gv.gvar(1,0.1)):
+            return np.sin(w * x)
+        r = root.refine(f, (1, 4))
+        self.assertAlmostEqual(r.mean, np.pi)
+        self.assertAlmostEqual(r.sdev, 0.1 * np.pi)
+
+class test_linalg(unittest.TestCase, ArrayTests):
+    def setUp(self):
+        pass
+
+    def make_random(self, a, g='1.0(1)'):
+        a = numpy.asarray(a)
+        ans = numpy.empty(a.shape, object)
+        for i in numpy.ndindex(a.shape):
+            ans[i] = a[i] * gvar(g)
+        return ans
+
+    def test_det(self):
+        m = self.make_random([[1., 0.1], [0.1, 2.]])
+        detm = linalg.det(m)
+        self.assertTrue(gv.equivalent(detm, m[0,0] * m[1,1] - m[0,1] * m[1,0]))
+        m = self.make_random([[1.0,2.,3.],[0,4,5], [0,0,6]])
+        self.assertTrue(gv.equivalent(linalg.det(m), m[0, 0] * m[1, 1] * m[2, 2]))
+        s, logdet = linalg.slogdet(m)
+        self.assertTrue(gv.equivalent(s * gv.exp(logdet), linalg.det(m)))
+
+    def test_inv(self):
+        m = self.make_random([[1., 0.1], [0.1, 2.]])
+        one = gv.gvar([['1(0)', '0(0)'], ['0(0)', '1(0)']])
+        invm = linalg.inv(m)
+        self.assertTrue(gv.equivalent(linalg.inv(invm), m))
+        for mm in [invm.dot(m), m.dot(invm)]:
+            np.testing.assert_allclose(
+                gv.mean(mm), [[1, 0], [0, 1]], rtol=1e-10, atol=1e-10
+                )
+            np.testing.assert_allclose(
+                gv.sdev(mm), [[0, 0], [0, 0]], rtol=1e-10, atol=1e-10
+                )
+        p = linalg.det(m) * linalg.det(invm)
+        self.assertAlmostEqual(p.mean, 1.)
+        self.assertGreater(1e-10, p.sdev)
+
+    def test_solve(self):
+        m = self.make_random([[1., 0.1], [0.2, 2.]])
+        b = self.make_random([3., 4.])
+        x = linalg.solve(m, b)
+        self.assertTrue(gv.equivalent(m.dot(x), b))
+        m = self.make_random([[1., 0.1], [0.2, 2.]])
+        b = self.make_random([[3., 1., 0.], [4., 2., 1.]])
+        x = linalg.solve(m, b)
+        self.assertTrue(gv.equivalent(m.dot(x), b))
+
+    def test_eigvalsh(self):
+        m = gv.gvar([['2.1(1)', '0(0)'], ['0(0)', '0.5(3)']])
+        th = 0.92
+        cth = numpy.cos(th)
+        sth = numpy.sin(th)
+        u = numpy.array([[cth, sth], [-sth, cth]])
+        mrot = u.T.dot(m.dot(u))
+        vals =  linalg.eigvalsh(mrot)
+        self.assertTrue(gv.equivalent(vals[0], m[1, 1]))
+        self.assertTrue(gv.equivalent(vals[1], m[0, 0]))
 
 if __name__ == '__main__':
     unittest.main()

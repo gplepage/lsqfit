@@ -33,9 +33,9 @@
 <![endif]-->
 
   </head>
-  <body>
+  <body role="document">
 
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -50,21 +50,21 @@
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="case-study-pendulum">
 <h1>Case Study: Pendulum<a class="headerlink" href="#case-study-pendulum" title="Permalink to this headline">¶</a></h1>
 <p>This case study shows how to fit a differential equation,
-using <tt class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></tt>, and how to deal with uncertainty in
-the independent variable of a fit (that is, the <tt class="docutils literal"><span class="pre">x</span></tt> in
-a <tt class="docutils literal"><span class="pre">y</span></tt> versus <tt class="docutils literal"><span class="pre">x</span></tt> fit).</p>
+using <code class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></code>, and how to deal with uncertainty in
+the independent variable of a fit (that is, the <code class="docutils literal"><span class="pre">x</span></code> in
+a <code class="docutils literal"><span class="pre">y</span></code> versus <code class="docutils literal"><span class="pre">x</span></code> fit).</p>
 <div class="section" id="the-problem">
 <h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
 <p>A pendulum is released at time 0 from angle 1.571(50) (radians). It&#8217;s
@@ -85,18 +85,18 @@ second:</p>
 1.00(1)      0.832(79)
 </pre></div>
 </div>
-<p>Function <tt class="docutils literal"><span class="pre">theta(t)</span></tt> satisfies a differential equation:</p>
+<p>Function <code class="docutils literal"><span class="pre">theta(t)</span></code> satisfies a differential equation:</p>
 <div class="highlight-python"><div class="highlight"><pre>d/dt d/dt theta(t)  =  -(g/l) sin(theta(t))
 </pre></div>
 </div>
-<p>where <tt class="docutils literal"><span class="pre">g</span></tt> is the acceleration due to gravity and <tt class="docutils literal"><span class="pre">l</span></tt> is
+<p>where <code class="docutils literal"><span class="pre">g</span></code> is the acceleration due to gravity and <code class="docutils literal"><span class="pre">l</span></code> is
 the pendulum&#8217;s length. The challenge is to use the data to improve
-our very approximate <em>a priori</em> estimate 40±20 for <tt class="docutils literal"><span class="pre">g/l</span></tt>.</p>
+our very approximate <em>a priori</em> estimate 40±20 for <code class="docutils literal"><span class="pre">g/l</span></code>.</p>
 </div>
 <div class="section" id="pendulum-dynamics">
 <h2>Pendulum Dynamics<a class="headerlink" href="#pendulum-dynamics" title="Permalink to this headline">¶</a></h2>
 <p>We start by designing a data type that solves the differential
-equation for <tt class="docutils literal"><span class="pre">theta(t)</span></tt>:</p>
+equation for <code class="docutils literal"><span class="pre">theta(t)</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
@@ -132,11 +132,11 @@ equation for <tt class="docutils literal"><span class="pre">theta(t)</span></tt>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dtheta_dt</span><span class="p">,</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">g_l</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)])</span>
 </pre></div>
 </div>
-<p>A <tt class="docutils literal"><span class="pre">Pendulum</span></tt> object is initialized with a value for <tt class="docutils literal"><span class="pre">g/l</span></tt> and a tolerance
-for the differential-equation integrator, <a class="reference internal" href="gvar_other.html#gvar.ode.Integrator" title="gvar.ode.Integrator"><tt class="xref py py-class docutils literal"><span class="pre">gvar.ode.Integrator</span></tt></a>.
-Evaluating the object for a given value of <tt class="docutils literal"><span class="pre">theta(0)</span></tt> and <tt class="docutils literal"><span class="pre">t</span></tt> then
-calculates <tt class="docutils literal"><span class="pre">theta(t)</span></tt>; <tt class="docutils literal"><span class="pre">t</span></tt> is an array. We use <tt class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></tt> here,
-rather than some other integrator, because it works with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><tt class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></tt></a>s,
+<p>A <code class="docutils literal"><span class="pre">Pendulum</span></code> object is initialized with a value for <code class="docutils literal"><span class="pre">g/l</span></code> and a tolerance
+for the differential-equation integrator, <a class="reference internal" href="gvar_other.html#gvar.ode.Integrator" title="gvar.ode.Integrator"><code class="xref py py-class docutils literal"><span class="pre">gvar.ode.Integrator</span></code></a>.
+Evaluating the object for a given value of <code class="docutils literal"><span class="pre">theta(0)</span></code> and <code class="docutils literal"><span class="pre">t</span></code> then
+calculates <code class="docutils literal"><span class="pre">theta(t)</span></code>; <code class="docutils literal"><span class="pre">t</span></code> is an array. We use <code class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></code> here,
+rather than some other integrator, because it works with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s,
 allowing errors to propagate through the integration.</p>
 </div>
 <div class="section" id="two-types-of-input-data">
@@ -145,10 +145,10 @@ allowing errors to propagate through the integration.</p>
 regular data, or as fit parameters with priors. In general dependent
 variables are treated as regular data, and independent variables with
 errors are treated as fit parameters, with priors. Here the dependent
-variable is <tt class="docutils literal"><span class="pre">theta(t)</span></tt> and the independent variable is <tt class="docutils literal"><span class="pre">t</span></tt>. The
+variable is <code class="docutils literal"><span class="pre">theta(t)</span></code> and the independent variable is <code class="docutils literal"><span class="pre">t</span></code>. The
 independent variable has uncertainties, so we treat the individual
-values as fit parameters whose priors equal the initial values <tt class="docutils literal"><span class="pre">t[i]</span></tt>.
-The value of <tt class="docutils literal"><span class="pre">theta(t=0)</span></tt> is also independent data, and so becomes
+values as fit parameters whose priors equal the initial values <code class="docutils literal"><span class="pre">t[i]</span></code>.
+The value of <code class="docutils literal"><span class="pre">theta(t=0)</span></code> is also independent data, and so becomes
 a fit parameter since it is uncertain. Our fit code therefore
 is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>   <span class="c"># makes this work for python2 and 3</span>
@@ -190,11 +190,11 @@ is:</p>
 </div>
 <p>The prior is a dictionary containing <em>a priori</em> estimates  for every fit
 parameter. The fit parameters are varied to give the best fit
-to both the data and the priors. The fit function uses a <tt class="xref py py-class docutils literal"><span class="pre">Pendulum</span></tt> object
-to  integrate the differential equation for <tt class="docutils literal"><span class="pre">theta(t)</span></tt>, generating values
-for each value of <tt class="docutils literal"><span class="pre">t[i]</span></tt> given a value for <tt class="docutils literal"><span class="pre">theta(0)</span></tt>.
-The function returns an array that has the same shape as array <tt class="docutils literal"><span class="pre">theta</span></tt>.</p>
-<p>The fit is excellent with a <tt class="docutils literal"><span class="pre">chi**2</span></tt> per degree of freedom of 0.7:</p>
+to both the data and the priors. The fit function uses a <code class="xref py py-class docutils literal"><span class="pre">Pendulum</span></code> object
+to  integrate the differential equation for <code class="docutils literal"><span class="pre">theta(t)</span></code>, generating values
+for each value of <code class="docutils literal"><span class="pre">t[i]</span></code> given a value for <code class="docutils literal"><span class="pre">theta(0)</span></code>.
+The function returns an array that has the same shape as array <code class="docutils literal"><span class="pre">theta</span></code>.</p>
+<p>The fit is excellent with a <code class="docutils literal"><span class="pre">chi**2</span></code> per degree of freedom of 0.7:</p>
 <a class="reference internal image-reference" href="_images/case-pendulum.png"><img alt="_images/case-pendulum.png" src="_images/case-pendulum.png" style="width: 80%;" /></a>
 <p>The gray band in the figure shows the best fit to the data, with the
 error bars on the fit. The output from this fit is:</p>
@@ -233,9 +233,9 @@ Settings:
   svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
 </pre></div>
 </div>
-<p>The final result for <tt class="docutils literal"><span class="pre">g/l</span></tt> is 39.8(9), which is accurate to about 2%.
+<p>The final result for <code class="docutils literal"><span class="pre">g/l</span></code> is 39.8(9), which is accurate to about 2%.
 Note that the fit generates (slightly) improved estimates for several of
-the <tt class="docutils literal"><span class="pre">t</span></tt> values and for <tt class="docutils literal"><span class="pre">theta(0)</span></tt>.</p>
+the <code class="docutils literal"><span class="pre">t</span></code> values and for <code class="docutils literal"><span class="pre">theta(0)</span></code>.</p>
 </div>
 </div>
 
@@ -243,7 +243,7 @@ the <tt class="docutils literal"><span class="pre">t</span></tt> values and for 
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
@@ -260,8 +260,8 @@ the <tt class="docutils literal"><span class="pre">t</span></tt> values and for 
                         title="previous chapter">Case Study: Simple Extrapolation</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gvar.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">gvar</span></tt> - Gaussian Random Variables</a></p>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">gvar</span></code> - Gaussian Random Variables</a></p>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -278,7 +278,7 @@ the <tt class="docutils literal"><span class="pre">t</span></tt> values and for 
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -293,12 +293,12 @@ the <tt class="docutils literal"><span class="pre">t</span></tt> values and for 
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              >previous</a> |</li>
-        <li><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
-    <div class="footer">
+    <div class="footer" role="contentinfo">
         &copy; Copyright 2009-2014, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
 </html>

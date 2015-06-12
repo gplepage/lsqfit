@@ -52,6 +52,17 @@ class CSpline:
 
         ``f.integ(x)`` --- integral from ``x[0]`` to ``x``.
 
+    Splines can be used outside the range covered by the defining
+    ``x`` values. As this is often a bad idea, the :mod:`CSpline` 
+    methods issue a warning when called with out-of-range points. 
+    The warning can be suppressed by setting parameter ``warn=False``.
+    The spline value for an out-of-range point is calculated 
+    using a polynomial whose value and derivatives match those of the spline
+    at the knot closest to the out-of-range point. The extrapolation 
+    polynomial is cubic by default, but lower orders can be specified by 
+    setting parameter ``extrap_order`` to a (non-negative) integer 
+    less than 3; this is often a good idea.
+
     :param x: The knots of the spline, where the function values are
         specified.
     :type x: 1-d sequence of numbers
@@ -61,17 +72,27 @@ class CSpline:
         region specified by ``x[i]``. Default value is ``None`` for 
         each boundary.
     :type deriv: 2-component sequence
+    :param extrap_order: Order of polynomial used for extrapolations outside
+        of the spline range. The polynomial is constructed from the spline's
+        value and derivatives at the (nearest) knot of the spline. 
+        The allowed range is ``0 <= extrap_order <= 3``. The default value
+        is 3 although it is common practice to use smaller values.
     :param warn: If ``True``, warnings are generated 
         when the spline function is called for ``x`` values that 
         fall outside of the original range of ``x``\s used to 
         define the spline. Default value is ``True``;
         out-of-range warnings are suppressed if set to ``False``.
     """
-    def __init__(self, x, y, deriv=(None, None), warn=True):
+    def __init__(self, x, y, deriv=(None, None), extrap_order=3, warn=True):
         x, y = zip(*sorted(zip(x, y)))
         x = numpy.array(x)
         y = numpy.array(y)
         self.warn = warn
+        self.extrap_order = extrap_order
+        if extrap_order not in [0,1,2,3]:
+            raise ValueError(
+                'bad value for parameter extrap_order (must be 0, 1, 2 or 3)'
+                )
 
         # solve for dydx
         if x.dtype == object or y.dtype == object:
@@ -124,102 +145,214 @@ class CSpline:
         for i in range(1, self.n):
             self.intydx[i] = self.intydx[i - 1] + ydx[i]
 
+        # taylor coefficients for expansions to left or right of range
+        self.cleft=numpy.array(
+                [self.y[0], self.D(self.x[0]), 0.5 * self.D2(self.x[0])]
+                )
+        self.cright=numpy.array(
+                [self.y[-1], self.D(self.x[-1]), 0.5 * self.D2(self.x[-1])]
+                )
+
     def __call__(self, x):
         x = numpy.asarray(x)
         xshape = x.shape
         x = x.flatten()
-        if self.warn and (numpy.any(x < self.x[0]) or numpy.any(x > self.x[-1])):
+        left = x < self.x[0]
+        right = x > self.x[-1]
+        out_of_range = numpy.any(left) or numpy.any(right)
+        if self.warn and out_of_range:
             warnings.warn('x outside of spline range: ' + str(x))
-        j = numpy.searchsorted(self.x, x)
-        j[j <= 0] = 1   
-        j[j >= self.n] = self.n - 1
-        i = j - 1
-        x1 = self.x[i]
-        x2 = self.x[j]
-        y1 = self.y[i]
-        y2 = self.y[j]
-        k1 = self.dydx[i]
-        k2 = self.dydx[j]
-        t = (x - x1) / (x2 - x1)
-        a = k1 * (x2 - x1) - (y2 - y1)
-        b = - k2 * (x2 - x1) + (y2 - y1)
-        ans = (1 - t) * y1 + t * y2 + t * (1-t) * (a * (1 - t) + b * t)
+        if out_of_range and self.extrap_order < 3:
+            ans = numpy.empty(self.n, object)
+            middle = numpy.logical_not(numpy.logical_or(left, right))
+            for coef, idx, x0 in [
+                (self.cleft, left, self.x[0]), 
+                (self.cright, right, self.x[-1]),
+                ]:
+                if len(idx) == 0:
+                    continue
+                coef = coef[:self.extrap_order + 1]
+                dx = x[idx] - x0
+                ans[idx] = numpy.sum(
+                    cn * dx ** n for n, cn in enumerate(coef)
+                    )
+            ans[middle] = self(x[middle])
+            try:
+                ans = numpy.array(ans, float)
+            except TypeError:
+                pass
+        else:
+            # self.x[i] and self.x[j] bracket x where possible
+            # otherwise use first or last increment
+            j = numpy.searchsorted(self.x, x)
+            j[j <= 0] = 1
+            j[j >= self.n] = self.n - 1
+            i = j - 1
+            x1 = self.x[i]
+            x2 = self.x[j]
+            y1 = self.y[i]
+            y2 = self.y[j]
+            k1 = self.dydx[i]
+            k2 = self.dydx[j]
+            t = (x - x1) / (x2 - x1)
+            a = k1 * (x2 - x1) - (y2 - y1)
+            b = - k2 * (x2 - x1) + (y2 - y1)
+            ans = (1 - t) * y1 + t * y2 + t * (1-t) * (a * (1 - t) + b * t)
         return ans.reshape(xshape) if xshape != () else ans[0]
 
     def integ(self, x):
         x = numpy.asarray(x)
         xshape = x.shape
         x = x.flatten()
-        if self.warn and (numpy.any(x < self.x[0]) or numpy.any(x > self.x[-1])):
+        left = x < self.x[0]
+        right = x > self.x[-1]
+        out_of_range = numpy.any(left) or numpy.any(right)
+        if self.warn and out_of_range:
             warnings.warn('x outside of spline range: ' + str(x))
-        j = numpy.searchsorted(self.x, x)
-        j[j <= 0] = 1   
-        j[j >= self.n] = self.n - 1
-        i = j - 1
-        x1 = self.x[i]
-        x2 = self.x[j]
-        y1 = self.y[i]
-        y2 = self.y[j]
-        k1 = self.dydx[i]
-        k2 = self.dydx[j]
-        t = (x - x1) / (x2 - x1)
-        a = k1 * (x2 - x1) - (y2 - y1)
-        b = - k2 * (x2 - x1) + (y2 - y1)
-        ans = (x2 - x1) * (
-            t * (1. - t / 2.) * y1
-            + t ** 2 / 2. * y2
-            + t ** 2 * (0.5 - 2. * t /3. + t ** 2 / 4.) * a
-            + t ** 3 * (1 / 3. - t / 4.) * b
-            )
-        ans += self.intydx[i]
+        if out_of_range and self.extrap_order < 3:
+            ans = numpy.empty(self.n, object)
+            middle = numpy.logical_not(numpy.logical_or(left, right))
+            cfac = numpy.array([1, 1/2., 1/3.])[:self.extrap_order + 1]
+            for coef, idx, x0 in [
+                (self.cleft, left, self.x[0]), 
+                (self.cright, right, self.x[-1]),
+                ]:
+                if len(idx) == 0:
+                    continue
+                coef = coef[:self.extrap_order + 1] * cfac
+                dx = x[idx] - x0
+                ans[idx] = numpy.sum(
+                    cn * dx ** (n+1) for n, cn in enumerate(coef)
+                    )
+            ans[right] += self.intydx[-1]
+            ans[middle] = self(x[middle])
+            try:
+                ans = numpy.array(ans, float)
+            except TypeError:
+                pass
+        else:
+            # self.x[i] and self.x[j] bracket x where possible
+            # otherwise use first or last increment
+            j = numpy.searchsorted(self.x, x)
+            j[j <= 0] = 1   
+            j[j >= self.n] = self.n - 1
+            i = j - 1
+            x1 = self.x[i]
+            x2 = self.x[j]
+            y1 = self.y[i]
+            y2 = self.y[j]
+            k1 = self.dydx[i]
+            k2 = self.dydx[j]
+            t = (x - x1) / (x2 - x1)
+            a = k1 * (x2 - x1) - (y2 - y1)
+            b = - k2 * (x2 - x1) + (y2 - y1)
+            ans = (x2 - x1) * (
+                t * (1. - t / 2.) * y1
+                + t ** 2 / 2. * y2
+                + t ** 2 * (0.5 - 2. * t /3. + t ** 2 / 4.) * a
+                + t ** 3 * (1 / 3. - t / 4.) * b
+                )
+            ans += self.intydx[i]
         return ans.reshape(xshape) if xshape != () else ans[0]
 
     def D(self, x):
         x = numpy.asarray(x)
         xshape = x.shape
         x = x.flatten()
-        if self.warn and (numpy.any(x < self.x[0]) or numpy.any(x > self.x[-1])):
+        left = x < self.x[0]
+        right = x > self.x[-1]
+        out_of_range = numpy.any(left) or numpy.any(right)
+        if self.warn and out_of_range:
             warnings.warn('x outside of spline range: ' + str(x))
-        j = numpy.searchsorted(self.x, x)
-        j[j <= 0] = 1   
-        j[j >= self.n] = self.n - 1
-        i = j - 1
-        x1 = self.x[i]
-        x2 = self.x[j]
-        y1 = self.y[i]
-        y2 = self.y[j]
-        k1 = self.dydx[i]
-        k2 = self.dydx[j]
-        t = (x - x1) / (x2 - x1)
-        a = k1 * (x2 - x1) - (y2 - y1)
-        b = - k2 * (x2 - x1) + (y2 - y1)
-        ans = (
-            (y2 - y1) / (x2 - x1) 
-            + (1 - 2 * t) * (a * (1 - t) + b * t) / (x2 - x1)
-            + t * (1 - t) * (b - a) / (x2 - x1)
-            )
+        if out_of_range and self.extrap_order < 3:
+            ans = numpy.empty(self.n, object)
+            middle = numpy.logical_not(numpy.logical_or(left, right))
+            for coef, idx, x0 in [
+                (self.cleft, left, self.x[0]), 
+                (self.cright, right, self.x[-1]),
+                ]:
+                if len(idx) == 0:
+                    continue
+                coef = coef[:self.extrap_order + 1]
+                if self.extrap_order == 0:
+                    ans[idx] = 0.
+                elif self.extrap_order == 1:
+                    ans[idx] = coef[1]
+                else:
+                    ans[idx] = coef[1] + 2 * coef[2] * (x[idx] - x0)
+            ans[middle] = self(x[middle])
+            try:
+                ans = numpy.array(ans, float)
+            except TypeError:
+                pass
+        else:
+            # self.x[i] and self.x[j] bracket x where possible
+            # otherwise use first or last increment
+            j = numpy.searchsorted(self.x, x)
+            j[j <= 0] = 1
+            j[j >= self.n] = self.n - 1
+            i = j - 1
+            x1 = self.x[i]
+            x2 = self.x[j]
+            y1 = self.y[i]
+            y2 = self.y[j]
+            k1 = self.dydx[i]
+            k2 = self.dydx[j]
+            t = (x - x1) / (x2 - x1)
+            a = k1 * (x2 - x1) - (y2 - y1)
+            b = - k2 * (x2 - x1) + (y2 - y1)
+            ans = (
+                (y2 - y1) / (x2 - x1) 
+                + (1 - 2 * t) * (a * (1 - t) + b * t) / (x2 - x1)
+                + t * (1 - t) * (b - a) / (x2 - x1)
+                )
         return ans.reshape(xshape) if xshape != () else ans[0]
 
     def D2(self, x):
         x = numpy.asarray(x)
         xshape = x.shape
         x = x.flatten()
-        if self.warn and (numpy.any(x < self.x[0]) or numpy.any(x > self.x[-1])):
+        left = x < self.x[0]
+        right = x > self.x[-1]
+        out_of_range = numpy.any(left) or numpy.any(right)
+        if self.warn and out_of_range:
             warnings.warn('x outside of spline range: ' + str(x))
-        j = numpy.searchsorted(self.x, x)
-        j[j <= 0] = 1   
-        j[j >= self.n] = self.n - 1
-        i = j - 1
-        x1 = self.x[i]
-        x2 = self.x[j]
-        y1 = self.y[i]
-        y2 = self.y[j]
-        k1 = self.dydx[i]
-        k2 = self.dydx[j]
-        t = (x - x1) / (x2 - x1)
-        a = k1 * (x2 - x1) - (y2 - y1)
-        b = - k2 * (x2 - x1) + (y2 - y1)
-        ans = 2 * (b - 2 * a + (a - b) * 3 * t) / (x2 - x1) ** 2
+        if out_of_range and self.extrap_order < 3:
+            ans = numpy.empty(self.n, object)
+            middle = numpy.logical_not(numpy.logical_or(left, right))
+            for coef, idx, x0 in [
+                (self.cleft, left, self.x[0]), 
+                (self.cright, right, self.x[-1]),
+                ]:
+                if len(idx) == 0:
+                    continue
+                coef = coef[:self.extrap_order + 1]
+                if self.extrap_order < 2:
+                    ans[idx] = 0.
+                else:
+                    ans[idx] = 2 * coef[2]
+            ans[middle] = self(x[middle])
+            try:
+                ans = numpy.array(ans, float)
+            except TypeError:
+                pass
+        else:
+            # self.x[i] and self.x[j] bracket x where possible
+            # otherwise use first or last increment
+            j = numpy.searchsorted(self.x, x)
+            j[j <= 0] = 1
+            j[j >= self.n] = self.n - 1
+            i = j - 1
+            x1 = self.x[i]
+            x2 = self.x[j]
+            y1 = self.y[i]
+            y2 = self.y[j]
+            k1 = self.dydx[i]
+            k2 = self.dydx[j]
+            t = (x - x1) / (x2 - x1)
+            a = k1 * (x2 - x1) - (y2 - y1)
+            b = - k2 * (x2 - x1) + (y2 - y1)
+            ans = 2 * (b - 2 * a + (a - b) * 3 * t) / (x2 - x1) ** 2
         return ans.reshape(xshape) if xshape != () else ans[0]
 
 def tri_diag_solve(a, b, c, d):

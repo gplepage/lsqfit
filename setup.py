@@ -15,11 +15,23 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
+import warnings
 
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
-from distutils.command.build_py import build_py
+try:
+    from setuptools import setup, Extension
+    setuptools_kwargs = dict(
+        install_requires=['cython>=0.17', 'numpy>=1.7'],
+        )
+except ImportError:
+    warnings.warn(
+        "setuptools not installed so can't verify dependencies"
+        )
+    from distutils.core import setup
+    from distutils.extension import Extension
+    setuptools_kwargs = dict(
+        requires=['cython (>=0.17)', 'numpy (>=1.7)'],
+        )
+from Cython.Build import cythonize
 import numpy
 
 LSQFIT_VERSION = '6.0'
@@ -46,8 +58,9 @@ ext_args = dict(
     include_dirs=[numpy.get_include()],
     library_dirs=[],
     runtime_library_dirs=[],
-    extra_link_args=[], # ['-framework','vecLib'], # for Mac OSX ?
+    extra_link_args=[] # ['-framework','vecLib'], # for Mac OSX ?
     )
+
 ext_modules = [     #
     Extension("gvar._gvarcore", ["src/gvar/_gvarcore.pyx"], **ext_args),
     Extension( "gvar._svec_smat", ["src/gvar/_svec_smat.pyx"], **ext_args),
@@ -58,7 +71,7 @@ ext_modules = [     #
     ]
 
 # packages
-packages = ["gvar","lsqfit"]
+packages = ["gvar", "lsqfit"]
 package_dir = {"lsqfit":"src/lsqfit", "gvar":"src/gvar"}
 package_data = {"gvar":['../gvar.pxd']}
 
@@ -70,9 +83,7 @@ setup(name='lsqfit',
     packages=packages,
     package_dir=package_dir,
     package_data=package_data,
-    ext_modules=ext_modules,
-    cmdclass={'build_ext':build_ext,'build_py':build_py},
-    requires=["cython (>=0.17)","numpy (>=1.7)"],
+    ext_modules= cythonize(ext_modules),
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',
@@ -106,8 +117,10 @@ setup(name='lsqfit',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'
-        ]
+        ],
+    **setuptools_kwargs
 )

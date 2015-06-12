@@ -1,3 +1,29 @@
+Version 6.1??? 
+============
+
+- Added gvar.equivalent(g1, g2, rtol, atol) which checkes whether or not
+  the GVars in g1 and g2 are the equivalent (ie, g.mean and g.der agree 
+  for each GVar). This is useful for debugging purposes.
+
+- tiny addition to gvar tests.
+
+- gvar.cspline now allows you to specify what order polynomial is used for 
+  out-of-range points. In the past a cubic polynomial was used, based on 
+  the value and derivatives at the knot nearest to the out-of-range point.
+  Now one can specify a lower-order polynomial by setting parameter 
+  extrap_order equal to 0, 1, or 2.
+
+- Added gvar.ode.integral for 1d integrals.
+
+- Added two new numerical analysis packages to gvar: 
+
+    gvar.root - finds roots of 1d functions
+    gvar.linalg - basic linear algebra (det, inv, solve, eigvalsh ...)
+
+  As for the other numerical analysis methods, the new methods work with any 
+  combination of numbers and GVars. 
+
+
 Version 6.0 - 2014-11-01
 ========================
 
