@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 6.0 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 6.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '6.0',
+        VERSION:     '6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
-    <link rel="prev" title="Numerical Analysis Modules in gvar" href="gvar_other.html" />
+    <link rel="top" title="lsqfit 6.1 documentation" href="index.html" />
+    <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -44,9 +44,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -65,8 +65,8 @@ data. In general a fit has four inputs:</p>
 <div><ol class="arabic simple">
 <li>The dependent data <code class="docutils literal"><span class="pre">y</span></code> that is to be fit &#8212; typically <code class="docutils literal"><span class="pre">y</span></code>
 is a Python dictionary in an <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> analysis. Its values
-<code class="docutils literal"><span class="pre">y[k]</span></code> are either <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays (any shape or dimension) of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that specify the values of the dependent variables
+<code class="docutils literal"><span class="pre">y[k]</span></code> are either <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays (any shape or dimension) of
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that specify the values of the dependent variables
 and their errors.</li>
 <li>A collection <code class="docutils literal"><span class="pre">x</span></code> of independent data &#8212; <code class="docutils literal"><span class="pre">x</span></code> can have any
 structure and contain any data (or no data).</li>
@@ -79,7 +79,7 @@ of <code class="docutils literal"><span class="pre">x</span></code> (that is, <c
 omitted from the input data).</li>
 <li>Initial estimates or <em>priors</em> for each parameter in <code class="docutils literal"><span class="pre">p</span></code>
 &#8212; priors are usually specified using a dictionary <code class="docutils literal"><span class="pre">prior</span></code>
-whose values <code class="docutils literal"><span class="pre">prior[k]</span></code> are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that
+whose values <code class="docutils literal"><span class="pre">prior[k]</span></code> are <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that
 give initial estimates (values and errors) for parameters <code class="docutils literal"><span class="pre">p[k]</span></code>.</li>
 </ol>
 </div></blockquote>
@@ -97,8 +97,8 @@ give initial estimates (values and errors) for parameters <code class="docutils 
 <p>The parameters <code class="docutils literal"><span class="pre">p[k]</span></code> are varied until the <code class="docutils literal"><span class="pre">chi**2</span></code> for the fit is
 minimized.</p>
 <p>The best-fit values for the parameters are recovered after fitting
-using, for example, <code class="docutils literal"><span class="pre">p=fit.p</span></code>. Then the <code class="docutils literal"><span class="pre">p[k]</span></code> are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or
-arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that give best-fit estimates and fit uncertainties
+using, for example, <code class="docutils literal"><span class="pre">p=fit.p</span></code>. Then the <code class="docutils literal"><span class="pre">p[k]</span></code> are <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or
+arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that give best-fit estimates and fit uncertainties
 in those estimates. The <code class="docutils literal"><span class="pre">print(fit)</span></code> statement prints a summary of
 the fit results.</p>
 <p>The dependent variable <code class="docutils literal"><span class="pre">y</span></code> above could be an array instead of a
@@ -130,7 +130,7 @@ example,</p>
 Bayes Factor, the number of iterations, and the cpu time needed for the
 fit are in <code class="docutils literal"><span class="pre">fit.chi2</span></code>, <code class="docutils literal"><span class="pre">fit.dof</span></code>, <code class="docutils literal"><span class="pre">fit.logGBF</span></code>, <code class="docutils literal"><span class="pre">fit.nit</span></code>, and
 <code class="docutils literal"><span class="pre">fit.time</span></code>, respectively. Results for individual parameters in
-<code class="docutils literal"><span class="pre">fit.p</span></code> are of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>, and therefore carry information about
+<code class="docutils literal"><span class="pre">fit.p</span></code> are of type <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>, and therefore carry information about
 errors and correlations with other parameters. The fit data and prior
 can be recovered using <code class="docutils literal"><span class="pre">fit.x</span></code> (equals <code class="docutils literal"><span class="pre">False</span></code> if there is no <code class="docutils literal"><span class="pre">x</span></code>),
 <code class="docutils literal"><span class="pre">fit.y</span></code>, and <code class="docutils literal"><span class="pre">fit.prior</span></code>; the data and prior are corrected for the
@@ -148,12 +148,12 @@ have any of the following formats:</p>
 <dt><code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">y</span></code></dt>
 <dd><code class="docutils literal"><span class="pre">x</span></code> is the independent data that is passed to the fit
 function with the fit parameters: <code class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>. <code class="docutils literal"><span class="pre">y</span></code> is a
-dictionary (or array) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that encode the means and
+dictionary (or array) of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that encode the means and
 covariance matrix for the data that is to be fit being fit.
 The fit function must return a result having the same
 layout as <code class="docutils literal"><span class="pre">y</span></code>.</dd>
 <dt><code class="docutils literal"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">y</span></code></dt>
-<dd><code class="docutils literal"><span class="pre">y</span></code> is a dictionary (or array) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that encode
+<dd><code class="docutils literal"><span class="pre">y</span></code> is a dictionary (or array) of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that encode
 the means and covariance matrix for the data being fit.
 There is no independent data so the fit function depends
 only upon the fit parameters: <code class="docutils literal"><span class="pre">fit(p)</span></code>. The fit function
@@ -282,8 +282,8 @@ statistics are assumed when computing <code class="docutils literal"><span class
 <code class="descname">p</code><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Best-fit parameters from fit. Depending upon what was used for
 the prior (or <code class="docutils literal"><span class="pre">p0</span></code>), it is either: a dictionary
-(<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s and/or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s; or
-an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>) of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. <code class="docutils literal"><span class="pre">fit.p</span></code> represents a
+(<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>) of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s and/or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s; or
+an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>) of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. <code class="docutils literal"><span class="pre">fit.p</span></code> represents a
 multi-dimensional Gaussian distribution which, in Bayesian terminology,
 is the <em>posterior</em> probability distribution of the fit parameters.</p>
 </dd></dl>
@@ -373,7 +373,7 @@ in particular attributes:</p>
 <code class="descname">prior</code><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prior used in the fit. This may differ from the input prior if an
 SVD cut is used. It is either a dictionary
-(<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>) or an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>),
+(<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>) or an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>),
 depending upon the input. Equals <code class="docutils literal"><span class="pre">None</span></code> if no prior was specified.</p>
 </dd></dl>
 
@@ -392,7 +392,7 @@ argument: so <code class="docutils literal"><span class="pre">f(p)</span></code>
 <code class="descname">y</code><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit data used in the fit. This may differ from the input data if
 an SVD cut is used. It is either a dictionary
-(<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>) or an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>),
+(<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>) or an array (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>),
 depending upon the input.</p>
 </dd></dl>
 
@@ -448,28 +448,29 @@ prior values are listed.</li>
 <dd><p>Tabulate error budget for <code class="docutils literal"><span class="pre">outputs[ko]</span></code> due to <code class="docutils literal"><span class="pre">inputs[ki]</span></code>.</p>
 <p>For each output <code class="docutils literal"><span class="pre">outputs[ko]</span></code>, <code class="docutils literal"><span class="pre">fmt_errorbudget</span></code> computes the
 contributions to <code class="docutils literal"><span class="pre">outputs[ko]</span></code>&#8216;s standard deviation coming from the
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s collected in <code class="docutils literal"><span class="pre">inputs[ki]</span></code>. This is done for each key
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s collected in <code class="docutils literal"><span class="pre">inputs[ki]</span></code>. This is done for each key
 combination <code class="docutils literal"><span class="pre">(ko,ki)</span></code> and the results are tabulated with columns and
-rows labeled by <code class="docutils literal"><span class="pre">ko</span></code> and <code class="docutils literal"><span class="pre">ki</span></code>, respectively. If a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> in
-<code class="docutils literal"><span class="pre">inputs[ki]</span></code> is correlated with other <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, the contribution from
+rows labeled by <code class="docutils literal"><span class="pre">ko</span></code> and <code class="docutils literal"><span class="pre">ki</span></code>, respectively. If a <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> in
+<code class="docutils literal"><span class="pre">inputs[ki]</span></code> is correlated with other <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, the contribution from
 the others is included in the <code class="docutils literal"><span class="pre">ki</span></code> contribution as well (since
-contributions from correlated <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s cannot be distinguished). The table
+contributions from correlated <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s cannot be distinguished). The table
 is returned as a string.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> &#8211; Dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s for which an error budget
+<li><strong>outputs</strong> &#8211; Dictionary of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s for which an error budget
 is computed.</li>
-<li><strong>inputs</strong> &#8211; Dictionary of: <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, arrays/dictionaries of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, or lists of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s and/or arrays/dictionaries of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. <code class="docutils literal"><span class="pre">fmt_errorbudget</span></code> tabulates the parts of the standard
+<li><strong>inputs</strong> &#8211; Dictionary of: <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, arrays/dictionaries of
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, or lists of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s and/or arrays/dictionaries of
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. <code class="docutils literal"><span class="pre">fmt_errorbudget</span></code> tabulates the parts of the standard
 deviations of each <code class="docutils literal"><span class="pre">outputs[ko]</span></code> due to each <code class="docutils literal"><span class="pre">inputs[ki]</span></code>.</li>
 <li><strong>ndecimal</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; Number of decimal places displayed in table.</li>
 <li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <code class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></code>; otherwise
 tabulate the errors themselves.</li>
-<li><strong>colwidth</strong> (<em>positive integer</em>) &#8211; Width of each column.</li>
+<li><strong>colwidth</strong> (<em>positive integer or None</em>) &#8211; Width of each column. This is set automatically, to
+accommodate label widths, if <code class="docutils literal"><span class="pre">colwidth=None</span></code> (default).</li>
 <li><strong>verify</strong> (<em>boolean</em>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code>, a warning is issued if: 1) different inputs are
 correlated (and therefore double count errors); or
 2) the sum (in quadrature) of partial errors is not equal to the
@@ -491,13 +492,13 @@ Output variables are labeled by the keys in <code class="docutils literal"><span
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.fmt_values">
 <code class="descname">fmt_values</code><span class="sig-paren">(</span><em>outputs</em>, <em>ndecimal=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tabulate <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s in <code class="docutils literal"><span class="pre">outputs</span></code>.</p>
+<dd><p>Tabulate <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s in <code class="docutils literal"><span class="pre">outputs</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> &#8211; A dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> objects.</li>
+<li><strong>outputs</strong> &#8211; A dictionary of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> objects.</li>
 <li><strong>ndecimal</strong> (<code class="docutils literal"><span class="pre">int</span></code> or <code class="docutils literal"><span class="pre">None</span></code>) &#8211; Format values <code class="docutils literal"><span class="pre">v</span></code> using <code class="docutils literal"><span class="pre">v.fmt(ndecimal)</span></code>.</li>
 </ul>
 </td>
@@ -743,18 +744,18 @@ dictionary for <a class="reference internal" href="#lsqfit.nonlinear_fit" title=
 <dl class="function">
 <dt id="lsqfit.wavg">
 <code class="descclassname">lsqfit.</code><code class="descname">wavg</code><span class="sig-paren">(</span><em>dataseq</em>, <em>prior=None</em>, <em>fast=False</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Weighted average of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays/dicts of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s.</p>
-<p>The weighted average of several <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s is what one obtains from
-a  least-squares fit of the collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s to the
+<dd><p>Weighted average of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays/dicts of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</p>
+<p>The weighted average of several <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s is what one obtains from
+a  least-squares fit of the collection of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s to the
 one-parameter fit function</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>where <code class="docutils literal"><span class="pre">N</span></code> is the number of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. The average is the best-fit
-value for <code class="docutils literal"><span class="pre">p[0]</span></code>.  <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s with smaller standard deviations carry
+<p>where <code class="docutils literal"><span class="pre">N</span></code> is the number of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. The average is the best-fit
+value for <code class="docutils literal"><span class="pre">p[0]</span></code>.  <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s with smaller standard deviations carry
 more weight than those with larger standard deviations. The averages
-computed by <code class="docutils literal"><span class="pre">wavg</span></code> take account of correlations between the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s.</p>
+computed by <code class="docutils literal"><span class="pre">wavg</span></code> take account of correlations between the <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</p>
 <p>If <code class="docutils literal"><span class="pre">prior</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>, it is added to the list of data
 used in the average. Thus <code class="docutils literal"><span class="pre">wavg([x2,</span> <span class="pre">x3],</span> <span class="pre">prior=x1)</span></code> is the
 same as <code class="docutils literal"><span class="pre">wavg([x1,</span> <span class="pre">x2,</span> <span class="pre">x3])</span></code>.</p>
@@ -765,10 +766,10 @@ same as <code class="docutils literal"><span class="pre">wavg([x1,</span> <span 
 <span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>   <span class="c"># weighted average of x1, x2 and x3</span>
 </pre></div>
 </div>
-<p>where the result <code class="docutils literal"><span class="pre">xavg</span></code> is a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> containing the weighted average.</p>
-<p>The individual <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s in the last example can be  replaced by
-multidimensional distributions, represented by arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s
-or dictionaries of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s (or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s). For example,</p>
+<p>where the result <code class="docutils literal"><span class="pre">xavg</span></code> is a <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> containing the weighted average.</p>
+<p>The individual <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s in the last example can be  replaced by
+multidimensional distributions, represented by arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s
+or dictionaries of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s (or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s). For example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
 <span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
 <span class="n">x3</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
@@ -777,7 +778,7 @@ or dictionaries of <a class="reference internal" href="gvar.html#gvar.GVar" titl
 </pre></div>
 </div>
 <p>where each array <code class="docutils literal"><span class="pre">x1</span></code>, <code class="docutils literal"><span class="pre">x2</span></code> ... must have the same shape.
-The result <code class="docutils literal"><span class="pre">xavg</span></code> in this case is an array of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, where
+The result <code class="docutils literal"><span class="pre">xavg</span></code> in this case is an array of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, where
 the shape of the array is the same as that of <code class="docutils literal"><span class="pre">x1</span></code>, etc.</p>
 <p>Another example is</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">x1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
@@ -810,11 +811,11 @@ of list <code class="docutils literal"><span class="pre">dataseq</span></code>. 
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dataseq</strong> &#8211; The <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s to be averaged. <code class="docutils literal"><span class="pre">dataseq</span></code> is a one-dimensional
-sequence of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, or of arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, or of dictionaries
-containing <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. All <code class="docutils literal"><span class="pre">dataseq[i]</span></code> must
+<li><strong>dataseq</strong> &#8211; The <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s to be averaged. <code class="docutils literal"><span class="pre">dataseq</span></code> is a one-dimensional
+sequence of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, or of arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, or of dictionaries
+containing <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. All <code class="docutils literal"><span class="pre">dataseq[i]</span></code> must
 have the same shape.</li>
-<li><strong>prior</strong> (<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> or array/dictionary of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s) &#8211; Prior values for the averages, to be included in the weighted
+<li><strong>prior</strong> (<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> or array/dictionary of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s) &#8211; Prior values for the averages, to be included in the weighted
 average. Default value is <code class="docutils literal"><span class="pre">None</span></code>, in which case <code class="docutils literal"><span class="pre">prior</span></code> is ignored.</li>
 <li><strong>fast</strong> (<em>bool</em>) &#8211; Setting <code class="docutils literal"><span class="pre">fast=True</span></code> causes <code class="docutils literal"><span class="pre">wavg</span></code> to compute an
 approximation to the weighted average that is much faster to calculate
@@ -869,7 +870,7 @@ called the <em>p-value</em>.</p>
 <dd><p>Fit output from average.</p>
 </dd></dl>
 
-<p>These same attributes are also attached to the output <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>,
+<p>These same attributes are also attached to the output <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>,
 array or dictionary from <code class="xref py py-func docutils literal"><span class="pre">gvar.wavg()</span></code>.</p>
 </dd></dl>
 
@@ -1003,7 +1004,7 @@ in <code class="docutils literal"><span class="pre">prior</span></code>.</p>
 <li><strong>n</strong> (<em>positive integer</em>) &#8211; Length of vector returned by the fit function <code class="docutils literal"><span class="pre">f(x)</span></code>.</li>
 <li><strong>f</strong> (<em>function</em>) &#8211; Fit function: <a class="reference internal" href="#lsqfit.multifit" title="lsqfit.multifit"><code class="xref py py-class docutils literal"><span class="pre">multifit</span></code></a> minimizes <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code>
 by varying parameters <code class="docutils literal"><span class="pre">x</span></code>. The parameters are a 1-d
-<code class="xref py py-class docutils literal"><span class="pre">numpy</span></code> array of either numbers or <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s.</li>
+<code class="xref py py-class docutils literal"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</li>
 <li><strong>reltol</strong> (<em>float</em>) &#8211; The fit stops when <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;</span> <span class="pre">abstol</span> <span class="pre">+</span> <span class="pre">reltol</span> <span class="pre">*</span> <span class="pre">|x_i|</span></code>;
 default value is <code class="docutils literal"><span class="pre">1e-4</span></code>.</li>
 <li><strong>abstol</strong> (<em>float</em>) &#8211; The fit stops when <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;</span> <span class="pre">abstol</span> <span class="pre">+</span> <span class="pre">reltol</span> <span class="pre">*</span> <span class="pre">|x_i|</span></code>;
@@ -1128,7 +1129,7 @@ The following attributes are available:</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> relies heavily on the <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a>, and <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> modules.
+<p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> relies heavily on the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> modules.
 Several utility functions are in <code class="xref py py-mod docutils literal"><span class="pre">lsqfit_util</span></code>. Also the minimization
 routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 </div>
@@ -1153,8 +1154,8 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="gvar_other.html"
-                        title="previous chapter">Numerical Analysis Modules in <code class="docutils literal"><span class="pre">gvar</span></code></a></p>
+  <p class="topless"><a href="case-pendulum.html"
+                        title="previous chapter">Case Study: Pendulum</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -1182,9 +1183,9 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar_other.html" title="Numerical Analysis Modules in gvar"
+          <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

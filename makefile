@@ -22,13 +22,7 @@ install-sys :
 
 uninstall :			# mostly works (leaves some empty directories)
 	- cat files-lsqfit.$(PYTHON) | xargs rm -rf
-	- cat files-gdev.$(PYTHON) | xargs rm -rf
 
-install-gdev :
-	$(PYTHON) gdev-setup.py install --user --record files-gdev.$(PYTHON)
-
-install-gdev-sys :
-	$(PYTHON) gdev-setup.py install --record files-gdev.$(PYTHON)
 
 doc-html:
 	rm -rf doc/html; sphinx-build -b html doc/source doc/html
@@ -75,8 +69,6 @@ clean:
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage doc.zip
 	rm -f -r dist
 	# rm -f src/lsqfit/*.c
-	# rm -f src/gvar/*.c
-	# rm -f src/*.c
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean

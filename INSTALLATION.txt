@@ -20,14 +20,35 @@ To install:
         less flexible) than ordinary python. Versions earlier than 0.17
 		may not work. 
 		(http://www.cython.org/)
+
+	d. The gvar python package - provides tools for creating and 
+		manipulating Gaussian random variables, which are used for
+		designing Bayesian priors, report fit results, etc, etc. This
+		package will be installed automatically when lsqfit is installed
+		provided setuptools are available (see next entry). gvar 
+		is available on PyPI and so can also be installed 
+		using 'pip install gvar'.
+		(https://github.com/gplepage/gvar or on PyPI)
+
+	e. The setuptools package (optional). setuptools is used in place of
+		distutils for installing the package, if setuptools is present. 
+		setuptools automatically ensures that modules needed by gvar 
+		are installed and sufficiently up-to-date. If setuptools is not 
+		installed, distutils is used and dependencies are not checked --- 
+		this must then be done by hand. To install setuptools either:
+		1) download https://bootstrap.pypa.io/ez_setup.py
+  		and run 'python ez_setup.py'; or 2) go to the setuptools website 
+  		for instructions.
+  		(https://pythonhosted.org/setuptools/)
+
 				
 	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2-3.4. It
 	does not work for Python versions 2.5.X or earlier. It has not been tested
 	for Python 3.0 and 3.1, but likely works at least with the latter. Some
 	of the tests don't work with Python 2.6.
 
-2. Use 'make install'. This will build the gvar and lsqfit packages, and 
-	then copy them into a standard directory in the user's space that
+2. Use 'make install'. This will build the lsqfit package, and 
+	then copy it into a standard directory in the user's space that
 	Python knows about. A list of the installed files is stored in file
 	files-lsqfit.python (in case, for example, you want to uninstall them).
 	
@@ -48,12 +69,6 @@ To install:
 	a separate installation for each python version that will be used for 
 	lsqfit.
 		
-	N.B. If you have old code that uses the gdev module, install gdev.so
-	using 'make install-gdev' (or 'python gdev-setup.py install --user'). 
-	This creates aliases, using the old names, for the critical elements of
-	the gvar package, thereby allowing most old code to run. Use gvar
-	instead of gdev for new code.
-
 	N.B. Adjust the entries for variables include_dirs, library_dirs, and
 	runtime_library_dirs in setup.py if 'make install' generates complaints about
 	being unable to find header files for gsl or numpy, or libraries for gsl.
@@ -91,7 +106,7 @@ Problems:
 	Contact Peter Lepage: g.p.lepage@cornell.edu
 
 
-# Copyright (c) 2008-2014 G. Peter Lepage. 
+# Copyright (c) 2008-2015 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

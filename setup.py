@@ -20,16 +20,13 @@ import warnings
 try:
     from setuptools import setup, Extension
     setuptools_kwargs = dict(
-        install_requires=['cython>=0.17', 'numpy>=1.7'],
+        install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],
         )
 except ImportError:
-    warnings.warn(
-        "setuptools not installed so can't verify dependencies"
-        )
     from distutils.core import setup
     from distutils.extension import Extension
     setuptools_kwargs = dict(
-        requires=['cython (>=0.17)', 'numpy (>=1.7)'],
+        requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],
         )
 from Cython.Build import cythonize
 import numpy
@@ -78,16 +75,16 @@ setup(name='lsqfit',
     license='GPLv3+',
     platforms='Any',
     long_description="""\
-    This package facilitate least-squares fitting of noisy data by
+    This package facilitates least-squares fitting of noisy data by
     multi-dimensional, nonlinear functions of arbitrarily many
     parameters. :mod:`lsqfit` provides the fitting capability;
     it makes heavy use of package :mod:`gvar`, which provides tools for 
     the analysis of error propagation, and also for the creation of 
-    complicated multi-dimensional gaussian distributions. 
-    :mod:`lsqfit` supports Bayesian priors for the fit parameters, with 
-    arbitrarily complicated multidimensional Gaussian distributions. It uses
-    automatic differentiation to compute gradients, greatly simplifying
-    the design of fit functions.
+    complicated multi-dimensional gaussian distributions. (:mod:`gvar`
+    is distributed separately.) :mod:`lsqfit` supports Bayesian priors 
+    for the fit parameters, with arbitrarily complicated multidimensional 
+    Gaussian distributions. It uses automatic differentiation to compute 
+    gradients, greatly simplifying the design of fit functions.
 
     In addition to :mod:`gvar`, this package uses the Gnu Scientific 
     Library (GSL) to do the fitting, numpy for efficient array arithmetic, 
@@ -106,7 +103,6 @@ setup(name='lsqfit',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'

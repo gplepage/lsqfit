@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Case Study: Pendulum &mdash; lsqfit 6.0 documentation</title>
+    <title>Case Study: Pendulum &mdash; lsqfit 6.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '6.0',
+        VERSION:     '6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
-    <link rel="next" title="gvar - Gaussian Random Variables" href="gvar.html" />
+    <link rel="top" title="lsqfit 6.1 documentation" href="index.html" />
+    <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
     <link rel="prev" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -45,12 +45,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar.html" title="gvar - Gaussian Random Variables"
+          <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -133,10 +133,10 @@ equation for <code class="docutils literal"><span class="pre">theta(t)</span></c
 </pre></div>
 </div>
 <p>A <code class="docutils literal"><span class="pre">Pendulum</span></code> object is initialized with a value for <code class="docutils literal"><span class="pre">g/l</span></code> and a tolerance
-for the differential-equation integrator, <a class="reference internal" href="gvar_other.html#gvar.ode.Integrator" title="gvar.ode.Integrator"><code class="xref py py-class docutils literal"><span class="pre">gvar.ode.Integrator</span></code></a>.
+for the differential-equation integrator, <code class="xref py py-class docutils literal"><span class="pre">gvar.ode.Integrator</span></code>.
 Evaluating the object for a given value of <code class="docutils literal"><span class="pre">theta(0)</span></code> and <code class="docutils literal"><span class="pre">t</span></code> then
 calculates <code class="docutils literal"><span class="pre">theta(t)</span></code>; <code class="docutils literal"><span class="pre">t</span></code> is an array. We use <code class="xref py py-mod docutils literal"><span class="pre">gvar.ode</span></code> here,
-rather than some other integrator, because it works with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s,
+rather than some other integrator, because it works with <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s,
 allowing errors to propagate through the integration.</p>
 </div>
 <div class="section" id="two-types-of-input-data">
@@ -259,8 +259,8 @@ the <code class="docutils literal"><span class="pre">t</span></code> values and 
   <p class="topless"><a href="case-extrapolation.html"
                         title="previous chapter">Case Study: Simple Extrapolation</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="gvar.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">gvar</span></code> - Gaussian Random Variables</a></p>
+  <p class="topless"><a href="lsqfit.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -288,12 +288,12 @@ the <code class="docutils literal"><span class="pre">t</span></code> values and 
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="gvar.html" title="gvar - Gaussian Random Variables"
+          <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
              >next</a> |</li>
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

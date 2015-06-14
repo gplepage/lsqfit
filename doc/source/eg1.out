@@ -31,7 +31,7 @@ Parameters:
               3     4.383 (21)      [  4.00 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 231/0.1)
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 233/0.1)
 
 E1/E0 = 2.0018(12)   E2/E0 = 3.0800(98)
 a1/a0 = 1.0094(30)   a2/a0 = 1.233(14)

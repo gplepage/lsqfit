@@ -7,15 +7,15 @@ Overview and Tutorial
 
 Introduction
 --------------------
-The modules defined here are designed to facilitate
-least-squares fitting of noisy data by multi-dimensional, nonlinear
-functions of arbitrarily many parameters. The central module is
-:mod:`lsqfit` because it provides the fitting functions. :mod:`lsqfit` makes
-heavy use of auxiliary module :mod:`gvar`, which provides tools that
-simplify the analysis of error propagation, and also the creation of
-complicated multi-dimensional Gaussian distributions. The power of the
-:mod:`gvar` module is a feature that distinguishes :mod:`lsqfit` from 
-standard fitting packages, as demonstrated below.
+
+The  :mod:`lsqfit` module is designed to facilitate least-squares fitting of
+noisy data by multi-dimensional, nonlinear functions of arbitrarily many
+parameters.  :mod:`lsqfit` makes heavy use of another module, :mod:`gvar`
+(distributed separately), which provides tools that simplify the analysis of
+error propagation, and also the creation of complicated multi-dimensional
+Gaussian distributions. The power of the :mod:`gvar` module is a feature that
+distinguishes :mod:`lsqfit` from standard fitting packages, as demonstrated
+below.
 
 The following (complete) code illustrates basic usage of :mod:`lsqfit`::
 
@@ -209,10 +209,31 @@ errors in the input values. The result of a fit is a collection of
 |GVar|\s specifying the best-fit values for the fit parameters and the 
 estimated uncertainties in those values. 
 
-There are three important things to know about |GVar|\s, in addition
-to knowing how to create them (see :ref:`creating-gaussian-variables`):
+|GVar|\s are defined in the :mod:`gvar` module. 
+There are four important things to know about them (see the 
+:mod:`gvar` documentation for more details):
 
-  1)  |GVar|\s describe not only means and standard deviations, but also
+  1)  |GVar|\s are created by :meth:`gvar.gvar`, individually or in 
+      groups: for example, ::
+
+        >>> import gvar as gv
+        >>> print(gv.gvar(1.0, 0.1), gv.gvar('1.0 +- 0.2'), gv.gvar('1.0(4)'))
+        1.00(10) 1.00(20) 1.00(40)
+        >>> print(gv.gvar([1.0, 1.0, 1.0], [0.1, 0.2, 0.41]))
+        [1.00(10) 1.00(20) 1.00(41)]
+        >>> print(gv.gvar(['1.0(1)', '1.0(2)', '1.00(41)']))
+        [1.00(10) 1.00(20) 1.00(41)]
+        >>> print(gv.gvar(dict(a='1.0(1)', b=['1.0(2)', '1.0(4)'])))
+        {'a': 1.00(10),'b': array([1.00(20), 1.00(40)], dtype=object)}
+
+      :mod:`gvar` uses the compact notation 1.234(22) to represent 
+      1.234±0.022 --- the digits in parentheses indicate the 
+      uncertainty in the rightmost corresponding digits quoted for the 
+      mean value. Very large (or small) numbers use a notation like
+      1.234(22)e10.
+
+
+  2)  |GVar|\s describe not only means and standard deviations, but also
       statistical correlations between different objects. For example, the
       |GVar|\s created by ::
 
@@ -245,7 +266,7 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
          [ 0.99995  1.     ]]
 
 
-  2)  |GVar|\s can be used in arithmetic expressions or as arguments
+  3)  |GVar|\s can be used in arithmetic expressions or as arguments
       to pure-Python functions. The results are also |GVar|\s. Covariances
       are propagated through these expressions following the usual rules,
       (automatically) preserving information about correlations. For 
@@ -280,7 +301,7 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
       functions that are compiled in C or other low-level languages 
       generally do not work with |GVar|\s; they should be replaced by
       equivalent pure-Python functions if they are needed for |GVar|-valued
-      arguments. See :ref:`gvar-arithmetic-and-functions` for more 
+      arguments. See the :mod:`gvar` documentation for more 
       information.
 
       The fact that correlation information is preserved *automatically* 
@@ -296,7 +317,7 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
       in fits, and to analyze the propagation of errors through
       complicated functions of the parameters after the fit.
 
-  3)  Storing |GVar|\s in a file for later use is somewhat complicated 
+  4)  Storing |GVar|\s in a file for later use is somewhat complicated 
       because one generally wants to hold onto their correlations as well 
       as their mean values and standard deviations. One easy way to do 
       this is to put all of the |GVar|\s to be saved into a single 
@@ -323,8 +344,8 @@ to knowing how to create them (see :ref:`creating-gaussian-variables`):
       |BufferDict|\s were created specifically to handle |GVar|\s, 
       although they can be quite useful with other data types as well. 
       The values in a pickled |BufferDict| can be individual |GVar|\s or 
-      arbitrary :mod:`numpy` arrays of |GVar|\s. See 
-      :ref:`storing-gvars-for-later-use` for more information.
+      arbitrary :mod:`numpy` arrays of |GVar|\s. See the :mod:`gvar`
+      docmentation for more information.
 
 There is considerably more information about |GVar|\s in the documentation for
 module :mod:`gvar`.

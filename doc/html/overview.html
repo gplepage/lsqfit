@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 6.0 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 6.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '6.0',
+        VERSION:     '6.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 6.0 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 6.1 documentation" href="index.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -63,15 +63,14 @@
 <h1>Overview and Tutorial<a class="headerlink" href="#overview-and-tutorial" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The modules defined here are designed to facilitate
-least-squares fitting of noisy data by multi-dimensional, nonlinear
-functions of arbitrarily many parameters. The central module is
-<a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> because it provides the fitting functions. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> makes
-heavy use of auxiliary module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a>, which provides tools that
-simplify the analysis of error propagation, and also the creation of
-complicated multi-dimensional Gaussian distributions. The power of the
-<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a> module is a feature that distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> from
-standard fitting packages, as demonstrated below.</p>
+<p>The  <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> module is designed to facilitate least-squares fitting of
+noisy data by multi-dimensional, nonlinear functions of arbitrarily many
+parameters.  <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> makes heavy use of another module, <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>
+(distributed separately), which provides tools that simplify the analysis of
+error propagation, and also the creation of complicated multi-dimensional
+Gaussian distributions. The power of the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> module is a feature that
+distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> from standard fitting packages, as demonstrated
+below.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -160,12 +159,12 @@ Values:
                   b: 0.449(65)           
 
 Partial % Errors:
-                             a       b/a         b
---------------------------------------------------
-                  y:     12.75     16.72     14.30
-              prior:      0.92      1.58      1.88
---------------------------------------------------
-              total:     12.78     16.80     14.42
+                   a       b/a         b
+----------------------------------------
+        y:     12.75     16.72     14.30
+    prior:      0.92      1.58      1.88
+----------------------------------------
+    total:     12.78     16.80     14.42
 </pre></div>
 </div>
 <p>The best-fit values for <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">b</span></code> are 0.253(32) and
@@ -216,11 +215,11 @@ the prior or back since both are forms of input information.</p>
 <div><ul class="simple">
 <li>The input data (<code class="docutils literal"><span class="pre">y</span></code>) is expressed in terms of Gaussian random
 variables &#8212; quantities with means and a covariance matrix. These are
-represented by objects of type <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> in the code; module
-<a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a> has a variety of tools for creating and manipulating
+represented by objects of type <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> in the code; module
+<code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> has a variety of tools for creating and manipulating
 Gaussian random variables (also see below).</li>
 <li>The input data is stored in a dictionary (<code class="docutils literal"><span class="pre">y</span></code>) whose values can
-be <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. The use of a dictionary allows for
+be <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. The use of a dictionary allows for
 far greater flexibility than, say, an array. The fit function
 (<code class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>) has to return a dictionary with the same layout as
 that of <code class="docutils literal"><span class="pre">y</span></code> (that is, with the same keys and where the value for
@@ -233,18 +232,18 @@ through the fit code to the fit function <code class="docutils literal"><span cl
 also be omitted altogether, in which case the fit function
 depends only upon the parameters: <code class="docutils literal"><span class="pre">fcn(p)</span></code>.</li>
 <li>The fit parameters (<code class="docutils literal"><span class="pre">p</span></code> in <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>) are also stored in a
-dictionary whose values are <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. Again this
+dictionary whose values are <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Again this
 allows for great flexibility. The layout of the parameter dictionary
 is copied from that of the prior (<code class="docutils literal"><span class="pre">prior</span></code>). Again <code class="docutils literal"><span class="pre">p</span></code> can be a
 single array instead of a dictionary, if that simplifies the code
 (which is usually not the case).</li>
 <li>The best-fit values of the fit parameters (<code class="docutils literal"><span class="pre">fit.p[k]</span></code>) are also
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s and these capture statistical correlations between different
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s and these capture statistical correlations between different
 parameters that are indicated by the fit. These output parameters can
 be combined in arithmetic expressions, using standard operators and
 standard functions, to obtain derived quantities. These operations
 take account of and track statistical correlations.</li>
-<li>Function <a class="reference internal" href="gvar.html#gvar.fmt_errorbudget" title="gvar.fmt_errorbudget"><code class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></code></a> is a useful tool for assessing
+<li>Function <code class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></code> is a useful tool for assessing
 the origins (<code class="docutils literal"><span class="pre">inputs</span></code>) of the statistical errors obtained in various
 final results (<code class="docutils literal"><span class="pre">outputs</span></code>). It is particularly useful for analyzing
 the impact of the <em>a priori</em> uncertainties encoded in the prior
@@ -275,22 +274,42 @@ data are sufficiently accurate. <a class="reference internal" href="lsqfit.html#
 (It also provides tests for non-Gaussian behavior, together with
 methods for dealing with such behavior.)
 One of the most distinctive features of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> is that it is
-built around a class, <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>, of objects that can be used to
+built around a class, <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>, of objects that can be used to
 represent arbitrarily complicated Gaussian distributions
 &#8212; that is, they represent <em>Gaussian random variables</em> that specify the means and
 covariance matrix of the probability distributions.
 The input data for a fit are represented
-by a collection of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s that specify both the values and possible
+by a collection of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that specify both the values and possible
 errors in the input values. The result of a fit is a collection of
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s specifying the best-fit values for the fit parameters and the
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s specifying the best-fit values for the fit parameters and the
 estimated uncertainties in those values.</p>
-<p>There are three important things to know about <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s, in addition
-to knowing how to create them (see <a class="reference internal" href="gvar.html#creating-gaussian-variables"><span>Creating Gaussian Variables</span></a>):</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s are defined in the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> module.
+There are four important things to know about them (see the
+<code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> documentation for more details):</p>
 <blockquote>
 <div><ol class="arabic">
-<li><p class="first"><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s describe not only means and standard deviations, but also
+<li><p class="first"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s are created by <code class="xref py py-meth docutils literal"><span class="pre">gvar.gvar()</span></code>, individually or in
+groups: for example,</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;1.0 +- 0.2&#39;</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;1.0(4)&#39;</span><span class="p">))</span>
+<span class="go">1.00(10) 1.00(20) 1.00(40)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.41</span><span class="p">]))</span>
+<span class="go">[1.00(10) 1.00(20) 1.00(41)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s">&#39;1.00(41)&#39;</span><span class="p">]))</span>
+<span class="go">[1.00(10) 1.00(20) 1.00(41)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s">&#39;1.0(4)&#39;</span><span class="p">])))</span>
+<span class="go">{&#39;a&#39;: 1.00(10),&#39;b&#39;: array([1.00(20), 1.00(40)], dtype=object)}</span>
+</pre></div>
+</div>
+<p><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> uses the compact notation 1.234(22) to represent
+1.234±0.022 &#8212; the digits in parentheses indicate the
+uncertainty in the rightmost corresponding digits quoted for the
+mean value. Very large (or small) numbers use a notation like
+1.234(22)e10.</p>
+</li>
+<li><p class="first"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s describe not only means and standard deviations, but also
 statistical correlations between different objects. For example, the
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s created by</p>
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s created by</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.010001</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -321,11 +340,11 @@ correlation coefficient for <code class="docutils literal"><span class="pre">a</
 </pre></div>
 </div>
 </li>
-<li><p class="first"><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s can be used in arithmetic expressions or as arguments
-to pure-Python functions. The results are also <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. Covariances
+<li><p class="first"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s can be used in arithmetic expressions or as arguments
+to pure-Python functions. The results are also <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Covariances
 are propagated through these expressions following the usual rules,
 (automatically) preserving information about correlations. For
-example, the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">b</span></code> above could have been created
+example, the <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">b</span></code> above could have been created
 using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
@@ -350,20 +369,20 @@ create new variables that are also highly correlated:</p>
 <span class="go"> [ 0.01388174  0.01927153]]</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a> module defines versions of the standard Python
-functions (<code class="docutils literal"><span class="pre">sin</span></code>, <code class="docutils literal"><span class="pre">cos</span></code>, ...) that work with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. Most any
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> module defines versions of the standard Python
+functions (<code class="docutils literal"><span class="pre">sin</span></code>, <code class="docutils literal"><span class="pre">cos</span></code>, ...) that work with <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Most any
 numeric pure-Python function will work with them as well. Numeric
 functions that are compiled in C or other low-level languages
-generally do not work with <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s; they should be replaced by
-equivalent pure-Python functions if they are needed for <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>-valued
-arguments. See <a class="reference internal" href="gvar.html#gvar-arithmetic-and-functions"><span>gvar.GVar Arithmetic and Functions</span></a> for more
+generally do not work with <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s; they should be replaced by
+equivalent pure-Python functions if they are needed for <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>-valued
+arguments. See the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> documentation for more
 information.</p>
 <p>The fact that correlation information is preserved <em>automatically</em>
 through arbitrarily complicated arithmetic is what makes
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s particularly useful. This is accomplished using <em>automatic
-differentiation</em> to compute the derivatives of any <em>derived</em> <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>
-with respect to the <em>primary</em> <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s (those defined using
-<a class="reference internal" href="gvar.html#gvar.gvar" title="gvar.gvar"><code class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></code></a>) from which it was created. As a result, for example,
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s particularly useful. This is accomplished using <em>automatic
+differentiation</em> to compute the derivatives of any <em>derived</em> <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>
+with respect to the <em>primary</em> <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s (those defined using
+<code class="xref py py-func docutils literal"><span class="pre">gvar.gvar()</span></code>) from which it was created. As a result, for example,
 we need not provide derivatives of fit functions for <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>
 (which are needed for the fit) since they are computed implicitly
 by the fitter from the fit function itself. Also
@@ -371,12 +390,12 @@ it becomes trivial to build correlations into the priors used
 in fits, and to analyze the propagation of errors through
 complicated functions of the parameters after the fit.</p>
 </li>
-<li><p class="first">Storing <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s in a file for later use is somewhat complicated
+<li><p class="first">Storing <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s in a file for later use is somewhat complicated
 because one generally wants to hold onto their correlations as well
 as their mean values and standard deviations. One easy way to do
-this is to put all of the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s to be saved into a single
-dictionary object of type <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>, and then to save the
-<a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a> using Python&#8217;s <code class="xref py py-mod docutils literal"><span class="pre">pickle</span></code> module: for example,
+this is to put all of the <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s to be saved into a single
+dictionary object of type <code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>, and then to save the
+<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code> using Python&#8217;s <code class="xref py py-mod docutils literal"><span class="pre">pickle</span></code> module: for example,
 using the variables defined above,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pickle</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">buffer</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
@@ -385,8 +404,8 @@ using the variables defined above,</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">buffer</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;wb&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>This creates a file named <code class="docutils literal"><span class="pre">'outputfile.p'</span></code> containing the <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s.
-Loading the file into a Python code later recovers the <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>
+<p>This creates a file named <code class="docutils literal"><span class="pre">'outputfile.p'</span></code> containing the <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.
+Loading the file into a Python code later recovers the <code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>
 with correlations intact:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="nb">buffer</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s">&#39;outputfile.p&#39;</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">buffer</span><span class="p">)</span>
@@ -395,16 +414,16 @@ with correlations intact:</p>
 <span class="go">1.627(34)</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a>s were created specifically to handle <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s,
+<p><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>s were created specifically to handle <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s,
 although they can be quite useful with other data types as well.
-The values in a pickled <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a> can be individual <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s or
-arbitrary <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> arrays of <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. See
-<a class="reference internal" href="gvar.html#storing-gvars-for-later-use"><span>Storing gvar.GVars for Later Use; gvar.BufferDicts</span></a> for more information.</p>
+The values in a pickled <code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code> can be individual <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or
+arbitrary <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. See the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>
+docmentation for more information.</p>
 </li>
 </ol>
 </div></blockquote>
-<p>There is considerably more information about <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s in the documentation for
-module <a class="reference internal" href="gvar.html#module-gvar" title="gvar: Correlated Gaussian random variables."><code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code></a>.</p>
+<p>There is considerably more information about <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s in the documentation for
+module <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>.</p>
 </div>
 <div class="section" id="basic-fits">
 <span id="id1"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this headline">¶</a></h2>
@@ -471,7 +490,7 @@ it is important (usually essential) to include it in the fit. This is
 done by designing priors for the fit, which are probability distributions
 for each parameter that describe the <em>a priori</em> uncertainty in that
 parameter. As discussed in the previous section, we use objects of type
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> to describe (Gaussian) probability distributions.
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> to describe (Gaussian) probability distributions.
 Let&#8217;s assume that before the fit we suspect that each <code class="docutils literal"><span class="pre">a[i]</span></code> is of order
 0.5±0.5, while <code class="docutils literal"><span class="pre">E[i]</span></code> is of order (1+i)±0.5. A prior
 that represents this information is built using the following code:</p>
@@ -494,9 +513,9 @@ one would then have:</p>
 <span class="go">[1.00(50), 2.00(50), 3.00(50)]</span>
 </pre></div>
 </div>
-<p>We use dictionary-like class <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a> for the prior because it
+<p>We use dictionary-like class <code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code> for the prior because it
 allows us to save the prior if we wish (using Python&#8217;s <code class="xref py py-mod docutils literal"><span class="pre">pickle</span></code> module).
-If saving is unnecessary, <a class="reference internal" href="gvar.html#gvar.BufferDict" title="gvar.BufferDict"><code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code></a> can be replaced by
+If saving is unnecessary, <code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code> can be replaced by
 <code class="docutils literal"><span class="pre">dict()</span></code> or most any other Python dictionary class.</p>
 <p>With fit data, a fit function, and a prior for the fit parameters, we are
 finally ready to do the fit, which is now easy:</p>
@@ -596,7 +615,7 @@ Parameters:
               3     4.383 (21)      [  4.00 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 231/0.1)
+  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 233/0.1)
 
 E1/E0 = 2.0018(12)   E2/E0 = 3.0800(98)
 a1/a0 = 1.0094(30)   a2/a0 = 1.233(14)
@@ -1014,7 +1033,7 @@ onto the end of the <code class="docutils literal"><span class="pre">main()</spa
 <div class="highlight-python"><div class="highlight"><pre>chi2/dof = 0.32
 
 E: [0.90030(51) 1.80007(67) 2.711(12) 3.76(18)]
-a: [0.4018(41) 0.4018(40) 0.421(20) 0.53(17)]
+a: [0.4018(39) 0.4018(40) 0.421(20) 0.53(17)]
 a1/a0: 1.000000(10)
 </pre></div>
 </div>
@@ -1058,7 +1077,7 @@ changing <code class="docutils literal"><span class="pre">make_data</span></code
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 </pre></div>
 </div>
-<p>Here <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> object <code class="docutils literal"><span class="pre">xfac</span></code> is used as a random number
+<p>Here <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> object <code class="docutils literal"><span class="pre">xfac</span></code> is used as a random number
 generator: each time it is called, <code class="docutils literal"><span class="pre">xfac()</span></code> is a different random number
 from the distribution with mean <code class="docutils literal"><span class="pre">xfac.mean</span></code> and standard deviation
 <code class="docutils literal"><span class="pre">xfac.sdev</span></code> (that is, 1±0.00001). The main program is modified so
@@ -1151,14 +1170,14 @@ reduced &#8212; by information in the fit data.</p>
 </div>
 <div class="section" id="correlated-parameters-gaussian-bayes-factor">
 <span id="correlated-parameters"></span><h2>Correlated Parameters; Gaussian Bayes Factor<a class="headerlink" href="#correlated-parameters-gaussian-bayes-factor" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> objects are very useful for handling more complicated
+<p><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> objects are very useful for handling more complicated
 priors, including situations where we know <em>a priori</em> of correlations
 between parameters. Returning to the <a class="reference internal" href="#basic-fits"><span>Basic Fits</span></a> example above,
 imagine a situation where we still have a ±0.5 uncertainty about the
 value of any individual <code class="docutils literal"><span class="pre">E[i]</span></code>, but we know <em>a priori</em> that the
 separations between adjacent <code class="docutils literal"><span class="pre">E[i]</span></code>s is 0.9±0.01. We want to
 build the correlation between adjacent <code class="docutils literal"><span class="pre">E[i]</span></code>s into our prior.</p>
-<p>We do this by introducing a <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> object <code class="docutils literal"><span class="pre">de[i]</span></code> for each
+<p>We do this by introducing a <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> object <code class="docutils literal"><span class="pre">de[i]</span></code> for each
 separate difference <code class="docutils literal"><span class="pre">E[i]-E[i-1]</span></code>, with <code class="docutils literal"><span class="pre">de[0]</span></code> being <code class="docutils literal"><span class="pre">E[0]</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">de</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nexp</span><span class="p">)]</span>
 <span class="n">de</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>    <span class="c"># different distribution for E[0]</span>
@@ -1385,17 +1404,17 @@ budget&#8221; for the fit result. The partial errors from all sources of input
 error reproduce the total fit error when they are added in quadrature.</p>
 <p>Given the <code class="docutils literal"><span class="pre">fit</span></code> object (an <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object) from the
 example in the section on <a class="reference internal" href="#correlated-parameters"><span>Correlated Parameters; Gaussian Bayes Factor</span></a>, for example, we can
-extract such information using <a class="reference internal" href="gvar.html#gvar.GVar.partialsdev" title="gvar.GVar.partialsdev"><code class="xref py py-meth docutils literal"><span class="pre">gvar.GVar.partialsdev()</span></code></a> &#8212; for example:</p>
+extract such information using <code class="xref py py-meth docutils literal"><span class="pre">gvar.GVar.partialsdev()</span></code> &#8212; for example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">1.9994(11)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]))</span>
-<span class="go">0.000419224371208</span>
+<span class="go">0.000419224372045</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]))</span>
-<span class="go">0.000158887614987</span>
+<span class="go">0.000158887614136</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-<span class="go">0.000953276447811</span>
+<span class="go">0.000953230539699</span>
 </pre></div>
 </div>
 <p>This shows that the total uncertainty in <code class="docutils literal"><span class="pre">E[1]/E[0]</span></code>, 0.00106, is
@@ -1423,13 +1442,13 @@ an error-budget table:</p>
               a1/a0: 0.9996(25)          
 
 Partial % Errors:
-                         E2/E0     E1/E0     a2/a0     a1/a0
-------------------------------------------------------------
-                  a:      0.09      0.01      1.09      0.02
-                  y:      0.07      0.05      0.77      0.19
-                  E:      0.35      0.02      2.44      0.16
-------------------------------------------------------------
-              total:      0.37      0.05      2.79      0.25
+               E2/E0     E1/E0     a2/a0     a1/a0
+--------------------------------------------------
+        a:      0.09      0.01      1.09      0.02
+        y:      0.07      0.05      0.77      0.19
+        E:      0.35      0.02      2.44      0.16
+--------------------------------------------------
+    total:      0.37      0.05      2.79      0.25
 </pre></div>
 </div>
 <p>This table shows, for example, that the 0.37% uncertainty in <code class="docutils literal"><span class="pre">E2/E0</span></code>
@@ -1491,7 +1510,7 @@ That fit will give values for <code class="docutils literal"><span class="pre">a
 uncertainties in <code class="docutils literal"><span class="pre">ymod</span></code>, which in turn originate in uncertainties in our
 knowledge about the parameters for the <code class="docutils literal"><span class="pre">i&gt;0</span></code> exponentials.</p>
 <p>It turns out to be quite simple to implement such a strategy using
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s. We convert our code by first modifying the main
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. We convert our code by first modifying the main
 program so that it provides prior information to a subroutine that computes
 <code class="docutils literal"><span class="pre">ymod</span></code>. We will vary the number of terms <code class="docutils literal"><span class="pre">nexp</span></code> that are kept in the
 fit, putting the rest into <code class="docutils literal"><span class="pre">ymod</span></code> as above (up to a maximum of 20
@@ -1599,12 +1618,12 @@ Fit:
 -------------------------------------------
         1       0.253 (19)      0.2557 (54)  
       1.2      0.1968 (91)      0.1977 (28)  
-      1.4      0.1545 (45)      0.1548 (15)  
-      1.6      0.1224 (22)     0.12256 (76)  
+      1.4      0.1545 (45)      0.1548 (14)  
+      1.6      0.1224 (22)     0.12256 (75)  
       1.8      0.0979 (11)     0.09793 (39)  
         2     0.07885 (54)     0.07886 (20)  
       2.2     0.06391 (27)     0.06391 (10)  
-      2.4     0.05206 (13)    0.052065 (52)  
+      2.4     0.05206 (13)    0.052065 (51)  
       2.6    0.042602 (67)    0.042601 (26)  
       2.8    0.034983 (33)    0.034982 (13)  
 
@@ -1629,23 +1648,23 @@ Parameters:
 Fit:
      x[k]              y[k]         f(x[k],p)
 ---------------------------------------------
-        1       0.2656 (78)       0.2666 (22)  
-      1.2       0.2027 (32)      0.20297 (97)  
-      1.4       0.1573 (13)      0.15737 (42)  
+        1       0.2656 (78)       0.2666 (23)  
+      1.2       0.2027 (32)      0.20297 (98)  
+      1.4       0.1573 (13)      0.15737 (43)  
       1.6      0.12378 (54)      0.12381 (18)  
       1.8      0.09853 (22)     0.098540 (79)  
         2     0.079153 (93)     0.079155 (34)  
       2.2     0.064051 (39)     0.064051 (15)  
-      2.4     0.052134 (16)    0.0521344 (66)  
-      2.6    0.0426348 (67)    0.0426347 (30)  
-      2.8    0.0349985 (28)    0.0349985 (14)  
+      2.4     0.052134 (16)    0.0521344 (62)  
+      2.6    0.0426348 (67)    0.0426347 (26)  
+      2.8    0.0349985 (28)    0.0349985 (11)  
 
 Settings:
   svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
 
 
-E1/E0 = 1.999(24)   E2/E0 = 3.00(21)
-a1/a0 = 0.997(77)   a2/a0 = 1.01(25)
+E1/E0 = 1.999(25)   E2/E0 = 3.00(22)
+a1/a0 = 0.997(79)   a2/a0 = 1.01(27)
 </pre></div>
 </div>
 <p>Here we use <code class="docutils literal"><span class="pre">fit.format(maxline=True)</span></code> to print out a table of <code class="docutils literal"><span class="pre">x</span></code> and
@@ -1682,7 +1701,7 @@ independent of <code class="docutils literal"><span class="pre">nexp</span></cod
 <code class="docutils literal"><span class="pre">nexp</span></code> increases and as <code class="docutils literal"><span class="pre">x</span></code> increases. Also the <code class="docutils literal"><span class="pre">nexp</span></code>
 independence of the fit results depends upon capturing all of the
 correlations in the correction to <code class="docutils literal"><span class="pre">y</span></code>. This is why
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>s are useful since they make the implementation of
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s are useful since they make the implementation of
 those correlations trivial.</p>
 </li>
 <li><p class="first">Although we motivated this example by the need to deal with <code class="docutils literal"><span class="pre">y</span></code>s
@@ -1799,19 +1818,19 @@ code,</p>
 </div>
 <p>which gives:</p>
 <div class="highlight-python"><div class="highlight"><pre>Values:
-              E2/E0: 3.00(21)            
-              E1/E0: 1.999(24)           
-              a2/a0: 1.01(25)            
-              a1/a0: 0.997(77)           
+              E2/E0: 3.00(22)            
+              E1/E0: 1.999(25)           
+              a2/a0: 1.01(27)            
+              a1/a0: 0.997(79)           
 
 Partial % Errors:
-                         E2/E0     E1/E0     a2/a0     a1/a0
-------------------------------------------------------------
-                  a:      3.73      0.70     11.75      4.35
-                svd:      0.29      0.10      0.13      0.55
-                  E:      5.90      1.00     22.43      6.33
-------------------------------------------------------------
-              total:      6.99      1.23     25.32      7.70
+               E2/E0     E1/E0     a2/a0     a1/a0
+--------------------------------------------------
+        a:      3.32      0.64     10.30      3.93
+      svd:      0.29      0.10      0.13      0.55
+        E:      6.43      1.08     24.38      6.86
+--------------------------------------------------
+    total:      7.24      1.26     26.46      7.92
 </pre></div>
 </div>
 <p>Here the contribution from the SVD cut is almost negligible, which might
@@ -1838,7 +1857,7 @@ problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong correlations between different parts of the fit
 data or prior.  Then much larger <code class="docutils literal"><span class="pre">svdcut</span></code>s may be needed.</p>
 <p>The SVD cut is applied to both the data and the prior. It is possible to
-apply SVD cuts to either of these separately using <a class="reference internal" href="gvar.html#gvar.svd" title="gvar.svd"><code class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></code></a> before
+apply SVD cuts to either of these separately using <code class="xref py py-func docutils literal"><span class="pre">gvar.svd()</span></code> before
 the fit: for example,</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">ymod</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">ymod</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
@@ -1902,10 +1921,7 @@ the <code class="docutils literal"><span class="pre">main()</span></code> subrou
 </div>
 <p>The results are consistent with the results obtained directly from the fit
 (when using <code class="docutils literal"><span class="pre">svdcut=1e-15</span></code>):</p>
-<div class="highlight-python"><div class="highlight"><pre>Bootstrap results:
-E1/E0 = 1.998(18)   E2/E1 = 2.96(16)
-a1/a0 = 0.988(60)   a2/a0 = 0.93(22)
-E1 = 1.798(16)   a1 = 0.395(25)
+<div class="highlight-python"><div class="highlight"><pre>
 </pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms our previous error estimates
@@ -2010,72 +2026,6 @@ a1/a0 = 0.9963(26)   a2/a0 = 1.019(28)
 Simulated Fit Values - Exact Values:
 E1/E0: -0.0025(11)   E2/E0: -0.005(11)
 a1/a0: -0.0033(26)   a2/a0: 0.014(28)
-
-Parameter chi2/dof [dof] = 2.12 [4]   Q = 0.1
-
-************************************* simulation
-Least Square Fit:
-  chi2/dof [dof] = 0.26 [15]    Q = 1    logGBF = 228.77
-
-Parameters:
-            a 0    0.4013 (40)      [  0.50 (50) ]  
-              1    0.3992 (42)      [  0.50 (50) ]  
-              2     0.410 (12)      [  0.50 (50) ]  
-              3     0.344 (46)      [  0.50 (50) ]  
-              4      0.58 (16)      [  0.50 (50) ]  
-              5      0.33 (31)      [  0.50 (50) ]  
-              6      0.37 (42)      [  0.50 (50) ]  
-            E 0   0.90029 (51)      [  1.00 (50) ]  
-              1    1.7980 (11)      [  1.90 (50) ]  
-              2     2.696 (10)      [  2.80 (50) ]  
-              3     3.596 (14)      [  3.70 (50) ]  
-              4     4.496 (17)      [  4.60 (50) ]  
-              5     5.396 (20)      [  5.50 (50) ]  
-              6     6.296 (22)      [  6.40 (50) ]  
-
-Settings:
-  svdcut/n = None/0    reltol/abstol = 0.0001/0    (itns/time = 50/0.1)
-
-E1/E0 = 1.9971(11)   E2/E0 = 2.995(11)
-a1/a0 = 0.9949(26)   a2/a0 = 1.021(28)
-
-Simulated Fit Values - Exact Values:
-E1/E0: -0.0023(11)   E2/E0: -0.005(11)
-a1/a0: -0.0047(26)   a2/a0: 0.016(28)
-
-Parameter chi2/dof [dof] = 1.73 [4]   Q = 0.1
-
-************************************* simulation
-Least Square Fit:
-  chi2/dof [dof] = 0.82 [15]    Q = 0.66    logGBF = 224.63
-
-Parameters:
-            a 0    0.4016 (40)      [  0.50 (50) ]  
-              1    0.4028 (41)      [  0.50 (50) ]  
-              2     0.397 (12)      [  0.50 (50) ]  
-              3     0.438 (45)      [  0.50 (50) ]  
-              4      0.24 (15)      [  0.50 (50) ]  
-              5      0.65 (31)      [  0.50 (50) ]  
-              6      0.64 (42)      [  0.50 (50) ]  
-            E 0   0.90021 (51)      [  1.00 (50) ]  
-              1    1.8015 (11)      [  1.90 (50) ]  
-              2     2.703 (10)      [  2.80 (50) ]  
-              3     3.603 (14)      [  3.70 (50) ]  
-              4     4.503 (17)      [  4.60 (50) ]  
-              5     5.403 (20)      [  5.50 (50) ]  
-              6     6.303 (22)      [  6.40 (50) ]  
-
-Settings:
-  svdcut/n = None/0    reltol/abstol = 0.0001/0    (itns/time = 36/0.0)
-
-E1/E0 = 2.0012(11)   E2/E0 = 3.003(11)
-a1/a0 = 1.0032(25)   a2/a0 = 0.989(28)
-
-Simulated Fit Values - Exact Values:
-E1/E0: 0.0018(11)   E2/E0: 0.003(11)
-a1/a0: 0.0036(25)   a2/a0: -0.016(28)
-
-Parameter chi2/dof [dof] = 1.02 [4]   Q = 0.4
 </pre></div>
 </div>
 <p>The simulations show that the fit values usually agree with the correct
@@ -2234,7 +2184,7 @@ These cuts will exclude exact or nearly exact zero modes, while leaving
 important modes mostly unaffected.</p>
 <p>Even if the SVD cuts work in such a case, the question remains as to why one
 of the covariance matrices has a zero mode. A common cause is if the same
-<a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a> was used for more than one prior. For example, one might
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> was used for more than one prior. For example, one might
 think that</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -2244,7 +2194,7 @@ think that</p>
 <p>creates a prior 1±1 for each of parameter <code class="docutils literal"><span class="pre">a</span></code> and parameter <code class="docutils literal"><span class="pre">b</span></code>.
 Indeed each parameter separately is of order 1±1, but in a fit the two
 parameters would be forced equal to each other because their priors are both
-set equal to the same <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>, <code class="docutils literal"><span class="pre">z</span></code>:</p>
+set equal to the same <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>, <code class="docutils literal"><span class="pre">z</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
 <span class="go">1.0(1.0) 1.0(1.0)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
@@ -2270,7 +2220,7 @@ fluctuate together, the prior should be redefined:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>where now each parameter has its own <a class="reference internal" href="gvar.html#gvar.GVar" title="gvar.GVar"><code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code></a>.</p>
+<p>where now each parameter has its own <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>.</p>
 </div>
 </div>
 
@@ -2339,7 +2289,7 @@ fluctuate together, the prior should be redefined:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 6.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
