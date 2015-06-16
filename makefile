@@ -1,5 +1,5 @@
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2013 G. Peter Lepage. 
+# Copyright (c) 2008-2015 G. Peter Lepage. 
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,16 +12,23 @@
 # GNU General Public License for more details.
 
 PYTHON = python
+PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 # PYTHONHASH = `python -c 'import sys; print(hash(sys.version))'`
 
 install : 
-	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHON)
+	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
+	rm -rf build/lsqfit.egg-info
+	mv lsqfit.egg-info build/
 
 install-sys : 		
-	$(PYTHON) setup.py install --record files-lsqfit.$(PYTHON)
+	$(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
+	rm -rf build/lsqfit.egg-info
+	mv lsqfit.egg-info build/
 
-uninstall :			# mostly works (leaves some empty directories)
-	- cat files-lsqfit.$(PYTHON) | xargs rm -rf
+uninstall :			# mostly works (may leave some empty directories)
+	pip uninstall lsqfit -y
+	
+# - cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
 
 
 doc-html:

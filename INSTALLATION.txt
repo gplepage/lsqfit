@@ -27,7 +27,8 @@ To install:
 		package will be installed automatically when lsqfit is installed
 		provided setuptools are available (see next entry). gvar 
 		is available on PyPI and so can also be installed 
-		using 'pip install gvar'.
+		using 'pip install gvar'. If setuptools fails to install gvar
+		(eg, something goes wrong), install it yourself (eg, pip install gvar).
 		(https://github.com/gplepage/gvar or on PyPI)
 
 	e. The setuptools package (optional). setuptools is used in place of
@@ -97,8 +98,7 @@ To install:
 To uninstall:
 
 1. 'make uninstall' (probably) uninstalls most of what was installed. It 
-	relies upon files with names like "files-lsqfit.python" that were 
-	created during installation.
+    uses pip uninstall.
 
 
 Problems:

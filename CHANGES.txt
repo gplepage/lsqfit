@@ -1,27 +1,18 @@
-Version 6.1??? 
-============
+Version 6.1 - 2014-06-16
+==========================
 
-- Added gvar.equivalent(g1, g2, rtol, atol) which checkes whether or not
-  the GVars in g1 and g2 are the equivalent (ie, g.mean and g.der agree 
-  for each GVar). This is useful for debugging purposes.
+With this version gvar is no longer bundled with lsqfit. setuptools will 
+try to install gvar if it is absent; otherwise it can be installed directly
+(pip install gvar). The undbundling facilitates the use of gvar by modules
+unrelated to lsqfit. Except for the unbundling this version of lsqfit is the
+same as the previous version and continues to run with the older (v6.0) 
+version of gvar. It also runs with the new version of gvar (v7.0), which 
+has some added functionality.
 
-- tiny addition to gvar tests.
+- setuptools is now the default installer, although distutils will be used
+  if setuptools is not installed.
 
-- gvar.cspline now allows you to specify what order polynomial is used for 
-  out-of-range points. In the past a cubic polynomial was used, based on 
-  the value and derivatives at the knot nearest to the out-of-range point.
-  Now one can specify a lower-order polynomial by setting parameter 
-  extrap_order equal to 0, 1, or 2.
-
-- Added gvar.ode.integral for 1d integrals.
-
-- Added two new numerical analysis packages to gvar: 
-
-    gvar.root - finds roots of 1d functions
-    gvar.linalg - basic linear algebra (det, inv, solve, eigvalsh ...)
-
-  As for the other numerical analysis methods, the new methods work with any 
-  combination of numbers and GVars. 
+- documentation loses gvar sections.
 
 
 Version 6.0 - 2014-11-01
