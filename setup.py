@@ -30,7 +30,7 @@ except ImportError:
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '6.1'
+LSQFIT_VERSION = '6.1.1'
 
 # create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
