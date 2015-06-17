@@ -1,3 +1,8 @@
+Version 6.1.2 - 2014-06-16
+==========================
+Going back to distutils instead of setuptools. The latter doesn't work well 
+with cython.
+
 Version 6.1.1 - 2014-06-16
 ==========================
 Fixed trivial error in MANIFEST.in which prevented building.

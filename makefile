@@ -17,18 +17,12 @@ PYTHONVERSION = python`python -c 'import platform; print(platform.python_version
 
 install : 
 	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
-	rm -rf build/lsqfit.egg-info
-	mv lsqfit.egg-info build/
 
 install-sys : 		
 	$(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
-	rm -rf build/lsqfit.egg-info
-	mv lsqfit.egg-info build/
 
 uninstall :			# mostly works (may leave some empty directories)
-	pip uninstall lsqfit -y
-	
-# - cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
+	- cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
 
 
 doc-html:
@@ -75,7 +69,7 @@ clean:
 	rm -rf __pycache__
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage doc.zip
 	rm -f -r dist
-	# rm -f src/lsqfit/*.c
+	rm -f src/lsqfit/*.c
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean

@@ -16,21 +16,23 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-try:
-    from setuptools import setup, Extension
-    setuptools_kwargs = dict(
-        install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],
-        )
-except ImportError:
-    from distutils.core import setup
-    from distutils.extension import Extension
-    setuptools_kwargs = dict(
-        requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],
-        )
+# try:
+#     from setuptools import setup, Extension
+#     installation_kwargs = dict(
+#         install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],
+#         )
+# except ImportError:
+
+from distutils.core import setup
+from distutils.extension import Extension
+installation_kwargs = dict(
+    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],
+    )
+
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '6.1.1'
+LSQFIT_VERSION = '6.1.2'
 
 # create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -106,5 +108,5 @@ setup(name='lsqfit',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'
         ],
-    **setuptools_kwargs
+    **installation_kwargs
 )
