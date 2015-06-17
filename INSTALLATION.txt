@@ -31,16 +31,10 @@ To install:
 		(eg, something goes wrong), install it yourself (eg, pip install gvar).
 		(https://github.com/gplepage/gvar or on PyPI)
 
-	e. The setuptools package (optional). setuptools is used in place of
-		distutils for installing the package, if setuptools is present. 
-		setuptools automatically ensures that modules needed by gvar 
-		are installed and sufficiently up-to-date. If setuptools is not 
-		installed, distutils is used and dependencies are not checked --- 
-		this must then be done by hand. To install setuptools either:
-		1) download https://bootstrap.pypa.io/ez_setup.py
-  		and run 'python ez_setup.py'; or 2) go to the setuptools website 
-  		for instructions.
-  		(https://pythonhosted.org/setuptools/)
+	e. pip is used for installing (and uninstalling) gvar. pip usually 
+	    comes with python. pip can be used to install numpy and cython as
+	    well.
+	    (https://pypi.python.org/pypi/pip)
 
 				
 	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2-3.4. It
@@ -54,7 +48,9 @@ To install:
 	files-lsqfit.python (in case, for example, you want to uninstall them).
 	
 	N.B. Rather than using make and the makefile, one can instead use 
-	standard distutils commands: eg, 'python setup.py install --user'
+	standard python installation tools like 'pip install . --user' 
+	(from within the main directory) or python distutils commands 
+	like 'python setup.py install --user'.
 	
 	N.B. If you have previously installed older versions of lsqfit,
 	consider removing the earlier modules to make sure that the new ones are 
@@ -64,8 +60,8 @@ To install:
 	using 'pydoc lsqfit' before installing the new software
 	(pydoc lists the location of the module under "FILE").
 	
-	N.B. To install lsqfit for an alternative version of python, say python3 
-	for example, use 'make PYTHON=python3 install'. Python's standard 
+	N.B. To install lsqfit with an alternative version of pip, say pip3 
+	for example, use 'make PIP=pip3 install'. Python's standard 
 	directories are structured in such a way that it is necessary to do 
 	a separate installation for each python version that will be used for 
 	lsqfit.

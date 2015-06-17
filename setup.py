@@ -1,7 +1,4 @@
 """ 
-build in place: python setup.py build_ext --inplace 
-install in ddd: python setup.py install --install-lib ddd
-
 Created by G. Peter Lepage (Cornell University) on 9/2011.
 Copyright (c) 2011-15 G. Peter Lepage.
 
@@ -16,23 +13,15 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-# try:
-#     from setuptools import setup, Extension
-#     installation_kwargs = dict(
-#         install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],
-#         )
-# except ImportError:
+# from setuptools import setup, Extension
 
 from distutils.core import setup
 from distutils.extension import Extension
-installation_kwargs = dict(
-    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],
-    )
 
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '6.1.2'
+LSQFIT_VERSION = '6.1.3'
 
 # create lsqfit/_version.py so lsqfit knows its version number 
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -72,6 +61,8 @@ setup(name='lsqfit',
     package_dir=package_dir,
     package_data=package_data,
     ext_modules= cythonize(ext_modules),
+    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],   # for pip (distutils ignores)
+    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],  # for distutils
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',
@@ -108,5 +99,4 @@ setup(name='lsqfit',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'
         ],
-    **installation_kwargs
 )

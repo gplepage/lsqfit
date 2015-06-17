@@ -11,18 +11,24 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
+PIP = pip
 PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
-# PYTHONHASH = `python -c 'import sys; print(hash(sys.version))'`
 
 install : 
-	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
+	$(PIP) install . --user
+
+# $(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
 
 install-sys : 		
-	$(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
+	$(PIP) install . 
+
+# $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
 
 uninstall :			# mostly works (may leave some empty directories)
-	- cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
+	- $(PIP) uninstall lsqfit
+
+# - cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
 
 
 doc-html:
