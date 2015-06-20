@@ -170,6 +170,45 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 if yf>1 else "nonlinear_fit data-dominated")
             self.t_basicfit(yf,pf,p0file)
 
+    def test_debug(self):
+        " debug==True "
+        with self.assertRaises(RuntimeError):
+            y = gv.gvar(1, 1)
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return p['p'] * gv.gvar(1, 0)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(RuntimeError):
+            y = [gv.gvar(1, 1)]
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return [p['p'], p['p']]
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(RuntimeError):
+            y = dict(a=gv.gvar(1, 1))
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return dict(a=[p['p'], p['p']])
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(RuntimeError):
+            y = dict(a=[gv.gvar(1, 1)])
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return dict(a=[p['p'], p['p']])
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(RuntimeError):
+            y = dict(a=gv.gvar(1, 1))
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'])
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(RuntimeError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1,1))
+            prior = dict(p=gv.gvar(0, 1))
+            def fcn(p):
+                return dict(a=p['p'])
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+
     def test_format(self):
         """ fit.format """
         # case 1 - y and prior dictionaries 

@@ -273,12 +273,20 @@ class nonlinear_fit(object):
                 nchivw = self.y.size + self.prior.size
             f = self.fcn(self.p0) if self.x is False else self.fcn(self.x,self.p0)
             if not _y_fcn_match(self.y, f):
-                raise ValueError(_y_fcn_match.msg)
+                raise RuntimeError(_y_fcn_match.msg)
             for p in [p0, p0gvar]:
                 f = flatfcn(p)
                 if len(f)!=self.y.size:
-                    raise ValueError("fcn(x, p) differs in size from y: %s, %s"
-                                     % (len(f), y.size))
+                    raise RuntimeError(
+                        "fcn(x, p) differs in size from y: %s, %s"
+                                     % (len(f), y.size)
+                        )
+                if p is p0 and numpy.any(
+                    [isinstance(f_i, _gvar.GVar) for f_i in f]
+                    ):
+                    raise RuntimeError(
+                        "fcn(x, p) returns GVar's when p contains only numbers"
+                        )
                 v = self._chiv(p)
                 if nf != len(v):
                     raise RuntimeError( #
@@ -1343,6 +1351,10 @@ def _y_fcn_match(y, f):
                     return False
             elif y[k].shape != f[k].shape:
                 _y_fcn_match.msg = "shape mismatch for key " + str(k)
+                return False
+        for k in f:
+            if k not in y:
+                _y_fcn_match.msg = "key mismatch: " + str(k)
                 return False
     return True    
 

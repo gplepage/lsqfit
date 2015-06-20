@@ -42,7 +42,7 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
       return ans
       
    # do the fit   
-   fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn)
+   fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn, debug=True)
    print(fit.format(maxline=True))     # print standard summary of fit
    
    p = fit.p                  # best-fit values for parameters
@@ -172,6 +172,12 @@ There are several things worth noting from this example:
      final results (``outputs``). It is particularly useful for analyzing
      the impact of the *a priori* uncertainties encoded in the prior
      (``prior``).
+
+   * Parameter ``debug=True`` is set in |nonlinear_fit|. This is a good idea,
+     particularly in the eary stages of a project, because it causes the 
+     code to check for various common errors and give more intelligible 
+     error messages than would otherwise arise. This parameter can be dropped
+     once code development is over.
    
 What follows is a tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
@@ -1339,7 +1345,7 @@ to the SVD-cutoff variance.
 The method :func:`lsqfit.nonlinear_fit.check_roundoff` can be used to check
 for roundoff errors by adding the line ``fit.check_roundoff()`` after the
 fit. It generates a warning if roundoff looks to be a problem. This check
-is done automatically if ``debug=True`` is added to argument list of
+is done automatically if ``debug=True`` is added to the argument list of
 :class:`lsqfit.nonlinear_fit`.
 
 Bootstrap Error Analysis
@@ -1592,15 +1598,28 @@ exponential distribution if the mean of ``p['sqrt(a)'']`` is zero. Using
 log-normal distribution.
 
 
-Troubleshooting
----------------
-:class:`lsqfit.nonlinear_fit` error messages that come from inside the  *gsl*
-routnines doing the fits are sometimes less than useful. They are usually due
-to errors in one of the inputs to the fit  (that is, the fit data, the prior,
-or the fit function). Setting ``debug=True`` in the argument list of
-:class:`lsqfit.nonlinear_fit` might result in more  intelligible error
-messages. This option also causes the fitter to check  for significant
-roundoff errors in the matrix inversions of the covariance matrices.
+Debugging and Troubleshooting
+-----------------------------
+
+It is a very good idea to set parameter ``debug=True`` in |nonlinear_fit|, at
+least in the early stages of a project. This causes the code to look for
+common mistakes and report on them with  more intelligible error messages. The
+code also then checks for significant roundoff errors in the matrix inversion
+of the covariance matrice.
+
+A common mistake is a mismatch between the format of the data and the
+format of what comes back from the fit function. Another mistake is when  a
+fit function ``fcn(p)`` returns results containing |GVar|\s  when the
+parameters ``p`` are all just numbers (or arrays of numbers). The only way a
+|GVar| should get into a fit  function is through the parameters; if a fit
+function requires an extra |GVar|, that |GVar| should be turned into a
+parameter by adding it to the prior.
+
+Error messages that come from inside the *gsl* routines used by
+|nonlinear_fit| are sometimes less than useful. They are usually due to errors
+in one of the inputs to the fit  (that is, the fit data, the prior, or the fit
+function). Again setting ``debug=True`` may catch the errors before they
+land in *gsl*.
 
 Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine
