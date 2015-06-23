@@ -201,14 +201,6 @@ nonlinear_fit Objects
       input data's covariance matrix is too singular to invert accurately
       (because of roundoff error), in which case an SVD cut is advisable.
    
-   .. attribute:: transformed_p
-
-      Same as ``fit.p`` but augmented to include the transforms of any 
-      log-normal or other parameter implemented using decorator
-      :class:`lsqfit.transform_p`. In the case of a log-normal variable
-      ``fit.p['logXX']``, for example, ``fit.transformed_p['XX']`` is 
-      defined equal to ``exp(fit.p['logXX'])``.
-
    .. attribute:: p0
    
       The parameter values used to start the fit.
@@ -299,15 +291,6 @@ Functions
 
 Other Classes
 ---------------
-.. autoclass:: lsqfit.transform_p
-
-   .. automethod:: transform
-
-   .. automethod:: untransform
-
-   .. automethod:: paramkey
-
-   .. automethod:: priorkey
 
 .. autoclass:: lsqfit.multifit(x0, n, f, reltol=1e-4, abstol=0, maxit=1000, alg='lmsder', analyzer=None)
 

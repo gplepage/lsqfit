@@ -1,5 +1,22 @@
-Version 6.1.4???
+Version 7.0a ???
 ================
+This is a modest change but includes some backwards incompatible changes in
+the routine --- hence the increase to v7.0. The incompatible changes are:
+1) removal of @transform_p; 2)????
+
+- nonlinear_fit now supports priors with log-normal and sqrt-normal 
+  distributionsPositive parameters. A parameter 'c', for example, ina
+  parameter dictionary can be assigned a log-normal prior by specifying a
+  prior for 'logc' (or 'log(c)') in the fit prior, rather than for 'c'. This
+  is the only change required to switch from 'c' from a Gaussian prior toa
+  log-normal prior; in particular the fit function can be still beexpressed in
+  terms of 'c' (rather than 'logc') since parameter dictionaries created  by
+  nonlinear_fit will have entries for both 'c' and 'logc'. sqrt-normal
+  distributions are handled the same way, but with, for example, 'sqrtc' or
+  'sqrt(c)' instead of 'logc'. This functionality was available in earlier
+  releases using the function decorator @transform_p, which is no longer
+  needed and has been removed.  This means that fit.transformed_p is gone too
+  --- just use fit.p.
 
 - debug=True checks for more errors. In particular it now looks for 
   stray GVars (not from the parameters) in fit functions. The only 
@@ -7,23 +24,28 @@ Version 6.1.4???
   Having other GVars there used to lead to a very obscure error message.
   Running with debug=True gives a slightly more comprehensible message.
 
+- fixed bug in nonlinear_fit.format which sometimes put stars in the wrong
+  place.
 
+- modified nonlinear_fit.format to list extra entries generated when 
+  using log-normal or sqrt-variables. So for a log-normal variable 'logc',
+  results for both 'logc' and 'c' will appear in the formatted output.
 
 Version 6.1.3 - 2015-06-17
 ===========================
 Changed to pip + distutils for installation. Fixed inconsistencies in 
 INSTALLATION.txt.
 
-Version 6.1.2 - 2014-06-16
+Version 6.1.2 - 2015-06-16
 ==========================
 Going back to distutils instead of setuptools. The latter doesn't work well 
 with cython.
 
-Version 6.1.1 - 2014-06-16
+Version 6.1.1 - 2015-06-16
 ==========================
 Fixed trivial error in MANIFEST.in which prevented building.
 
-Version 6.1 - 2014-06-16
+Version 6.1 - 2015-06-16
 ==========================
 
 With this version gvar is no longer bundled with lsqfit. setuptools will 

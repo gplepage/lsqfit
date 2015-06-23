@@ -3,6 +3,8 @@ Least Square Fit:
 
 Parameters:
           sqrta   0.099 (67)     [ 0.141 (71) ]  
+-----------------------------------------------
+              a   0.010 (13)     [ 0.020 (20) ]  
 
 Settings:
   svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 11/0.0)

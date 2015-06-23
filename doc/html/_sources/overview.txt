@@ -10,12 +10,13 @@ Introduction
 
 The  :mod:`lsqfit` module is designed to facilitate least-squares fitting of
 noisy data by multi-dimensional, nonlinear functions of arbitrarily many
-parameters.  :mod:`lsqfit` makes heavy use of another module, :mod:`gvar`
-(distributed separately), which provides tools that simplify the analysis of
-error propagation, and also the creation of complicated multi-dimensional
-Gaussian distributions. The power of the :mod:`gvar` module is a feature that
-distinguishes :mod:`lsqfit` from standard fitting packages, as demonstrated
-below.
+parameters, each with a (Bayesian) prior.  :mod:`lsqfit` makes heavy use of
+another module, :mod:`gvar` (distributed separately), which provides tools
+that simplify the analysis of error propagation, and also the creation of
+complicated multi-dimensional Gaussian distributions. The power of the
+:mod:`gvar` module, particularly for correlated distributions, is a feature
+that distinguishes :mod:`lsqfit` from standard fitting packages, as
+demonstrated below.
 
 The following (complete) code illustrates basic usage of :mod:`lsqfit`::
 
@@ -176,8 +177,18 @@ There are several things worth noting from this example:
    * Parameter ``debug=True`` is set in |nonlinear_fit|. This is a good idea,
      particularly in the eary stages of a project, because it causes the 
      code to check for various common errors and give more intelligible 
-     error messages than would otherwise arise. The parameter can be dropped
+     error messages than would otherwise arise. This parameter can be dropped
      once code development is over.
+
+   * The priors for the fit parameters specify Gaussian distributions,
+     characterized by the means and standard deviations given
+     ``gv.gvar(...)``. Some other distributions become available if argument
+     ``extend=True`` is included in the call to |nonlinear_fit|.  The
+     distribution for parameter ``a``, for example, can then be switched to a
+     log-normal distribution by replacing ``a=gv.gvar(0.5, 0.5)`` with
+     ``loga=gv.log(gv.gvar(0.5,0.5))`` in the prior. This change would 
+     be desirable if we knew *a priori* that parameter ``a`` is positive
+     since this is guaranteed with a log-normal distribution. 
    
 What follows is a tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
@@ -1493,7 +1504,7 @@ Positive Parameters
 -------------------
 The priors for |nonlinear_fit| are all Gaussian. There are situations,
 however, where other distributions would be desirable. One such case is where
-a parameter  is known to be positive, but is close to zero in value ("close"
+a parameter is known to be positive, but is close to zero in value ("close"
 being defined relative to the *a priori* uncertainty). For such cases we would
 like to use  non-Gaussian priors that force positivity --- for example, priors
 that  impose log-normal or exponential distributions on the parameter.
@@ -1501,31 +1512,17 @@ Ideally the decision to use such a distribution would  be made on a parameter-
 by-parameter basis, when creating the priors, and would have no impact on the
 definition of the fit function itself.
 
-:mod:`lsqfit` provides a decorator, :class:`lsqfit.transform_p`, for fit
-functions that makes this possible. This decorator only works for fit
-functions that use dictionaries for their parameters. Given a prior ``prior``
-for  a fit, the decorator is used in the following way::
-   
-   @lsqfit.transform_p(prior.keys())
-   def fitfcn(p):
-      ...
-
-when the parameter argument is the first argument of the fit function, or ::
-
-   @lsqfit.transform_p(prior.keys(), has_x=True)
-   def fitfcn(x, p):
-      ...
-
-when the parameter argument is the second argument of the 
-fit function. Consider any
-parameter ``p['XX']`` used in ``fitfcn``. The prior  distribution for that
-parameter can now be turned into a log-normal distribution  by replacing
-``prior['XX']`` with ``prior['logXX']`` (or ``prior['log(XX)'']``) when
-defining the prior, thereby assigning a Gaussian distribution to ``logXX``
-rather than to ``XX``. Nothing need be changed in the fit function, other than
-adding the decorator. The decorator automatically detects parameters whose
-keys begin with ``'log'`` and adds new parameters to the parameter-dictionary
-for ``fitfcn`` that are exponentials of those parameters.
+|nonlinear_fit| supports log-normal distributions when ``extend=True``
+is set in its argument list. This argument only affects fits that use
+dictionaries for their parameters. The prior for a parameter ``'c'`` is switched
+from a  Gaussian distribution to a log-normal distribtuion by replacing
+parameter ``'c'`` in the fit prior with a prior for its logarithm, using the key
+``'logc'`` or ``'log(c)'``. This causes |nonlinear_fit| to use the logarithm as
+the fit  parameter (with its Gaussian prior). Parameter dictionaries 
+produced by |nonlinear_fit| will have entries for both ``'c'`` and ``'logc'``, so 
+only the prior need be changed to switch distributions. In particular the 
+fit function can be expressed directly in terms of ``'c'`` so that it is 
+independent of the distribution chosen for the ``'c'`` prior.
 
 To illustrate consider a simple problem where an experimental quantity ``y`` is
 known to be positive, but experimental errors mean that measured values can
@@ -1565,37 +1562,36 @@ A better analysis is to use a log-normal distribution for ``a``::
 
    prior = gv.BufferDict(loga=gv.log(gv.gvar(0.02, 0.02))) # loga not a
 
-   @lsqfit.transform_p(prior.keys(), 0)
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
-   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
+   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
    print(fit)
-   print('a =', fit.transformed_p['a'].fmt())    # exp(loga)
+   print('a =', fit.p['a'].fmt())    # exp(loga)
 
-The fit parameter is now ``log(a)`` rather than ``a`` itself,
-but we are able to use the identical fit function. Here ``fit.transformed_p`` 
-is the same as ``fit.p`` but augmented to include the exponentials of
-any log-normal variables --- that is, ``a`` as well as ``loga``.
-Rather than including all keys, the decorator can be written with a list 
-containing just the variables to be transformed: here, 
-``@lsqfit.transform_p(['loga'], 0)``.
+The fit parameter is now ``loga`` rather than ``a`` itself, but the code 
+is unchanged except for the definition of the prior and the addition
+of ``extend=True`` to the |nonlinear_fit| arguments. In particular the 
+fit function is identical to what we used in the first case.
 
 The result from this fit is
 
 .. literalinclude:: eg6-loga.out
 
-which is more compelling. The "correct" value for ``a`` here is 0.015
-(from the method used to generate the ``y``\s).
+which is more compelling. Parameters listed  above the dashed line in the
+parameter table are the actual  parameters used in the fit; those listed below
+the dashed line are derived from those above the line. The "correct" value for
+``a`` here is 0.015 (from the method used to generate the ``y``\s).
 
-:func:`lsqfit.transform_p` also allows parameters to be replaced by their
-square roots as fit parameters --- for example,  define ``prior['sqrt(a)']``
-(or ``prior['sqrta']``) rather than ``prior['a']`` when creating the prior.
-This again guarantees positive  parameters. The prior for ``p['a']`` is an
-exponential distribution if the mean of ``p['sqrt(a)'']`` is zero. Using
-``prior['sqrt(a)'']`` in place of ``prior['a']`` in the example above leads to
-``a = 0.010(13)``, which is almost identical to the result obtained from the
-log-normal distribution.
+Setting ``extend=True`` in |nonlinear_fit| also allows parameters to  be
+replaced by their square roots as fit parameters --- for example,  define
+``prior['sqrta']`` (or ``prior['sqrt(a)']``) rather than ``prior['a']`` when
+creating the prior. This again guarantees positive  parameters. 
+Using ``sqrta=gv.sqrt(gv.gvar(0.2, 0.2))`` in the prior above, instead
+of  ``a=gv.gvar(0.02, 0.02)``, leads to a final result of ``a = 0.010(13)``,
+which is almost identical to the result obtained from the log-normal
+distribution. Note that a sqrt-normal distribution with zero mean is
+equivalent to an exponential distribution.
 
 
 Debugging and Troubleshooting
@@ -1604,8 +1600,8 @@ Debugging and Troubleshooting
 It is a very good idea to set parameter ``debug=True`` in |nonlinear_fit|, at
 least in the early stages of a project. This causes the code to look for
 common mistakes and report on them with  more intelligible error messages. The
-code also then checks for significant roundoff errors in the matrix inversions
-of the covariance matrices.
+code also then checks for significant roundoff errors in the matrix inversion
+of the covariance matrice.
 
 A common mistake is a mismatch between the format of the data and the
 format of what comes back from the fit function. Another mistake is when  a

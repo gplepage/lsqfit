@@ -9,7 +9,7 @@ Copyright (c) 2013 G. Peter Lepage. All rights reserved.
 
 from __future__ import print_function   # makes this work for python2 and 3
 from gvar import *
-from lsqfit import nonlinear_fit, transform_p
+from lsqfit import nonlinear_fit
 import functools
 import inspect
 import sys
@@ -32,20 +32,9 @@ stdout = sys.stdout
 for p in [prior, log_prior, sqrt_prior]:
 	key = list(p.keys())[0]
 	sys.stdout = open("eg6-{}.out".format(key), "w")
-	if True:
-		@transform_p(p)
-		def fcn(p, N=len(y)):
-			return N*[p['a']]
-	else:
-		class fwrapper(object):
-			def __init__(self, N):
-				self.N = N
-			@p_transforms(p, has_x=True)
-			def f(self, p):
-				"hi"
-				return self.N * [p['a']]
-		fcn = fwrapper(len(y)).f
-	f = nonlinear_fit(prior=p, fcn=fcn, data=(y))
+	def fcn(p, N=len(y)):
+		return N*[p['a']]
+	f = nonlinear_fit(prior=p, fcn=fcn, data=(y), extend=True)
 	print (f)
-	print ("a =", f.transformed_p['a'].fmt())
+	print ("a =", f.p['a'].fmt())
 sys.stdout = stdout
