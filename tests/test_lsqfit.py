@@ -382,7 +382,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             output = avg(fit.p['rooty']**2)
             # self.assertEqual(wavg.dof,ny-1)
             input = wavg([avg(y),avg(rooty**2)])
-            self.assertEqual(wavg.dof,1)
+            self.assertEqual(input.dof,1)
             # print("*** wavg1",input,output)
             self.assert_gvclose(input,output,rtol=1e-2)
             if ny>1:  # cov diag
@@ -1299,15 +1299,15 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertTrue(gv.equivalent(fit.p['sqrta'] ** 2, fit.p['a']))
         self.assertEqual(fit.p['a'].fmt(), "0.010(13)")
 
-    def test_pdict(self):
-        " _pdict "
-        # check _pdict() and refill_buf
+    def test_ExtendedDict(self):
+        " ExtendedDict "
+        # check ExtendedDict() and refill_buf
         p = gv.BufferDict()
         p['a'] = 1. 
         p['b'] = [2., 3.]
         p['logc'] = 0.
         p['sqrt(d)'] = [5., 6.]
-        newp = lsqfit._pdict(p)
+        newp = lsqfit.ExtendedDict(p)
         for i in range(2):
             for k in p: 
                 assert np.all(p[k] == newp[k])
@@ -1320,14 +1320,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         assert 'c' not in oldp 
         assert 'd' not in oldp
         assert numpy.all(oldp.buf == p.buf)
-        # _stripkey
+        # stripkey
         for ks, f, k in [
             ('aa', np.exp, 'logaa'),
             ('aa', np.exp, 'log(aa)'),
             ('aa', np.square, 'sqrtaa'),
             ('aa', np.square, 'sqrt(aa)'),
             ]:
-            assert (ks, f) == lsqfit._pdict._stripkey(k)
+            assert (ks, f) == lsqfit.ExtendedDict.stripkey(k)
 
     def test_multifit_exceptions(self):
         """ multifit exceptions """

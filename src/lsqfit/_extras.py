@@ -93,6 +93,10 @@ class GVarWAvg(gvar.GVar):
 
         Time required to do average.
 
+    .. attribute:: svdcorrection
+
+        The *svd* corrections added to the data in the average.
+
     .. attribute:: fit
 
         Fit result from average.
@@ -133,6 +137,10 @@ class ArrayWAvg(numpy.ndarray):
     .. attribute:: time
 
         Time required to do average.
+
+    .. attribute:: svdcorrection
+
+        The *svd* corrections added to the data in the average.
 
     .. attribute:: fit
 
@@ -184,6 +192,10 @@ class BufferDictWAvg(gvar.BufferDict):
     .. attribute:: time
 
         Time required to do average.
+
+    .. attribute:: svdcorrection
+
+        The *svd* corrections added to the data in the average.
 
     .. attribute:: fit
 
@@ -284,17 +296,18 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         used to do the averaging.
     :type kargs: dict
         
-    The following function attributes are also set:    
+    Results returned by :func:`gvar.wavg` have the following extra 
+    attributes describing the average:
         
-    .. attribute:: wavg.chi2
+    .. attribute:: chi2
         
         ``chi**2`` for weighted average.
         
-    .. attribute:: wavg.dof
+    .. attribute:: dof
         
         Effective number of degrees of freedom.
         
-    .. attribute:: wavg.Q
+    .. attribute:: Q
         
         The probability that the ``chi**2`` could have been larger, 
         by chance, assuming that the data are all Gaussain and consistent
@@ -304,20 +317,17 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
 
         Quality factor `Q` (or *p-value*) for fit.
 
-    .. attribute:: wavg.time
+    .. attribute:: time
 
         Time required to do average.
 
-    .. attribute:: wavg.svdcorrection
+    .. attribute:: svdcorrection
 
         The *svd* corrections made to the data when ``svdcut`` is not ``None``.
 
-    .. attribute:: wavg.fit
+    .. attribute:: fit
 
         Fit output from average.
-    
-    These same attributes are also attached to the output |GVar|, 
-    array or dictionary from :func:`gvar.wavg`.            
     """
     if len(dataseq) <= 0:
         if prior is None:
@@ -407,12 +417,12 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         def fcn(p):
             return len(data) * [p]
     fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **kargs)
-    wavg.Q = fit.Q
-    wavg.chi2 = fit.chi2
-    wavg.dof = fit.dof
-    wavg.time = fit.time
-    wavg.svdcorrection = fit.svdcorrection
-    wavg.fit = fit
+    # wavg.Q = fit.Q
+    # wavg.chi2 = fit.chi2
+    # wavg.dof = fit.dof
+    # wavg.time = fit.time
+    # wavg.svdcorrection = fit.svdcorrection
+    # wavg.fit = fit
     if p0.shape is None:
         return BufferDictWAvg(gvar.BufferDict(p0, buf=fit.p.flat), fit)
     elif p0.shape == ():

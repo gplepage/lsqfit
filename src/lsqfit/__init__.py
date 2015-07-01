@@ -95,7 +95,7 @@ import numpy
 import gvar as _gvar
 
 # add extras and utilities to lsqfit 
-from ._extras import empbayes_fit, wavg 
+from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
 from ._utilities import multifit, multiminex, gammaQ
@@ -304,7 +304,7 @@ class nonlinear_fit(object):
                 nchivw = self.y.size + self.prior.size
             selfp0 = self.p0 
             if self.extend:
-                selfp0 = _pdict(selfp0)
+                selfp0 = ExtendedDict(selfp0)
             f = self.fcn(selfp0) if self.x is False else self.fcn(self.x, selfp0)
             if not _y_fcn_match(self.y, f):
                 raise RuntimeError(_y_fcn_match.msg)
@@ -416,7 +416,7 @@ class nonlinear_fit(object):
 
     p = property(_getp, doc="Best-fit parameters with correlations.")
 
-    transformed_p = property(_getp, doc="Same as fit.p --- for legacy code.")  # legacy name
+    # transformed_p = property(_getp, doc="Same as fit.p --- for legacy code.")  # legacy name
 
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
@@ -486,12 +486,12 @@ class nonlinear_fit(object):
                     nstar = 0
                 return '  ' + nstar * '*'
             if extend:
-                v2 = _pdict(v2)
+                v2 = ExtendedDict(v2)
                 newkeys = v2.newkeys()
-                if len(newkeys) == 0:
+                try:
+                    first_newkey = next(newkeys)
+                except StopIteration:
                     extend = False
-                else:
-                    first_newkey = newkeys[0]
             ct = 0
             ans = []
             width = [0,0,0]
@@ -906,7 +906,9 @@ class nonlinear_fit(object):
             ...
 
             glist = []
-            for sfit in fit.bootstrapped_fit_iter(n=100, datalist=datalist, bootstrap=True):
+            for sfit in fit.bootstrapped_fit_iter(
+                n=100, datalist=datalist, bootstrap=True
+                ):
                 glist.append(g(sfit.pmean))
 
             ... analyze samples glist[i] from g(p) distribution ...
@@ -970,226 +972,24 @@ class nonlinear_fit(object):
 
     bootstrap_iter = bootstrapped_fit_iter
 
-# decorator for fit function allowing log/sqrt-normal distributions
-# class transform_p(object):
-#     """ Decorate fit function to allow log/sqrt-normal priors. DEPRECATED.
-
-#     :class:`tranform_p` is no longer supported; use the ``extend`` 
-#     parameter in :class:`nonlinear_fit` instead.
-
-#     This decorator can be applied to fit functions whose parameters 
-#     are stored in a dictionary-like object. It searches 
-#     the parameter keys for string-valued keys of the 
-#     form ``"log(XX)"``, ``"logXX"``, ``"sqrt(XX)"``, or 
-#     ``"sqrtXX"`` where ``"XX"`` is an arbitrary string. For each
-#     such key it adds a new entry to the parameter dictionary
-#     with key ``"XX"`` where::
-
-#         p["XX"] = exp(p[k])    for k = "log(XX)" or "logXX"
-
-#     or ::
-
-#         p["XX"] = p[k] ** 2    for k = "sqrt(XX)" or "sqrtXX"
-
-#     This means that the fit function can be expressed entirely in 
-#     terms of ``p["XX"]`` even if the actual fit parameter is 
-#     the logarithm or square root of that quantity. Since fit 
-#     parameters have gaussian/normal priors, ``p["XX"]`` has 
-#     a log-normal or "sqrt-normal" distribution in the first
-#     or second cases above, respectively. In either case
-#     ``p["XX"]`` is guaranteed to be postiive. 
-
-#     This is a convenience function. It allows for the 
-#     rapid replacement of a fit parameter by its 
-#     logarithm or square root without having to rewrite the
-#     fit function --- only the prior need be changed. The decorator
-#     needs to be told if the fit function has an ``x`` as its 
-#     first argument, followed by the parameters ``p``::
-
-#         @lsqfit.transform_p(prior.keys(), has_x=True)
-#         def fitfcn(x, p):
-#             ...
-
-#     versus ::
-
-#         @lsqfit.transform_p(prior.keys())
-#         def fitfcn(p):
-#             ...
-
-#     A list of the specific keys that need transforming can be used instead
-#     of the list of all keys (``prior.keys()``). The decorator assigns a copy 
-#     of itself to the function as an attribute: ``fitfcn.transform_p``.
-
-#     :param priorkeys: The keys in the prior that are to be tranformed. 
-#         Other keys can be in ``priorkeys`` provided they do not begin
-#         with ``'log'`` or ``'sqrt'`` --- they are ignored.
-#     :type priorkeys: sequence
-#     :param has_x: Set equal to ``True`` if the fit function is a function
-#         of ``x`` and parameters ``p`` (*i.e.*, ``f(x,p)``). Set equal to 
-#         ``False`` if the fit function is a function only of the parameters
-#         (*i.e.*, ``f(p)``). Default is ``False``.
-#     :type pindex: bool
-#     :param pkey: Name of the parameters-variable in the argument keyword
-#         dictionary of the fit function. Default value is ``None``; one of 
-#         ``pkey`` or ``pindex`` must be specified (i.e., ``not None``),
-#         unless the fit function has only a single argument.
-#     :type pkey: string or None
-#     """
-#     def __init__(self, priorkeys, has_x=False):
-#         warnings.warn(
-#             "transform_p is deprecated; use nonlinear_fit's extend instead",
-#             UserWarning
-#             )
-#         self.pindex = 1 if has_x else 0
-#         self.log_keys = []
-#         self.sqrt_keys = []
-#         self.added_keys = []
-#         # N.B. Allowing priorkeys to be the prior itself for compatibility 
-#         #      with old convention. Migt want to get rid of this someday.
-#         pkeys = priorkeys.keys() if hasattr(priorkeys, "keys") else set(priorkeys)
-#         for i in pkeys:
-#             if isinstance(i, str):
-#                 if i[:3] == 'log':
-#                     if i[3] == '(' and i[-1] == ')':
-#                         j = i[4:-1]
-#                     else:
-#                         j = i[3:]
-#                     self.log_keys.append((i, j))
-#                     self.added_keys.append(j)
-#                 elif i[:4] == 'sqrt':
-#                     if i[4] == '(' and i[-1] == ')':
-#                         j = i[5:-1]
-#                     else:
-#                         j = i[4:]
-#                     self.sqrt_keys.append((i, j))
-#                     self.added_keys.append(j)
-
-#     @staticmethod
-#     def priorkey(prior, k):
-#         """ Return key in ``prior`` corresponding to ``k``. 
-
-#         Add in ``"log"`` or ``"sqrt"`` as needed to find a key
-#         in ``prior``.
-#         """
-#         if k in prior:
-#             return k
-#         for t in ["log{}", "log({})", "sqrt{}", "sqrt({})"]:
-#             tk = t.format(str(k))
-#             if tk in prior:
-#                 return tk
-#         raise ValueError("unknown prior: " + str(k))
-
-#     @staticmethod
-#     def paramkey(k):
-#         """ Return parameter key corresponding to prior-key ``k``.
-
-#         Strip off any ``"log"`` or ``"sqrt"`` prefix.
-#         """
-#         if isinstance(k, str):
-#             if k[:4] == "log(" and k[-1] == ")":
-#                 return k[4:-1]
-#             elif k[:3] == "log":
-#                 return k[3:]
-#             elif k[:5] == "sqrt(" and k[-1] == ")":
-#                 return k[5:-1]
-#             elif k[:4] == "sqrt":
-#                 return k[4:]
-#         return k
-
-#     def transform(self, p):
-#         """ Create transformed copy of dictionary ``p``.
-
-#         Create a copy of parameter-dictionary ``p`` 
-#         that includes new entries for 
-#         each ``"logXX"``, etc entry corresponding to
-#         ``"XX"``. The values in ``p`` can be any type that 
-#         supports logarithms, exponentials, and arithmetic.
-#         """
-#         newp = _gvar.BufferDict(p)
-#         for i, j in self.log_keys:
-#             newp[j] = _gvar.exp(newp[i])
-#         for i, j in self.sqrt_keys:
-#             newp[j] = newp[i] * newp[i]
-#         return newp
-
-#     def untransform(self, p):
-#         """ Undo ``self.transform(p)``.
-
-#         Reconstruct ``p0`` where ``p == self.transform(p0)``; that
-#         is remove entries for keys ``"XX"`` that were added by
-#         by :func:`transform_p.transform` (because ``"logXX"`` or 
-#         ``"sqrtXX"`` or ... appeared in ``p0``).
-#         """
-#         newp = _gvar.BufferDict()
-#         for i in p:
-#             if i not in self.added_keys:
-#                 newp[i] = p[i]
-#         return newp
-
-
-#     def __call__(self, f):
-#         try:
-#             pkey = inspect.getargspec(f)[0][self.pindex]
-#         except IndexError:
-#             raise IndexError('function has too few arguments')
-        
-#         @functools.wraps(f)
-#         def newf(*args, **kargs):
-#             p = ( 
-#                 _gvar.BufferDict(args[self.pindex])
-#                 if self.pindex < len(args) else
-#                 _gvar.BufferDict(kargs[pkey])
-#                 )
-#             for i, j in self.log_keys:
-#                 p[j] = _gvar.exp(p[i])
-#             for i, j in self.sqrt_keys:
-#                 p[j] = p[i] * p[i]
-#             if self.pindex < len(args):
-#                 args = list(args)
-#                 args[self.pindex] = p
-#                 args = tuple(args)
-#             else:
-#                 kargs[pkey] = p
-#             # newf.transform_p = self
-#             return f(*args, **kargs)
-
-#         newf.transform_p = self
-#         return newf
-
-# p_transforms = transform_p   # legacy name
-
-
 # components of nonlinear_fit 
-class _pdict(_gvar.BufferDict):
-    """ parameter BufferDict that supports log-normal/sqrt-normal variables.
+class ExtendedDict(_gvar.BufferDict):
+    """ Parameter |BufferDict| that supports log-normal/sqrt-normal variables.
 
     Used for parameters when there may be log-normal/sqrt-normal  variables.
     The exponentiated/squared values of those variables are included in the
-    BufferDict, together with  the original versions. Method refill_buf
-    refills the buffer with  a 1-d array and then fills in the
-    exponentiated/squared values of  the log-normal/sqrt-normal variables --- 
-    that is, write  p.refull_buf(newbuf)  instead of  p.buf = newbuf.
-
-    There are two other utilities. One trimkeys(p) creates a copy of
-    BufferDict p omitting any variables that are the  exponentials/squares of
-    log-normal/sqrt-normal variables). The other verifykeys(p) makes sure
-    that the keys in p will not result in conflicts with existing entries when
-    exponentiated/squared values are added.
-
-    _pdict has one other method: newkeys() which returns a list of 
-    the new keys created by _pdict.
-
-        extensions -- list of slices and functions for refill_buf
-
-    Having defined p=_pdict(p0), you can get rid of the extra parameters 
-    using gvar.BufferDict(p, keys=p.origkeys).
+    BufferDict, together with  the original versions. Method
+    :meth:`ExtendedDict.refill_buf` refills the buffer with  a 1-d array and
+    then fills in the exponentiated/squared values of  the log-normal/sqrt-
+    normal variables ---  that is, ``p.refull_buf(newbuf)``  
+    replaces ``p.buf = newbuf``.
     """
     def __init__(self, p0, buf=None):
-        super(_pdict, self).__init__(p0, buf=buf)
+        super(ExtendedDict, self).__init__(p0, buf=buf)
         extensions = []
         newkeys = []
         for k in p0:
-            k_stripped, k_fcn = _pdict._stripkey(k)
+            k_stripped, k_fcn = ExtendedDict.stripkey(k)
             if k_fcn is not None:
                 self[k_stripped] = k_fcn(self[k])
                 extensions.append(
@@ -1208,35 +1008,22 @@ class _pdict(_gvar.BufferDict):
             self.buf[s1] = f(self.buf[s2])
 
     def newkeys(self):
-        " List of new keys generated by :class:`_pdict`. "
-        return list(self._newkeys)
+        " Iterator containing new keys generated by :class:`ExtendedDict`. "
+        return iter(self._newkeys)
 
     @staticmethod
-    def priorkey(prior, k):
-        """ Return key in ``prior`` corresponding to ``k``. 
-
-        Add in ``"log"`` or ``"sqrt"`` as needed to find a key
-        in ``prior``.
-        """
-        if k in prior:
-            return k
-        for t in ["log{}", "log({})", "sqrt{}", "sqrt({})"]:
-            tk = t.format(str(k))
-            if tk in prior:
-                return tk
-        raise ValueError("unknown prior: " + str(k))
+    def origkey(prior, k):
+        """ Find key in ``prior`` corresponding to ``k``. """
+        if not isinstance(k, str):
+            return k 
+        for f in ['log{}', 'log({})', 'sqrt{}', 'sqrt({})']:
+            newk = f.format(k)
+            if newk in prior:
+                return newk 
+        return k
 
     @staticmethod
-    def verifykeys(p):
-        for k in p:
-            k_stripped, f_fcn = _pdict._stripkey(k)
-            if k_stripped in p:
-                raise ValueError(
-                    'redundant parameters {} and {}'.format(k, k_stripped)
-                    )
-
-    @staticmethod
-    def _stripkey(k):
+    def stripkey(k):
         """ Return (stripped key, fcn) where fcn is exp or square.
 
         Strip off any ``"log"`` or ``"sqrt"`` prefix, with or without 
@@ -1263,7 +1050,7 @@ def trim_redundant_keys(p):
     """
     keys = list(p.keys())
     for k in p:
-        k_stripped, k_fcn = _pdict._stripkey(k)
+        k_stripped, k_fcn = ExtendedDict.stripkey(k)
         if k_fcn is not None:
             try:
                 keys.remove(k_stripped)
@@ -1282,7 +1069,7 @@ def _reformat(p, buf, extend=False):
             raise ValueError(       #
                 "p, buf size mismatch: %d, %d"%(ans.size, len(buf)))
         if extend:
-            ans = _pdict(ans, buf=buf)
+            ans = ExtendedDict(ans, buf=buf)
         else:
             ans = BufferDict(ans, buf=buf)
     else:
@@ -1484,7 +1271,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
                     return numpy.array(ans).flat            
         else:
             if extend:
-                po = _pdict(p0, buf=numpy.zeros(p0.size, float))
+                po = ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
             else:
                 po = BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po):
@@ -1508,7 +1295,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
                 return yo.flat            
         else:
             if extend:
-                po = _pdict(p0, buf=numpy.zeros(p0.size, float))
+                po = ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
             else:
                 po = BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):

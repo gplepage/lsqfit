@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 7.0a documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 7.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '7.0a',
+        VERSION:     '7.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 7.0a documentation" href="index.html" />
+    <link rel="top" title="lsqfit 7.0 documentation" href="index.html" />
     <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0a documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -644,7 +644,9 @@ of the fit parameters:</p>
 <span class="o">...</span>
 
 <span class="n">glist</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">datalist</span><span class="o">=</span><span class="n">datalist</span><span class="p">,</span> <span class="n">bootstrap</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span>
+    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">datalist</span><span class="o">=</span><span class="n">datalist</span><span class="p">,</span> <span class="n">bootstrap</span><span class="o">=</span><span class="bp">True</span>
+    <span class="p">):</span>
     <span class="n">glist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">sfit</span><span class="o">.</span><span class="n">pmean</span><span class="p">))</span>
 
 <span class="o">...</span> <span class="n">analyze</span> <span class="n">samples</span> <span class="n">glist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kn">from</span> <span class="nn">g</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="n">distribution</span> <span class="o">...</span>
@@ -841,22 +843,23 @@ used to do the averaging.</li>
 </tr>
 </tbody>
 </table>
-<p>The following function attributes are also set:</p>
+<p>Results returned by <code class="xref py py-func docutils literal"><span class="pre">gvar.wavg()</span></code> have the following extra
+attributes describing the average:</p>
 <dl class="attribute">
-<dt id="lsqfit.wavg.chi2">
-<code class="descclassname">wavg.</code><code class="descname">chi2</code><a class="headerlink" href="#lsqfit.wavg.chi2" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.chi2">
+<code class="descclassname">lsqfit.</code><code class="descname">chi2</code><a class="headerlink" href="#lsqfit.chi2" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="docutils literal"><span class="pre">chi**2</span></code> for weighted average.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.wavg.dof">
-<code class="descclassname">wavg.</code><code class="descname">dof</code><a class="headerlink" href="#lsqfit.wavg.dof" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.dof">
+<code class="descclassname">lsqfit.</code><code class="descname">dof</code><a class="headerlink" href="#lsqfit.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Effective number of degrees of freedom.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.wavg.Q">
-<code class="descclassname">wavg.</code><code class="descname">Q</code><a class="headerlink" href="#lsqfit.wavg.Q" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.Q">
+<code class="descclassname">lsqfit.</code><code class="descname">Q</code><a class="headerlink" href="#lsqfit.Q" title="Permalink to this definition">¶</a></dt>
 <dd><p>The probability that the <code class="docutils literal"><span class="pre">chi**2</span></code> could have been larger,
 by chance, assuming that the data are all Gaussain and consistent
 with each other. Values smaller than 0.1 or suggest that the
@@ -866,25 +869,23 @@ called the <em>p-value</em>.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.wavg.time">
-<code class="descclassname">wavg.</code><code class="descname">time</code><a class="headerlink" href="#lsqfit.wavg.time" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.time">
+<code class="descclassname">lsqfit.</code><code class="descname">time</code><a class="headerlink" href="#lsqfit.time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Time required to do average.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.wavg.svdcorrection">
-<code class="descclassname">wavg.</code><code class="descname">svdcorrection</code><a class="headerlink" href="#lsqfit.wavg.svdcorrection" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.svdcorrection">
+<code class="descclassname">lsqfit.</code><code class="descname">svdcorrection</code><a class="headerlink" href="#lsqfit.svdcorrection" title="Permalink to this definition">¶</a></dt>
 <dd><p>The <em>svd</em> corrections made to the data when <code class="docutils literal"><span class="pre">svdcut</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.wavg.fit">
-<code class="descclassname">wavg.</code><code class="descname">fit</code><a class="headerlink" href="#lsqfit.wavg.fit" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.fit">
+<code class="descclassname">lsqfit.</code><code class="descname">fit</code><a class="headerlink" href="#lsqfit.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit output from average.</p>
 </dd></dl>
 
-<p>These same attributes are also attached to the output <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>,
-array or dictionary from <code class="xref py py-func docutils literal"><span class="pre">gvar.wavg()</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1094,7 +1095,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0a documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
