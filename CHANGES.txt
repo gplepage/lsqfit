@@ -1,5 +1,5 @@
-Version 7.0a ???
-================
+Version 7.0 2015-07-01
+=======================
 This is a modest change but includes some backwards incompatible changes in
 the routine --- hence the increase to v7.0. 
 
