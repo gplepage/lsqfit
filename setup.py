@@ -1,4 +1,4 @@
-""" 
+"""
 Created by G. Peter Lepage (Cornell University) on 9/2011.
 Copyright (c) 2011-15 G. Peter Lepage.
 
@@ -23,16 +23,16 @@ import numpy
 
 LSQFIT_VERSION = '7.0'
 
-# create lsqfit/_version.py so lsqfit knows its version number 
+# create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
     version_file.write(
-        "# File created by lsqfit setup.py\nversion = '%s'\n" 
+        "# File created by lsqfit setup.py\nversion = '%s'\n"
         % LSQFIT_VERSION
         )
 
-# extension modules 
-# Add explicit directories to the ..._dirs variables if 
-# the build process has trouble finding the gsl library 
+# extension modules
+# Add explicit directories to the ..._dirs variables if
+# the build process has trouble finding the gsl library
 # or the numpy headers. This should not be necessary if
 # gsl and numpy are installed in standard locations.
 ext_args = dict(
@@ -70,18 +70,18 @@ setup(name='lsqfit',
     This package facilitates least-squares fitting of noisy data by
     multi-dimensional, nonlinear functions of arbitrarily many
     parameters. :mod:`lsqfit` provides the fitting capability;
-    it makes heavy use of package :mod:`gvar`, which provides tools for 
-    the analysis of error propagation, and also for the creation of 
+    it makes heavy use of package :mod:`gvar`, which provides tools for
+    the analysis of error propagation, and also for the creation of
     complicated multi-dimensional gaussian distributions. (:mod:`gvar`
-    is distributed separately.) :mod:`lsqfit` supports Bayesian priors 
-    for the fit parameters, with arbitrarily complicated multidimensional 
-    Gaussian distributions. It uses automatic differentiation to compute 
+    is distributed separately.) :mod:`lsqfit` supports Bayesian priors
+    for the fit parameters, with arbitrarily complicated multidimensional
+    Gaussian distributions. It uses automatic differentiation to compute
     gradients, greatly simplifying the design of fit functions.
 
-    In addition to :mod:`gvar`, this package uses the Gnu Scientific 
-    Library (GSL) to do the fitting, numpy for efficient array arithmetic, 
+    In addition to :mod:`gvar`, this package uses the Gnu Scientific
+    Library (GSL) to do the fitting, numpy for efficient array arithmetic,
     and cython to compile efficient core routines and interface code.
-    """ 
+    """
     ,
     classifiers = [                     #
         'Development Status :: 5 - Production/Stable',
