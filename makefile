@@ -1,11 +1,11 @@
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2015 G. Peter Lepage. 
+# Copyright (c) 2008-2015 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version (see <http://www.gnu.org/licenses/>).
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -15,13 +15,13 @@ PIP = pip
 PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 
-install : 
+install :
 	$(PIP) install . --user
 
 # $(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
 
-install-sys : 		
-	$(PIP) install . 
+install-sys :
+	$(PIP) install .
 
 # $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
 
@@ -56,6 +56,9 @@ tests test-all:
 	@echo ''
 	$(PYTHON) -m unittest discover
 
+time:
+	$(MAKE) -C examples PYTHON=$(PYTHON) time
+
 run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
@@ -71,7 +74,7 @@ upload-git:
 	git push origin master
 
 clean:
-	rm -f -r build 
+	rm -f -r build
 	rm -rf __pycache__
 	rm -f *.so *.tmp *.pyc *.prof *.c .coverage doc.zip
 	rm -f -r dist

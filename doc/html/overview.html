@@ -2164,7 +2164,7 @@ the dashed line are derived from those above the line. The &#8220;correct&#8221;
 replaced by their square roots as fit parameters &#8212; for example,  define
 <code class="docutils literal"><span class="pre">prior['sqrta']</span></code> (or <code class="docutils literal"><span class="pre">prior['sqrt(a)']</span></code>) rather than <code class="docutils literal"><span class="pre">prior['a']</span></code> when
 creating the prior. This again guarantees positive  parameters.
-Using <code class="docutils literal"><span class="pre">sqrta=gv.sqrt(gv.gvar(0.2,</span> <span class="pre">0.2))</span></code> in the prior above, instead
+Using <code class="docutils literal"><span class="pre">sqrta=gv.sqrt(gv.gvar(0.02,</span> <span class="pre">0.02))</span></code> in the prior above, instead
 of  <code class="docutils literal"><span class="pre">a=gv.gvar(0.02,</span> <span class="pre">0.02)</span></code>, leads to a final result of <code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">0.010(13)</span></code>,
 which is almost identical to the result obtained from the log-normal
 distribution. Note that a sqrt-normal distribution with zero mean is

@@ -1,11 +1,11 @@
 lsqfit
 ------
 
-This package facilitates least-squares fitting of noisy data by multi-
-dimensional, nonlinear functions of arbitrarily many parameters. The central
-package is ``lsqfit`` which provides the fitting capability. ``lsqfit`` makes
-heavy use of package ``gvar``, which provides tools for the analysis of error
-propagation, and also for the creation of complicated multi-dimensional
+This package facilitates least-squares fitting of noisy data by
+multi-dimensional, nonlinear functions of arbitrarily many parameters. The
+central package is ``lsqfit`` which provides the fitting capability. ``lsqfit``
+makes heavy use of package ``gvar``, which provides tools for the analysis of 
+error propagation, and also for the creation of complicated multi-dimensional
 Gaussian distributions. (``gvar`` is  distributed separately.) ``lsqfit``
 supports Bayesian priors for the fit parameters, with arbitrarily complicated
 multidimensional gaussian distributions. An tutorial on fitting is included in
@@ -26,7 +26,7 @@ that interfaces between Python and the C-based GSL. The fitter uses
 automatic differentiation to compute gradients, which greatly simplifies
 the design of fitting functions.
 
-Information on how to install the components is in the ``INSTALLATION`` file. 
+Information on how to install the components is in the ``INSTALLATION`` file.
 
 To test the libraries try ``make tests``. (Some tests involve random
 numbers and so may occasionally — less than 1 in 100 runs — fail due to

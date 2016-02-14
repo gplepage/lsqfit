@@ -1,10 +1,10 @@
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version (see <http://www.gnu.org/licenses/>).
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,6 +25,17 @@ run:
 	- diff -w -I svdcut err-budget.out err-budget.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
 	- diff -w -I svdcut pendulum.out pendulum.tmp
+
+time:
+	time $(MAKE) _time
+
+_time:
+	$(PYTHON) simple.py > /dev/null
+	$(PYTHON) y-vs-x.py > /dev/null
+	$(PYTHON) x-err.py > /dev/null
+	$(PYTHON) p-corr.py > /dev/null
+	$(PYTHON) err-budget.py > /dev/null
+	$(PYTHON) pendulum.py > /dev/null
 
 update-all:
 	$(PYTHON) simple.py > simple.out

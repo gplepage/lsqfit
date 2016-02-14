@@ -513,7 +513,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             else:
                 datay = gv.gvar(datay,data[2])
                 dataycov = data[2]
-            fit = nonlinear_fit(data=data,p0=p0,fcn=fcn,debug=True,reltol=1e-16)
+            fit = nonlinear_fit(data=data,p0=p0,fcn=fcn,debug=True,reltol=1e-14)
             print_fit(fit,dict(y=avg(fit.p**2)))
             self.assertIsNone(fit.logGBF)
             self.assertEqual(fit.dof,0.0)
