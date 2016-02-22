@@ -337,7 +337,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '      1,1    2.20 (10)    2.093 (71)  *',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)',
+            '  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)',
             '',
             ])
         self.assertEqual(out, fit.format(True))
@@ -1350,7 +1350,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         nx = 3
         x0 = np.arange(nx)+1.
         def f(x,x0=x0):
-            return (x-x0)**3
+            return x ** 3 - 3 * x ** 2 * x0 + 3 * x * x0 **2 - x0 ** 3
+            # return (x-x0)**3
 
         if PRINT_FIT:
             def tabulate(x,f,df):
@@ -1364,6 +1365,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         ans = multifit(x0=np.zeros(nx),n=nx,f=f,analyzer=tabulate,
                         alg='lmder')
         self.assert_arraysclose(ans.x,x0,rtol=1e-3)
+        if multifit.gsl_version() > "2.0":
+            ans = multifit(x0=np.zeros(nx),n=nx,f=f,analyzer=tabulate,
+                            alg='lmniel', tol=(0, 1e-16, 0))
+            self.assertEqual(ans.stopping_criterion, 2)
+            self.assert_arraysclose(ans.x,x0,rtol=1e-3)
+
 
     def test_multiminex_exceptions(self):
         """ multiminex exceptions """

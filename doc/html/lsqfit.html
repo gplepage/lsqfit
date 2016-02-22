@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 7.0 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 7.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '7.0',
+        VERSION:     '7.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 7.0 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 7.1 documentation" href="index.html" />
     <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -418,17 +418,21 @@ errors in the final error estimates:</p>
 <dt id="lsqfit.nonlinear_fit.format">
 <code class="descname">format</code><span class="sig-paren">(</span><em>maxline=0</em>, <em>pstyle='v'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
-<p>The output tabulates the <code class="docutils literal"><span class="pre">chi**2</span></code> per degree of freedom of the
-fit (<code class="docutils literal"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom,
-the logarithm of the Gaussian Bayes Factor for the fit (<code class="docutils literal"><span class="pre">logGBF</span></code>),
-and the number of fit-algorithm iterations needed by the fit.
-Optionally, it will also list the best-fit values for the
-fit parameters together with the prior for each (in <code class="docutils literal"><span class="pre">[]</span></code> on
-each line). It can also list all of the data and the corresponding
-values from the fit. At the end it lists the SVD cut,
-the number of eigenmodes modified by the SVD cut, the relative
-and absolute tolerances used in the fit, and the time in seconds
-needed to do the fit.</p>
+<p>The output tabulates the <code class="docutils literal"><span class="pre">chi**2</span></code> per degree of freedom of the fit
+(<code class="docutils literal"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the logarithm of the
+Gaussian Bayes Factor for the fit (<code class="docutils literal"><span class="pre">logGBF</span></code>), and the number of fit-
+algorithm iterations needed by the fit. Optionally, it will also list
+the best-fit values for the fit parameters together with the prior for
+each (in <code class="docutils literal"><span class="pre">[]</span></code> on each line). Lines for parameters that deviate from
+their prior by more than one (prior) standard deviation are marked
+with asterisks, with the number of asterisks equal to the number of
+standard deviations (up to five). <code class="docutils literal"><span class="pre">format</span></code> can also list all of the
+data and the corresponding values from the fit, again with asterisks
+on lines  where there is a significant discrepancy. At the end it
+lists the SVD cut, the number of eigenmodes modified by the SVD cut,
+the tolerances used in the fit, and the time in seconds needed to do
+the fit. The tolerance used to terminate the fit is marked with an
+asterisk.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -903,7 +907,7 @@ of freedom even if the model used to construct <code class="docutils literal"><s
 <h2>Other Classes<a class="headerlink" href="#other-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.multifit">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">multifit</code><span class="sig-paren">(</span><em>x0</em>, <em>n</em>, <em>f</em>, <em>reltol=1e-4</em>, <em>abstol=0</em>, <em>maxit=1000</em>, <em>alg='lmsder'</em>, <em>analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.multifit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">multifit</code><span class="sig-paren">(</span><em>x0</em>, <em>n</em>, <em>f</em>, <em>tol=1e-4</em>, <em>maxit=1000</em>, <em>alg='lmsder'</em>, <em>analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.multifit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fitter for nonlinear least-squares multidimensional fits.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -915,15 +919,32 @@ of freedom even if the model used to construct <code class="docutils literal"><s
 <li><strong>f</strong> (<em>function</em>) &#8211; Fit function: <a class="reference internal" href="#lsqfit.multifit" title="lsqfit.multifit"><code class="xref py py-class docutils literal"><span class="pre">multifit</span></code></a> minimizes <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code>
 by varying parameters <code class="docutils literal"><span class="pre">x</span></code>. The parameters are a 1-d
 <code class="xref py py-class docutils literal"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</li>
-<li><strong>reltol</strong> (<em>float</em>) &#8211; The fit stops when <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;</span> <span class="pre">abstol</span> <span class="pre">+</span> <span class="pre">reltol</span> <span class="pre">*</span> <span class="pre">|x_i|</span></code>;
-default value is <code class="docutils literal"><span class="pre">1e-4</span></code>.</li>
-<li><strong>abstol</strong> (<em>float</em>) &#8211; The fit stops when <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;</span> <span class="pre">abstol</span> <span class="pre">+</span> <span class="pre">reltol</span> <span class="pre">*</span> <span class="pre">|x_i|</span></code>;
-default value is <code class="docutils literal"><span class="pre">0.0</span></code>.</li>
+<li><strong>tol</strong> (<em>tuple or float</em>) &#8211; <p>Setting <code class="docutils literal"><span class="pre">tol=(reltol,</span> <span class="pre">abstol)</span></code> causes the fit to stop
+searching for a solution when <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;=</span> <span class="pre">abstol</span> <span class="pre">+</span> <span class="pre">reltol</span> <span class="pre">*</span> <span class="pre">|x_i|</span></code>.
+With version 2 or higher of the GSL library, <code class="docutils literal"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code>
+can be used, where the fit stops when any one of the following
+three criteria is satisfied:</p>
+<blockquote>
+<div><ol class="arabic">
+<li>step size small: <code class="docutils literal"><span class="pre">|dx_i|</span> <span class="pre">&lt;=</span> <span class="pre">xtol</span> <span class="pre">*</span> <span class="pre">(xtol</span> <span class="pre">+</span> <span class="pre">|x_i|)</span></code>;</li>
+<li>gradient small: <code class="docutils literal"><span class="pre">||g</span> <span class="pre">.</span> <span class="pre">x||_inf</span> <span class="pre">&lt;=</span> <span class="pre">gtol</span> <span class="pre">*</span> <span class="pre">||f||^2</span></code>;</li>
+<li>residuals small: <code class="docutils literal"><span class="pre">||f(x+dx)</span> <span class="pre">-</span> <span class="pre">f(x)||</span> <span class="pre">&lt;=</span> <span class="pre">ftol</span> <span class="pre">*</span> <span class="pre">max(||f(x)||,</span> <span class="pre">1)</span></code>.</li>
+</ol>
+</div></blockquote>
+<p>Recommended values are: <code class="docutils literal"><span class="pre">xtol=1/10**d</span></code> for <code class="docutils literal"><span class="pre">d</span></code>
+digits of precision in the parameters; <code class="docutils literal"><span class="pre">gtol=1e-6</span></code> to account
+for roundoff errors in gradient <code class="docutils literal"><span class="pre">g</span></code> (unless the second order derivative
+vanishes at minimum as well, in which case <code class="docutils literal"><span class="pre">gtol=0</span></code> might be good);
+and <code class="docutils literal"><span class="pre">ftol&lt;&lt;1</span></code>. Setting <code class="docutils literal"><span class="pre">tol=reltol</span></code> is equivalent to setting
+<code class="docutils literal"><span class="pre">tol=(reltol,</span> <span class="pre">0.0)</span></code>. The default setting is <code class="docutils literal"><span class="pre">tol=0.0001</span></code>.</p>
+</li>
 <li><strong>maxit</strong> (<em>integer</em>) &#8211; Maximum number of iterations in search for minimum;
 default is 1000.</li>
 <li><strong>alg</strong> (<em>string</em>) &#8211; <em>GSL</em> algorithm to use for minimization. Two options are
 currently available: <code class="docutils literal"><span class="pre">&quot;lmsder&quot;</span></code>, the scaled <em>LMDER</em> algorithm
-(default); and <code class="docutils literal"><span class="pre">&quot;lmder&quot;</span></code>, the unscaled <em>LMDER</em> algorithm.</li>
+(default); and <code class="docutils literal"><span class="pre">&quot;lmder&quot;</span></code>, the unscaled <em>LMDER</em> algorithm.
+With version 2 of the GSL library, another option is <code class="docutils literal"><span class="pre">&quot;lmniel&quot;</span></code>,
+which can be useful when there is much more data than parameters.</li>
 <li><strong>analyzer</strong> (<em>function</em>) &#8211; Optional function of <code class="docutils literal"><span class="pre">x,</span> <span class="pre">[...f_i(x)...],</span> <span class="pre">[[..df_ij(x)..]]</span></code>
 which is called after each iteration. This can be used to inspect
 intermediate steps in the minimization, if needed.</li>
@@ -963,6 +984,18 @@ vector <code class="docutils literal"><span class="pre">x</span></code>. The fol
 <dt id="lsqfit.multifit.nit">
 <code class="descname">nit</code><a class="headerlink" href="#lsqfit.multifit.nit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Number of iterations used in last fit to find the minimum.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lsqfit.multifit.stopping_criterion">
+<code class="descname">stopping_criterion</code><a class="headerlink" href="#lsqfit.multifit.stopping_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Criterion used to stop fit:</dt>
+<dd>0 =&gt; didn&#8217;t converge
+1 =&gt; step size small
+2 =&gt; gradient small
+3 =&gt; residuals small</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -1095,7 +1128,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

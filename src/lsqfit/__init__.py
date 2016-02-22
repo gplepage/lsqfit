@@ -98,7 +98,8 @@ import gvar as _gvar
 from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
-from ._utilities import multifit, multiminex, gammaQ
+from ._utilities import multifit
+from ._utilities import multiminex, gammaQ
 from ._version import version as __version__
 
 
@@ -340,8 +341,8 @@ class nonlinear_fit(object):
         self.chi2 = numpy.sum(fit.f**2)
         self.Q = gammaQ(self.dof/2., self.chi2/2.)
         self.nit = fit.nit
-        self.abstol = fit.abstol
-        self.reltol = fit.reltol
+        self.tol = fit.tol
+        self.stopping_criterion = fit.stopping_criterion
         self.alg = fit.alg
         self._p = None          # lazy evaluation
         try:
@@ -431,17 +432,21 @@ class nonlinear_fit(object):
     def format(self, maxline=0, pstyle='v', nline=None):
         """ Formats fit output details into a string for printing.
 
-        The output tabulates the ``chi**2`` per degree of freedom of the
-        fit (``chi2/dof``), the number of degrees of freedom,
-        the logarithm of the Gaussian Bayes Factor for the fit (``logGBF``),
-        and the number of fit-algorithm iterations needed by the fit.
-        Optionally, it will also list the best-fit values for the
-        fit parameters together with the prior for each (in ``[]`` on
-        each line). It can also list all of the data and the corresponding
-        values from the fit. At the end it lists the SVD cut,
-        the number of eigenmodes modified by the SVD cut, the relative
-        and absolute tolerances used in the fit, and the time in seconds
-        needed to do the fit.
+        The output tabulates the ``chi**2`` per degree of freedom of the fit
+        (``chi2/dof``), the number of degrees of freedom, the logarithm of the
+        Gaussian Bayes Factor for the fit (``logGBF``), and the number of fit-
+        algorithm iterations needed by the fit. Optionally, it will also list
+        the best-fit values for the fit parameters together with the prior for
+        each (in ``[]`` on each line). Lines for parameters that deviate from
+        their prior by more than one (prior) standard deviation are marked
+        with asterisks, with the number of asterisks equal to the number of
+        standard deviations (up to five). ``format`` can also list all of the
+        data and the corresponding values from the fit, again with asterisks
+        on lines  where there is a significant discrepancy. At the end it
+        lists the SVD cut, the number of eigenmodes modified by the SVD cut,
+        the tolerances used in the fit, and the time in seconds needed to do
+        the fit. The tolerance used to terminate the fit is marked with an
+        asterisk.
 
         :param maxline: Maximum number of data points for which fit
             results and input data are tabulated. ``maxline<0`` implies
@@ -635,9 +640,18 @@ class nonlinear_fit(object):
         settings = "\nSettings:\n  svdcut/n = {svdcut}/{svdn}".format(
             svdcut=self.svdcut, svdn=self.svdn
             )
-        settings += "    reltol/abstol = {rel:.2g}/{abs:.2g}".format(
-            rel=self.reltol, abs=self.abstol
-            )
+        if len(self.tol) == 2:
+            settings += "    reltol/abstol = {:.2g}/{:.2g}".format(*self.tol)
+            if self.stopping_criterion == 1:
+                settings += '*'
+        else:
+            fmtstr = [
+                "    tol = ({:.2g},{:.2g},{:.2g})",
+                "    tol = ({:.2g}*,{:.2g},{:.2g})",
+                "    tol = ({:.2g},{:.2g}*,{:.2g})",
+                "    tol = ({:.2g},{:.2g},{:.2g}*)",
+                ][self.stopping_criterion]
+            settings += fmtstr.format(*self.tol)
         settings +="    (itns/time = {itns}/{time:.1f})\n".format(
             itns=self.nit, time=self.time
             )
@@ -980,14 +994,14 @@ class nonlinear_fit(object):
 
 # components of nonlinear_fit
 class ExtendedDict(_gvar.BufferDict):
-    """ Parameter |BufferDict| that supports log-normal/sqrt-normal variables.
+    """ |BufferDict| that supports log-normal/sqrt-normal variables.
 
     Used for parameters when there may be log-normal/sqrt-normal  variables.
     The exponentiated/squared values of those variables are included in the
     BufferDict, together with  the original versions. Method
     :meth:`ExtendedDict.refill_buf` refills the buffer with  a 1-d array and
     then fills in the exponentiated/squared values of  the log-normal/sqrt-
-    normal variables ---  that is, ``p.refull_buf(newbuf)``
+    normal variables ---  that is, ``p.refill_buf(newbuf)``
     replaces ``p.buf = newbuf``.
     """
     def __init__(self, p0, buf=None):
@@ -1066,7 +1080,7 @@ def trim_redundant_keys(p):
 
 
 def _reformat(p, buf, extend=False):
-    """ Transfer format of ``p`` to data in 1-d array ``buf``. """
+    """ Apply format of ``p`` to data in 1-d array ``buf``. """
     if numpy.ndim(buf) != 1:
         raise ValueError("Buffer ``buf`` must be 1-d.")
     if hasattr(p, 'keys'):

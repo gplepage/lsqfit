@@ -1,7 +1,18 @@
-Version 7.0.1 ????
-===================
+Version 7.1 2016-02-21
+======================
+This version was made necessary by backwards incompatible changes in the
+GSL library (with v2) used by lsqfit to do the fitting. The resulting
+change in lsqfit *is* backwards compatible.
 
-- added 'make time' to makefile (not too useful)
+- lsqfit now compiles with either of GSL versions 2.1 or 1.16. If 2.1 is
+  used there are two (minor?) enhancements: 1) there is a more sophisticated
+  stopping condition using parameter tol in place of abstol and reltol
+  (see multifit documentation); and 2) there is a new fitting algorithm
+  lmniel (in addition to lmsder and lmder) that is supposed to be faster
+  when fitting very large amounts of data with relatively few parameters.
+  Parameters abstol and reltol continue to work but are discouraged in
+  favor of tol=(reltol, abstol) or tol=reltol.
+
 
 Version 7.0 2015-07-01
 =======================

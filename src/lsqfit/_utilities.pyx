@@ -55,6 +55,7 @@ cdef extern from "gsl/gsl_matrix_double.h":
     gsl_matrix *gsl_matrix_alloc (int n1, int n2)
     void gsl_matrix_set_zero (gsl_matrix * m)
     void gsl_matrix_free (gsl_matrix * m)
+    int gsl_matrix_memcpy(gsl_matrix * dest, const gsl_matrix * src);
 
 cdef inline double gsl_matrix_get(gsl_matrix *m, int i, int j):
     return m.data[i*m.tda+j]
@@ -128,7 +129,6 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
         gsl_multifit_function_fdf* fdf
         gsl_vector *x
         gsl_vector *f
-        gsl_matrix *J
         gsl_vector *dx
         void *state
     ctypedef struct gsl_multifit_fdfsolver_type:
@@ -202,6 +202,16 @@ cdef extern from "gsl/gsl_multimin.h":
     double gsl_multimin_fminimizer_minimum (gsl_multimin_fminimizer * s)
     int gsl_multimin_test_size(double size , double epsabs)
 
+cdef extern from "_gsl_stub.h":
+    char* GSL_VERSION
+    int GSL_MAJOR_VERSION
+    int gsl_major_version()  # fill in correct stuff when ready
+    int gsl_multifit_fdfsolver_jac(gsl_multifit_fdfsolver * s, gsl_matrix * J)
+    int gsl_multifit_fdfsolver_test (
+        gsl_multifit_fdfsolver * s,
+        double xtol, double gtol, double ftol, int *info
+        )
+    gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmniel
 
 # multifit
 _valder = None          # ValDer workspace
@@ -232,18 +242,29 @@ class multifit(object):
         by varying parameters ``x``. The parameters are a 1-d
         :class:`numpy` array of either numbers or :class:`gvar.GVar`\s.
     :type f: function
-    :param reltol: The fit stops when ``|dx_i| < abstol + reltol * |x_i|``;
-            default value is ``1e-4``.
-    :type reltol: float
-    :param abstol: The fit stops when ``|dx_i| < abstol + reltol * |x_i|``;
-            default value is ``0.0``.
-    :type abstol: float
+    :param tol: Setting ``tol=(reltol, abstol)`` causes the fit to stop
+        searching for a solution when ``|dx_i| <= abstol + reltol * |x_i|``.
+        With version 2 or higher of the GSL library, ``tol=(xtol, gtol, ftol)``
+        can be used, where the fit stops when any one of the following
+        three criteria is satisfied:
+            1) step size small: ``|dx_i| <= xtol * (xtol + |x_i|)``;
+            2) gradient small: ``||g . x||_inf <= gtol * ||f||^2``;
+            3) residuals small: ``||f(x+dx) - f(x)|| <= ftol * max(||f(x)||, 1)``.
+        Recommended values are: ``xtol=1/10**d`` for ``d``
+        digits of precision in the parameters; ``gtol=1e-6`` to account
+        for roundoff errors in gradient ``g`` (unless the second order derivative
+        vanishes at minimum as well, in which case ``gtol=0`` might be good);
+        and ``ftol<<1``. Setting ``tol=reltol`` is equivalent to setting
+        ``tol=(reltol, 0.0)``. The default setting is ``tol=0.0001``.
+    :type tol: tuple or float
     :param maxit: Maximum number of iterations in search for minimum;
             default is 1000.
     :type maxit: integer
     :param alg: *GSL* algorithm to use for minimization. Two options are
             currently available: ``"lmsder"``, the scaled *LMDER* algorithm
             (default); and ``"lmder"``, the unscaled *LMDER* algorithm.
+            With version 2 of the GSL library, another option is ``"lmniel"``,
+            which can be useful when there is much more data than parameters.
     :type alg: string
     :param analyzer: Optional function of ``x, [...f_i(x)...], [[..df_ij(x)..]]``
             which is called after each iteration. This can be used to inspect
@@ -274,6 +295,14 @@ class multifit(object):
 
         Number of iterations used in last fit to find the minimum.
 
+    .. attribute:: stopping_criterion
+
+        Criterion used to stop fit:
+            0 => didn't converge
+            1 => step size small
+            2 => gradient small
+            3 => residuals small
+
     .. attribute:: error
 
         ``None`` if fit successful; an error message otherwise.
@@ -282,35 +311,57 @@ class multifit(object):
     """
 
     def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, int n,
-                 object f, double reltol=0.0001, double abstol=0.0,
+                 object f, object tol=0.0001,
+                 object reltol=None, object abstol=None,
                  unsigned int maxit=1000, object alg='lmsder',
                  object analyzer=None):
         global _valder, _p_f, _pyerr
         cdef gsl_multifit_fdfsolver_type *T
         cdef gsl_multifit_fdfsolver *s
-        cdef int status, rval
+        cdef int status, rval, criterion
         cdef Py_ssize_t i, it, p
         cdef gsl_matrix *covar
+        cdef gsl_matrix *J
         cdef gsl_vector* x0v
         # cdef numpy.ndarray[numpy.double_t, ndim=1] ans
         super(multifit, self).__init__()
         # hold onto inputs
-        self.reltol = reltol
-        self.abstol = abstol
+        # reltol and abstol are deprecated but still work (for legacy code)
+        if reltol is not None and abstol is not None:
+            tol = (reltol, abstol)
+        elif reltol is not None:
+            tol = (reltol, 0.0)
+        elif abstol is not None:
+            tol = (0.0001, abstol)
+        elif type(tol) in [list, tuple]:
+            if len(tol) > 2 and GSL_MAJOR_VERSION < 2:
+                raise RuntimeError(
+                    "Need GSL v2 for tol=(xtol,gtol,ftol); have GSL "
+                    + str(GSL_VERSION)
+                    )
+        else:
+            tol = (tol, 0.0)
+        self.tol = tol
         self.maxit = maxit
         self.alg = alg
         self.x0 = x0
         self.n = n
-        #
+        self.error = None
         p = len(x0)
         covar = gsl_matrix_alloc(p, p)
         if alg=="lmsder" or alg is None:
             T = gsl_multifit_fdfsolver_lmsder
         elif alg=="lmder":
             T = gsl_multifit_fdfsolver_lmder
+        elif alg=="lmniel":
+            if GSL_MAJOR_VERSION < 2:
+                raise RuntimeError(
+                    "Need GSL v2 for alg=lmniel; have GSL "
+                    + str(GSL_VERSION)
+                    )
+            T = gsl_multifit_fdfsolver_lmniel
         else:
             raise ValueError("Unknown algorithm: "+alg)
-        #
         cdef gsl_multifit_function_fdf gf
         gf.f = &_c_f
         gf.df = &_c_df
@@ -324,6 +375,7 @@ class multifit(object):
         s = gsl_multifit_fdfsolver_alloc(T, n, p)
         x0v = array2vector(x0)
         gsl_multifit_fdfsolver_set(s, &gf, x0v)
+        J = gsl_matrix_alloc(n, p)
         for it in range(1, maxit+1):
             status = gsl_multifit_fdfsolver_iterate(s)
             if _pyerr is not None:
@@ -334,24 +386,33 @@ class multifit(object):
                     raise tmp[0], tmp[1].args, tmp[2]   # python2
             elif status:
                 self.error = (status, str(gsl_strerror(status)))
+                criterion = 0
                 break
             if analyzer is not None:
+                gsl_multifit_fdfsolver_jac(s, J)
                 analyzer(vector2array(s.x), vector2array(s.f),
-                        matrix2array(s.J))
-            rval = gsl_multifit_test_delta(s.dx, s.x, abstol, reltol)
+                        matrix2array(J))
+            if len(tol) == 2:
+                rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
+                criterion = 1 if rval != GSL_CONTINUE else 0
+            else:
+                rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
             if rval != GSL_CONTINUE:
                 break
-        gsl_multifit_covar(s.J, 0.0, covar)
+
+        gsl_multifit_fdfsolver_jac(s, J)
+        gsl_multifit_covar(J, 0.0, covar)
         self.cov = matrix2array(covar)
         self.x = vector2array(s.x)
         self.f = vector2array(s.f)
-        self.J = matrix2array(s.J)
+        self.J = matrix2array(J)
         self.nit = it
-        self.error = None
+        self.stopping_criterion = criterion
         if it>=maxit and rval==GSL_CONTINUE:
             self.error ="multifit didn't convernge in %d iterations" % maxit
         gsl_multifit_fdfsolver_free(s)
         gsl_matrix_free(covar)
+        gsl_matrix_free(J)
         gsl_vector_free(x0v)
         _p_f = old_p_f
 
@@ -360,6 +421,11 @@ class multifit(object):
 
     def __str__(self):
         return str(self.p)
+
+    @staticmethod
+    def gsl_version():
+        " Return version for the GSL library used in fits. "
+        return str(GSL_VERSION)
 
 # wrappers for multifit's python function #
 cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):

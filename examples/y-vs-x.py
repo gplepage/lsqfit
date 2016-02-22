@@ -3,13 +3,13 @@
 """
 y-vs-x.py - Code for "Making Fake Data" and "Basic Fits"
 """
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version (see <http://www.gnu.org/licenses/>).
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -61,8 +61,9 @@ def main():
         # eps = gv.gvar(1,1e-300)   # use svdcut to make it independent
         # prior['a'] *= eps
         # y *= eps
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior, 
-                                   p0=p0,svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(
+            data=(x,y),fcn=f,prior=prior, p0=p0,svdcut=SVDCUT, reltol=1e-5
+            )
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
@@ -71,10 +72,10 @@ def main():
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
-    
+
     if DO_BOOTSTRAP:
         Nbs = 10                                     # number of bootstrap copies
-            
+
         outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[],'a2/a0':[],'E1':[],'a1':[]}   # results
         for bsfit in fit.bootstrap_iter(n=Nbs):
             E = bsfit.pmean['E']                     # best-fit parameters
@@ -98,10 +99,10 @@ def main():
         print('E1/E0 =',outputs['E1/E0'],'  E2/E0 =',outputs['E2/E0'])
         print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])
         print('E1 =',outputs['E1'],'  a1 =',outputs['a1'])
-        
+
     if DO_PLOT:
         print(fit.format(100))                   # print the fit results
-        import pylab as plt   
+        import pylab as plt
         ratio = y/f(x,fit.pmean)
         plt.xlim(0,21)
         plt.xlabel('x')

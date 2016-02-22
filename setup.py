@@ -21,7 +21,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '7.0'
+LSQFIT_VERSION = '7.1'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -44,7 +44,11 @@ ext_args = dict(
     )
 
 ext_modules = [
-    Extension("lsqfit._utilities", ["src/lsqfit/_utilities.pyx"],  **ext_args),
+    Extension(
+        "lsqfit._utilities",
+        ["src/lsqfit/_utilities.pyx","src/lsqfit/_gsl_stub.c"],
+        **ext_args
+        ),
     ]
 
 # packages
