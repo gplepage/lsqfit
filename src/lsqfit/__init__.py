@@ -1,5 +1,5 @@
 """ Introduction
-------------
+----------------
 This package contains tools for nonlinear least-squares curve fitting of
 data. In general a fit has four inputs:
 
