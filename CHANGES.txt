@@ -1,8 +1,9 @@
-Version 7.1 2016-02-21
-======================
+Version 7.1 and 7.1.0 2016-02-21
+==================================
 This version was made necessary by backwards incompatible changes in the
 GSL library (with v2) used by lsqfit to do the fitting. The resulting
-change in lsqfit *is* backwards compatible.
+change in lsqfit *is* backwards compatible. Versions 7.1 and 7.1.0 are
+the same.
 
 - lsqfit now compiles with either of GSL versions 2.1 or 1.16. If 2.1 is
   used there are two (minor?) enhancements: 1) there is a more sophisticated

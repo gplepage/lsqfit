@@ -1,11 +1,11 @@
 include makefile README.rst INSTALLATION.txt LICENSE.txt MANIFEST.in CHANGES.txt
-include setup.py src/lsqfit/*.pyx
+include setup.py src/lsqfit/*.pyx src/lsqfit/_gsl_stub.*
 include doc/lsqfit.pdf
 
 graft doc/html
 graft examples
 graft tests
-exclude examples/*.tmp 
+exclude examples/*.tmp
 exclude examples/*.pyc
 exclude tests/*.pyc
 recursive-exclude tests/__pycache__ *
