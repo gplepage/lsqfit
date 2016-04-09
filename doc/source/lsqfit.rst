@@ -289,6 +289,10 @@ Functions
 
 .. autofunction:: lsqfit.gammaQ
 
+.. autofunction:: lsqfit.add_parameter_distribution
+
+.. autofunction:: lsqfit.del_parameter_distribution
+
 Other Classes
 ---------------
 

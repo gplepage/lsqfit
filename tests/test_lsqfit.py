@@ -315,14 +315,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(out, fit.format(True))
 
         # log-normal
-        prior = dict(loga=gv.log(gv.gvar(['1.0(5)', '1.0(5)'])))
+        prior = {'log(a)':gv.log(gv.gvar(['1.0(5)', '1.0(5)']))}
         fit = nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True, debug=True)
         out = '\n'.join([
             'Least Square Fit:',
             '  chi2/dof [dof] = 1.1 [4]    Q = 0.36    logGBF = -1.77',
             '',
             'Parameters:',
-            '         loga 0   -0.020 (90)     [  0.00 (50) ]  ',
+            '       log(a) 0   -0.020 (90)     [  0.00 (50) ]  ',
             '              1    0.739 (34)     [  0.00 (50) ]  *',
             '------------------------------------------------',
             '            a 0    0.981 (88)     [  1.00 (50) ]  ',
@@ -723,7 +723,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         # case 1 - (x,y) and prior
         yo = dict(y=[gv.gvar(1, 2), gv.gvar(10,4)])
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
-        po['logp'] = gv.log(po['p'])
+        po['log(p)'] = gv.log(po['p'])
         xo = 20
         x, y, prior, fdata = lsqfit._unpack_data(
             data=(xo,yo), prior=po, svdcut=None, extend=True
@@ -731,7 +731,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(x,xo)
         self.assertTrue('p' not in prior)
         self.assert_gvclose(y['y'], yo['y'])
-        self.assert_gvclose(gv.exp(prior['logp']), po['p'])
+        self.assert_gvclose(gv.exp(prior['log(p)']), po['p'])
         self.assert_arraysequal(fdata.mean, [1., 10., gv.log(2.)])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.5])
@@ -929,13 +929,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 self.assert_arraysequal(p['v'], p0['v'])
 
         # no prior, p0 has redundant variables
-        p0 = dict(a=1., b=[2., 3.], logb=[4., 5.])
+        p0 = dict(a=1., b=[2., 3.])
+        p0['log(b)'] =[4., 5.]
         p = lsqfit._unpack_p0(p0=p0, p0file=None, prior=None, extend=True)
-        self.assertTrue('logb' in p and 'b' not in p and 'a' in p)
+        self.assertTrue('log(b)' in p and 'b' not in p and 'a' in p)
         for k in p:
             numpy.testing.assert_equal(p[k], p0[k])
         p = lsqfit._unpack_p0(p0=p0, p0file=None, prior=None, extend=False)
-        self.assertTrue('logb' in p and 'b' in p and 'a' in p)
+        self.assertTrue('log(b)' in p and 'b' in p and 'a' in p)
         for k in p:
             numpy.testing.assert_equal(p[k], p0[k])
 
@@ -1262,23 +1263,25 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)',
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
-        prior = gv.BufferDict(loga = gv.log(gv.gvar("0.02(2)")))
+        prior = gv.BufferDict()
+        prior['log(a)'] = gv.log(gv.gvar("0.02(2)"))
         def fcn(p, N=len(y)):
             "fit function"
             return N * [p['a']]
         fit = nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
         self.assertTrue('a' in fit.p)
-        self.assertTrue(gv.equivalent(gv.exp(fit.p['loga']), fit.p['a']))
+        self.assertTrue(gv.equivalent(gv.exp(fit.p['log(a)']), fit.p['a']))
         self.assertEqual(fit.p['a'].fmt(), "0.012(11)")
 
         # arrays
         y = gv.gvar([['0.1(1)', '1(1)'], ['0.2(1)', '2(1)']])
-        prior = gv.BufferDict(loga = gv.log(gv.gvar(['0.1(2)', '10(20)'])))
+        prior = gv.BufferDict()
+        prior['log(a)'] = gv.log(gv.gvar(['0.1(2)', '10(20)']))
         def fcn(p, N=y.shape[0]):
             return [p['a'], p['a']]
         fit = nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
         self.assertTrue('a' in fit.p)
-        self.assertTrue(gv.equivalent(gv.exp(fit.p['loga']), fit.p['a']))
+        self.assertTrue(gv.equivalent(gv.exp(fit.p['log(a)']), fit.p['a']))
         self.assertEqual(fit.p['a'][0].fmt(),'0.147(69)')
         self.assertEqual(fit.p['a'][1].fmt(), '1.64(69)')
 
@@ -1290,13 +1293,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)',
             '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
             ])
-        prior = gv.BufferDict(sqrta = gv.sqrt(gv.gvar("0.02(2)")))
+        prior = gv.BufferDict()
+        prior['sqrt(a)'] = gv.sqrt(gv.gvar("0.02(2)"))
         def fcn(xdummy, p, N=len(y)):
             "fit function"
             return N * [p['a']]
         fit = nonlinear_fit(prior=prior, data=(None,y), fcn=fcn, extend=True)
         self.assertTrue('a' in fit.p)
-        self.assertTrue(gv.equivalent(fit.p['sqrta'] ** 2, fit.p['a']))
+        self.assertTrue(gv.equivalent(fit.p['sqrt(a)'] ** 2, fit.p['a']))
         self.assertEqual(fit.p['a'].fmt(), "0.010(13)")
 
     def test_ExtendedDict(self):
@@ -1305,13 +1309,13 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         p = gv.BufferDict()
         p['a'] = 1.
         p['b'] = [2., 3.]
-        p['logc'] = 0.
+        p['log(c)'] = 0.
         p['sqrt(d)'] = [5., 6.]
         newp = lsqfit.ExtendedDict(p)
         for i in range(2):
             for k in p:
                 assert np.all(p[k] == newp[k])
-            assert newp['c'] == np.exp(newp['logc'])
+            assert newp['c'] == np.exp(newp['log(c)'])
             assert np.all(newp['d'] == np.square(newp['sqrt(d)']))
             p.buf[:] = [10., 20., 30., 1., 2., 3.]
             newp.refill_buf(p.buf)
@@ -1322,9 +1326,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         assert numpy.all(oldp.buf == p.buf)
         # stripkey
         for ks, f, k in [
-            ('aa', np.exp, 'logaa'),
             ('aa', np.exp, 'log(aa)'),
-            ('aa', np.square, 'sqrtaa'),
             ('aa', np.square, 'sqrt(aa)'),
             ]:
             assert (ks, f) == lsqfit.ExtendedDict.stripkey(k)

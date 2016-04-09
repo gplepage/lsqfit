@@ -24,8 +24,10 @@ y = gvar(ystr)
 print (ystr[:])
 
 print
-log_prior = BufferDict(loga = log(gvar(0.02, 0.02)))  
-sqrt_prior = BufferDict(sqrta = sqrt(gvar(0.02, 0.02)))
+log_prior = BufferDict()
+log_prior['log(a)'] = log(gvar(0.02, 0.02))
+sqrt_prior = BufferDict()
+sqrt_prior['sqrt(a)'] = sqrt(gvar(0.02, 0.02))
 prior = BufferDict(a = gvar(0.02, 0.02))
 
 stdout = sys.stdout
@@ -38,3 +40,21 @@ for p in [prior, log_prior, sqrt_prior]:
 	print (f)
 	print ("a =", f.p['a'].fmt())
 sys.stdout = stdout
+
+
+import lsqfit
+
+def invf(x):
+    return 0.02 + 0.02 * tanh(x)
+def f(x):
+    return arctanh((x - 0.02) / 0.02)
+
+lsqfit.add_parameter_distribution('f', invf)
+intv_prior = BufferDict()
+intv_prior['f(a)'] = gvar(0,1)
+fit = nonlinear_fit(prior=intv_prior, fcn=fcn, data=y, extend=True)
+a = fit.p['a']
+fa = fit.p['f(a)']
+print (fit.format())
+print (invf(fa), fit.p['a'])
+print (f(a), fit.p['f(a)'])

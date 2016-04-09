@@ -1,3 +1,19 @@
+Version 8.0 ????
+===================
+The first change breaks backwards compatibility.
+
+- To signal a log-normal prior for a parameter 'c' in nonlinear_fit one must
+  now include an entry for prior['log(c)'] in the prior. Before one could
+  leave out the parentheses, using prior['logc'] instead. The parenthesis are
+  now essential. The same is true for sqrt-normal priors, where one would
+  include prior['sqrt(c)'], not prior['sqrtc'].
+
+- Function lsqfit.add_parameter_distribution has been added to all new
+  prior distributions in addition to log-normal and sqrt-normal. This
+  allows one, for example, to restrict a parameter to a particular
+  interval.
+
+
 Version 7.1 and 7.1.0 2016-02-21
 ==================================
 This version was made necessary by backwards incompatible changes in the

@@ -108,16 +108,17 @@ function <code class="docutils literal"><span class="pre">f(x,</span> <span clas
 variable. The prior <code class="docutils literal"><span class="pre">prior</span></code> could also be represented by an array
 instead of a dictionary.</p>
 <p>By default priors are Gaussian/normal distributions, represented by  <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.
-Setting <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">extend=True</span></code>  allows for log-
-normal and sqrt-normal distributions as well. The latter are indicated by
-replacing the prior (in a dictionary prior) with key <code class="docutils literal"><span class="pre">c</span></code>,  for  example, by
-a prior for the parameter&#8217;s logarithm or square root, with key <code class="docutils literal"><span class="pre">logc</span></code> or
-<code class="docutils literal"><span class="pre">sqrtc</span></code>, respectively. (Keys <code class="docutils literal"><span class="pre">log(c)</span></code> and  <code class="docutils literal"><span class="pre">sqrt(c)</span></code> also work.)
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> adds parameter <code class="docutils literal"><span class="pre">c</span></code> to  the parameter dictionary,
-deriving its value from parameter <code class="docutils literal"><span class="pre">logc</span></code> or  <code class="docutils literal"><span class="pre">sqrtc</span></code>. The fit function can
-be expressed directly in terms of parameter <code class="docutils literal"><span class="pre">c</span></code>  and so is the same no
-matter which distribution is used for <code class="docutils literal"><span class="pre">c</span></code>. Note that a sqrt-normal
-distribution with zero mean is equivalent to an exponential distribution.</p>
+Setting <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">extend=True</span></code>  allows for log-normal
+and sqrt-normal distributions as well. The latter are indicated by replacing
+the prior (in a dictionary prior) with key <code class="docutils literal"><span class="pre">c</span></code>,  for example, by a prior for
+the parameter&#8217;s logarithm or square root, with key <code class="docutils literal"><span class="pre">log(c)</span></code> or <code class="docutils literal"><span class="pre">sqrt(c)</span></code>,
+respectively.  <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> adds parameter <code class="docutils literal"><span class="pre">c</span></code> to the parameter
+dictionary, deriving its value from parameter <code class="docutils literal"><span class="pre">log(c)</span></code> or <code class="docutils literal"><span class="pre">sqrt(c)</span></code>. The
+fit function can be expressed directly in terms of parameter <code class="docutils literal"><span class="pre">c</span></code>  and so is
+the same no matter which distribution is used for <code class="docutils literal"><span class="pre">c</span></code>. Note that a
+sqrt-normal distribution with zero mean is equivalent to an exponential
+distribution. Additional distributions can be added using
+<a class="reference internal" href="#lsqfit.add_parameter_distribution" title="lsqfit.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.add_parameter_distribution()</span></code></a>.</p>
 <p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> tutorial contains extended explanations and examples.
 The first appendix in the paper at <a class="reference external" href="http://arxiv.org/abs/arXiv:1406.2279">http://arxiv.org/abs/arXiv:1406.2279</a>
 provides conceptual background on the techniques used in this
@@ -243,13 +244,14 @@ for fit priors when <code class="docutils literal"><span class="pre">extend=True
 specified by a dictionary (as opposed to an array). To use such a
 distribution  for a parameter <code class="docutils literal"><span class="pre">'c'</span></code> in the fit prior, replace
 <code class="docutils literal"><span class="pre">prior['c']</span></code>  with a prior specifying its logarithm or  square
-root, designated by <code class="docutils literal"><span class="pre">prior['logc']</span></code>  or <code class="docutils literal"><span class="pre">prior['sqrtc']</span></code>,
-respectively. (<code class="docutils literal"><span class="pre">prior['log(c)']</span></code> and <code class="docutils literal"><span class="pre">prior['sqrt(c)']</span></code> also
-work.) The dictionaries containing parameters generated by
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> will have entries for both <code class="docutils literal"><span class="pre">'c'</span></code>   and <code class="docutils literal"><span class="pre">'logc'</span></code> or
-<code class="docutils literal"><span class="pre">'sqrtc'</span></code>, so only the prior need be changed to  switch to
+root, designated by <code class="docutils literal"><span class="pre">prior['log(c)']</span></code>  or <code class="docutils literal"><span class="pre">prior['sqrt(c)']</span></code>,
+respectively. The dictionaries containing parameters generated by
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> will have entries for both <code class="docutils literal"><span class="pre">'c'</span></code>   and <code class="docutils literal"><span class="pre">'log(c)'</span></code>
+or <code class="docutils literal"><span class="pre">'sqrt(c)'</span></code>, so only the prior need be changed to  switch to
 log-normal/sqrt-normal distributions. Setting <code class="docutils literal"><span class="pre">extend=False</span></code> (the
-default) restricts all parameters to Gaussian distributions.</li>
+default) restricts all parameters to Gaussian distributions.
+Additional distributions can be added using
+<a class="reference internal" href="#lsqfit.add_parameter_distribution" title="lsqfit.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.add_parameter_distribution()</span></code></a>.</li>
 <li><strong>debug</strong> (<em>boolean</em>) &#8211; Set to <code class="docutils literal"><span class="pre">True</span></code> for extra debugging of the fit function
 and a check for roundoff errors. (Default is <code class="docutils literal"><span class="pre">False</span></code>.)</li>
 <li><strong>fitterargs</strong> &#8211; Dictionary of arguments passed on to
@@ -900,6 +902,46 @@ called the <em>p-value</em>.</p>
 <p>Note that <code class="docutils literal"><span class="pre">gammaQ(ndof/2.,</span> <span class="pre">chi2/2.)</span></code> is the probabilty that one could
 get a <code class="docutils literal"><span class="pre">chi**2</span></code> larger than <code class="docutils literal"><span class="pre">chi2</span></code> with <code class="docutils literal"><span class="pre">ndof</span></code> degrees
 of freedom even if the model used to construct <code class="docutils literal"><span class="pre">chi2</span></code> is correct.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="lsqfit.add_parameter_distribution">
+<code class="descclassname">lsqfit.</code><code class="descname">add_parameter_distribution</code><span class="sig-paren">(</span><em>name</em>, <em>invfcn</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.add_parameter_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add new parameter distribution for use in fits.</p>
+<p>This function adds new distributions for the parameters used in
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. For example, the code</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="n">lsqfit</span><span class="o">.</span><span class="n">add_parameter_distribution</span><span class="p">(</span><span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>enables the use of log-normal distributions for parameters. The log-normal
+distribution is invoked for a parameter <code class="docutils literal"><span class="pre">p</span></code> by including <code class="docutils literal"><span class="pre">log(p)</span></code>
+rather than <code class="docutils literal"><span class="pre">p</span></code> itself in the fit prior. log-normal and sqrt-normal
+distributions are included by default.</p>
+<p>These distributions are implemented by replacing a fit parameter <code class="docutils literal"><span class="pre">p</span></code>
+by a new fit parameter <code class="docutils literal"><span class="pre">fcn(p)</span></code> where <code class="docutils literal"><span class="pre">fcn</span></code> is some function. <code class="docutils literal"><span class="pre">fcn(p)</span></code>
+is assumed to have a Gaussian distribution, and parameter <code class="docutils literal"><span class="pre">p</span></code> is
+recovered using the inverse function <code class="docutils literal"><span class="pre">invfcn</span></code> where <code class="docutils literal"><span class="pre">p=invfcn(fcn(p))</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; Distribution&#8217;s name.</li>
+<li><strong>invfcn</strong> &#8211; Inverse of the transformation function.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="lsqfit.del_parameter_distribution">
+<code class="descclassname">lsqfit.</code><code class="descname">del_parameter_distribution</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.del_parameter_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete parameter distribution <code class="docutils literal"><span class="pre">name</span></code>.</p>
 </dd></dl>
 
 </div>

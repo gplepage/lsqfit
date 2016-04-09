@@ -1500,28 +1500,28 @@ centered around ``pexact``. This is overkill in most
 situations, however. The three simulations above are enough to reassure
 us that the original fit estimates, including errors, are reliable.
 
-Positive Parameters
--------------------
+Positive Parameters; Non-Gaussian Priors
+----------------------------------------
 The priors for |nonlinear_fit| are all Gaussian. There are situations,
 however, where other distributions would be desirable. One such case is where
 a parameter is known to be positive, but is close to zero in value ("close"
 being defined relative to the *a priori* uncertainty). For such cases we would
 like to use  non-Gaussian priors that force positivity --- for example, priors
 that  impose log-normal or exponential distributions on the parameter.
-Ideally the decision to use such a distribution would  be made on a parameter-
-by-parameter basis, when creating the priors, and would have no impact on the
+Ideally the decision to use such a distribution is made on a parameter-
+by-parameter basis, when creating the priors, and has no impact on the
 definition of the fit function itself.
 
-|nonlinear_fit| supports log-normal distributions when ``extend=True``
-is set in its argument list. This argument only affects fits that use
-dictionaries for their parameters. The prior for a parameter ``'c'`` is switched
-from a  Gaussian distribution to a log-normal distribtuion by replacing
-parameter ``'c'`` in the fit prior with a prior for its logarithm, using the key
-``'logc'`` or ``'log(c)'``. This causes |nonlinear_fit| to use the logarithm as
-the fit  parameter (with its Gaussian prior). Parameter dictionaries
-produced by |nonlinear_fit| will have entries for both ``'c'`` and ``'logc'``, so
-only the prior need be changed to switch distributions. In particular the
-fit function can be expressed directly in terms of ``'c'`` so that it is
+|nonlinear_fit| supports log-normal distributions when ``extend=True`` is set
+in its argument list. This argument only affects fits that use dictionaries
+for their parameters. The prior for a parameter ``'c'`` is switched from a
+Gaussian distribution to a log-normal distribtuion by replacing parameter
+``'c'`` in the fit prior with a prior for its logarithm, using the key
+``'log(c)'``. This causes |nonlinear_fit| to use the logarithm as the fit
+parameter (with its Gaussian prior). Parameter dictionaries produced by
+|nonlinear_fit| will have entries for both ``'c'`` and ``'log(c)'``, so only
+the prior need be changed to switch distributions. In particular the fit
+function can be expressed directly in terms of ``'c'`` so that it is
 independent of the distribution chosen for the ``'c'`` prior.
 
 To illustrate consider a simple problem where an experimental quantity ``y`` is
@@ -1541,7 +1541,8 @@ often be negative::
 We want to know the average value ``a`` of the ``y``\s and so could
 use the following fitting code::
 
-   prior = gv.BufferDict(a=gv.gvar(0.02, 0.02))      # a = avg value of y's
+   prior = gv.BufferDict()
+   prior['a'] = gv.gvar(0.02, 0.02))                # a = avg value of y's
 
    def fcn(p, N=len(y)):
       return N * [p['a']]
@@ -1560,23 +1561,24 @@ is negative, and yet we know that ``a`` must be postive.
 
 A better analysis is to use a log-normal distribution for ``a``::
 
-   prior = gv.BufferDict(loga=gv.log(gv.gvar(0.02, 0.02))) # loga not a
+   prior = gv.BufferDict()
+   prior['log(a)'] = gv.log(gv.gvar(0.02, 0.02))) # loga not a
 
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
    print(fit)
-   print('a =', fit.p['a'].fmt())    # exp(loga)
+   print('a =', fit.p['a'].fmt())                 # exp(log(a))
 
-The fit parameter is now ``loga`` rather than ``a`` itself, but the code
+The fit parameter is now ``log(a)`` rather than ``a`` itself, but the code
 is unchanged except for the definition of the prior and the addition
 of ``extend=True`` to the |nonlinear_fit| arguments. In particular the
 fit function is identical to what we used in the first case.
 
 The result from this fit is
 
-.. literalinclude:: eg6-loga.out
+.. literalinclude:: eg6-log(a).out
 
 which is more compelling. Parameters listed  above the dashed line in the
 parameter table are the actual  parameters used in the fit; those listed below
@@ -1585,13 +1587,36 @@ the dashed line are derived from those above the line. The "correct" value for
 
 Setting ``extend=True`` in |nonlinear_fit| also allows parameters to  be
 replaced by their square roots as fit parameters --- for example,  define
-``prior['sqrta']`` (or ``prior['sqrt(a)']``) rather than ``prior['a']`` when
+```prior['sqrt(a)']`` rather than ``prior['a']`` when
 creating the prior. This again guarantees positive  parameters.
-Using ``sqrta=gv.sqrt(gv.gvar(0.02, 0.02))`` in the prior above, instead
+Using ``prior['sqrt(a)'']=gv.sqrt(gv.gvar(0.02, 0.02))`` in the prior above, instead
 of  ``a=gv.gvar(0.02, 0.02)``, leads to a final result of ``a = 0.010(13)``,
 which is almost identical to the result obtained from the log-normal
 distribution. Note that a sqrt-normal distribution with zero mean is
 equivalent to an exponential distribution.
+
+Other distributions can be defined using :meth:`lsqfit.add_parameter_distribution`.
+For example, ::
+
+  import lsqfit
+  import gvar as gv
+
+  def invf(x):
+    return 0.02 + 0.02 * gv.tanh(x)
+
+  def f(x):                                   # not used
+    return gv.arctanh((x - 0.02) / 0.02)
+
+  lsqfit.add_parameter_distribution('f', invf)
+  prior = gv.BufferDict()
+  prior['f(a)'] = gv.gvar(0,1)
+
+  ... as before ...
+
+does a fit with Gaussian parameter ``f(a)``, which forces ``a``
+to lie between 0 and 0.4. This fit gives ``a=0.009(13)``, which
+again agrees well with log-normal fit.
+
 
 
 Debugging and Troubleshooting

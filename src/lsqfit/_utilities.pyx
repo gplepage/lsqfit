@@ -247,9 +247,13 @@ class multifit(object):
         With version 2 or higher of the GSL library, ``tol=(xtol, gtol, ftol)``
         can be used, where the fit stops when any one of the following
         three criteria is satisfied:
+
             1) step size small: ``|dx_i| <= xtol * (xtol + |x_i|)``;
+
             2) gradient small: ``||g . x||_inf <= gtol * ||f||^2``;
+
             3) residuals small: ``||f(x+dx) - f(x)|| <= ftol * max(||f(x)||, 1)``.
+
         Recommended values are: ``xtol=1/10**d`` for ``d``
         digits of precision in the parameters; ``gtol=1e-6`` to account
         for roundoff errors in gradient ``g`` (unless the second order derivative
