@@ -2179,7 +2179,7 @@ For example,</p>
 <span class="k">def</span> <span class="nf">invf</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
   <span class="k">return</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>                                   <span class="c"># not used</span>
   <span class="k">return</span> <span class="n">gv</span><span class="o">.</span><span class="n">arctanh</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.02</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.02</span><span class="p">)</span>
 
 <span class="n">lsqfit</span><span class="o">.</span><span class="n">add_parameter_distribution</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="n">invf</span><span class="p">)</span>
@@ -2190,7 +2190,7 @@ For example,</p>
 </pre></div>
 </div>
 <p>does a fit with Gaussian parameter <code class="docutils literal"><span class="pre">f(a)</span></code>, which forces <code class="docutils literal"><span class="pre">a</span></code>
-to lie between 0 and 0.2. This fit gives <code class="docutils literal"><span class="pre">a=0.009(13)</span></code>, which
+to lie between 0 and 0.4. This fit gives <code class="docutils literal"><span class="pre">a=0.009(13)</span></code>, which
 again agrees well with log-normal fit.</p>
 </div>
 <div class="section" id="debugging-and-troubleshooting">

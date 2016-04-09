@@ -1604,7 +1604,7 @@ For example, ::
   def invf(x):
     return 0.02 + 0.02 * gv.tanh(x)
 
-  def f(x):
+  def f(x):                                   # not used
     return gv.arctanh((x - 0.02) / 0.02)
 
   lsqfit.add_parameter_distribution('f', invf)
@@ -1614,7 +1614,7 @@ For example, ::
   ... as before ...
 
 does a fit with Gaussian parameter ``f(a)``, which forces ``a``
-to lie between 0 and 0.2. This fit gives ``a=0.009(13)``, which
+to lie between 0 and 0.4. This fit gives ``a=0.009(13)``, which
 again agrees well with log-normal fit.
 
 
