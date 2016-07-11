@@ -1303,34 +1303,6 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertTrue(gv.equivalent(fit.p['sqrt(a)'] ** 2, fit.p['a']))
         self.assertEqual(fit.p['a'].fmt(), "0.010(13)")
 
-    def test_ExtendedDict(self):
-        " ExtendedDict "
-        # check ExtendedDict() and refill_buf
-        p = gv.BufferDict()
-        p['a'] = 1.
-        p['b'] = [2., 3.]
-        p['log(c)'] = 0.
-        p['sqrt(d)'] = [5., 6.]
-        newp = lsqfit.ExtendedDict(p)
-        for i in range(2):
-            for k in p:
-                assert np.all(p[k] == newp[k])
-            assert newp['c'] == np.exp(newp['log(c)'])
-            assert np.all(newp['d'] == np.square(newp['sqrt(d)']))
-            p.buf[:] = [10., 20., 30., 1., 2., 3.]
-            newp.refill_buf(p.buf)
-        # trim redundant keys
-        oldp = lsqfit.trim_redundant_keys(newp)
-        assert 'c' not in oldp
-        assert 'd' not in oldp
-        assert numpy.all(oldp.buf == p.buf)
-        # stripkey
-        for ks, f, k in [
-            ('aa', np.exp, 'log(aa)'),
-            ('aa', np.square, 'sqrt(aa)'),
-            ]:
-            assert (ks, f) == lsqfit.ExtendedDict.stripkey(k)
-
     def test_multifit_exceptions(self):
         """ multifit exceptions """
         y = gv.gvar(["1(1)", "2(1)"])

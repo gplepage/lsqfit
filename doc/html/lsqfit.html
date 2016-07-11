@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 7.1.0 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '7.1.0',
+        VERSION:     '8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 7.1.0 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.0 documentation" href="index.html" />
     <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -944,6 +944,21 @@ recovered using the inverse function <code class="docutils literal"><span class=
 <dd><p>Delete parameter distribution <code class="docutils literal"><span class="pre">name</span></code>.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="lsqfit.add_parameter_parentheses">
+<code class="descclassname">lsqfit.</code><code class="descname">add_parameter_parentheses</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.add_parameter_parentheses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return dictionary with proper keys for parameter distributions (legacy code).</p>
+<p>This utility function helps fix legacy code that uses
+parameter keys like <code class="docutils literal"><span class="pre">logp</span></code> or <code class="docutils literal"><span class="pre">sqrtp</span></code> instead of
+<code class="docutils literal"><span class="pre">log(p)</span></code> or <code class="docutils literal"><span class="pre">sqrt(p)</span></code>, as now required. This method creates a
+copy of  dictionary <code class="docutils literal"><span class="pre">p''</span> <span class="pre">but</span> <span class="pre">with</span> <span class="pre">keys</span> <span class="pre">like</span> <span class="pre">``logp</span></code> or <code class="docutils literal"><span class="pre">sqrtp</span></code>
+replaced by <code class="docutils literal"><span class="pre">log(p)</span></code> or <code class="docutils literal"><span class="pre">sqrt(p)</span></code>. So setting</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">p</span> <span class="o">=</span> <span class="n">add_parameter_parentheses</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>fixes the keys in <code class="docutils literal"><span class="pre">p</span></code> for log-normal and sqrt-normal parameters.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="other-classes">
 <h2>Other Classes<a class="headerlink" href="#other-classes" title="Permalink to this headline">¶</a></h2>
@@ -1170,7 +1185,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

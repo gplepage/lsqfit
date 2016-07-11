@@ -51,7 +51,7 @@ def f(x):
 
 lsqfit.add_parameter_distribution('f', invf)
 intv_prior = BufferDict()
-intv_prior['f(a)'] = gvar(0,1)
+intv_prior['f(a)'] = gvar(0,0.75)
 fit = nonlinear_fit(prior=intv_prior, fcn=fcn, data=y, extend=True)
 a = fit.p['a']
 fa = fit.p['f(a)']

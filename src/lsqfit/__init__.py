@@ -63,7 +63,7 @@ fit function can be expressed directly in terms of parameter ``c``  and so is
 the same no matter which distribution is used for ``c``. Note that a
 sqrt-normal distribution with zero mean is equivalent to an exponential
 distribution. Additional distributions can be added using
-:meth:`lsqfit.add_parameter_distribution`.
+:meth:`gvar.add_parameter_distribution`.
 
 The :mod:`lsqfit` tutorial contains extended explanations and examples.
 The first appendix in the paper at http://arxiv.org/abs/arXiv:1406.2279
@@ -234,7 +234,7 @@ class nonlinear_fit(object):
         log-normal/sqrt-normal distributions. Setting ``extend=False`` (the
         default) restricts all parameters to Gaussian distributions.
         Additional distributions can be added using
-        :meth:`lsqfit.add_parameter_distribution`.
+        :meth:`gvar.add_parameter_distribution`.
 
     :param debug: Set to ``True`` for extra debugging of the fit function
         and a check for roundoff errors. (Default is ``False``.)
@@ -308,7 +308,7 @@ class nonlinear_fit(object):
                 nchivw = self.y.size + self.prior.size
             selfp0 = self.p0
             if self.extend:
-                selfp0 = ExtendedDict(selfp0)
+                selfp0 = _gvar.ExtendedDict(selfp0)
             f = self.fcn(selfp0) if self.x is False else self.fcn(self.x, selfp0)
             if not _y_fcn_match(self.y, f):
                 raise RuntimeError(_y_fcn_match.msg)
@@ -500,7 +500,7 @@ class nonlinear_fit(object):
                     nstar = 0
                 return '  ' + nstar * '*'
             if extend:
-                v2 = ExtendedDict(v2)
+                v2 = _gvar.ExtendedDict(v2)
                 newkeys = v2.newkeys()
                 try:
                     first_newkey = next(newkeys)
@@ -967,7 +967,7 @@ class nonlinear_fit(object):
                         )
                     yield fit
             else:
-                g = BufferDict(y=y.flat, prior=prior.flat)
+                g = _gvar.BufferDict(y=y.flat, prior=prior.flat)
                 for gb in _gvar.bootstrap_iter(g, n):
                     yb = _reformat(y, buf=gb['y'])
                     priorb = _reformat(prior, buf=gb['prior'])
@@ -996,131 +996,158 @@ class nonlinear_fit(object):
     bootstrap_iter = bootstrapped_fit_iter
 
 # components of nonlinear_fit
-class ExtendedDict(_gvar.BufferDict):
-    """ |BufferDict| that supports variables from extended distributions.
+# class ExtendedDict(_gvar.BufferDict):
+#     """ |BufferDict| that supports variables from extended distributions.
 
-    Used for parameters when there may be log-normal/sqrt-normal/...  variables.
-    The exponentiated/squared/... values of those variables are included in the
-    BufferDict, together with  the original versions. Method
-    :meth:`ExtendedDict.refill_buf` refills the buffer with  a 1-d array and
-    then fills in the exponentiated/squared values of  the log-normal/sqrt-
-    normal variables ---  that is, ``p.refill_buf(newbuf)``
-    replaces ``p.buf = newbuf``.
+#     Used for parameters when there may be log-normal/sqrt-normal/...  variables.
+#     The exponentiated/squared/... values of those variables are included in the
+#     BufferDict, together with  the original versions. Method
+#     :meth:`ExtendedDict.refill_buf` refills the buffer with  a 1-d array and
+#     then fills in the exponentiated/squared values of  the log-normal/sqrt-
+#     normal variables ---  that is, ``p.refill_buf(newbuf)``
+#     replaces ``p.buf = newbuf``.
 
-    Use function :meth:`lsqfit.add_parameter_distribution` to add distributions.
-    """
+#     Use function :meth:`lsqfit.add_parameter_distribution` to add distributions.
 
-    extension_pattern = re.compile('^([^()]+)\((.+)\)$')
-    extension_fcn = {}
+#     N.B. ExtendedDict is *not* part of the public api.
+#     """
 
-    def __init__(self, p0, buf=None):
-        super(ExtendedDict, self).__init__(p0, buf=buf)
-        extensions = []
-        newkeys = []
-        for k in p0:
-            k_stripped, k_fcn = ExtendedDict.stripkey(k)
-            if k_fcn is not None:
-                self[k_stripped] = k_fcn(self[k])
-                extensions.append(
-                    (self.slice(k_stripped), k_fcn, self.slice(k))
-                    )
-                newkeys.append(k_stripped)
-        self.extensions = extensions
-        self._newkeys = newkeys
+#     extension_pattern = re.compile('^([^()]+)\((.+)\)$')
+#     extension_fcn = {}
 
-    def refill_buf(self, newbuf):
-        if len(newbuf) != len(self.buf):
-            self.buf = numpy.resize(newbuf, len(self.buf))
-        else:
-            self.buf = newbuf
-        for s1, f, s2 in self.extensions:
-            self.buf[s1] = f(self.buf[s2])
+#     def __init__(self, p0, buf=None):
+#         super(ExtendedDict, self).__init__(p0, buf=buf)
+#         extensions = []
+#         newkeys = []
+#         for k in p0:
+#             k_stripped, k_fcn = ExtendedDict.stripkey(k)
+#             if k_fcn is not None:
+#                 self[k_stripped] = k_fcn(self[k])
+#                 extensions.append(
+#                     (self.slice(k_stripped), k_fcn, self.slice(k))
+#                     )
+#                 newkeys.append(k_stripped)
+#         self.extensions = extensions
+#         self._newkeys = newkeys
 
-    def newkeys(self):
-        " Iterator containing new keys generated by :class:`ExtendedDict`. "
-        return iter(self._newkeys)
+#     def refill_buf(self, newbuf):
+#         if len(newbuf) != len(self.buf):
+#             self.buf = numpy.resize(newbuf, len(self.buf))
+#         else:
+#             self.buf = newbuf
+#         for s1, f, s2 in self.extensions:
+#             self.buf[s1] = f(self.buf[s2])
 
-    @staticmethod
-    def origkey(prior, k):
-        """ Find key in ``prior`` corresponding to ``k``. """
-        if not isinstance(k, str):
-            return k
-        for f in ExtendedDict.extension_fcn:
-            newk = f + '(' + k + ')'
-            if newk in prior:
-                return newk
-        return k
+#     def newkeys(self):
+#         " Iterator containing new keys generated by :class:`ExtendedDict`. "
+#         return iter(self._newkeys)
 
-    @staticmethod
-    def stripkey(k):
-        """ Return (stripped key, fcn) where fcn is exp or square.
+#     @staticmethod
+#     def basekey(prior, k):
+#         """ Find base key in ``prior`` corresponding to ``k``. """
+#         if not isinstance(k, str):
+#             return k
+#         for f in ExtendedDict.extension_fcn:
+#             newk = f + '(' + k + ')'
+#             if newk in prior:
+#                 return newk
+#         return k
 
-        Strip off any ``"log"`` or ``"sqrt"`` prefix, with or without
-        parentheses.
-        """
-        if not isinstance(k, str):
-            return k, None
-        m = re.match(ExtendedDict.extension_pattern, k)
-        if m is None:
-            return k, None
-        k_fcn, k_stripped = m.groups()
-        if k_fcn not in ExtendedDict.extension_fcn:
-            return k, None
-        return k_stripped, ExtendedDict.extension_fcn[k_fcn]
+#     @staticmethod
+#     def stripkey(k):
+#         """ Return (stripped key, fcn) where fcn is exp or square or ...
 
-def add_parameter_distribution(name, invfcn):
-    """ Add new parameter distribution for use in fits.
+#         Strip off any ``"log"`` or ``"sqrt"`` or ... prefix.
+#         """
+#         if not isinstance(k, str):
+#             return k, None
+#         m = re.match(ExtendedDict.extension_pattern, k)
+#         if m is None:
+#             return k, None
+#         k_fcn, k_stripped = m.groups()
+#         if k_fcn not in ExtendedDict.extension_fcn:
+#             return k, None
+#         return k_stripped, ExtendedDict.extension_fcn[k_fcn]
 
-    This function adds new distributions for the parameters used in
-    :class:`lsqfit.nonlinear_fit`. For example, the code ::
+# def add_parameter_parentheses(p):
+#     """ Return dictionary with proper keys for parameter distributions (legacy code).
 
-        import gvar as gv
-        import lsqfit
+#     This utility function helps fix legacy code that uses
+#     parameter keys like ``logp`` or ``sqrtp`` instead of
+#     ``log(p)`` or ``sqrt(p)``, as now required. This method creates a
+#     copy of  dictionary ``p'' but with keys like ``logp`` or ``sqrtp``
+#     replaced by ``log(p)`` or ``sqrt(p)``. So setting ::
 
-        lsqfit.add_parameter_distribution('log', gv.exp)
+#         p = add_parameter_parentheses(p)
 
-    enables the use of log-normal distributions for parameters. The log-normal
-    distribution is invoked for a parameter ``p`` by including ``log(p)``
-    rather than ``p`` itself in the fit prior. log-normal and sqrt-normal
-    distributions are included by default.
+#     fixes the keys in ``p`` for log-normal and sqrt-normal parameters.
+#     """
+#     newp = _gvar.BufferDict()
+#     for k in p:
+#         if isinstance(k, str):
+#             if k[:3] == 'log' and ExtendedDict.stripkey(k)[1] is None:
+#                 newk = 'log(' + k[3:] + ')'
+#             elif k[:4] == 'sqrt' and ExtendedDict.stripkey(k)[1] is None:
+#                 newk = 'sqrt(' + k[4:] + ')'
+#             else:
+#                 newk = k
+#             newp[newk] = p[k]
+#     return newp
 
-    These distributions are implemented by replacing a fit parameter ``p``
-    by a new fit parameter ``fcn(p)`` where ``fcn`` is some function. ``fcn(p)``
-    is assumed to have a Gaussian distribution, and parameter ``p`` is
-    recovered using the inverse function ``invfcn`` where ``p=invfcn(fcn(p))``.
 
-    :param name: Distribution's name.
-    :type name: str
-    :param invfcn: Inverse of the transformation function.
-    """
-    ExtendedDict.extension_fcn[name] = invfcn
+# def add_parameter_distribution(name, invfcn):
+#     """ Add new parameter distribution for use in fits.
 
-def del_parameter_distribution(name):
-    """ Delete parameter distribution ``name``. """
-    del ExtendedDict.extension_fcn[name]
+#     This function adds new distributions for the parameters used in
+#     :class:`lsqfit.nonlinear_fit`. For example, the code ::
 
-# default extensions
-add_parameter_distribution('log', numpy.exp)
-add_parameter_distribution('sqrt', numpy.square)
+#         import gvar as gv
+#         import lsqfit
 
-def trim_redundant_keys(p):
-    """ Remove redundant keys from dictionary ``p``.
+#         lsqfit.add_parameter_distribution('log', gv.exp)
 
-    A key ``'c'`` is redundant if either of ``'log(c)'``
-    or ``'sqrt(c)'`` is also a key. (There are additional redundancies
-    if :meth:`lsqfit.add_parameter_distribution` has been used to add
-    extra distributions.) This function creates a copy of ``p`` but with
-    the redundant keys removed.
-    """
-    keys = list(p.keys())
-    for k in p:
-        k_stripped, k_fcn = ExtendedDict.stripkey(k)
-        if k_fcn is not None:
-            try:
-                keys.remove(k_stripped)
-            except ValueError:
-                pass
-    return _gvar.BufferDict(p, keys=keys)
+#     enables the use of log-normal distributions for parameters. The log-normal
+#     distribution is invoked for a parameter ``p`` by including ``log(p)``
+#     rather than ``p`` itself in the fit prior. log-normal and sqrt-normal
+#     distributions are included by default.
+
+#     These distributions are implemented by replacing a fit parameter ``p``
+#     by a new fit parameter ``fcn(p)`` where ``fcn`` is some function. ``fcn(p)``
+#     is assumed to have a Gaussian distribution, and parameter ``p`` is
+#     recovered using the inverse function ``invfcn`` where ``p=invfcn(fcn(p))``.
+
+#     :param name: Distribution's name.
+#     :type name: str
+#     :param invfcn: Inverse of the transformation function.
+#     """
+#     ExtendedDict.extension_fcn[name] = invfcn
+
+# def del_parameter_distribution(name):
+#     """ Delete parameter distribution ``name``. """
+#     del ExtendedDict.extension_fcn[name]
+
+# # default extensions
+# add_parameter_distribution('log', numpy.exp)
+# add_parameter_distribution('sqrt', numpy.square)
+
+# def trim_redundant_keys(p):
+#     """ Remove redundant keys from dictionary ``p``.
+
+#     A key ``'c'`` is redundant if either of ``'log(c)'``
+#     or ``'sqrt(c)'`` is also a key. (There are additional redundancies
+#     if :meth:`lsqfit.add_parameter_distribution` has been used to add
+#     extra distributions.) This function creates a copy of ``p`` but with
+#     the redundant keys removed.
+#     """
+#     keys = list(p.keys())
+#     for k in p:
+#         k_stripped, k_fcn = ExtendedDict.stripkey(k)
+#         if k_fcn is not None:
+#             try:
+#                 keys.remove(k_stripped)
+#             except ValueError:
+#                 pass
+#     return _gvar.BufferDict(p, keys=keys)
 
 
 def _reformat(p, buf, extend=False):
@@ -1133,9 +1160,9 @@ def _reformat(p, buf, extend=False):
             raise ValueError(       #
                 "p, buf size mismatch: %d, %d"%(ans.size, len(buf)))
         if extend:
-            ans = ExtendedDict(ans, buf=buf)
+            ans = _gvar.ExtendedDict(ans, buf=buf)
         else:
-            ans = BufferDict(ans, buf=buf)
+            ans = _gvar.BufferDict(ans, buf=buf)
     else:
         if numpy.size(p) != len(buf):
             raise ValueError(       #
@@ -1207,7 +1234,7 @@ def _unpack_data(data, prior, svdcut, extend):
         prior = _unpack_gvars(prior)
         if extend and hasattr(prior, 'keys'):
             # remove redundant keys, if any
-            prior = trim_redundant_keys(prior)
+            prior = _gvar.trim_redundant_keys(prior)
         yp, fdata = _apply_svd(numpy.concatenate((y.flat, prior.flat)))
         y.flat = yp[:y.size]
         prior.flat = yp[y.size:]
@@ -1318,7 +1345,7 @@ def _unpack_p0(p0, p0file, prior, extend):
     if extend and prior is None and p0.shape is None:
         # remove redundant keys (eg, remove a if loga present)
         # don't bother if there is a prior -- its keys are used to build p0
-        p0 = trim_redundant_keys(p0)
+        p0 = _gvar.trim_redundant_keys(p0)
     return p0
 
 
@@ -1335,9 +1362,9 @@ def _unpack_fcn(fcn, p0, y, x, extend):
                     return numpy.array(ans).flat
         else:
             if extend:
-                po = ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
+                po = _gvar.ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
             else:
-                po = BufferDict(p0, buf=numpy.zeros(p0.size, float))
+                po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po):
                 if extend:
                     po.refill_buf(p)
@@ -1349,7 +1376,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
                 else:
                     return numpy.array(ans).flat
     else:
-        yo = BufferDict(y, buf=y.size*[None])
+        yo = _gvar.BufferDict(y, buf=y.size*[None])
         if p0.shape is not None:
             def nfcn(p, x=x, fcn=fcn, pshape=p0.shape, yo=yo):
                 po = p.reshape(pshape)
@@ -1359,9 +1386,9 @@ def _unpack_fcn(fcn, p0, y, x, extend):
                 return yo.flat
         else:
             if extend:
-                po = ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
+                po = _gvar.ExtendedDict(p0, buf=numpy.zeros(p0.size, float))
             else:
-                po = BufferDict(p0, buf=numpy.zeros(p0.size, float))
+                po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
                 if extend:
                     po.refill_buf(p)
@@ -1375,7 +1402,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
 
 def _y_fcn_match(y, f):
     if hasattr(f,'keys'):
-        f = BufferDict(f)
+        f = _gvar.BufferDict(f)
     else:
         f = numpy.array(f)
     if y.shape != f.shape:
@@ -1399,6 +1426,53 @@ def _y_fcn_match(y, f):
                 _y_fcn_match.msg = "key mismatch: " + str(k)
                 return False
     return True
+
+try:
+    import vegas
+    class BayesIntegrator(_gvar.PDFIntegrator):
+        def __init__(self, fit, scale=1.0, svdcut=1e-15, limit=1e15):
+            super(BayesIntegrator, self).__init__(
+                fit.p, scale=scale, svdcut=svdcut, limit=limit
+                )
+            self.chiv = fit._chiv
+            self.logGBF = fit.logGBF
+            self.chi2 = fit.chi2
+            self.extend = fit.extend
+
+        def logpdf(self, p, norm=1.):
+            if hasattr(p, 'keys'):
+                if self.extend:
+                    p = _gvar.trim_redundant_keys(p).buf
+                else:
+                    p = _gvar.BufferDict(p).buf
+            else:
+                p = numpy.asarray(p).reshape(-1)
+            return (
+                -0.5 * (numpy.sum(self.chiv(p) ** 2) - self.chi2)
+                - self.log_gnorm - numpy.log(norm)
+                )
+
+        def pdf(self, p, norm=1.):
+            return numpy.exp(self.logpdf(p, norm))
+
+        def __call__(self, f=None, mpi=False, **kargs):
+            def ff(p):
+                if self.extend:
+                    p = _gvar.ExtendedDict(p)
+                fp = 1. if f is None else f(p)
+                if hasattr(fp, 'keys'):
+                    fp = _gvar.BufferDict(fp)
+                    return _gvar.BufferDict(
+                        fp,
+                        buf=fp.buf * numpy.exp(self.logpdf(p)),
+                        )
+                else:
+                    return numpy.asarray(fp) * numpy.exp(self.logpdf(p))
+            return super(BayesIntegrator, self).__call__(
+                ff, nopdf=True, mpi=mpi, **kargs
+                )
+except ImportError:
+    pass
 
 # legacy definitions (obsolete)
 class _legacy_constructor:

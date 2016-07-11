@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 7.1.0 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '7.1.0',
+        VERSION:     '8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 7.1.0 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.0 documentation" href="index.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1276,9 +1276,21 @@ difference is significant despite the fact that the <code class="docutils litera
 cases are almost the same. <code class="docutils literal"><span class="pre">chi**2</span></code> tests goodness of fit, but there are
 usually more ways than one to get a good fit. Some are more plausible
 than others, and the Bayes factor helps sort out which.</p>
+<p>The Gaussian Bayes Factor is an approximation to
+the <em>Bayes Factor</em> which is valid in the limit where
+all distributions can be approximated by Gaussians. The Bayes Factor
+is the probability
+(density) that the fit data would be generated randomly from the
+fit function and priors (the <em>model</em>) used in the fit.
+Ratios of Bayes Factors from fits with different models tell us about the
+relative likelihood of the different models given the data. (Actually the
+ratio gives the ratio of probabilities for obtaining the data
+from the models, as opposed to the probabilities for the models given
+the data. The latter ratio is the same as the former, however, provided
+the two models are equally likely <em>a priori</em> (from Bayes Theorem).)</p>
 </div>
 <div class="section" id="tuning-priors-and-the-empirical-bayes-criterion">
-<h2>Tuning Priors and the Empirical Bayes Criterion<a class="headerlink" href="#tuning-priors-and-the-empirical-bayes-criterion" title="Permalink to this headline">¶</a></h2>
+<span id="empirical-bayes"></span><h2>Tuning Priors and the Empirical Bayes Criterion<a class="headerlink" href="#tuning-priors-and-the-empirical-bayes-criterion" title="Permalink to this headline">¶</a></h2>
 <p>Given two choices of prior for a parameter, the one that results in a larger
 Gaussian Bayes Factor after fitting (see <code class="docutils literal"><span class="pre">logGBF</span></code> in fit output or
 <code class="docutils literal"><span class="pre">fit.logGBF</span></code>) is the one preferred by the data. We can use this fact to tune
@@ -2142,7 +2154,8 @@ print(&#39;a =&#39;, fit.p[&#39;a&#39;].fmt())                 # exp(log(a))
 <p>The fit parameter is now <code class="docutils literal"><span class="pre">log(a)</span></code> rather than <code class="docutils literal"><span class="pre">a</span></code> itself, but the code
 is unchanged except for the definition of the prior and the addition
 of <code class="docutils literal"><span class="pre">extend=True</span></code> to the <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> arguments. In particular the
-fit function is identical to what we used in the first case.</p>
+fit function is identical to what we used in the first case since
+parameter dictionary <code class="docutils literal"><span class="pre">p</span></code> has entries for both <code class="docutils literal"><span class="pre">'a'</span></code> and <code class="docutils literal"><span class="pre">'log(a)'</span></code>.</p>
 <p>The result from this fit is</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.252
@@ -2161,12 +2174,16 @@ a = 0.012(11)
 <p>which is more compelling. Parameters listed  above the dashed line in the
 parameter table are the actual  parameters used in the fit; those listed below
 the dashed line are derived from those above the line. The &#8220;correct&#8221; value for
-<code class="docutils literal"><span class="pre">a</span></code> here is 0.015 (from the method used to generate the <code class="docutils literal"><span class="pre">y</span></code>s).</p>
+<code class="docutils literal"><span class="pre">a</span></code> here is 0.015 (given the method used to generate the <code class="docutils literal"><span class="pre">y</span></code>s).</p>
 <p>Setting <code class="docutils literal"><span class="pre">extend=True</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> also allows parameters to  be
 replaced by their square roots as fit parameters &#8212; for example,  define
-<code class="docutils literal"><span class="pre">`prior['sqrt(a)']</span></code> rather than <code class="docutils literal"><span class="pre">prior['a']</span></code> when
+<code class="docutils literal"><span class="pre">prior['sqrt(a)']</span></code> rather than <code class="docutils literal"><span class="pre">prior['a']</span></code> when
 creating the prior. This again guarantees positive  parameters.
-Using <code class="docutils literal"><span class="pre">prior['sqrt(a)'']=gv.sqrt(gv.gvar(0.02,</span> <span class="pre">0.02))</span></code> in the prior above, instead
+Using</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prior</span><span class="p">[</span><span class="s">&#39;sqrt(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>in the prior above, instead
 of  <code class="docutils literal"><span class="pre">a=gv.gvar(0.02,</span> <span class="pre">0.02)</span></code>, leads to a final result of <code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">0.010(13)</span></code>,
 which is almost identical to the result obtained from the log-normal
 distribution. Note that a sqrt-normal distribution with zero mean is
@@ -2184,14 +2201,17 @@ For example,</p>
 
 <span class="n">lsqfit</span><span class="o">.</span><span class="n">add_parameter_distribution</span><span class="p">(</span><span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="n">invf</span><span class="p">)</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
-<span class="n">prior</span><span class="p">[</span><span class="s">&#39;f(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">prior</span><span class="p">[</span><span class="s">&#39;f(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0.00(75)&#39;</span><span class="p">)</span>
 
 <span class="o">...</span> <span class="k">as</span> <span class="n">before</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>does a fit with Gaussian parameter <code class="docutils literal"><span class="pre">f(a)</span></code>, which forces <code class="docutils literal"><span class="pre">a</span></code>
-to lie between 0 and 0.4. This fit gives <code class="docutils literal"><span class="pre">a=0.009(13)</span></code>, which
-again agrees well with log-normal fit.</p>
+to lie between 0 and 0.04. This fit gives <code class="docutils literal"><span class="pre">a=0.012(12)</span></code>, which
+again agrees well with log-normal fit. The prior 0±0.75 for <code class="docutils literal"><span class="pre">f(a)</span></code>
+is chosen to make the prior probability
+distribution for parameter <code class="docutils literal"><span class="pre">a</span></code> almost flat
+across most (80%) of the interval 0.2±0.2.</p>
 </div>
 <div class="section" id="debugging-and-troubleshooting">
 <h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
@@ -2327,7 +2347,7 @@ fluctuate together, the prior should be redefined:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

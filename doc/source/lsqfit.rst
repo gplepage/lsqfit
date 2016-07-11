@@ -293,6 +293,8 @@ Functions
 
 .. autofunction:: lsqfit.del_parameter_distribution
 
+.. autofunction:: lsqfit.add_parameter_parentheses
+
 Other Classes
 ---------------
 

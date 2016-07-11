@@ -1,17 +1,24 @@
 Version 8.0 ????
 ===================
-The first change breaks backwards compatibility.
+The second change (a consequence of the first) breaks backwards compatibility.
+
+- Function lsqfit.add_parameter_distribution has been added to allow new
+  prior distributions, in addition to log-normal and sqrt-normal. This
+  allows one, for example, to restrict a parameter to a particular
+  interval (see the Overview section on Non-Gaussian Priors).
 
 - To signal a log-normal prior for a parameter 'c' in nonlinear_fit one must
   now include an entry for prior['log(c)'] in the prior. Before one could
-  leave out the parentheses, using prior['logc'] instead. The parenthesis are
-  now essential. The same is true for sqrt-normal priors, where one would
-  include prior['sqrt(c)'], not prior['sqrtc'].
+  leave out the parentheses in the key, using prior['logc'] instead. The
+  parenthesis are now essential. The same is true for sqrt-normal priors,
+  where one would include prior['sqrt(c)'], not prior['sqrtc']. To help
+  convert legacy code, there is a new utility function that adds
+  parentheses: use,
 
-- Function lsqfit.add_parameter_distribution has been added to all new
-  prior distributions in addition to log-normal and sqrt-normal. This
-  allows one, for example, to restrict a parameter to a particular
-  interval.
+    prior = lsqfit.add_parameter_parentheses(prior)
+
+  to add parentheses to keys of the form logc or sqrtc (which become log(c)
+  or sqrt(c)) in dictionary prior.
 
 
 Version 7.1 and 7.1.0 2016-02-21

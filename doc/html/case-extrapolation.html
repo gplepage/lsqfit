@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Case Study: Simple Extrapolation &mdash; lsqfit 7.1.0 documentation</title>
+    <title>Case Study: Simple Extrapolation &mdash; lsqfit 8.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '7.1.0',
+        VERSION:     '8.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 7.1.0 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.0 documentation" href="index.html" />
     <link rel="next" title="Case Study: Pendulum" href="case-pendulum.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -295,19 +295,27 @@ Parameters:
               ...
 </pre></div>
 </div>
-<p>Setting <code class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(20)'])</span></code> gives a very wide prior and
+<p>Setting <code class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(20)'])</span></code> gives very wide priors and
 a rather strange looking fit:</p>
 <a class="reference internal image-reference" href="_images/appendix_4.png"><img alt="_images/appendix_4.png" src="_images/appendix_4.png" style="width: 80%;" /></a>
 <p>Here fit errors are comparable to the data errors at the data points, as you
 would expect, but balloon up in between. This is an example of
-<em>over fitting</em>: the data are not sufficiently accurate to fit the
+<em>over-fitting</em>: the data and priors are not sufficiently accurate to fit the
 number of parameters used. Specifically the priors are too broad.
 Again the Bayes Factor signals the problem: <code class="docutils literal"><span class="pre">logGBF</span> <span class="pre">=</span> <span class="pre">-14.479</span></code> here, which
 means that our data are roughly a million times (<code class="docutils literal"><span class="pre">=exp(14)</span></code>) more
 likely to to come from a world with coefficients of order one than
-from one with coefficients of order twenty. Over fitting becomes
-worse as the prior width is further increased &#8212; meaningful priors are
-necessary in order to fit this data with 91 parameters.</p>
+from one with coefficients of order twenty. That is, the broad priors suggest
+much larger
+variations between the leading parameters than is indicated by the data &#8212;
+again, the
+data are unnaturally regular in a world described by the very broad prior.</p>
+<p>Absent useful <em>a priori</em> information about the parameters, we can sometimes use the
+data to suggest a plausible width for a set of priors. We do this by setting
+the width equal to the value
+that maximizes <code class="docutils literal"><span class="pre">logGBF</span></code>. This approach suggests priors of <code class="docutils literal"><span class="pre">0.0(6)</span></code> for
+the fit above, which gives results very similar to the fit
+with priors of <code class="docutils literal"><span class="pre">0(1)</span></code>. See <a class="reference internal" href="overview.html#empirical-bayes"><span>Tuning Priors and the Empirical Bayes Criterion</span></a> for more details.</p>
 <p>The priors are responsible for about half of the final error in our best
 estimate of <code class="docutils literal"><span class="pre">p[0]</span></code> (with priors of <code class="docutils literal"><span class="pre">0(1)</span></code>); the rest comes from the
 uncertainty in the data. This can be  established by creating an error budget
@@ -330,11 +338,6 @@ using the code</p>
 <p>The table shows that the final 3.5% error comes from a 2.7% error due
 to uncertainties in <code class="docutils literal"><span class="pre">y</span></code> and a 2.2% error from uncertainties in the
 prior (added in quadrature).</p>
-<p>Bayes Factors are generally quite useful for testing priors and especially
-the widths of the priors. The width that maximizes <code class="docutils literal"><span class="pre">logGBF</span></code> is the
-one most consistent with the fluctuations in the data. Typically the
-priors one uses should be at least as wide; otherwise one must explain
-why the data are showing larger fluctuations than the priors suggest.</p>
 </div>
 <div class="section" id="another-solution-marginalization">
 <h2>Another Solution &#8212; Marginalization<a class="headerlink" href="#another-solution-marginalization" title="Permalink to this headline">¶</a></h2>
@@ -482,7 +485,7 @@ larger error.</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 7.1.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

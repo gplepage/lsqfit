@@ -21,6 +21,11 @@ To install:
 		may not work.
 		(http://www.cython.org/)
 
+		Note that there can be issues compiling cython modules on
+		Windows: for tips on how to deal with them, see
+
+		https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
+
 	d. The gvar python package - provides tools for creating and
 		manipulating Gaussian random variables, which are used for
 		designing Bayesian priors, report fit results, etc, etc. This
