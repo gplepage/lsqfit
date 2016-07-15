@@ -1366,10 +1366,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
             else:
                 po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po):
-                if extend:
-                    po.refill_buf(p)
-                else:
-                    po.buf = p
+                po.buf = p
                 ans = fcn(po) if x is False else fcn(x, po)
                 if hasattr(ans, 'flat'):
                     return ans.flat
@@ -1390,10 +1387,7 @@ def _unpack_fcn(fcn, p0, y, x, extend):
             else:
                 po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
-                if extend:
-                    po.refill_buf(p)
-                else:
-                    po.buf = p
+                po.buf = p
                 fxp = fcn(po) if x is False else fcn(x, po)
                 for k in yo:
                     yo[k] = fxp[k]
@@ -1455,19 +1449,18 @@ try:
         def pdf(self, p, norm=1.):
             return numpy.exp(self.logpdf(p, norm))
 
-        def __call__(self, f=None, mpi=False, **kargs):
+        def __call__(self, f=None, mpi=False, nopdf=False, **kargs):
             def ff(p):
-                if self.extend:
-                    p = _gvar.ExtendedDict(p)
                 fp = 1. if f is None else f(p)
+                pdf = 1. if nopdf else numpy.exp(self.logpdf(p))
                 if hasattr(fp, 'keys'):
                     fp = _gvar.BufferDict(fp)
                     return _gvar.BufferDict(
                         fp,
-                        buf=fp.buf * numpy.exp(self.logpdf(p)),
+                        buf=fp.buf * pdf,
                         )
                 else:
-                    return numpy.asarray(fp) * numpy.exp(self.logpdf(p))
+                    return numpy.asarray(fp) * pdf
             return super(BayesIntegrator, self).__call__(
                 ff, nopdf=True, mpi=mpi, **kargs
                 )
