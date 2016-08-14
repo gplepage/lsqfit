@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012-2015 G. Peter Lepage.
+# Copyright (c) 2012-2016 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import numpy as np
 import gvar as gv
 from lsqfit import *
 import lsqfit
+
 
 FAST = False         # skips embayes and bootstrap tests
 
@@ -1386,6 +1387,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                             analyzer=tabulate,alg="nmsimplex2")
         self.assert_arraysclose(ans.x,[5.,-3.],rtol=1e-4)
         self.assert_arraysclose(ans.f,-1.,rtol=1e-4)
+
     def test_gammaQ(self):
         " gammaQ(a, x) "
         cases = [
@@ -1398,6 +1400,47 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
 
+    @unittest.skipIf(FAST,"skipping test_bayesintegrator for speed")
+    def test_bayesintegrator(self):
+        " BayesIntegrator(fit) "
+        # linear fit => BayesIntegrator gives same results for everything, norm=1
+        if not hasattr(lsqfit, 'BayesIntegrator'):
+            return
+        x = np.array([0.2, 0.6, 0.8, 1.2, 1.4])
+        y = gv.gvar(['0.38(20)', '0.85(20)', '0.59(20)', '1.44(20)', '0.73(20)'])
+        prior = gv.BufferDict(c=['0(5)', '0(5)'])
+        def f(x, p):
+            c = p['c']
+            return c[0] + c[1] * x
+        fit = nonlinear_fit(data=(x, y), prior=prior, fcn=f)
+
+        expval = BayesIntegrator(fit, limit=7.)
+        expval(neval=1000, nitn=5)
+        def g(p):
+            c = p['c']
+            return dict(mean=c, outer=np.outer(c, c))
+        r = expval(g, neval=1000, nitn=10, adapt=False)
+        mean = r['mean']
+        cov = r['outer'] - np.outer(mean, mean)
+        dmean = mean - fit.pmean['c']
+        dcov = cov - gv.evalcov(fit.p['c'])
+        dnorm = expval.norm - 1.
+        for dd in [dmean, dcov]:
+            self.assertTrue(
+                np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
+                )
+
+        pdf = BayesPDF(fit)
+        r = expval(g, neval=1000, nitn=10, pdf=pdf, adapt=False)
+        mean = r['mean']
+        cov = r['outer'] - np.outer(mean, mean)
+        dmean = mean - fit.pmean['c']
+        dcov = cov - gv.evalcov(fit.p['c'])
+        dnorm = expval.norm - 1.
+        for dd in [dmean, dcov]:
+            self.assertTrue(
+                np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
+                )
 
 def partialerrors(outputs,inputs):
     err = {}

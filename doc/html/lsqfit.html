@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="lsqfit 8.0 documentation" href="index.html" />
-    <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
+    <link rel="prev" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -44,7 +44,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="case-pendulum.html" title="Case Study: Pendulum"
+          <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>
@@ -118,7 +118,7 @@ fit function can be expressed directly in terms of parameter <code class="docuti
 the same no matter which distribution is used for <code class="docutils literal"><span class="pre">c</span></code>. Note that a
 sqrt-normal distribution with zero mean is equivalent to an exponential
 distribution. Additional distributions can be added using
-<a class="reference internal" href="#lsqfit.add_parameter_distribution" title="lsqfit.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.add_parameter_distribution()</span></code></a>.</p>
+<a class="reference internal" href="#gvar.add_parameter_distribution" title="gvar.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">gvar.add_parameter_distribution()</span></code></a>.</p>
 <p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> tutorial contains extended explanations and examples.
 The first appendix in the paper at <a class="reference external" href="http://arxiv.org/abs/arXiv:1406.2279">http://arxiv.org/abs/arXiv:1406.2279</a>
 provides conceptual background on the techniques used in this
@@ -251,7 +251,7 @@ or <code class="docutils literal"><span class="pre">'sqrt(c)'</span></code>, so 
 log-normal/sqrt-normal distributions. Setting <code class="docutils literal"><span class="pre">extend=False</span></code> (the
 default) restricts all parameters to Gaussian distributions.
 Additional distributions can be added using
-<a class="reference internal" href="#lsqfit.add_parameter_distribution" title="lsqfit.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.add_parameter_distribution()</span></code></a>.</li>
+<a class="reference internal" href="#gvar.add_parameter_distribution" title="gvar.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">gvar.add_parameter_distribution()</span></code></a>.</li>
 <li><strong>debug</strong> (<em>boolean</em>) &#8211; Set to <code class="docutils literal"><span class="pre">True</span></code> for extra debugging of the fit function
 and a check for roundoff errors. (Default is <code class="docutils literal"><span class="pre">False</span></code>.)</li>
 <li><strong>fitterargs</strong> &#8211; Dictionary of arguments passed on to
@@ -905,21 +905,22 @@ of freedom even if the model used to construct <code class="docutils literal"><s
 </dd></dl>
 
 <dl class="function">
-<dt id="lsqfit.add_parameter_distribution">
-<code class="descclassname">lsqfit.</code><code class="descname">add_parameter_distribution</code><span class="sig-paren">(</span><em>name</em>, <em>invfcn</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.add_parameter_distribution" title="Permalink to this definition">¶</a></dt>
+<dt id="gvar.add_parameter_distribution">
+<code class="descclassname">gvar.</code><code class="descname">add_parameter_distribution</code><span class="sig-paren">(</span><em>name</em>, <em>invfcn</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.add_parameter_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add new parameter distribution for use in fits.</p>
 <p>This function adds new distributions for the parameters used in
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. For example, the code</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
-<span class="kn">import</span> <span class="nn">lsqfit</span>
-
-<span class="n">lsqfit</span><span class="o">.</span><span class="n">add_parameter_distribution</span><span class="p">(</span><span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">)</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">add_parameter_distribution</span><span class="p">(</span><span class="s">&#39;log&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>enables the use of log-normal distributions for parameters. The log-normal
 distribution is invoked for a parameter <code class="docutils literal"><span class="pre">p</span></code> by including <code class="docutils literal"><span class="pre">log(p)</span></code>
-rather than <code class="docutils literal"><span class="pre">p</span></code> itself in the fit prior. log-normal and sqrt-normal
-distributions are included by default.</p>
+rather than <code class="docutils literal"><span class="pre">p</span></code> itself in the fit prior. log-normal, sqrt-normal,  and
+erfinv-normal distributions are included by default. (Setting  a prior
+<code class="docutils literal"><span class="pre">prior[erfinv(w)]</span></code> equal to <code class="docutils literal"><span class="pre">gv.gvar('0(1)')</span> <span class="pre">/</span> <span class="pre">gv.sqrt(2)</span></code>  means that
+the prior probability for <code class="docutils literal"><span class="pre">w</span></code> is distributed uniformly between -1 and 1,
+and is zero elsewhere.)</p>
 <p>These distributions are implemented by replacing a fit parameter <code class="docutils literal"><span class="pre">p</span></code>
 by a new fit parameter <code class="docutils literal"><span class="pre">fcn(p)</span></code> where <code class="docutils literal"><span class="pre">fcn</span></code> is some function. <code class="docutils literal"><span class="pre">fcn(p)</span></code>
 is assumed to have a Gaussian distribution, and parameter <code class="docutils literal"><span class="pre">p</span></code> is
@@ -939,14 +940,14 @@ recovered using the inverse function <code class="docutils literal"><span class=
 </dd></dl>
 
 <dl class="function">
-<dt id="lsqfit.del_parameter_distribution">
-<code class="descclassname">lsqfit.</code><code class="descname">del_parameter_distribution</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.del_parameter_distribution" title="Permalink to this definition">¶</a></dt>
+<dt id="gvar.del_parameter_distribution">
+<code class="descclassname">gvar.</code><code class="descname">del_parameter_distribution</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.del_parameter_distribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete parameter distribution <code class="docutils literal"><span class="pre">name</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="lsqfit.add_parameter_parentheses">
-<code class="descclassname">lsqfit.</code><code class="descname">add_parameter_parentheses</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.add_parameter_parentheses" title="Permalink to this definition">¶</a></dt>
+<dt id="gvar.add_parameter_parentheses">
+<code class="descclassname">gvar.</code><code class="descname">add_parameter_parentheses</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#gvar.add_parameter_parentheses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return dictionary with proper keys for parameter distributions (legacy code).</p>
 <p>This utility function helps fix legacy code that uses
 parameter keys like <code class="docutils literal"><span class="pre">logp</span></code> or <code class="docutils literal"><span class="pre">sqrtp</span></code> instead of
@@ -957,6 +958,240 @@ replaced by <code class="docutils literal"><span class="pre">log(p)</span></code
 </pre></div>
 </div>
 <p>fixes the keys in <code class="docutils literal"><span class="pre">p</span></code> for log-normal and sqrt-normal parameters.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="classes-for-bayesian-integrals">
+<h2>Classes for Bayesian Integrals<a class="headerlink" href="#classes-for-bayesian-integrals" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="lsqfit.BayesPDF">
+<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesPDF</code><span class="sig-paren">(</span><em>fit</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bayesian probability density function corresponding to <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal"><span class="pre">fit</span></code>.</p>
+<p>The probability density function is the exponential of
+<code class="docutils literal"><span class="pre">-1/2</span></code> times the <code class="docutils literal"><span class="pre">chi**2</span></code> function (data and priors) used
+in <code class="docutils literal"><span class="pre">fit</span></code> divided by <code class="docutils literal"><span class="pre">norm</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fit</strong> &#8211; Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a>.</li>
+<li><strong>svdcut</strong> (<em>non-negative float or None</em>) &#8211; If not <code class="docutils literal"><span class="pre">None</span></code>, replace
+covariance matrix of <code class="docutils literal"><span class="pre">g</span></code> with a new matrix whose
+small eigenvalues are modified: eigenvalues smaller than
+<code class="docutils literal"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal"><span class="pre">eig_max</span></code> are
+replaced by <code class="docutils literal"><span class="pre">svdcut*eig_max</span></code>. This can ameliorate
+problems caused by roundoff errors when inverting the
+covariance matrix. It increases the uncertainty associated
+with the modified eigenvalues and so is conservative.
+Setting <code class="docutils literal"><span class="pre">svdcut=None</span></code> or <code class="docutils literal"><span class="pre">svdcut=0</span></code> leaves the
+covariance matrix unchanged. Default is <code class="docutils literal"><span class="pre">1e-15</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="lsqfit.BayesPDF.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Probability density function evaluated at <code class="docutils literal"><span class="pre">p</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.BayesPDF.logpdf">
+<code class="descname">logpdf</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.logpdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithm of the probability density function evaluated at <code class="docutils literal"><span class="pre">p</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lsqfit.BayesIntegrator">
+<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesIntegrator</code><span class="sig-paren">(</span><em>fit</em>, <em>limit=1e15</em>, <em>scale=1</em>, <em>pdf=None</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> integrator for Bayesian fit integrals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fit</strong> &#8211; Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a>.</li>
+<li><strong>limit</strong> (<em>positive float</em>) &#8211; Limits the integrations to a finite
+region of size <code class="docutils literal"><span class="pre">limit</span></code> times the standard deviation on
+either side of the mean. This can be useful if the
+functions being integrated misbehave for large parameter
+values (e.g., <code class="docutils literal"><span class="pre">numpy.exp</span></code> overflows for a large range of
+arguments). Default is <code class="docutils literal"><span class="pre">1e15</span></code>.</li>
+<li><strong>scale</strong> (<em>positive float</em>) &#8211; The integration variables are
+rescaled to emphasize parameter values of order
+<code class="docutils literal"><span class="pre">scale</span></code> times the corresponding standard deviations.
+The rescaling does not change the value of the integral but it
+can reduce uncertainties in the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> estimates.
+Default is <code class="docutils literal"><span class="pre">1.0</span></code>.</li>
+<li><strong>pdf</strong> (<em>function</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
+fit parameters to use in place of the normal PDF associated
+with the least-squares fit used to create the integrator.</li>
+<li><strong>svdcut</strong> (<em>non-negative float or None</em>) &#8211; If not <code class="docutils literal"><span class="pre">None</span></code>, replace
+covariance matrix of <code class="docutils literal"><span class="pre">g</span></code> with a new matrix whose
+small eigenvalues are modified: eigenvalues smaller than
+<code class="docutils literal"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal"><span class="pre">eig_max</span></code> are
+replaced by <code class="docutils literal"><span class="pre">svdcut*eig_max</span></code>. This can ameliorate
+problems caused by roundoff errors when inverting the
+covariance matrix. It increases the uncertainty associated
+with the modified eigenvalues and so is conservative.
+Setting <code class="docutils literal"><span class="pre">svdcut=None</span></code> or <code class="docutils literal"><span class="pre">svdcut=0</span></code> leaves the
+covariance matrix unchanged. Default is <code class="docutils literal"><span class="pre">1e-15</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal"><span class="pre">BayesIntegrator(fit)</span></code> is a <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> integrator that evaluates
+expectation values for the multi-dimensional Bayesian distribution
+associated with <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal"><span class="pre">fit</span></code>: the probability
+density function is the exponential of the <code class="docutils literal"><span class="pre">chi**2</span></code> function
+(times <code class="docutils literal"><span class="pre">-1/2</span></code>), for data and priors, used in the fit.
+For linear fits, it is equivalent to <code class="docutils literal"><span class="pre">gvar.PDFIntegrator(fit.p)</span></code>,
+since the <code class="docutils literal"><span class="pre">chi**2</span></code> function is  quadratic in the fit parameters;
+but they can differ significantly for nonlinear fits.</p>
+<p><code class="docutils literal"><span class="pre">BayesIntegrator</span></code> integrates over the entire parameter space but
+first reexpresses the integrals in terms of variables that
+diagonalize the covariance matrix of the best-fit parameters
+<code class="docutils literal"><span class="pre">fit.p</span></code> from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> and are centered at the
+best-fit values. This greatly facilitates the integration using
+<code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>, making integrals over 10s or more of parameters feasible.
+(The <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> module must be installed separately in order
+to use <code class="docutils literal"><span class="pre">BayesIntegrator</span></code>.)</p>
+<p>A simple illustration of <code class="docutils literal"><span class="pre">BayesIntegrator</span></code> is given by the following
+code, which we use to evaluate the mean and standard deviation for
+<code class="docutils literal"><span class="pre">s*g</span></code> where <code class="docutils literal"><span class="pre">s</span></code> and <code class="docutils literal"><span class="pre">g</span></code> are fit parameters:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">lsqfit</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># least-squares fit</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;1.2(1.0)&#39;</span><span class="p">,</span> <span class="s">&#39;2.4(1)&#39;</span><span class="p">,</span> <span class="s">&#39;2.0(1.2)&#39;</span><span class="p">,</span> <span class="s">&#39;5.2(3.2)&#39;</span><span class="p">])</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s">&#39;0(5)&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s">&#39;0(2)&#39;</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="s">&#39;2(2)&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;g&#39;</span><span class="p">]</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+
+<span class="c"># Bayesian integral to evaluate expectation value of s*g</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">sg</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;g&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">sg</span><span class="p">,</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">expval</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">BayesIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">20.</span><span class="p">)</span>
+<span class="n">warmup</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;results =&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="n">sg</span><span class="p">,</span> <span class="n">sg2</span> <span class="o">=</span> <span class="n">results</span>
+<span class="n">sg_sdev</span> <span class="o">=</span> <span class="p">(</span><span class="n">sg2</span> <span class="o">-</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;s*g from Bayes integral:  mean =&#39;</span><span class="p">,</span> <span class="n">sg</span><span class="p">,</span> <span class="s">&#39;  sdev =&#39;</span><span class="p">,</span> <span class="n">sg_sdev</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;s*g from fit:&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;g&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>where the <code class="docutils literal"><span class="pre">warmup</span></code> calls to the integrator are used to adapt it to
+probability density function from the fit, and then the integrator
+is used to evaluate the expectation value of <code class="docutils literal"><span class="pre">g(p)</span></code>, which is
+returned in array <code class="docutils literal"><span class="pre">results</span></code>.  Here <code class="docutils literal"><span class="pre">neval</span></code> is the (approximate)
+number of function calls per iteration of the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> algorithm
+and <code class="docutils literal"><span class="pre">nitn</span></code> is the number of iterations. We use the integrator to
+calculated the expectation value of <code class="docutils literal"><span class="pre">s*g</span></code> and <code class="docutils literal"><span class="pre">(s*g)**2</span></code> so we can
+compute a mean and standard deviation.</p>
+<p>The output from this code shows that the Gaussian approximation
+for <code class="docutils literal"><span class="pre">s*g</span></code> (0.76(66)) is somewhat different from the result
+obtained from a Bayesian integral (0.48(54)):</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
+
+Parameters:
+              a    1.61 (90)     [  0.0 (5.0) ]
+              s    0.62 (81)     [  0.0 (2.0) ]
+              g    1.2 (1.1)     [  2.0 (2.0) ]
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 10/0.0)
+
+itn   integral        average         chi2/dof        Q
+-------------------------------------------------------
+  1   1.034(21)       1.034(21)           0.00     1.00
+  2   1.034(21)       1.034(15)           0.56     0.64
+  3   1.024(18)       1.030(12)           0.37     0.90
+  4   1.010(18)       1.0254(98)          0.47     0.89
+  5   1.005(17)       1.0213(85)          0.55     0.88
+  6   1.013(19)       1.0199(78)          0.69     0.80
+  7   0.987(16)       1.0152(70)          0.78     0.72
+  8   1.002(18)       1.0135(66)          0.90     0.59
+  9   1.036(20)       1.0160(62)          0.86     0.66
+ 10   1.060(20)       1.0204(60)          0.94     0.55
+
+results = [0.4837(32) 0.5259(47)]
+
+s*g from Bayes integral:  mean = 0.4837(32)   sdev = 0.5403(25)
+s*g from fit: 0.78(66)
+</pre></div>
+</div>
+<p>The table shows estimates of the probability density function&#8217;s
+normalization from each of the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> iterations used
+by the integrator to estimate the final results.</p>
+<p>In general functions being integrated can return a number, or an array
+of numbers, or a dictionary whose values are numbers or arrays of
+numbers. This allows multiple expectation values to be evaluated
+simultaneously.</p>
+<p>See the documentation with the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> module for more details on
+its use, and on the attributes and methods associated with
+integrators. The example above sets <code class="docutils literal"><span class="pre">adapt=False</span></code> when  computing
+final results. This gives more reliable error estimates  when
+<code class="docutils literal"><span class="pre">neval</span></code> is small. Note that <code class="docutils literal"><span class="pre">neval</span></code> may need to be much larger
+(tens or hundreds of thousands) for more difficult high-dimension
+integrals.</p>
+<dl class="method">
+<dt id="lsqfit.BayesIntegrator.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>f=None</em>, <em>mpi=False</em>, <em>pdf=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate expectation value of function <code class="docutils literal"><span class="pre">f(p)</span></code>.</p>
+<p>Uses multi-dimensional integration modules <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>  to
+estimate the expectation value of <code class="docutils literal"><span class="pre">f(p)</span></code> with  respect to
+the probability density function  associated with
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal"><span class="pre">fit</span></code>. Setting <code class="docutils literal"><span class="pre">mpi=True</span></code>
+configures vegas for multi-processor running using MPI.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> (<em>function</em>) &#8211; Function <code class="docutils literal"><span class="pre">f(p)</span></code> to integrate. Integral is
+the expectation value of the function with respect
+to the distribution. The function can return a number,
+an array of numbers, or a dictionary whose values are
+numbers or arrays of numbers.</li>
+<li><strong>mpi</strong> (<em>bool</em>) &#8211; <p>If <code class="docutils literal"><span class="pre">True</span></code> configure for use with multiple processors
+and MPI. This option requires module <code class="xref py py-mod docutils literal"><span class="pre">mpi4py</span></code>. A
+script <code class="docutils literal"><span class="pre">xxx.py</span></code> using an MPI integrator is run
+with <code class="docutils literal"><span class="pre">mpirun</span></code>: e.g.,</p>
+<div class="highlight-python"><div class="highlight"><pre>mpirun -np 4 -output-filename xxx.out python xxx.py
+</pre></div>
+</div>
+<p>runs on 4 processors. Setting <code class="docutils literal"><span class="pre">mpi=False</span></code> (default) does
+not support multiple processors. The MPI processor
+rank can be obtained from the <code class="docutils literal"><span class="pre">mpi_rank</span></code>
+attribute of the integrator.</p>
+</li>
+<li><strong>pdf</strong> (<em>function</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
+fit parameters to use in place of the normal PDF associated
+with the least-squares fit used to create the integrator.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>All other keyword arguments are passed on to a <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>
+integrator; see the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> documentation for further
+information.</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1147,6 +1382,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
+<li><a class="reference internal" href="#classes-for-bayesian-integrals">Classes for Bayesian Integrals</a></li>
 <li><a class="reference internal" href="#other-classes">Other Classes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
@@ -1154,8 +1390,8 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="case-pendulum.html"
-                        title="previous chapter">Case Study: Pendulum</a></p>
+  <p class="topless"><a href="case-outliers.html"
+                        title="previous chapter">Case Study: Outliers and Bayesian Integrals</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -1183,7 +1419,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="case-pendulum.html" title="Case Study: Pendulum"
+          <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0 documentation</a> &raquo;</li> 
       </ul>

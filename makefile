@@ -18,8 +18,6 @@ PYTHONVERSION = python`python -c 'import platform; print(platform.python_version
 install :
 	$(PIP) install . --user
 
-# $(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
-
 install-sys :
 	$(PIP) install .
 
@@ -28,8 +26,11 @@ install-sys :
 uninstall :			# mostly works (may leave some empty directories)
 	- $(PIP) uninstall lsqfit
 
-# - cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
+try:
+	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
 
+untry:
+	- cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
 
 doc-html:
 	rm -rf doc/html; sphinx-build -b html doc/source doc/html

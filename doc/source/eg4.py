@@ -17,7 +17,7 @@ import lsqfit
 import numpy as np
 import gvar as gv
 import tee
-        
+
 def f_exact(x):                     # exact f(x)
     return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(100))
 
@@ -26,12 +26,12 @@ def f(x,p):                         # function used to fit x,y data
     E = p['E']                      # array of E[i]s
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
-def make_data():                    # make x,y fit data
-    x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
-    cr = gv.gvar(0.0,0.01)
-    c = [gv.gvar(cr(),cr.sdev) for n in range(100)]
+def make_data(N=100, eps=0.01):                    # make x,y fit data
+    x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])[4:]
+    cr = gv.gvar(0.0,eps)
+    c = [gv.gvar(cr(),cr.sdev) for n in range(N)]
     x_xmax = x/max(x)
-    noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
+    noise = 1+ sum(c[n]*x_xmax**n for n in range(N))
     y = f_exact(x)*noise            # noisy y[i]s
     return x,y
 
@@ -39,7 +39,7 @@ def make_prior(nexp):               # make priors for fit parameters
     prior = dict()         # Gaussian prior -- dictionary-like
     prior['a'] = [gv.gvar(0.5,0.5) for i in range(nexp)]
     de = [gv.gvar(0.9,0.01) for i in range(nexp)]
-    de[0] = gv.gvar(1,0.5)     
+    de[0] = gv.gvar(1,0.5)
     prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
     return prior
 
@@ -47,7 +47,7 @@ def main():
     gv.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
     x,y = make_data()               # make fit data
     p0 = None                       # make larger fits go faster (opt.)
-    for nexp in range(3,8):
+    for nexp in range(3,5):
         print '************************************* nexp =',nexp
         prior = make_prior(nexp)
         fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
@@ -79,15 +79,15 @@ def main():
         # print (E[1]/E[0]).partialsdev(fit.prior['E'])
         # print (E[1]/E[0]).partialsdev(fit.prior['a'])
         # print (E[1]/E[0]).partialsdev(y)
-        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
+        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}
-        
+
         sys.stdout = tee.tee(sys_stdout, open("eg4b.out","w"))
         print fit.fmt_values(outputs)
         print fit.fmt_errorbudget(outputs,inputs)
         sys.stdout = sys_stdout
-    
+
     if DO_SIMULATIONS:
         # fit simulations
         sys.stdout = tee.tee(sys_stdout, open("eg4d.out","w"))
@@ -111,7 +111,7 @@ def main():
             sim_results = [sE[0], sE[1], sa[0], sa[1]]
             exact_results = [E[0], E[1], a[0], a[1]]
             chi2 = gv.chi2(sim_results, exact_results, svdcut=1e-8)
-            print '\nParameter chi2/dof [dof] = %.2f' % (chi2/gv.chi2.dof), '[%d]' % gv.chi2.dof, '  Q = %.1f' % gv.chi2.Q
+            print '\nParameter chi2/dof [dof] = %.2f' % (chi2/chi2.dof), '[%d]' % chi2.dof, '  Q = %.1f' % chi2.Q
             print
         sys.stdout = sys_stdout
 
@@ -129,13 +129,13 @@ def main():
         a = fit.p['a']
         print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
         print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
-        print "prior['a'] =",fit.prior['a'][0]
+        # print "prior['a'] =",fit.prior['a'][0]
         sys.stdout = sys_stdout
         print
-    
+
     if DO_PLOT:
-        import pylab as pp   
-        from gvar import mean,sdev     
+        import pylab as pp
+        from gvar import mean,sdev
         fity = f(x,fit.pmean)
         ratio = y/fity
         pp.xlim(0,21)

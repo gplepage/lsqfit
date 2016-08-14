@@ -289,11 +289,24 @@ Functions
 
 .. autofunction:: lsqfit.gammaQ
 
-.. autofunction:: lsqfit.add_parameter_distribution
+.. autofunction:: gvar.add_parameter_distribution
 
-.. autofunction:: lsqfit.del_parameter_distribution
+.. autofunction:: gvar.del_parameter_distribution
 
-.. autofunction:: lsqfit.add_parameter_parentheses
+.. autofunction:: gvar.add_parameter_parentheses
+
+Classes for Bayesian Integrals
+-------------------------------
+
+.. autoclass:: lsqfit.BayesPDF(fit, svdcut=1e-15)
+
+   .. automethod:: __call__(p)
+
+   .. automethod:: logpdf(p)
+
+.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, svdcut=1e-15)
+
+   .. automethod:: __call__(f=None, mpi=False, pdf=None, **kargs)
 
 Other Classes
 ---------------

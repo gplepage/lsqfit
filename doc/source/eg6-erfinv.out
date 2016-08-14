@@ -1,0 +1,12 @@
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
+
+Parameters:
+  erfinv(50a-1)   -0.42 (68)     [  0.00 (71) ]  
+-----------------------------------------------
+          50a-1   -0.44 (64)     [  0.00 (80) ]  
+
+Settings:
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 9/0.0)
+
+a = 0.011(13)

@@ -10,10 +10,11 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
    overview.rst
    case-extrapolation.rst
    case-pendulum.rst
+   case-outliers.rst
    lsqfit.rst
 
 Indices and tables

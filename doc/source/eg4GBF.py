@@ -26,7 +26,7 @@ def f(x,p):                         # function used to fit x,y data
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
 
 def make_data():                    # make x,y fit data
-    x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])
+    x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])[4:]
     cr = gd.gvar(0.0,0.01)
     c = [gd.gvar(cr(),cr.sdev) for n in range(100)]
     x_xmax = x/max(x)
@@ -35,10 +35,10 @@ def make_data():                    # make x,y fit data
     return x,y
 
 def make_prior(nexp):               # make priors for fit parameters
-    prior = lsqfit.GPrior()         # Gaussian prior -- dictionary-like
+    prior = lsqfit.BufferDict()         # Gaussian prior -- dictionary-like
     prior['a'] = [gd.gvar(0.5,0.5) for i in range(nexp)]
     de = [gd.gvar(0.9,0.01) for i in range(nexp)]
-    de[0] = gd.gvar(1,0.5)     
+    de[0] = gd.gvar(1,0.5)
     prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
     return prior
 
@@ -68,15 +68,15 @@ def main():
         print (E[1]/E[0]).partialsdev(fit.prior['E'])
         print (E[1]/E[0]).partialsdev(fit.prior['a'])
         print (E[1]/E[0]).partialsdev(y)
-        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
+        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':fit.prior['E'],'a':fit.prior['a'],'y':y}
-        
+
         sys.stdout = tee.tee(sys_stdout, open("eg4GBFb.out","w"))
         print fit.fmt_values(outputs)
         print fit.fmt_errorbudget(outputs,inputs)
         sys.stdout = sys_stdout
-        
+
     if DO_EMPBAYES:
         def fitargs(z,nexp=nexp,prior=prior,f=f,data=(x,y),p0=p0):
             z = gd.exp(z)
@@ -94,10 +94,10 @@ def main():
         print "prior['a'] =",fit.prior['a'][0]
         sys.stdout = sys_stdout
         print
-    
+
     if DO_PLOT:
-        import pylab as pp   
-        from gvar import mean,sdev     
+        import pylab as pp
+        from gvar import mean,sdev
         fity = f(x,fit.pmean)
         ratio = y/fity
         pp.xlim(0,21)

@@ -1,6 +1,6 @@
 """
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-15 G. Peter Lepage.
+Copyright (c) 2011-16 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -65,8 +65,8 @@ setup(name='lsqfit',
     package_dir=package_dir,
     package_data=package_data,
     ext_modules= cythonize(ext_modules),
-    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=6.0'],   # for pip (distutils ignores)
-    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=6.0)'],  # for distutils
+    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=7.3'],   # for pip (distutils ignores)
+    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=7.3)'],  # for distutils
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',

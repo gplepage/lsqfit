@@ -1,4 +1,4 @@
-# Copyright (c) 2012 G. Peter Lepage.
+# Copyright (c) 2012-2016 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@ run:
 	- diff -w -I svdcut err-budget.out err-budget.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
 	- diff -w -I svdcut pendulum.out pendulum.tmp
+	$(PYTHON) bayes.py > bayes.tmp
+	- diff -w -B -I svdcut bayes.out bayes.tmp
 
 time:
 	time $(MAKE) _time
@@ -36,6 +38,7 @@ _time:
 	$(PYTHON) p-corr.py > /dev/null
 	$(PYTHON) err-budget.py > /dev/null
 	$(PYTHON) pendulum.py > /dev/null
+	# $(PYTHON) bayes.py > /dev/null
 
 update-all:
 	$(PYTHON) simple.py > simple.out
@@ -44,6 +47,7 @@ update-all:
 	$(PYTHON) p-corr.py > p-corr.out
 	$(PYTHON) err-budget.py > err-budget.out
 	$(PYTHON) pendulum.py > pendulum.out
+	$(PYTHON) bayes.py > bayes.out
 
 clean:
 	rm -f *.pyc *.tmp *.p *.prof
