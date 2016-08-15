@@ -35,7 +35,9 @@ The following (complete) code illustrates basic usage of :mod:`lsqfit`::
        'data1' : np.array([0.1, 1.0]),
        'data2' : np.array([0.1, 0.5])
        }
-   prior = dict(a=gv.gvar(0.5, 0.5), b=gv.gvar(0.5, 0.5))
+   prior = {}
+   prior['a'] = gv.gvar(0.5, 0.5)
+   prior['b'] = gv.gvar(0.5, 0.5))
 
    def fcn(x, p):             # fit function of x and parameters p
       ans = {}
@@ -114,7 +116,8 @@ prior rather than ``y``::
        'data1' : np.array([0.1, 1.0]),
        'data2' : np.array([0.1, 0.5])
        }
-   prior = dict(a=gv.gvar(0.5, 0.5))
+   prior = {}
+   prior['a'] = gv.gvar(0.5, 0.5)
    prior['b'] = prior['a'] * gv.gvar(2.0, 0.5)
 
    def fcn(x, p):             # fit function of x and parameters p[k]
@@ -187,10 +190,12 @@ There are several things worth noting from this example:
      ``gv.gvar(...)``. Some other distributions become available if argument
      ``extend=True`` is included in the call to |nonlinear_fit|.  The
      distribution for parameter ``a``, for example, can then be switched to a
-     log-normal distribution by replacing ``a=gv.gvar(0.5, 0.5)`` with
-     ``loga=gv.log(gv.gvar(0.5,0.5))`` in the prior. This change would
+     log-normal distribution by replacing ``prior['a']=gv.gvar(0.5, 0.5)`` with
+     ``prior['log(a)']=gv.log(gv.gvar(0.5,0.5))`` in the code. This change would
      be desirable if we knew *a priori* that parameter ``a`` is positive
-     since this is guaranteed with a log-normal distribution.
+     since this is guaranteed with a log-normal distribution. Only the
+     prior need be changed (in particular, the fit function ``fcn(x,p)``
+     need *not* be changed).
 
 What follows is a tutorial that demonstrates in greater detail how to
 use these modules in some standard variations on the data fitting problem.
