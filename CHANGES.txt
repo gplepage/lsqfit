@@ -1,3 +1,7 @@
+Version 8.0.1 2016-08-15
+========================
+Tiny (but somewhat conspicuouis) fix in documentation.
+
 Version 8.0 2016-08-14
 =======================
 The most significant addition is class BayesIntegrator for doing Bayesian
