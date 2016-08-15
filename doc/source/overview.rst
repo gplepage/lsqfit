@@ -190,8 +190,12 @@ There are several things worth noting from this example:
      ``gv.gvar(...)``. Some other distributions become available if argument
      ``extend=True`` is included in the call to |nonlinear_fit|.  The
      distribution for parameter ``a``, for example, can then be switched to a
-     log-normal distribution by replacing ``prior['a']=gv.gvar(0.5, 0.5)`` with
-     ``prior['log(a)']=gv.log(gv.gvar(0.5,0.5))`` in the code. This change would
+     log-normal distribution by replacing ``prior['a']=gv.gvar(0.5, 0.5)``
+     with::
+
+        prior['log(a)'] = gv.log(gv.gvar(0.5,0.5))
+
+     in the code. This change would
      be desirable if we knew *a priori* that parameter ``a`` is positive
      since this is guaranteed with a log-normal distribution. Only the
      prior need be changed (in particular, the fit function ``fcn(x,p)``

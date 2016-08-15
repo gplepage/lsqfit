@@ -73,38 +73,40 @@ complicated multi-dimensional Gaussian distributions. The power of the
 that distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> from standard fitting packages, as
 demonstrated below.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
-<span class="kn">import</span> <span class="nn">lsqfit</span>
+<div class="highlight-python"><div class="highlight"><pre>import numpy as np
+import gvar as gv
+import lsqfit
 
-<span class="n">y</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># data for the dependent variable</span>
-    <span class="s">&#39;data1&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
-    <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]]),</span>
-    <span class="s">&#39;b/a&#39;</span>   <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-    <span class="p">}</span>
-<span class="n">x</span> <span class="o">=</span> <span class="p">{</span>                      <span class="c"># independent variable</span>
-    <span class="s">&#39;data1&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
-    <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-    <span class="p">}</span>
-<span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+y = {                      # data for the dependent variable
+    &#39;data1&#39; : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
+    &#39;data2&#39; : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]]),
+    &#39;b/a&#39;   : gv.gvar(2.0, 0.5)
+    }
+x = {                      # independent variable
+    &#39;data1&#39; : np.array([0.1, 1.0]),
+    &#39;data2&#39; : np.array([0.1, 0.5])
+    }
+prior = {}
+prior[&#39;a&#39;] = gv.gvar(0.5, 0.5)
+prior[&#39;b&#39;] = gv.gvar(0.5, 0.5))
 
-<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p</span>
-   <span class="n">ans</span> <span class="o">=</span> <span class="p">{}</span>
-   <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;data1&#39;</span><span class="p">,</span> <span class="s">&#39;data2&#39;</span><span class="p">]:</span>
-      <span class="n">ans</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
-   <span class="n">ans</span><span class="p">[</span><span class="s">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
-   <span class="k">return</span> <span class="n">ans</span>
+def fcn(x, p):             # fit function of x and parameters p
+   ans = {}
+   for k in [&#39;data1&#39;, &#39;data2&#39;]:
+      ans[k] = gv.exp(p[&#39;a&#39;] + x[k] * p[&#39;b&#39;])
+   ans[&#39;b/a&#39;] = p[&#39;b&#39;] / p[&#39;a&#39;]
+   return ans
 
-<span class="c"># do the fit</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>     <span class="c"># print standard summary of fit</span>
+# do the fit
+fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn, debug=True)
+print(fit.format(maxline=True))     # print standard summary of fit
 
-<span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                  <span class="c"># best-fit values for parameters</span>
-<span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
-<span class="n">outputs</span><span class="p">[</span><span class="s">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
-<span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>              <span class="c"># tabulate outputs</span>
-<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="c"># print error budget for outputs</span>
+p = fit.p                  # best-fit values for parameters
+outputs = dict(a=p[&#39;a&#39;], b=p[&#39;b&#39;])
+outputs[&#39;b/a&#39;] = p[&#39;b&#39;]/p[&#39;a&#39;]
+inputs = dict(y=y, prior=prior)
+print(gv.fmt_values(outputs))              # tabulate outputs
+print(gv.fmt_errorbudget(outputs, inputs)) # print error budget for outputs
 </pre></div>
 </div>
 <p>This code fits the function <code class="docutils literal"><span class="pre">f(x,a,b)=</span> <span class="pre">exp(a+b*x)</span></code> (see <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>)
@@ -192,7 +194,8 @@ prior rather than <code class="docutils literal"><span class="pre">y</span></cod
     <span class="s">&#39;data1&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
     <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
     <span class="p">}</span>
-<span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 <span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>             <span class="c"># fit function of x and parameters p[k]</span>
@@ -213,13 +216,14 @@ there is less input data. We can often move information from the <code class="do
 the prior or back since both are forms of input information.</p>
 <p>There are several things worth noting from this example:</p>
 <blockquote>
-<div><ul class="simple">
-<li>The input data (<code class="docutils literal"><span class="pre">y</span></code>) is expressed in terms of Gaussian random
+<div><ul>
+<li><p class="first">The input data (<code class="docutils literal"><span class="pre">y</span></code>) is expressed in terms of Gaussian random
 variables &#8212; quantities with means and a covariance matrix. These are
 represented by objects of type <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> in the code; module
 <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code> has a variety of tools for creating and manipulating
-Gaussian random variables (also see below).</li>
-<li>The input data is stored in a dictionary (<code class="docutils literal"><span class="pre">y</span></code>) whose values can
+Gaussian random variables (also see below).</p>
+</li>
+<li><p class="first">The input data is stored in a dictionary (<code class="docutils literal"><span class="pre">y</span></code>) whose values can
 be <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. The use of a dictionary allows for
 far greater flexibility than, say, an array. The fit function
 (<code class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>) has to return a dictionary with the same layout as
@@ -227,42 +231,55 @@ that of <code class="docutils literal"><span class="pre">y</span></code> (that i
 each key has the same shape as the corresponding value in <code class="docutils literal"><span class="pre">y</span></code>).
 <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> allows <code class="docutils literal"><span class="pre">y</span></code> to be an array instead of a dictionary,
 which might be preferable for very simple fits (but usually not
-otherwise).</li>
-<li>The independent data (<code class="docutils literal"><span class="pre">x</span></code>) can be anything; it is simply passed
+otherwise).</p>
+</li>
+<li><p class="first">The independent data (<code class="docutils literal"><span class="pre">x</span></code>) can be anything; it is simply passed
 through the fit code to the fit function <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>. It can
 also be omitted altogether, in which case the fit function
-depends only upon the parameters: <code class="docutils literal"><span class="pre">fcn(p)</span></code>.</li>
-<li>The fit parameters (<code class="docutils literal"><span class="pre">p</span></code> in <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>) are also stored in a
+depends only upon the parameters: <code class="docutils literal"><span class="pre">fcn(p)</span></code>.</p>
+</li>
+<li><p class="first">The fit parameters (<code class="docutils literal"><span class="pre">p</span></code> in <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>) are also stored in a
 dictionary whose values are <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Again this
 allows for great flexibility. The layout of the parameter dictionary
 is copied from that of the prior (<code class="docutils literal"><span class="pre">prior</span></code>). Again <code class="docutils literal"><span class="pre">p</span></code> can be a
 single array instead of a dictionary, if that simplifies the code
-(which is usually not the case).</li>
-<li>The best-fit values of the fit parameters (<code class="docutils literal"><span class="pre">fit.p[k]</span></code>) are also
+(which is usually not the case).</p>
+</li>
+<li><p class="first">The best-fit values of the fit parameters (<code class="docutils literal"><span class="pre">fit.p[k]</span></code>) are also
 <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s and these capture statistical correlations between different
 parameters that are indicated by the fit. These output parameters can
 be combined in arithmetic expressions, using standard operators and
 standard functions, to obtain derived quantities. These operations
-take account of and track statistical correlations.</li>
-<li>Function <code class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></code> is a useful tool for assessing
+take account of and track statistical correlations.</p>
+</li>
+<li><p class="first">Function <code class="xref py py-func docutils literal"><span class="pre">gvar.fmt_errorbudget()</span></code> is a useful tool for assessing
 the origins (<code class="docutils literal"><span class="pre">inputs</span></code>) of the statistical errors obtained in various
 final results (<code class="docutils literal"><span class="pre">outputs</span></code>). It is particularly useful for analyzing
 the impact of the <em>a priori</em> uncertainties encoded in the prior
-(<code class="docutils literal"><span class="pre">prior</span></code>).</li>
-<li>Parameter <code class="docutils literal"><span class="pre">debug=True</span></code> is set in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. This is a good idea,
+(<code class="docutils literal"><span class="pre">prior</span></code>).</p>
+</li>
+<li><p class="first">Parameter <code class="docutils literal"><span class="pre">debug=True</span></code> is set in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. This is a good idea,
 particularly in the eary stages of a project, because it causes the
 code to check for various common errors and give more intelligible
 error messages than would otherwise arise. This parameter can be dropped
-once code development is over.</li>
-<li>The priors for the fit parameters specify Gaussian distributions,
+once code development is over.</p>
+</li>
+<li><p class="first">The priors for the fit parameters specify Gaussian distributions,
 characterized by the means and standard deviations given
 <code class="docutils literal"><span class="pre">gv.gvar(...)</span></code>. Some other distributions become available if argument
 <code class="docutils literal"><span class="pre">extend=True</span></code> is included in the call to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.  The
 distribution for parameter <code class="docutils literal"><span class="pre">a</span></code>, for example, can then be switched to a
-log-normal distribution by replacing <code class="docutils literal"><span class="pre">a=gv.gvar(0.5,</span> <span class="pre">0.5)</span></code> with
-<code class="docutils literal"><span class="pre">loga=gv.log(gv.gvar(0.5,0.5))</span></code> in the prior. This change would
+log-normal distribution by replacing <code class="docutils literal"><span class="pre">prior['a']=gv.gvar(0.5,</span> <span class="pre">0.5)</span></code>
+with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prior</span><span class="p">[</span><span class="s">&#39;log(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>in the code. This change would
 be desirable if we knew <em>a priori</em> that parameter <code class="docutils literal"><span class="pre">a</span></code> is positive
-since this is guaranteed with a log-normal distribution.</li>
+since this is guaranteed with a log-normal distribution. Only the
+prior need be changed (in particular, the fit function <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>
+need <em>not</em> be changed).</p>
+</li>
 </ul>
 </div></blockquote>
 <p>What follows is a tutorial that demonstrates in greater detail how to
