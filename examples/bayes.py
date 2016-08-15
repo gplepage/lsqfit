@@ -10,11 +10,16 @@ try:
     gv.ranseed([1])
 
     PLOT = False
+    RESULTS = False
 
     # least-squares fit
     x = np.array([0.1, 1.2, 1.9, 3.5])
     y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
-    prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
+    prior = gv.BufferDict()
+    prior['a'] = '0(5)'
+    prior['s'] = '0(2)'
+    prior['g'] = '2(2)'
+    prior = gv.gvar(prior)
     def f(x, p):
         return p['a'] + p['s'] * x ** p['g']
     fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=f, debug=True)
@@ -33,7 +38,8 @@ try:
     expval = lsqfit.BayesIntegrator(fit, limit=20.)
     warmup = expval(neval=2000, nitn=10)
     results = expval(g, neval=2000, nitn=10, adapt=False)
-    print(results.summary())
+    if RESULTS:
+        print(results.summary())
     stats = hist.analyze(results['histogram']).stats
     print('s*g from Bayesian integral:')
     print(stats)
