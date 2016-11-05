@@ -1315,7 +1315,7 @@ class BayesPDF(_gvar.PDF):
 
 try:
     import vegas
-    class BayesIntegrator(_gvar.PDFIntegrator):
+    class BayesIntegrator(vegas.PDFIntegrator):
         """ :mod:`vegas` integrator for Bayesian fit integrals.
 
         Args:
@@ -1356,7 +1356,7 @@ try:
         associated with :class:`nonlinear_fit` ``fit``: the probability
         density function is the exponential of the ``chi**2`` function
         (times ``-1/2``), for data and priors, used in the fit.
-        For linear fits, it is equivalent to ``gvar.PDFIntegrator(fit.p)``,
+        For linear fits, it is equivalent to ``vegas.PDFIntegrator(fit.p)``,
         since the ``chi**2`` function is  quadratic in the fit parameters;
         but they can differ significantly for nonlinear fits.
 
@@ -1539,11 +1539,11 @@ try:
                 )
             self.norm = results[0]
             if self._fp.shape is None:
-                return _gvar._RAvgDictWrapper(self._fp, results)
+                return vegas._RAvgDictWrapper(self._fp, results)
             elif self._fp.shape != ():
-                return _gvar._RAvgArrayWrapper(self._fp.shape, results)
+                return vegas._RAvgArrayWrapper(self._fp.shape, results)
             else:
-                return _gvar._RAvgWrapper(results)
+                return vegas._RAvgWrapper(results)
 except ImportError:
     pass
 

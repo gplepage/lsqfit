@@ -21,7 +21,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '8.0.1'
+LSQFIT_VERSION = '8.0.2'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -65,8 +65,8 @@ setup(name='lsqfit',
     package_dir=package_dir,
     package_data=package_data,
     ext_modules= cythonize(ext_modules),
-    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=7.3'],   # for pip (distutils ignores)
-    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=7.3)'],  # for distutils
+    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=8.0'],   # for pip (distutils ignores)
+    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=8.0)'],  # for distutils
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',

@@ -60,7 +60,7 @@ tests test-all:
 time:
 	$(MAKE) -C examples PYTHON=$(PYTHON) time
 
-run-examples:
+run run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
 register-pypi:
@@ -73,6 +73,10 @@ upload-git:
 	make doc-all
 	git commit -a -m "prep for upload"
 	git push origin master
+
+test-download:
+	-$(PIP) uninstall lsqfit
+	$(PIP) install lsqfit --no-cache-dir
 
 clean:
 	rm -f -r build

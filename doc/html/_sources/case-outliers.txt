@@ -230,7 +230,7 @@ Here class ``ModifiedPDF`` implements the modified PDF.  As usual the PDF for
 the parameters (in ``__call__``) is the product of a PDF for the data times a
 PDF for the priors. The data PDF is more complicated than usual, however, as
 it consists of two Gaussian distributions: one, ``data_pdf1``, with the
-norminal data errors, and the other, ``data_pdf2``, with errors that are ten
+nominal data errors, and the other, ``data_pdf2``, with errors that are ten
 times larger. Parameter ``w`` determines the relative weight of each data PDF.
 
 The Bayesian integrals are estimated using :class:`lsqfit.BayesIntegrator`

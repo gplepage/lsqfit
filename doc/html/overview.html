@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 8.0.1 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 8.0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.0.1',
+        VERSION:     '8.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.0.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.0.2 documentation" href="index.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -73,40 +73,40 @@ complicated multi-dimensional Gaussian distributions. The power of the
 that distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> from standard fitting packages, as
 demonstrated below.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>:</p>
-<div class="highlight-python"><div class="highlight"><pre>import numpy as np
-import gvar as gv
-import lsqfit
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
 
-y = {                      # data for the dependent variable
-    &#39;data1&#39; : gv.gvar([1.376, 2.010], [[ 0.0047, 0.01], [ 0.01, 0.056]]),
-    &#39;data2&#39; : gv.gvar([1.329, 1.582], [[ 0.0047, 0.0067], [0.0067, 0.0136]]),
-    &#39;b/a&#39;   : gv.gvar(2.0, 0.5)
-    }
-x = {                      # independent variable
-    &#39;data1&#39; : np.array([0.1, 1.0]),
-    &#39;data2&#39; : np.array([0.1, 0.5])
-    }
-prior = {}
-prior[&#39;a&#39;] = gv.gvar(0.5, 0.5)
-prior[&#39;b&#39;] = gv.gvar(0.5, 0.5))
+<span class="n">y</span> <span class="o">=</span> <span class="p">{</span>                                 <span class="c"># data for the dependent variable</span>
+   <span class="s">&#39;data1&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.376</span><span class="p">,</span> <span class="mf">2.010</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.056</span><span class="p">]]),</span>
+   <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.329</span><span class="p">,</span> <span class="mf">1.582</span><span class="p">],</span> <span class="p">[[</span> <span class="mf">0.0047</span><span class="p">,</span> <span class="mf">0.0067</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0067</span><span class="p">,</span> <span class="mf">0.0136</span><span class="p">]]),</span>
+   <span class="s">&#39;b/a&#39;</span>   <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+   <span class="p">}</span>
+<span class="n">x</span> <span class="o">=</span> <span class="p">{</span>                                 <span class="c"># independent variable</span>
+   <span class="s">&#39;data1&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]),</span>
+   <span class="s">&#39;data2&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
+   <span class="p">}</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">prior</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
 
-def fcn(x, p):             # fit function of x and parameters p
-   ans = {}
-   for k in [&#39;data1&#39;, &#39;data2&#39;]:
-      ans[k] = gv.exp(p[&#39;a&#39;] + x[k] * p[&#39;b&#39;])
-   ans[&#39;b/a&#39;] = p[&#39;b&#39;] / p[&#39;a&#39;]
-   return ans
+<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>                        <span class="c"># fit function of x and parameters p</span>
+  <span class="n">ans</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;data1&#39;</span><span class="p">,</span> <span class="s">&#39;data2&#39;</span><span class="p">]:</span>
+     <span class="n">ans</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
+  <span class="n">ans</span><span class="p">[</span><span class="s">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+  <span class="k">return</span> <span class="n">ans</span>
 
-# do the fit
-fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fcn, debug=True)
-print(fit.format(maxline=True))     # print standard summary of fit
+<span class="c"># do the fit</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>       <span class="c"># print standard summary of fit</span>
 
-p = fit.p                  # best-fit values for parameters
-outputs = dict(a=p[&#39;a&#39;], b=p[&#39;b&#39;])
-outputs[&#39;b/a&#39;] = p[&#39;b&#39;]/p[&#39;a&#39;]
-inputs = dict(y=y, prior=prior)
-print(gv.fmt_values(outputs))              # tabulate outputs
-print(gv.fmt_errorbudget(outputs, inputs)) # print error budget for outputs
+<span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                             <span class="c"># best-fit values for parameters</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">])</span>
+<span class="n">outputs</span><span class="p">[</span><span class="s">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;b&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>              <span class="c"># tabulate outputs</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="c"># print error budget for outputs</span>
 </pre></div>
 </div>
 <p>This code fits the function <code class="docutils literal"><span class="pre">f(x,a,b)=</span> <span class="pre">exp(a+b*x)</span></code> (see <code class="docutils literal"><span class="pre">fcn(x,p)</span></code>)
@@ -1023,7 +1023,7 @@ distribution relevant to the fits is well approximated by a Gaussian
 distribution. The key distribution in a fit is the probability density function
 for
 the parameters, which is proportional to <code class="docutils literal"><span class="pre">exp(-chi**2/2)</span></code> in
-a full Bayesian analysis. (Here the the <code class="docutils literal"><span class="pre">chi**2</span></code> function
+a full Bayesian analysis. (Here the <code class="docutils literal"><span class="pre">chi**2</span></code> function
 is treated as a function of the parameters
 and has contributions from both the data and the priors.) Bayesian estimates
 for the fit parameters are the
@@ -2529,7 +2529,7 @@ succinct way of writing this line is:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

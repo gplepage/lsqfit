@@ -1,3 +1,7 @@
+Version 8.0.2  2016-11-05
+==========================
+Tiny change to keep lsqfit compatible with gvar v8.0 and later.
+
 Version 8.0.1 2016-08-15
 ========================
 Tiny (but somewhat conspicuouis) fix in documentation.

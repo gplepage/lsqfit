@@ -18,6 +18,9 @@ import gvar
 import numpy
 import sys
 
+from numpy cimport npy_intp as INTP_TYPE
+# index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
+
 # gsl interface
 cdef extern from "gsl/gsl_sf.h":
     struct gsl_sf_result_struct:
@@ -63,7 +66,7 @@ cdef inline double gsl_matrix_get(gsl_matrix *m, int i, int j):
 cdef inline void gsl_matrix_set(gsl_matrix *m, int i, int j, double x):
     m.data[i*m.tda+j] = x
 
-# cdef gsl_matrix* array2matrix(numpy.ndarray[numpy.double_t,ndim=2] a):
+# cdef gsl_matrix* array2matrix(numpy.ndarray[numpy.float_t,ndim=2] a):
 #     cdef Py_ssize_t i1,i2
 #     cdef gsl_matrix* m
 #     cdef Py_ssize_t n1 = a.shape[0]
@@ -74,11 +77,11 @@ cdef inline void gsl_matrix_set(gsl_matrix *m, int i, int j, double x):
 #             gsl_matrix_set(m,i1,i2,a[i1,i2])
 #     return m
 
-cdef numpy.ndarray[numpy.double_t, ndim=2] matrix2array(gsl_matrix* m):
+cdef numpy.ndarray[numpy.float_t, ndim=2] matrix2array(gsl_matrix* m):
     """ copies contents of m into numeric array """
     cdef Py_ssize_t i1, i2
-    cdef numpy.ndarray[numpy.double_t, ndim=2] ans
-    ans = numpy.zeros((m.size1, m.size2), numpy.double)
+    cdef numpy.ndarray[numpy.float_t, ndim=2] ans
+    ans = numpy.zeros((m.size1, m.size2), numpy.float_)
     for i1 in range(m.size1):
         for i2 in range(m.size2):
             ans[i1, i2] = gsl_matrix_get(m, i1, i2)
@@ -100,7 +103,7 @@ cdef inline void gsl_vector_set(gsl_vector *v, int i, double x):
 cdef inline double gsl_vector_get(gsl_vector *v, int i):
     return v.data[i*v.stride]
 
-cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t, ndim=1] a):
+cdef  gsl_vector* array2vector(numpy.ndarray[numpy.float_t, ndim=1] a):
     cdef Py_ssize_t i
     cdef Py_ssize_t n = a.shape[0]
     cdef gsl_vector* v = gsl_vector_alloc(n)
@@ -108,11 +111,11 @@ cdef  gsl_vector* array2vector(numpy.ndarray[numpy.double_t, ndim=1] a):
         gsl_vector_set(v, i, a[i])
     return v
 
-cdef numpy.ndarray[numpy.double_t, ndim=1] vector2array(gsl_vector* v):
+cdef numpy.ndarray[numpy.float_t, ndim=1] vector2array(gsl_vector* v):
     """ copies contents of v into numeric array """
     cdef Py_ssize_t i
-    cdef numpy.ndarray[numpy.double_t, ndim=1] ans
-    ans = numpy.zeros(v.size, numpy.double)
+    cdef numpy.ndarray[numpy.float_t, ndim=1] ans
+    ans = numpy.zeros(v.size, numpy.float_)
     for i in range(v.size):
         ans[i] = gsl_vector_get(v, i)
     return ans
@@ -314,7 +317,7 @@ class multifit(object):
     :class:`multifit` is a wrapper for the ``multifit`` *GSL* routine.
     """
 
-    def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, int n,
+    def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, int n,
                  object f, object tol=0.0001,
                  object reltol=None, object abstol=None,
                  unsigned int maxit=1000, object alg='lmsder',
@@ -327,7 +330,7 @@ class multifit(object):
         cdef gsl_matrix *covar
         cdef gsl_matrix *J
         cdef gsl_vector* x0v
-        # cdef numpy.ndarray[numpy.double_t, ndim=1] ans
+        # cdef numpy.ndarray[numpy.float_t, ndim=1] ans
         super(multifit, self).__init__()
         # hold onto inputs
         # reltol and abstol are deprecated but still work (for legacy code)
@@ -544,7 +547,7 @@ class multiminex(object):
 
     :class:`multiminex` is a wrapper for the ``multimin`` *GSL* routine.
     """
-    def __init__(self, numpy.ndarray[numpy.double_t, ndim=1] x0, object f, #):
+    def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):
                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
                  analyzer=None):
         global _p_fs, _pyerr
@@ -555,7 +558,7 @@ class multiminex(object):
         cdef int i, status, rval
         cdef Py_ssize_t it
         cdef gsl_multimin_fminimizer* s
-        cdef numpy.ndarray[numpy.double_t, ndim=1] x
+        cdef numpy.ndarray[numpy.float_t, ndim=1] x
         cdef double fx
 
         super(multiminex, self).__init__()
@@ -650,7 +653,7 @@ def gammaQ(double a, double x):
     return res.val
 #
 
-def dot(numpy.ndarray[numpy.double_t, ndim=2] w not None, x):
+def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
     """ Compute dot product of matrix ``w`` with vector ``x``.
 
     This is a substitute for ``numpy.dot`` that is highly optimized for the
@@ -683,15 +686,15 @@ def _build_chiv_chivw(fdata, fcn, prior):
     if prior is not None:
         def chiv(p, fd=fdata):
             cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
-            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
+            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
             delta = numpy.concatenate((fcn(p), p)) - fd.mean
             if delta.dtype == object:
                 ans = numpy.zeros(nw, object)
             else:
-                ans = numpy.zeros(nw, float)
+                ans = numpy.zeros(nw, numpy.float_)
             iw, wgts = fd.inv_wgts[0]
             i1 = 0
             i2 = len(iw)
@@ -703,21 +706,21 @@ def _build_chiv_chivw(fdata, fcn, prior):
                 ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
-            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
-            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
+            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
+            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts, wj
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt2
             cdef numpy.ndarray ans, delta
             delta = numpy.concatenate((fcn(p), p)) - fd.mean
             if delta.dtype == object:
                 ans = numpy.zeros(niw, object)
             else:
-                ans = numpy.zeros(niw, float)
+                ans = numpy.zeros(niw, numpy.float_)
             iw, wgts = fd.inv_wgts[0]
             if len(iw) > 0:
                 ans[iw] = wgts ** 2 * delta[iw]
             for iw, wgt in fd.inv_wgts[1:]:
-                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), float)
+                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), numpy.float_)
                 for wj in wgt:
                     wgt2 += numpy.outer(wj, wj)
                 ans[iw] = dot(wgt2, delta[iw])
@@ -726,15 +729,15 @@ def _build_chiv_chivw(fdata, fcn, prior):
     else:
         def chiv(p, fd=fdata):
             cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
-            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
+            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
+            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
             cdef numpy.ndarray ans, delta
             delta = fcn(p) - fd.mean
             if delta.dtype == object:
                 ans = numpy.zeros(nw, object)
             else:
-                ans = numpy.zeros(nw, float)
+                ans = numpy.zeros(nw, numpy.float_)
             iw, wgts = fd.inv_wgts[0]
             i1 = 0
             i2 = len(iw)
@@ -746,21 +749,21 @@ def _build_chiv_chivw(fdata, fcn, prior):
                 ans[i1:i2] = dot(wgt, delta[iw])
             return ans
         def chivw(p, fd=fdata):
-            cdef numpy.ndarray[numpy.intp_t, ndim=1] iw
-            cdef numpy.ndarray[numpy.double_t, ndim=1] wgts, wj
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt
-            cdef numpy.ndarray[numpy.double_t, ndim=2] wgt2
+            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
+            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts, wj
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
+            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt2
             cdef numpy.ndarray ans, delta
             delta = fcn(p) - fd.mean
             if delta.dtype == object:
                 ans = numpy.zeros(niw, object)
             else:
-                ans = numpy.zeros(niw, float)
+                ans = numpy.zeros(niw, numpy.float_)
             iw, wgts = fd.inv_wgts[0]
             if len(iw) > 0:
                 ans[iw] = wgts ** 2 * delta[iw]
             for iw, wgt in fd.inv_wgts[1:]:
-                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), float)
+                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), numpy.float_)
                 for wj in wgt:
                     wgt2 += numpy.outer(wj, wj)
                 ans[iw] = dot(wgt2, delta[iw])
