@@ -10,6 +10,6 @@ Settings:
   svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 10/0.0)
 
 s*g from Bayesian integral:
-   mean = 0.4694(81)   sdev = 0.5802(90)   skew = 0.464(43)   ex_kurt = 0.30(11)
-   median = 0.4295(73)   plus = 0.566(19)   minus = 0.516(13)
+   mean = 0.4761(97)   sdev = 0.6010(71)   skew = 0.525(36)   ex_kurt = 0.219(89)
+   median = 0.4233(99)   plus = 0.608(14)   minus = 0.5294(77)
 s*g from fit: 0.78(66)

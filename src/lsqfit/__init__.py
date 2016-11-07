@@ -1460,21 +1460,20 @@ try:
         (tens or hundreds of thousands) for more difficult high-dimension
         integrals.
         """
-        def __init__(self, fit, limit=1e15, scale=1.0, pdf=None, svdcut=1e-15):
+        def __init__(self, fit, limit=1e15, scale=1.0, pdf=None, svdcut=1e-15, **kargs):
             super(BayesIntegrator, self).__init__(
                 BayesPDF(fit, svdcut=svdcut),
-                scale=scale, svdcut=svdcut, limit=limit,
+                scale=scale, svdcut=svdcut, limit=limit, **kargs
                 )
             self.pdf_function = pdf
 
-        def __call__(self, f=None, mpi=False, pdf=None, **kargs):
+        def __call__(self, f=None, pdf=None, **kargs):
             """ Estimate expectation value of function ``f(p)``.
 
             Uses multi-dimensional integration modules :mod:`vegas`  to
             estimate the expectation value of ``f(p)`` with  respect to
             the probability density function  associated with
-            :class:`nonlinear_fit` ``fit``. Setting ``mpi=True``
-            configures vegas for multi-processor running using MPI.
+            :class:`nonlinear_fit` ``fit``.
 
             Args:
                 f (function): Function ``f(p)`` to integrate. Integral is
@@ -1482,18 +1481,6 @@ try:
                     to the distribution. The function can return a number,
                     an array of numbers, or a dictionary whose values are
                     numbers or arrays of numbers.
-
-                mpi (bool): If ``True`` configure for use with multiple processors
-                    and MPI. This option requires module :mod:`mpi4py`. A
-                    script ``xxx.py`` using an MPI integrator is run
-                    with ``mpirun``: e.g., ::
-
-                        mpirun -np 4 -output-filename xxx.out python xxx.py
-
-                    runs on 4 processors. Setting ``mpi=False`` (default) does
-                    not support multiple processors. The MPI processor
-                    rank can be obtained from the ``mpi_rank``
-                    attribute of the integrator.
 
                 pdf (function): Probability density function ``pdf(p)`` of the
                     fit parameters to use in place of the normal PDF associated
@@ -1535,7 +1522,7 @@ try:
                     self._buffer[1:] = numpy.asarray(fp).flat[:]
                 return self._buffer * pdf
             results = super(BayesIntegrator, self).__call__(
-                _fstd=_fstd, nopdf=True, mpi=mpi, **kargs
+                _fstd=_fstd, nopdf=True, **kargs
                 )
             self.norm = results[0]
             if self._fp.shape is None:

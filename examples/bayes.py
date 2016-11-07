@@ -7,7 +7,7 @@ import numpy as np
 try:
     import vegas
 
-    gv.ranseed([1])
+    gv.ranseed(1)
 
     PLOT = False
     RESULTS = False
