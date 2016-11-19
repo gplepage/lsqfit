@@ -1,3 +1,8 @@
+Version 8.1 - 2016-11-06??
+==========================
+MPI support for BayesIntegrator is now automatic --- ie, no need to set
+parameter mpi=True. Older code should still work, however.
+
 Version 8.0.2  2016-11-05
 ==========================
 Tiny change to keep lsqfit compatible with gvar v8.0 and later.

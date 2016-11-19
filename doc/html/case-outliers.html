@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Case Study: Outliers and Bayesian Integrals &mdash; lsqfit 8.0.2 documentation</title>
+    <title>Case Study: Outliers and Bayesian Integrals &mdash; lsqfit 8.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.0.2',
+        VERSION:     '8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.0.2 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.1 documentation" href="index.html" />
     <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
     <link rel="prev" title="Case Study: Pendulum" href="case-pendulum.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -133,7 +133,7 @@ Parameters:
               1   0.261 (42)     [  0.0 (5.0) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 </pre></div>
 </div>
 <p>The problem is evident if we plot the data:</p>
@@ -319,33 +319,33 @@ Parameters:
            2w-1    3e-16 +- 0.8      [  0.00 (80) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
 
 itn   integral        average         chi2/dof        Q
 -------------------------------------------------------
-  1   6.874(81)e-11   6.874(81)e-11       0.00     1.00
-  2   6.669(89)e-11   6.771(60)e-11       1.40     0.18
-  3   6.843(97)e-11   6.795(52)e-11       1.41     0.11
-  4   6.820(82)e-11   6.801(44)e-11       1.17     0.24
-  5   6.574(87)e-11   6.756(39)e-11       1.19     0.20
-  6   6.779(81)e-11   6.760(35)e-11       1.18     0.19
-  7   6.821(88)e-11   6.769(33)e-11       1.07     0.33
-  8   6.848(92)e-11   6.779(31)e-11       1.14     0.21
-  9   6.857(82)e-11   6.787(29)e-11       1.06     0.35
- 10   6.856(84)e-11   6.794(27)e-11       0.98     0.54
- 11   6.737(80)e-11   6.789(26)e-11       0.94     0.65
- 12   6.591(88)e-11   6.772(25)e-11       0.94     0.64
- 13   6.866(95)e-11   6.780(24)e-11       0.91     0.74
- 14   6.95(14)e-11    6.792(24)e-11       0.99     0.50
- 15   6.706(91)e-11   6.786(24)e-11       0.99     0.51
+  1   6.82(11)e-11    6.82(11)e-11        0.00     1.00
+  2   7.04(11)e-11    6.930(78)e-11       1.10     0.36
+  3   6.775(76)e-11   6.878(58)e-11       0.97     0.49
+  4   6.651(97)e-11   6.821(50)e-11       1.04     0.40
+  5   6.74(10)e-11    6.806(45)e-11       0.95     0.55
+  6   6.740(79)e-11   6.795(39)e-11       0.88     0.69
+  7   6.763(87)e-11   6.790(36)e-11       0.93     0.63
+  8   7.085(92)e-11   6.827(34)e-11       0.96     0.56
+  9   6.873(68)e-11   6.832(31)e-11       0.95     0.59
+ 10   6.853(75)e-11   6.834(29)e-11       0.95     0.61
+ 11   6.79(11)e-11    6.830(28)e-11       0.89     0.76
+ 12   6.833(94)e-11   6.830(27)e-11       0.92     0.71
+ 13   6.806(81)e-11   6.828(26)e-11       0.93     0.67
+ 14   6.67(10)e-11    6.817(25)e-11       0.94     0.66
+ 15   6.725(93)e-11   6.811(24)e-11       0.90     0.77
 
-c = [0.28(14) 0.623(57)]
-corr(c) = [[ 1.         -0.89732867]
-           [-0.89732867  1.        ]] 
+c = [0.28(14) 0.622(58)]
+corr(c) = [[ 1.         -0.90056919]
+           [-0.90056919  1.        ]] 
 
 w = 0.26(11) 
 
-logBF = -23.4135(35)
+logBF = -23.4099(35)
 </pre></div>
 </div>
 <p>The table after the fit shows results for the normalization of the
@@ -378,15 +378,15 @@ so that <code class="docutils literal"><span class="pre">2w-1</span></code> (and
 <p>The Bayesian integral then has 21 parameters, rather than the 3 parameters
 before. The code still takes only 5&#8211;6&nbsp;secs to run (on a 2014 laptop).</p>
 <p>The final results are quite similar to the other model:</p>
-<div class="highlight-python"><div class="highlight"><pre>c = [0.28(16) 0.621(67)]
-corr(c) = [[ 1.         -0.92077026]
-           [-0.92077026  1.        ]] 
+<div class="highlight-python"><div class="highlight"><pre>c = [0.30(16) 0.609(68)]
+corr(c) = [[ 1.         -0.90919302]
+           [-0.90919302  1.        ]] 
 
-w = [0.38(27) 0.68(23) 0.40(29) 0.37(27) 0.65(24) 0.50(27) 0.51(29) 0.40(27)
- 0.42(27) 0.36(26) 0.38(27) 0.37(25) 0.40(28) 0.37(26) 0.39(26) 0.37(25)
- 0.45(29) 0.66(22) 0.36(26)] 
+w = [0.37(25) 0.67(23) 0.40(27) 0.35(27) 0.65(24) 0.49(30) 0.50(29) 0.35(25)
+ 0.44(27) 0.41(27) 0.37(26) 0.37(26) 0.41(27) 0.37(25) 0.38(26) 0.38(25)
+ 0.49(29) 0.65(25) 0.38(27)] 
 
-logBF = -24.189(66)
+logBF = -24.164(63)
 </pre></div>
 </div>
 <p>Note that the logarithm of the Bayes Factor <code class="docutils literal"><span class="pre">logBF</span></code> is slighly lower for
@@ -462,7 +462,7 @@ example, the intercept would be 0.35(17).</p>
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

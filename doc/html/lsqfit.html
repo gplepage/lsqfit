@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 8.0.2 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 8.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.0.2',
+        VERSION:     '8.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.0.2 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 8.1 documentation" href="index.html" />
     <link rel="prev" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -46,7 +46,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1155,8 +1155,7 @@ integrals.</p>
 <p>Uses multi-dimensional integration modules <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>  to
 estimate the expectation value of <code class="docutils literal"><span class="pre">f(p)</span></code> with  respect to
 the probability density function  associated with
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal"><span class="pre">fit</span></code>. Setting <code class="docutils literal"><span class="pre">mpi=True</span></code>
-configures vegas for multi-processor running using MPI.</p>
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal"><span class="pre">fit</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1167,18 +1166,6 @@ the expectation value of the function with respect
 to the distribution. The function can return a number,
 an array of numbers, or a dictionary whose values are
 numbers or arrays of numbers.</li>
-<li><strong>mpi</strong> (<em>bool</em>) &#8211; <p>If <code class="docutils literal"><span class="pre">True</span></code> configure for use with multiple processors
-and MPI. This option requires module <code class="xref py py-mod docutils literal"><span class="pre">mpi4py</span></code>. A
-script <code class="docutils literal"><span class="pre">xxx.py</span></code> using an MPI integrator is run
-with <code class="docutils literal"><span class="pre">mpirun</span></code>: e.g.,</p>
-<div class="highlight-python"><div class="highlight"><pre>mpirun -np 4 -output-filename xxx.out python xxx.py
-</pre></div>
-</div>
-<p>runs on 4 processors. Setting <code class="docutils literal"><span class="pre">mpi=False</span></code> (default) does
-not support multiple processors. The MPI processor
-rank can be obtained from the <code class="docutils literal"><span class="pre">mpi_rank</span></code>
-attribute of the integrator.</p>
-</li>
 <li><strong>pdf</strong> (<em>function</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
 fit parameters to use in place of the normal PDF associated
 with the least-squares fit used to create the integrator.</li>
@@ -1421,7 +1408,7 @@ routines are from the Gnu Scientific Library (<em>GSL</em>).</p>
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

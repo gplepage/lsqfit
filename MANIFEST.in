@@ -7,6 +7,8 @@ graft examples
 graft tests
 exclude examples/*.tmp
 exclude examples/*.pyc
+exclude examples/*.1.0
+exclude examples/*.1.1
 exclude tests/*.pyc
 recursive-exclude tests/__pycache__ *
 recursive-exclude doc/source/_build *

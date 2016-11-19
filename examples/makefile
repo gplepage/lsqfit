@@ -54,5 +54,5 @@ update-all:
 	$(PYTHON) bayes.py > bayes.out
 
 clean:
-	rm -f *.pyc *.tmp *.p *.prof
+	rm -f *.pyc *.tmp *.p *.prof *.1.0 *.1.1
 
