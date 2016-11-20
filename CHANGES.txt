@@ -1,7 +1,9 @@
-Version 8.1 - 2016-11-06??
-==========================
+Version 8.1 - 2016-11-20
+========================
 MPI support for BayesIntegrator is now automatic --- ie, no need to set
-parameter mpi=True. Older code should still work, however.
+parameter mpi=True (the parameter has no effect). Older code should still
+work, however. See the documentation for vegas 3.2 for information about
+using multiple processors.
 
 Version 8.0.2  2016-11-05
 ==========================

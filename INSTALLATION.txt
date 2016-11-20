@@ -36,7 +36,12 @@ To install:
 		(eg, something goes wrong), install it yourself (eg, pip install gvar).
 		(https://github.com/gplepage/gvar or on PyPI)
 
-	e. pip is used for installing (and uninstalling) gvar. pip usually
+	e. (Optional) The vegas python package is optional for most lsqfit
+		applications, but is needed in order to use vegas.BayesIntegrator.
+		Use version 3.2 or greater. vegas does adaptive multi-dimensional
+		integration.
+
+	f. pip is used for installing (and uninstalling) gvar. pip usually
 	    comes with python. pip can be used to install numpy and cython as
 	    well.
 	    (https://pypi.python.org/pypi/pip)
