@@ -353,7 +353,7 @@ class multifit(object):
         self.alg = alg
         self.x0 = x0
         self.n = n
-        self.error = None
+        self.error =  None
         p = len(x0)
         covar = gsl_matrix_alloc(p, p)
         if alg=="lmsder" or alg is None:

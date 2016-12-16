@@ -1,3 +1,9 @@
+Version 8.???
+=================
+
+- Slight enhancement of lsqfit.nonlinear_fit.format(...): setting
+  pstyle=None suppresses the parameter list. Otherwise unchanged.
+
 Version 8.1 - 2016-11-20
 ========================
 MPI support for BayesIntegrator is now automatic --- ie, no need to set

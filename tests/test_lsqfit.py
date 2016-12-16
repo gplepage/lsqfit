@@ -256,6 +256,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '',
             'Parameters:',
             '              p    0.90 (44)     [  0.0 (2.0) ]  ',
+            '',
+            'Settings:',
+            '  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)',
             ''])
         self.assertEqual(out, fit.format(pstyle='m'))
         self.assert_gvclose(fit.p['p'], wavg([y['a'],y['b'],prior['p']]))

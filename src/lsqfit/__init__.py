@@ -240,7 +240,10 @@ class nonlinear_fit(object):
         and a check for roundoff errors. (Default is ``False``.)
     :type debug: boolean
     :param fitterargs: Dictionary of arguments passed on to
-        :class:`lsqfit.multifit`, which does the fitting.
+        :class:`lsqfit.multifit`, which does the fitting. The most
+        relevant of these parameters are the tolerance
+        ``tol`` and the maximum number of iterations ``maxit``, both of
+        which affect when the fit algorithm stops.
     """
     def __init__(
         self, data, fcn, prior=None, p0=None, extend=False,
@@ -462,7 +465,8 @@ class nonlinear_fit(object):
         :param pstyle: Style used for parameter list. Supported values are
             'vv' for very verbose, 'v' for verbose, and 'm' for minimal.
             When 'm' is set, only parameters whose values differ from their
-            prior values are listed.
+            prior values are listed. Setting ``pstyle=None`` implies
+            no parameters are listed.
         :type pstyle: 'vv', 'v', or 'm'
         :returns: String containing detailed information about fit.
         """
@@ -474,14 +478,15 @@ class nonlinear_fit(object):
             maxline = sys.maxsize
         if maxline is False or maxline is None:
             maxline = -1
-        if pstyle[:2] == 'vv':
-            pstyle = 'vv'
-        elif pstyle[:1] == 'v':
-            pstyle = 'v'
-        elif pstyle[:1] == 'm':
-            pstyle = 'm'
-        else:
-            raise ValueError("Invalid pstyle: "+str(pstyle))
+        if pstyle is not None:
+            if pstyle[:2] == 'vv':
+                pstyle = 'vv'
+            elif pstyle[:1] == 'v':
+                pstyle = 'v'
+            elif pstyle[:1] == 'm':
+                pstyle = 'm'
+            else:
+                raise ValueError("Invalid pstyle: "+str(pstyle))
 
         def collect(v1, v2, style='v', stride=1, extend=False):
             """ Collect data from v1 and v2 into table.
@@ -615,31 +620,33 @@ class nonlinear_fit(object):
             return table
 
         # create parameter table
-        table = table + '\nParameters:\n'
-        prior = self.prior
-        if prior is None:
-            if self.p0.shape is None:
-                prior = _gvar.BufferDict(
-                    self.p0, buf=self.p0.flatten() + _gvar.gvar(0,float('inf')))
-            else:
-                prior = self.p0 + _gvar.gvar(0,float('inf'))
-        data = collect(self.palt, prior, style=pstyle, stride=1, extend=self.extend)
-        w1, w2, w3 = collect.width
-        fst = "%%%ds%s%%%ds%s[ %%%ds ]" % (
-            max(w1, 15), 3 * ' ',
-            max(w2, 10), int(max(w2,10)/2) * ' ', max(w3,10)
-            )
-        for di, stars in zip(data, collect.stars):
-            if di is None:
-                # marker for boundary between true fit parameters and derived parameters
-                ndashes = (
-                    max(w1, 15) + 3 + max(w2, 10) + int(max(w2, 10)/2)
-                    + 4 + max(w3, 10)
-                    )
-                table += ndashes * '-' + '\n'
-                continue
-            table += (fst % tuple(di)) + stars + '\n'
+        if pstyle is not None:
+            table = table + '\nParameters:\n'
+            prior = self.prior
+            if prior is None:
+                if self.p0.shape is None:
+                    prior = _gvar.BufferDict(
+                        self.p0, buf=self.p0.flatten() + _gvar.gvar(0,float('inf')))
+                else:
+                    prior = self.p0 + _gvar.gvar(0,float('inf'))
+            data = collect(self.palt, prior, style=pstyle, stride=1, extend=self.extend)
+            w1, w2, w3 = collect.width
+            fst = "%%%ds%s%%%ds%s[ %%%ds ]" % (
+                max(w1, 15), 3 * ' ',
+                max(w2, 10), int(max(w2,10)/2) * ' ', max(w3,10)
+                )
+            for di, stars in zip(data, collect.stars):
+                if di is None:
+                    # marker for boundary between true fit parameters and derived parameters
+                    ndashes = (
+                        max(w1, 15) + 3 + max(w2, 10) + int(max(w2, 10)/2)
+                        + 4 + max(w3, 10)
+                        )
+                    table += ndashes * '-' + '\n'
+                    continue
+                table += (fst % tuple(di)) + stars + '\n'
 
+        # settings
         settings = "\nSettings:\n  svdcut/n = {svdcut}/{svdn}".format(
             svdcut=self.svdcut, svdn=self.svdn
             )
@@ -658,9 +665,7 @@ class nonlinear_fit(object):
         settings +="    (itns/time = {itns}/{time:.1f})\n".format(
             itns=self.nit, time=self.time
             )
-        if pstyle == 'm':
-            settings = ""
-        elif self.alg != "lmsder":
+        if self.alg != "lmsder":
             settings += "  alg = %s\n" % self.alg
 
         if maxline <= 0 or self.data is None:
