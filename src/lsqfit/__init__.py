@@ -100,9 +100,8 @@ import gvar as _gvar
 from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
-from ._utilities import multifit
-from ._utilities import multiminex, gammaQ
-from ._utilities2 import gsl_multifit
+from ._gsl import multiminex, gammaQ
+from ._gsl import gsl_multifit, gsl_v1_multifit
 from ._version import version as __version__
 
 
@@ -573,20 +572,23 @@ class nonlinear_fit(object):
                 # numpy array
                 v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
+                    # convert array(GVar) to GVar
+                    v1k = v1[k] if hasattr(v1[k], 'fmt') else v1[k].flat[0]
+                    v2k = v2[k] if hasattr(v2[k], 'fmt') else v2[k].flat[0]
                     if ct%stride != 0:
                         ct += 1
                         continue
                     kfmt = (len(k) * "%d,")[:-1] % k
                     if style in ['v','m']:
-                        v1fmt = v1[k].fmt(sep=' ')
-                        v2fmt = v2[k].fmt(sep=' ')
+                        v1fmt = v1k.fmt(sep=' ')
+                        v2fmt = v2k.fmt(sep=' ')
                     else:
-                        v1fmt = v1[k].fmt(-1)
-                        v2fmt = v2[k].fmt(-1)
+                        v1fmt = v1k.fmt(-1)
+                        v2fmt = v2k.fmt(-1)
                     if style == 'm' and v1fmt == v2fmt:
                         ct += 1
                         continue
-                    stars.append(nstar(v1[k], v2[k])) ###
+                    stars.append(nstar(v1k, v2k)) ###
                     ans.append([kfmt, v1fmt, v2fmt])
                     w = [len(ai) for ai in ans[-1]]
                     for i, (wo, wn) in enumerate(zip(width, w)):
@@ -652,21 +654,13 @@ class nonlinear_fit(object):
         settings = "\nSettings:\n  svdcut/n = {svdcut}/{svdn}".format(
             svdcut=self.svdcut, svdn=self.svdn
             )
-        if len(self.tol) == 2:
-            settings += "    reltol/abstol = {:.2g}/{:.2g}".format(*self.tol)
-            if self.stopping_criterion == 1:
-                settings += '*'
-        else:
-            s_c = self.stopping_criterion
-            if s_c > 2 or s_c < 0:
-                s_c = 0
-            fmtstr = [
-                "    tol = ({:.2g},{:.2g},{:.2g})",
-                "    tol = ({:.2g}*,{:.2g},{:.2g})",
-                "    tol = ({:.2g},{:.2g}*,{:.2g})",
-                "    tol = ({:.2g},{:.2g},{:.2g}*)",
-                ][s_c]
-            settings += fmtstr.format(*self.tol)
+        fmtstr = [
+            "    tol = ({:.2g},{:.2g},{:.2g})",
+            "    tol = ({:.2g}*,{:.2g},{:.2g})",
+            "    tol = ({:.2g},{:.2g}*,{:.2g})",
+            "    tol = ({:.2g},{:.2g},{:.2g}*)",
+            ][self.stopping_criterion]
+        settings += fmtstr.format(*self.tol)
         if self.stopping_criterion == 0:
             settings +="    (itns/time = {itns}*/{time:.1f})\n".format(
                 itns=self.nit, time=self.time

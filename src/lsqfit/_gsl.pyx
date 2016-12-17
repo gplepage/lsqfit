@@ -1,4 +1,4 @@
-# Copyright (c) 2011-13 G. Peter Lepage.
+# Copyright (c) 2016-17 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -139,32 +139,12 @@ cdef extern from "gsl/gsl_multifit_nlinear.h":
 
     ctypedef struct gsl_multifit_nlinear_trs:
         pass
-        # const char *name
-        # void * (*alloc) (const void * params, const size_t n, const size_t p)
-        # int (*init) (const void * vtrust_state, void * vstate)
-        # int (*preloop) (const void * vtrust_state, void * vstate)
-        # int (*step) (const void * vtrust_state, const double delta,
-        #            gsl_vector * dx, void * vstate)
-        # int (*preduction) (const void * vtrust_state, const gsl_vector * dx,
-        #                  double * pred, void * vstate)
-        # void (*free) (void * vstate)
 
     ctypedef struct gsl_multifit_nlinear_scale:
         pass
-        # const char *name
-        # int (*init) (const gsl_matrix * J, gsl_vector * diag)
-        # int (*update) (const gsl_matrix * J, gsl_vector * diag)
 
     ctypedef struct gsl_multifit_nlinear_solver:
         pass
-        # const char *name
-        # void * (*alloc) (const size_t n, const size_t p)
-        # int (*init) (const void * vtrust_state, void * vstate)
-        # int (*presolve) (const double mu, const void * vtrust_state, void * vstate)
-        # int (*solve) (const gsl_vector * f, gsl_vector * x,
-        #             const void * vtrust_state, void * vstate)
-        # int (*rcond) (double * rcond, void * vstate)
-        # void (*free) (void * vstate)
 
     ctypedef struct gsl_multifit_nlinear_parameters:
         const gsl_multifit_nlinear_trs *trs        # trust region subproblem method
@@ -216,72 +196,88 @@ cdef extern from "gsl/gsl_multifit_nlinear.h":
 
     double gsl_multifit_nlinear_avratio (const gsl_multifit_nlinear_workspace * w)
 
-    int gsl_multifit_nlinear_driver (const size_t maxiter,
-                                 const double xtol,
-                                 const double gtol,
-                                 const double ftol,
-                                 void (*callback)(const size_t iter, void *params,
-                                                  const gsl_multifit_nlinear_workspace *w),
-                                 void *callback_params,
-                                 int *info,
-                                 gsl_multifit_nlinear_workspace * w)
+    int gsl_multifit_nlinear_driver (
+        const size_t maxiter,
+        const double xtol,
+        const double gtol,
+        const double ftol,
+        void (*callback)(
+            const size_t iter, void *params,
+            const gsl_multifit_nlinear_workspace *w
+            ),
+        void *callback_params,
+        int *info,
+        gsl_multifit_nlinear_workspace * w
+        )
 
-    gsl_matrix * gsl_multifit_nlinear_jac (const gsl_multifit_nlinear_workspace * w)
+    gsl_matrix * gsl_multifit_nlinear_jac (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    const char * gsl_multifit_nlinear_name (const gsl_multifit_nlinear_workspace * w)
+    const char * gsl_multifit_nlinear_name (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    gsl_vector * gsl_multifit_nlinear_position (const gsl_multifit_nlinear_workspace * w)
+    gsl_vector * gsl_multifit_nlinear_position (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    gsl_vector * gsl_multifit_nlinear_residual (const gsl_multifit_nlinear_workspace * w)
+    gsl_vector * gsl_multifit_nlinear_residual (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    size_t gsl_multifit_nlinear_niter (const gsl_multifit_nlinear_workspace * w)
+    size_t gsl_multifit_nlinear_niter (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    int gsl_multifit_nlinear_rcond (double *rcond, const gsl_multifit_nlinear_workspace * w)
+    int gsl_multifit_nlinear_rcond (
+        double *rcond, const gsl_multifit_nlinear_workspace * w
+        )
 
-    const char * gsl_multifit_nlinear_trs_name (const gsl_multifit_nlinear_workspace * w)
+    const char * gsl_multifit_nlinear_trs_name (
+        const gsl_multifit_nlinear_workspace * w
+        )
 
-    int gsl_multifit_nlinear_eval_f(gsl_multifit_nlinear_fdf *fdf,
-                                    const gsl_vector *x,
-                                    const gsl_vector *swts,
-                                    gsl_vector *y)
+    int gsl_multifit_nlinear_eval_f(
+        gsl_multifit_nlinear_fdf *fdf,
+        const gsl_vector *x,
+        const gsl_vector *swts,
+        gsl_vector *y
+        )
 
-    int gsl_multifit_nlinear_eval_df(const gsl_vector *x,
-                                     const gsl_vector *f,
-                                     const gsl_vector *swts,
-                                     const double h,
-                                     const gsl_multifit_nlinear_fdtype fdtype,
-                                     gsl_multifit_nlinear_fdf *fdf,
-                                     gsl_matrix *df, gsl_vector *work)
+    int gsl_multifit_nlinear_eval_df(
+        const gsl_vector *x,
+        const gsl_vector *f,
+        const gsl_vector *swts,
+        const double h,
+        const gsl_multifit_nlinear_fdtype fdtype,
+        gsl_multifit_nlinear_fdf *fdf,
+        gsl_matrix *df, gsl_vector *work
+        )
 
-    int gsl_multifit_nlinear_eval_fvv(const double h,
-                                  const gsl_vector *x,
-                                  const gsl_vector *v,
-                                  const gsl_vector *f,
-                                  const gsl_matrix *J,
-                                  const gsl_vector *swts,
-                                  gsl_multifit_nlinear_fdf *fdf,
-                                  gsl_vector *yvv, gsl_vector *work)
+    int gsl_multifit_nlinear_eval_fvv(
+        const double h,
+        const gsl_vector *x,
+        const gsl_vector *v,
+        const gsl_vector *f,
+        const gsl_matrix *J,
+        const gsl_vector *swts,
+        gsl_multifit_nlinear_fdf *fdf,
+        gsl_vector *yvv, gsl_vector *work
+        )
 
     # /* covar.c */
-    int gsl_multifit_nlinear_covar (const gsl_matrix * J, const double epsrel,
-                                gsl_matrix * covar)
+    int gsl_multifit_nlinear_covar (
+        const gsl_matrix * J, const double epsrel,
+        gsl_matrix * covar
+        )
 
     # /* convergence.c */
-    int gsl_multifit_nlinear_test (const double xtol, const double gtol,
-                               const double ftol, int *info,
-                               const gsl_multifit_nlinear_workspace * w)
-
-    # /* fdjac.c */
-    # int gsl_multifit_nlinear_df(const double h, const gsl_multifit_nlinear_fdtype fdtype,
-    #                         const gsl_vector *x, const gsl_vector *wts,
-    #                         gsl_multifit_nlinear_fdf *fdf,
-    #                         const gsl_vector *f, gsl_matrix *J, gsl_vector *work)
-
-    # /* fdfvv.c */
-    # int gsl_multifit_nlinear_fdfvv(const double h, const gsl_vector *x, const gsl_vector *v,
-    #                            const gsl_vector *f, const gsl_matrix *J,
-    #                            const gsl_vector *swts, gsl_multifit_nlinear_fdf *fdf,
-    #                            gsl_vector *fvv, gsl_vector *work)
+    int gsl_multifit_nlinear_test (
+        const double xtol, const double gtol,
+        const double ftol, int *info,
+        const gsl_multifit_nlinear_workspace * w
+        )
 
     # /* top-level algorithms */
     const gsl_multifit_nlinear_type * gsl_multifit_nlinear_trust
@@ -303,44 +299,49 @@ cdef extern from "gsl/gsl_multifit_nlinear.h":
     const gsl_multifit_nlinear_solver * gsl_multifit_nlinear_solver_qr
     const gsl_multifit_nlinear_solver * gsl_multifit_nlinear_solver_svd
 
+cdef extern from "gsl/gsl_multifit_nlin.h":
 
+    ctypedef struct gsl_multifit_function_fdf:
+        int (* f) (gsl_vector * x, void *params, gsl_vector *f)
+        int (* df) (gsl_vector *x, void *params, gsl_matrix *df)
+        int (* fdf) (gsl_vector *x, void *params, gsl_vector *f, gsl_matrix *df)
+        int n  # number of functions
+        int p  # number of independent variables
+        void * params
+    ctypedef struct gsl_multifit_fdfsolver:
+        gsl_multifit_function_fdf* fdf
+        gsl_vector *x
+        gsl_vector *f
+        gsl_vector *dx
+        void *state
+    ctypedef struct gsl_multifit_fdfsolver_type:
+        int dummy
+    gsl_multifit_fdfsolver* gsl_multifit_fdfsolver_alloc(
+        gsl_multifit_fdfsolver_type * T, int n, int p
+        )
 
-# cdef extern from "gsl/gsl_multifit_nlin.h":
+    int gsl_multifit_fdfsolver_set(
+        gsl_multifit_fdfsolver *s,
+        gsl_multifit_function_fdf *fdf,
+        gsl_vector *x
+        )
+    int gsl_multifit_fdfsolver_iterate(gsl_multifit_fdfsolver *s)
 
-#     ctypedef struct gsl_multifit_function_fdf:
-#         int (* f) (gsl_vector * x, void *params, gsl_vector *f)
-#         int (* df) (gsl_vector *x, void *params, gsl_matrix *df)
-#         int (* fdf) (gsl_vector *x, void *params, gsl_vector *f, gsl_matrix *df)
-#         int n  # number of functions
-#         int p  # number of independent variables
-#         void * params
-#     ctypedef struct gsl_multifit_fdfsolver:
-#         gsl_multifit_function_fdf* fdf
-#         gsl_vector *x
-#         gsl_vector *f
-#         gsl_vector *dx
-#         void *state
-#     ctypedef struct gsl_multifit_fdfsolver_type:
-#         int dummy
-#     gsl_multifit_fdfsolver* gsl_multifit_fdfsolver_alloc(
-#         gsl_multifit_fdfsolver_type * T, int n, int p
-#         )
+    void gsl_multifit_fdfsolver_free(gsl_multifit_fdfsolver *s)
+    int gsl_multifit_test_delta(gsl_vector * dx, gsl_vector * x,
+                                double epsabs, double epsrel)
+    int gsl_multifit_test_gradient (gsl_vector * g, double epsabs)
+    int gsl_multifit_covar (gsl_matrix * J, double epsrel, gsl_matrix * covar)
+    int gsl_multifit_fdfsolver_jac(gsl_multifit_fdfsolver * s, gsl_matrix * J)
+    int gsl_multifit_fdfsolver_test (
+        gsl_multifit_fdfsolver * s,
+        double xtol, double gtol, double ftol, int *info
+        )
 
-#     int gsl_multifit_fdfsolver_set(
-#         gsl_multifit_fdfsolver *s,
-#         gsl_multifit_function_fdf *fdf,
-#         gsl_vector *x
-#         )
-#     int gsl_multifit_fdfsolver_iterate(gsl_multifit_fdfsolver *s)
-
-#     void gsl_multifit_fdfsolver_free(gsl_multifit_fdfsolver *s)
-#     int gsl_multifit_test_delta(gsl_vector * dx, gsl_vector * x,
-#                                 double epsabs, double epsrel)
-#     int gsl_multifit_test_gradient (gsl_vector * g, double epsabs)
-#     int gsl_multifit_covar (gsl_matrix * J, double epsrel, gsl_matrix * covar)
-
-#     gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmder
-#     gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmsder
+    # solvers
+    gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmder
+    gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmsder
+    gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmniel
 
 cdef extern from "gsl/gsl_multimin.h":
     ctypedef struct gsl_multimin_function:
@@ -390,17 +391,6 @@ cdef extern from "gsl/gsl_multimin.h":
     double gsl_multimin_fminimizer_size (gsl_multimin_fminimizer * s)
     double gsl_multimin_fminimizer_minimum (gsl_multimin_fminimizer * s)
     int gsl_multimin_test_size(double size , double epsabs)
-
-# cdef extern from "_gsl_stub.h":
-#     char* GSL_VERSION
-#     int GSL_MAJOR_VERSION
-#     int gsl_major_version()  # fill in correct stuff when ready
-#     int gsl_multifit_fdfsolver_jac(gsl_multifit_fdfsolver * s, gsl_matrix * J)
-#     int gsl_multifit_fdfsolver_test (
-#         gsl_multifit_fdfsolver * s,
-#         double xtol, double gtol, double ftol, int *info
-#         )
-#     gsl_multifit_fdfsolver_type *gsl_multifit_fdfsolver_lmniel
 
 # multifit
 _valder = None          # ValDer workspace
@@ -502,48 +492,29 @@ class gsl_multifit(object):
 
     :class:`multifit` is a wrapper for the ``multifit`` *GSL* routine.
     """
-    def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, size_t n,
-                 object f, object tol=0.0001,
-                 object reltol=None, object abstol=None,
-                 unsigned int maxit=1000, object alg='lmsder',
-                 object analyzer=None):
+    def __init__(
+        self, numpy.ndarray[numpy.float_t, ndim=1] x0, size_t n,
+        object f,
+        object tol=(0.00001, 0.0, 0.0),
+        unsigned int maxit=1000,
+        object alg='lmsder',
+        object analyzer=None
+        ):
         global _valder, _p_f, _pyerr
         cdef gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust
         cdef gsl_multifit_nlinear_workspace *w
         cdef gsl_multifit_nlinear_fdf fdf
-        cdef gsl_multifit_nlinear_parameters fdf_params = gsl_multifit_nlinear_default_parameters()
+        cdef gsl_multifit_nlinear_parameters fdf_params = \
+            gsl_multifit_nlinear_default_parameters()
         cdef gsl_matrix *covar
         cdef gsl_matrix *J
-        cdef gsl_vector* x0v
+        cdef gsl_vector *x0v
         cdef size_t i, it, p
         cdef int status, info
 
-        # cdef gsl_multifit_fdfsolver_type *T
-        # cdef gsl_multifit_fdfsolver *s
-        # cdef int status, rval, criterion
-        # cdef Py_ssize_t i, it, p
-        # cdef gsl_matrix *covar
-        # cdef gsl_matrix *J
-        # cdef gsl_vector* x0v
-
-        # cdef numpy.ndarray[numpy.float_t, ndim=1] ans
         super(gsl_multifit, self).__init__()
-        # hold onto inputs
-        # reltol and abstol are deprecated but still work (for legacy code)
-        # if reltol is not None and abstol is not None:
-        #     tol = (reltol, abstol)
-        # elif reltol is not None:
-        #     tol = (reltol, 0.0)
-        # elif abstol is not None:
-        #     tol = (0.0001, abstol)
-        # elif type(tol) in [list, tuple]:
-        #     if len(tol) > 2 and GSL_MAJOR_VERSION < 2:
-        #         raise RuntimeError(
-        #             "Need GSL v2 for tol=(xtol,gtol,ftol); have GSL "
-        #             + str(GSL_VERSION)
-        #             )
-        # else:
-        #     tol = (tol, 0.0, 0.0)
+
+        # standardize tol
         if numpy.shape(tol) == ():
             tol = (tol, 0., 0.)
         elif numpy.shape(tol) == (1,):
@@ -551,7 +522,7 @@ class gsl_multifit(object):
         elif numpy.shape(tol) == (2,):
             tol = (tol[0], tol[1], 0.0)
         elif numpy.shape(tol) != (3,):
-            raise ValueError("tol must be number")
+            raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
         self.tol = tol
         self.maxit = maxit
         self.alg = alg
@@ -559,24 +530,12 @@ class gsl_multifit(object):
         self.n = n
         self.error =  None
         p = len(x0)
-        covar = gsl_matrix_alloc(p, p)
 
-        # if alg=="lmsder" or alg is None:
-        #     T = gsl_multifit_fdfsolver_lmsder
-        # elif alg=="lmder":
-        #     T = gsl_multifit_fdfsolver_lmder
-        # elif alg=="lmniel":
-        #     if GSL_MAJOR_VERSION < 2:
-        #         raise RuntimeError(
-        #             "Need GSL v2 for alg=lmniel; have GSL "
-        #             + str(GSL_VERSION)
-        #             )
-        #     T = gsl_multifit_fdfsolver_lmniel
-        # else:
-        #     raise ValueError("Unknown algorithm: "+alg)
+        # choose algorithms fdf_params
+        if alg == "":
+            pass
 
-        # cdef gsl_multifit_function_fdf gf
-
+        # set up fit function
         fdf.f = &_c_f
         fdf.df = &_c_df
         fdf.fvv = NULL
@@ -585,13 +544,17 @@ class gsl_multifit(object):
         fdf.params = NULL
         old_p_f = _p_f
         _p_f = f
-        _valder = gvar.valder(p*[0.0])  # workspace
 
+        # allocate parameter and fitter workspaces
+        _valder = gvar.valder(p * [0.0])
         w = gsl_multifit_nlinear_alloc (T, &fdf_params, n, p)
+
+        # initialize and run fit
         x0v = array2vector(x0)
         gsl_multifit_nlinear_init (x0v, &fdf, w)
         status = gsl_multifit_nlinear_driver(maxit, tol[0], tol[1], tol[2],
                                        NULL, NULL, &info, w)
+        # check for Python errors; record other errors
         if _pyerr is not None:
             tmp, _pyerr = _pyerr, None
             if hasattr(tmp[1],'with_traceback'):
@@ -600,67 +563,31 @@ class gsl_multifit(object):
                 raise tmp[0], tmp[1].args, tmp[2]   # python2
         elif status:
             self.error = (status, str(gsl_strerror(status)))
-            # criterion = 0
-        # if analyzer is not None:
-        #     gsl_multifit_fdfsolver_jac(s, J)
-        #     analyzer(vector2array(s.x), vector2array(s.f),
-        #             matrix2array(J))
-        # if len(tol) == 2:
-        #     rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
-        #     criterion = 1 if rval != GSL_CONTINUE else 0
-        # else:
-        #     rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
-        # if rval != GSL_CONTINUE:
-        #     break
 
+        # identify stopping criterion
+        if info >= 0 and info <= 3:
+            self.stopping_criterion = info
+        else:
+            self.stopping_criterion = 0
+
+        # calculate covariance matrix for fit output
         J = gsl_multifit_nlinear_jac(w)
+        covar = gsl_matrix_alloc(p, p)
         gsl_multifit_nlinear_covar (J, 0.0, covar)
 
-        # s = gsl_multifit_fdfsolver_alloc(T, n, p)
-        # x0v = array2vector(x0)
-        # gsl_multifit_fdfsolver_set(s, &gf, x0v)
-        # J = gsl_matrix_alloc(n, p)
-        # for it in range(1, maxit+1):
-        #     status = gsl_multifit_fdfsolver_iterate(s)
-        #     if _pyerr is not None:
-        #         tmp, _pyerr = _pyerr, None
-        #         if hasattr(tmp[1],'with_traceback'):
-        #             raise tmp[1].with_traceback(tmp[2]) # python3
-        #         else:
-        #             raise tmp[0], tmp[1].args, tmp[2]   # python2
-        #     elif status:
-        #         self.error = (status, str(gsl_strerror(status)))
-        #         criterion = 0
-        #         break
-        #     if analyzer is not None:
-        #         gsl_multifit_fdfsolver_jac(s, J)
-        #         analyzer(vector2array(s.x), vector2array(s.f),
-        #                 matrix2array(J))
-        #     if len(tol) == 2:
-        #         rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
-        #         criterion = 1 if rval != GSL_CONTINUE else 0
-        #     else:
-        #         rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
-        #     if rval != GSL_CONTINUE:
-        #         break
-
-        # gsl_multifit_fdfsolver_jac(s, J)
-        # gsl_multifit_covar(J, 0.0, covar)
-
+        # convert results to Python
         self.cov = matrix2array(covar)
-        self.x = vector2array(w.x)
-        self.f = vector2array(w.f)
-        self.J = matrix2array(J)
-        self.nit = w.niter
-        self.stopping_criterion = info
-        if info == 0:
+        self.x = vector2array(gsl_multifit_nlinear_position(w))
+        self.f = vector2array(gsl_multifit_nlinear_residual(w))
+        self.J = matrix2array(gsl_multifit_nlinear_jac(w))
+        self.nit = gsl_multifit_nlinear_niter(w)
+        # self.description = gsl_multifit_nlinear_trs_name(w)
+        if info == 0 and self.error is None:
             self.error = "gsl_multifit didn't converge in {} iterations".format(maxit)
-        # if it>=maxit and rval==GSL_CONTINUE:
-        #     self.error ="multifit didn't convernge in %d iterations" % maxit
-        # gsl_multifit_fdfsolver_free(s)
+
+        # deallocate work areas
         gsl_multifit_nlinear_free(w);
         gsl_matrix_free(covar)
-        # gsl_matrix_free(J)
         gsl_vector_free(x0v)
         _p_f = old_p_f
 
@@ -711,26 +638,204 @@ cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ):
         _pyerr = sys.exc_info()
         return GSL_EBADFUNC
 
-# cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ):
-#     global _p_f, _pyerr, _valder
-#     cdef gvar.GVar fi
-#     cdef gvar.svec f_i_d
-#     cdef numpy.ndarray[object, ndim=1] f
-#     try:
-#         f = _p_f(_valder+vector2array(vx))
-#         gsl_matrix_set_zero(mJ)
-#         assert len(f[0].cov) == mJ.size2, \
-#             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
-#         for i in range(mJ.size1):
-#             fi = f[i]
-#             fi_d = fi.d
-#             gsl_vector_set(vf, i, fi.v)
-#             for j in range(fi_d.size):
-#                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
-#         return GSL_SUCCESS
-#     except:
-#         _pyerr = sys.exc_info()
-#         return GSL_EBADFUNC
+cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ):
+    global _p_f, _pyerr, _valder
+    cdef gvar.GVar fi
+    cdef gvar.svec f_i_d
+    cdef numpy.ndarray[object, ndim=1] f
+    try:
+        f = _p_f(_valder+vector2array(vx))
+        gsl_matrix_set_zero(mJ)
+        assert len(f[0].cov) == mJ.size2, \
+            'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
+        for i in range(mJ.size1):
+            fi = f[i]
+            fi_d = fi.d
+            gsl_vector_set(vf, i, fi.v)
+            for j in range(fi_d.size):
+                gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
+        return GSL_SUCCESS
+    except:
+        _pyerr = sys.exc_info()
+        return GSL_EBADFUNC
+
+class gsl_v1_multifit(object):
+    """ Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)
+
+    :param x0: Starting point for minimization.
+    :type x0: :class:`numpy` array of floats
+    :param n: Length of vector returned by the fit function ``f(x)``.
+    :type n: positive integer
+    :param f: Fit function: :class:`multifit` minimizes ``sum_i f_i(x)**2``
+        by varying parameters ``x``. The parameters are a 1-d
+        :class:`numpy` array of either numbers or :class:`gvar.GVar`\s.
+    :type f: function
+    :param tol: Setting ``tol=(reltol, abstol)`` causes the fit to stop
+        searching for a solution when ``|dx_i| <= abstol + reltol * |x_i|``.
+        With version 2 or higher of the GSL library, ``tol=(xtol, gtol, ftol)``
+        can be used, where the fit stops when any one of the following
+        three criteria is satisfied:
+
+            1) step size small: ``|dx_i| <= xtol * (xtol + |x_i|)``;
+
+            2) gradient small: ``||g . x||_inf <= gtol * ||f||^2``;
+
+            3) residuals small: ``||f(x+dx) - f(x)|| <= ftol * max(||f(x)||, 1)``.
+
+        Recommended values are: ``xtol=1/10**d`` for ``d``
+        digits of precision in the parameters; ``gtol=1e-6`` to account
+        for roundoff errors in gradient ``g`` (unless the second order derivative
+        vanishes at minimum as well, in which case ``gtol=0`` might be good);
+        and ``ftol<<1``. Setting ``tol=reltol`` is equivalent to setting
+        ``tol=(reltol, 0.0)``. The default setting is ``tol=0.0001``.
+    :type tol: tuple or float
+    :param maxit: Maximum number of iterations in search for minimum;
+            default is 1000.
+    :type maxit: integer
+    :param alg: *GSL* algorithm to use for minimization. Two options are
+            currently available: ``"lmsder"``, the scaled *LMDER* algorithm
+            (default); and ``"lmder"``, the unscaled *LMDER* algorithm.
+            With version 2 of the GSL library, another option is ``"lmniel"``,
+            which can be useful when there is much more data than parameters.
+    :type alg: string
+    :param analyzer: Optional function of ``x, [...f_i(x)...], [[..df_ij(x)..]]``
+            which is called after each iteration. This can be used to inspect
+            intermediate steps in the minimization, if needed.
+    :type analyzer: function
+
+    :class:`multifit` is a function-class whose constructor does a least
+    squares fit by minimizing ``sum_i f_i(x)**2`` as a function of
+    vector ``x``. The following attributes are available:
+
+    .. attribute:: x
+
+        Location of the most recently computed (best) fit point.
+
+    .. attribute:: cov
+
+        Covariance matrix at the minimum point.
+
+    .. attribute:: f
+
+        The fit function ``f(x)`` at the minimum in the most recent fit.
+
+    .. attribute:: J
+
+        Gradient ``J_ij = df_i/dx[j]`` for most recent fit.
+
+    .. attribute:: nit
+
+        Number of iterations used in last fit to find the minimum.
+
+    .. attribute:: stopping_criterion
+
+        Criterion used to stop fit:
+            0 => didn't converge
+            1 => step size small
+            2 => gradient small
+            3 => residuals small
+
+    .. attribute:: error
+
+        ``None`` if fit successful; an error message otherwise.
+
+    :class:`gslv1_multifit` is a wrapper for the (older) ``nlin multifit`` *GSL* routine.
+    """
+
+    def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, int n,
+                 object f, object tol=0.0001,
+                 object reltol=None, object abstol=None,
+                 unsigned int maxit=1000, object alg='lmsder',
+                 object analyzer=None):
+        global _valder, _p_f, _pyerr
+        cdef gsl_multifit_fdfsolver_type *T
+        cdef gsl_multifit_fdfsolver *s
+        cdef int status, rval, criterion
+        cdef Py_ssize_t i, it, p
+        cdef gsl_matrix *covar
+        cdef gsl_matrix *J
+        cdef gsl_vector* x0v
+        # cdef numpy.ndarray[numpy.float_t, ndim=1] ans
+        super(gsl_v1_multifit, self).__init__()
+        # hold onto inputs
+        # reltol and abstol are deprecated but still work (for legacy code)
+        if reltol is not None and abstol is not None:
+            tol = (reltol, abstol)
+        elif reltol is not None:
+            tol = (reltol, 0.0)
+        elif abstol is not None:
+            tol = (0.0001, abstol)
+        elif type(tol) not in [list, tuple]:
+            tol = (tol, 0.0)
+        self.tol = tol
+        self.maxit = maxit
+        self.alg = alg
+        self.x0 = x0
+        self.n = n
+        self.error =  None
+        p = len(x0)
+        covar = gsl_matrix_alloc(p, p)
+        if alg=="lmsder" or alg is None:
+            T = gsl_multifit_fdfsolver_lmsder
+        elif alg=="lmder":
+            T = gsl_multifit_fdfsolver_lmder
+        elif alg=="lmniel":
+            T = gsl_multifit_fdfsolver_lmniel
+        else:
+            raise ValueError("Unknown algorithm: "+alg)
+        cdef gsl_multifit_function_fdf gf
+        gf.f = &_c_f
+        gf.df = &_c_df
+        gf.fdf = &_c_fdf
+        gf.p = p
+        gf.n = n
+        gf.params = NULL
+        old_p_f = _p_f
+        _p_f = f
+        _valder = gvar.valder(p*[0.0])  # workspace
+        s = gsl_multifit_fdfsolver_alloc(T, n, p)
+        x0v = array2vector(x0)
+        gsl_multifit_fdfsolver_set(s, &gf, x0v)
+        J = gsl_matrix_alloc(n, p)
+        for it in range(1, maxit+1):
+            status = gsl_multifit_fdfsolver_iterate(s)
+            if _pyerr is not None:
+                tmp, _pyerr = _pyerr, None
+                if hasattr(tmp[1],'with_traceback'):
+                    raise tmp[1].with_traceback(tmp[2]) # python3
+                else:
+                    raise tmp[0], tmp[1].args, tmp[2]   # python2
+            elif status:
+                self.error = (status, str(gsl_strerror(status)))
+                criterion = 0
+                break
+            if analyzer is not None:
+                gsl_multifit_fdfsolver_jac(s, J)
+                analyzer(vector2array(s.x), vector2array(s.f),
+                        matrix2array(J))
+            if len(tol) == 2:
+                rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
+                criterion = 1 if rval != GSL_CONTINUE else 0
+            else:
+                rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
+            if rval != GSL_CONTINUE:
+                break
+
+        gsl_multifit_fdfsolver_jac(s, J)
+        gsl_multifit_covar(J, 0.0, covar)
+        self.cov = matrix2array(covar)
+        self.x = vector2array(s.x)
+        self.f = vector2array(s.f)
+        self.J = matrix2array(J)
+        self.nit = it
+        self.stopping_criterion = criterion
+        if it>=maxit and rval==GSL_CONTINUE:
+            self.error ="multifit didn't convernge in %d iterations" % maxit
+        gsl_multifit_fdfsolver_free(s)
+        gsl_matrix_free(covar)
+        gsl_matrix_free(J)
+        gsl_vector_free(x0v)
+        _p_f = old_p_f
 
 # multiminex
 _p_fs = None                # Python function to be minimized
@@ -892,122 +997,3 @@ def gammaQ(double a, double x):
     status = gsl_sf_gamma_inc_Q_e(a, x, &res)
     assert status==GSL_SUCCESS, status
     return res.val
-#
-
-def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
-    """ Compute dot product of matrix ``w`` with vector ``x``.
-
-    This is a substitute for ``numpy.dot`` that is highly optimized for the
-    case where ``w`` is a 2-dimensional array of ``float``\s, and ``x`` is
-    a 1=dimensional array of ``gvar.GVar``\s. Other cases are handed off
-    to ``numpy.dot``.
-    """
-    cdef gvar.GVar g
-    cdef gvar.GVar gans, gx
-    cdef Py_ssize_t i, nx, nans
-    cdef numpy.ndarray[object, ndim=1] ans
-    if not isinstance(x[0], gvar.GVar):
-        return numpy.dot(w, x)
-    nx = len(x)
-    nans = w.shape[0]
-    assert nx==w.shape[1], str(nx)+'!='+str(w.shape[1])
-    ans = numpy.zeros(nans, object)
-    for i in range(nans):
-        ans[i] = gvar.wsum_gvar(w[i], x)
-    return ans
-#
-#
-def _build_chiv_chivw(fdata, fcn, prior):
-    """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``.
-
-    Also builds ``chivw``.
-    """
-    nw = sum(len(wgts) for iw, wgts in fdata.inv_wgts)
-    niw = sum(len(iw) for iw, wgts in fdata.inv_wgts)
-    if prior is not None:
-        def chiv(p, fd=fdata):
-            cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-            cdef numpy.ndarray ans, delta
-            delta = numpy.concatenate((fcn(p), p)) - fd.mean
-            if delta.dtype == object:
-                ans = numpy.zeros(nw, object)
-            else:
-                ans = numpy.zeros(nw, numpy.float_)
-            iw, wgts = fd.inv_wgts[0]
-            i1 = 0
-            i2 = len(iw)
-            if i2 > 0:
-                ans[i1:i2] = wgts * delta[iw]
-            for iw, wgt in fd.inv_wgts[1:]:
-                i1 = i2
-                i2 += len(wgt)
-                ans[i1:i2] = dot(wgt, delta[iw])
-            return ans
-        def chivw(p, fd=fdata):
-            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts, wj
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt2
-            cdef numpy.ndarray ans, delta
-            delta = numpy.concatenate((fcn(p), p)) - fd.mean
-            if delta.dtype == object:
-                ans = numpy.zeros(niw, object)
-            else:
-                ans = numpy.zeros(niw, numpy.float_)
-            iw, wgts = fd.inv_wgts[0]
-            if len(iw) > 0:
-                ans[iw] = wgts ** 2 * delta[iw]
-            for iw, wgt in fd.inv_wgts[1:]:
-                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), numpy.float_)
-                for wj in wgt:
-                    wgt2 += numpy.outer(wj, wj)
-                ans[iw] = dot(wgt2, delta[iw])
-            return ans
-        chiv.nf = nw
-    else:
-        def chiv(p, fd=fdata):
-            cdef Py_ssize_t i1, i2
-            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-            cdef numpy.ndarray ans, delta
-            delta = fcn(p) - fd.mean
-            if delta.dtype == object:
-                ans = numpy.zeros(nw, object)
-            else:
-                ans = numpy.zeros(nw, numpy.float_)
-            iw, wgts = fd.inv_wgts[0]
-            i1 = 0
-            i2 = len(iw)
-            if i2 > 0:
-                ans[i1:i2] = wgts * delta[iw]
-            for iw, wgt in fd.inv_wgts[1:]:
-                i1 = i2
-                i2 += len(wgt)
-                ans[i1:i2] = dot(wgt, delta[iw])
-            return ans
-        def chivw(p, fd=fdata):
-            cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-            cdef numpy.ndarray[numpy.float_t, ndim=1] wgts, wj
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-            cdef numpy.ndarray[numpy.float_t, ndim=2] wgt2
-            cdef numpy.ndarray ans, delta
-            delta = fcn(p) - fd.mean
-            if delta.dtype == object:
-                ans = numpy.zeros(niw, object)
-            else:
-                ans = numpy.zeros(niw, numpy.float_)
-            iw, wgts = fd.inv_wgts[0]
-            if len(iw) > 0:
-                ans[iw] = wgts ** 2 * delta[iw]
-            for iw, wgt in fd.inv_wgts[1:]:
-                wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), numpy.float_)
-                for wj in wgt:
-                    wgt2 += numpy.outer(wj, wj)
-                ans[iw] = dot(wgt2, delta[iw])
-            return ans
-        chiv.nf = nw
-    return chiv, chivw

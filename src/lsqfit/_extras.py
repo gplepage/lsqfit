@@ -18,7 +18,7 @@ import gvar
 import lsqfit
 import time
 import collections
-from ._utilities import multiminex, gammaQ
+from ._gsl import multiminex, gammaQ
 
 
 def empbayes_fit(z0, fitargs, **minargs):
