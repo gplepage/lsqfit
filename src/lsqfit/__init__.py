@@ -571,20 +571,22 @@ class nonlinear_fit(object):
                 # numpy array
                 v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
+                    v1k = v1[k] * 1.
+                    v2k = v2[k] * 1.
                     if ct%stride != 0:
                         ct += 1
                         continue
                     kfmt = (len(k)*"%d,")[:-1] % k
                     if style in ['v','m']:
-                        v1fmt = v1[k].fmt(sep=' ')
-                        v2fmt = v2[k].fmt(sep=' ')
+                        v1fmt = v1k.fmt(sep=' ')
+                        v2fmt = v2k.fmt(sep=' ')
                     else:
-                        v1fmt = v1[k].fmt(-1)
-                        v2fmt = v2[k].fmt(-1)
+                        v1fmt = v1k.fmt(-1)
+                        v2fmt = v2k.fmt(-1)
                     if style == 'm' and v1fmt == v2fmt:
                         ct += 1
                         continue
-                    stars.append(nstar(v1[k], v2[k])) ###
+                    stars.append(nstar(v1k, v2k)) ###
                     ans.append([kfmt, v1fmt, v2fmt])
                     w = [len(ai) for ai in ans[-1]]
                     for i, (wo, wn) in enumerate(zip(width, w)):
