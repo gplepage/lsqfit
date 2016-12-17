@@ -342,8 +342,8 @@ class nonlinear_fit(object):
         # do the fit and save results
         # if self.fitterargs.get('alg', None) == 'scipy':
         #     multifit = LSQFitter
-        fit = multifit(p0, nf, self._chiv, **self.fitterargs)
-        # fit = gsl_multifit(p0, nf, self._chiv, **self.fitterargs)
+        # fit = multifit(p0, nf, self._chiv, **self.fitterargs)
+        fit = gsl_multifit(p0, nf, self._chiv, **self.fitterargs)
         self.error = fit.error
         self.cov = fit.cov
         self.chi2 = numpy.sum(fit.f**2)
@@ -499,8 +499,8 @@ class nonlinear_fit(object):
             entry.
             """
             def nstar(v1, v2):
-                sdev = max(_gvar.sdev(v1), _gvar.sdev(v2))
-                nstar = int(abs(_gvar.mean(v1) - _gvar.mean(v2)) / sdev)
+                sdev = max(v1.sdev, v2.sdev)
+                nstar = int(abs(v1.mean - v2.mean) / sdev)
                 if nstar > 5:
                     nstar = 5
                 elif nstar < 1:
@@ -578,17 +578,17 @@ class nonlinear_fit(object):
                         continue
                     kfmt = (len(k) * "%d,")[:-1] % k
                     if style in ['v','m']:
-                        v1fmt = _gvar.fmt(v1[k], sep=' ')
-                        v2fmt = _gvar.fmt(v2[k], sep=' ')
+                        v1fmt = v1[k].fmt(sep=' ')
+                        v2fmt = v2[k].fmt(sep=' ')
                     else:
-                        v1fmt = _gvar.fmt(v1[k], -1)
-                        v2fmt = _gvar.fmt(v2[k], -1)
+                        v1fmt = v1[k].fmt(-1)
+                        v2fmt = v2[k].fmt(-1)
                     if style == 'm' and v1fmt == v2fmt:
                         ct += 1
                         continue
                     stars.append(nstar(v1[k], v2[k])) ###
                     ans.append([kfmt, v1fmt, v2fmt])
-                    w = [numpy.size(ai) for ai in ans[-1]]
+                    w = [len(ai) for ai in ans[-1]]
                     for i, (wo, wn) in enumerate(zip(width, w)):
                         if wn > wo:
                             width[i] = wn
