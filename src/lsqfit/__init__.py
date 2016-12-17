@@ -102,6 +102,7 @@ from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
 from ._utilities import multifit
 from ._utilities import multiminex, gammaQ
+from ._utilities2 import gsl_multifit
 from ._version import version as __version__
 
 
@@ -342,6 +343,7 @@ class nonlinear_fit(object):
         # if self.fitterargs.get('alg', None) == 'scipy':
         #     multifit = LSQFitter
         fit = multifit(p0, nf, self._chiv, **self.fitterargs)
+        # fit = gsl_multifit(p0, nf, self._chiv, **self.fitterargs)
         self.error = fit.error
         self.cov = fit.cov
         self.chi2 = numpy.sum(fit.f**2)
@@ -497,8 +499,8 @@ class nonlinear_fit(object):
             entry.
             """
             def nstar(v1, v2):
-                sdev = max(v1.sdev, v2.sdev)
-                nstar = int(abs(v1.mean - v2.mean) / sdev)
+                sdev = max(_gvar.sdev(v1), _gvar.sdev(v2))
+                nstar = int(abs(_gvar.mean(v1) - _gvar.mean(v2)) / sdev)
                 if nstar > 5:
                     nstar = 5
                 elif nstar < 1:
@@ -574,19 +576,19 @@ class nonlinear_fit(object):
                     if ct%stride != 0:
                         ct += 1
                         continue
-                    kfmt = (len(k)*"%d,")[:-1] % k
+                    kfmt = (len(k) * "%d,")[:-1] % k
                     if style in ['v','m']:
-                        v1fmt = v1[k].fmt(sep=' ')
-                        v2fmt = v2[k].fmt(sep=' ')
+                        v1fmt = _gvar.fmt(v1[k], sep=' ')
+                        v2fmt = _gvar.fmt(v2[k], sep=' ')
                     else:
-                        v1fmt = v1[k].fmt(-1)
-                        v2fmt = v2[k].fmt(-1)
+                        v1fmt = _gvar.fmt(v1[k], -1)
+                        v2fmt = _gvar.fmt(v2[k], -1)
                     if style == 'm' and v1fmt == v2fmt:
                         ct += 1
                         continue
                     stars.append(nstar(v1[k], v2[k])) ###
                     ans.append([kfmt, v1fmt, v2fmt])
-                    w = [len(ai) for ai in ans[-1]]
+                    w = [numpy.size(ai) for ai in ans[-1]]
                     for i, (wo, wn) in enumerate(zip(width, w)):
                         if wn > wo:
                             width[i] = wn
@@ -655,16 +657,24 @@ class nonlinear_fit(object):
             if self.stopping_criterion == 1:
                 settings += '*'
         else:
+            s_c = self.stopping_criterion
+            if s_c > 2 or s_c < 0:
+                s_c = 0
             fmtstr = [
                 "    tol = ({:.2g},{:.2g},{:.2g})",
                 "    tol = ({:.2g}*,{:.2g},{:.2g})",
                 "    tol = ({:.2g},{:.2g}*,{:.2g})",
                 "    tol = ({:.2g},{:.2g},{:.2g}*)",
-                ][self.stopping_criterion]
+                ][s_c]
             settings += fmtstr.format(*self.tol)
-        settings +="    (itns/time = {itns}/{time:.1f})\n".format(
-            itns=self.nit, time=self.time
-            )
+        if self.stopping_criterion == 0:
+            settings +="    (itns/time = {itns}*/{time:.1f})\n".format(
+                itns=self.nit, time=self.time
+                )
+        else:
+            settings +="    (itns/time = {itns}/{time:.1f})\n".format(
+                itns=self.nit, time=self.time
+                )
         if self.alg != "lmsder":
             settings += "  alg = %s\n" % self.alg
 

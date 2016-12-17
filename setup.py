@@ -46,7 +46,13 @@ ext_args = dict(
 ext_modules = [
     Extension(
         "lsqfit._utilities",
+        # "lsqfit._utilities2",
         ["src/lsqfit/_utilities.pyx","src/lsqfit/_gsl_stub.c"],
+        **ext_args
+        ),
+    Extension(
+        "lsqfit._utilities2",
+        ["src/lsqfit/_utilities2.pyx","src/lsqfit/_gsl_stub.c"],
         **ext_args
         ),
     ]

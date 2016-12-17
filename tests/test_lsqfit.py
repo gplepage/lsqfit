@@ -128,6 +128,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         y = dict(y=y)
         fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,p0=p0file,debug=True)
+        print(fit.error, fit.stopping_criterion, fit.p)
         print_fit(fit,dict(y=wavg(fit.p['p']**2)))
         self.assertEqual(fit.dof,2)
         self.assertAlmostEqual(fit.Q,1.0)
