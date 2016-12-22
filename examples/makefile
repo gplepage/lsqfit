@@ -14,23 +14,23 @@ PYTHON = python
 
 run:
 	$(PYTHON) simple.py > simple.tmp
-	- diff -w -I svdcut simple.out simple.tmp
+	- diff -w -I svdcut -I fitter simple.out simple.tmp
 	$(PYTHON) y-vs-x.py > y-vs-x.tmp
-	- diff -w -I svdcut y-vs-x.out y-vs-x.tmp
+	- diff -w -I svdcut -I fitter y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
-	- diff -w -I svdcut x-err.out x-err.tmp
+	- diff -w -I svdcut -I fitter x-err.out x-err.tmp
 	$(PYTHON) p-corr.py > p-corr.tmp
-	- diff -w -I svdcut p-corr.out p-corr.tmp
+	- diff -w -I svdcut -I fitter p-corr.out p-corr.tmp
 	$(PYTHON) err-budget.py > err-budget.tmp
-	- diff -w -I svdcut err-budget.out err-budget.tmp
+	- diff -w -I svdcut -I fitter err-budget.out err-budget.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
-	- diff -w -I svdcut pendulum.out pendulum.tmp
+	- diff -w -I svdcut -I fitter pendulum.out pendulum.tmp
 	$(PYTHON) bayes.py > bayes.tmp
-	- diff -w -B -I svdcut bayes.out bayes.tmp
+	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 	# mpi tests
 	- mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py
-	- diff mpi-bayes.1.0 mpi-bayes.1.1
-	- diff mpi-bayes.1.0 mpi-bayes.out
+	- diff -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.1.1
+	- diff -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.out
 
 time:
 	time $(MAKE) _time

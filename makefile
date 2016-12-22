@@ -70,8 +70,8 @@ upload-pypi:
 	python setup.py sdist upload
 
 upload-git:
-	make doc-all
-	git commit -a -m "prep for upload"
+	make doc-html
+	git commit -a -m "prep documentation for upload"
 	git push origin master
 
 test-download:

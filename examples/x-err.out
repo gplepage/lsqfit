@@ -26,7 +26,8 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 69/0.0)
+  svdcut/n = 1e-10/5    tol = (1e-05*,1e-10,1e-10)    (itns/time = 46/0.1)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 E1/E0 = 2.034(11)   E2/E0 = 3.691(55)
 a1/a0 = 1.130(28)   a2/a0 = 2.678(43)
@@ -61,7 +62,8 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
+  svdcut/n = 1e-10/5    tol = (1e-05*,1e-10,1e-10)    (itns/time = 192/0.4)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 E1/E0 = 2.027(16)   E2/E0 = 3.40(26)
 a1/a0 = 1.100(52)   a2/a0 = 1.54(67)
@@ -98,7 +100,8 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
+  svdcut/n = 1e-10/5    tol = (1e-05*,1e-10,1e-10)    (itns/time = 108/0.2)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 E1/E0 = 2.021(20)   E2/E0 = 3.31(30)
 a1/a0 = 1.076(70)   a2/a0 = 1.46(60)
@@ -137,7 +140,8 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
+  svdcut/n = 1e-10/5    tol = (1e-05*,1e-10,1e-10)    (itns/time = 62/0.1)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 E1/E0 = 2.018(22)   E2/E0 = 3.27(31)
 a1/a0 = 1.065(77)   a2/a0 = 1.45(57)
@@ -178,7 +182,8 @@ Parameters:
              14    20.00016 (20)       [ 20.00016 (20) ]  
 
 Settings:
-  svdcut/n = 1e-10/5    reltol/abstol = 0.0001/0    (itns/time = 6/0.0)
+  svdcut/n = 1e-10/5    tol = (1e-05*,1e-10,1e-10)    (itns/time = 44/0.1)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 E1/E0 = 2.017(22)   E2/E0 = 3.26(31)
 a1/a0 = 1.061(79)   a2/a0 = 1.45(56)

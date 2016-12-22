@@ -20,7 +20,8 @@ Fit:
         9     0.832 (79)     0.935 (44)  *
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 3/0.1)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 fit/exact for (g/l) = 1.004(17)
 fit/exact for theta(0) = 1.012(18)

@@ -9,7 +9,7 @@ Parameters:
               1   1.80017 (73)      [  1.90 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 
 ************************************* nexp = 3
@@ -25,6 +25,6 @@ Parameters:
               2     2.702 (11)      [  2.80 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 4/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 

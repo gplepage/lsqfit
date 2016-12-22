@@ -1834,6 +1834,73 @@ distribution for parameter ``a`` almost flat
 across most (80%) of the interval 0.2±0.2.
 
 
+Changing Fitters
+-------------------
+|nonlinear_fit| uses fitters from the Gnu Scientific Library (GSL) and/or
+from the :mod:`scipy` Python module to do the actual fitting, depending
+upon which of these is installed. It is worth trying a different fitter
+if a fit is causing trouble, since different fitters are optimized for
+different problems. The fitter is selected using the ``fitter`` argument
+in |nonlinear_fit|. There are currently three fitters available:
+
+  ``fitter='gsl_multifit'``
+    The standard GSL least-squares fitter which
+    is wrapped in Python class :class:`lsqfit.gsl_multifit`. This is the
+    default fitter provided GSL is installed. It offers a wide range
+    of options, including several different algorithms that are selected
+    by setting |nonlinear_fit| parameter ``alg`` equal to ``'lm'``,
+    ``'subspace2D'``, and so on. See the documentation.
+
+  ``fitter='gsl_v1_multifit'``
+    The GSL fitter from version |~| 1 of the
+    GSL library. This is wrapped in Python class
+    :class:`lsqfit.gsl_v1_multifit`. It was the fitter used in :mod:`lsqfit`
+    versions earlier than version |~| 9.0.
+
+  ``fitter='scipy_least_squares'``
+    The standard :mod:`scipy` least-squares
+    fitter, here provided with an :mod:`lsqfit` interface by
+    class :class:`lsqfit.scipy_least_squares`. This is the default fitter
+    when GSL is not available.
+
+The default configurations for these fitters are chosen to emphasize
+robustness rather than speed, and therefore some of the non-default options
+can be much faster. For example, adding the arguments ::
+
+  fitter='gsl_multifit', alg='subspace2D', scaler='more', solver='cholesky'
+
+to |nonlinear_fit|'s argument list tripled the fitter's speed for a particular
+medium-large analysis that simultaneously fit multiple correlators from
+lattice QCD. The more robust choices are important for challenging fits, but
+straightforward fits can be greatly accelerated by using different options.
+The ``scipy_least_squares`` fitter can also be much faster than the default.
+It is worth experimenting when fits become costly.
+
+The global defaults used by |nonlinear_fit| can be modified by changing
+the values of the various parameters stored in dictionary
+``lsqfit.nonlinear_fit.DEFAULTS``. For example, we can make the fast
+option mentioned above the default choice for any subsequent fit
+using::
+
+  lsqfit.nonlinear_fit.DEFAULTS.update(dict(
+      fitter='gsl_multifit',
+      alg='subspace2D',
+      scaler='more',
+      solver='cholesky',
+      ))
+
+Default values for parameters ``extend``, ``svdcut``,
+``debug``, ``maxit``, ``fitter``, and ``tol`` can be reset,
+as can any parameters that are
+sent to the underlying fitter (e.g., 'alg' here).
+
+|nonlinear_fit| is easier to use than the underlying fitters because it can
+handle correlated data, and it automatically generates Jacobian functions for the fitter,
+using automatic differentiation. It also is integrated with the :mod:`gvar`
+module, which provides powerful tools for error propagation, generating error
+budgets, and creating potentially complicated priors for Bayesian fitting. The
+underlying fitters are available from :mod:`lsqfit` for use in other
+more specialized applications.
 
 Debugging and Troubleshooting
 -----------------------------
@@ -1852,11 +1919,11 @@ parameters ``p`` are all just numbers (or arrays of numbers). The only way a
 function requires an extra |GVar|, that |GVar| should be turned into a
 parameter by adding it to the prior.
 
-Error messages that come from inside the *gsl* routines used by
+Error messages that come from inside the GSL routines used by
 |nonlinear_fit| are sometimes less than useful. They are usually due to errors
 in one of the inputs to the fit  (that is, the fit data, the prior, or the fit
 function). Again setting ``debug=True`` may catch the errors before they
-land in *gsl*.
+land in GSL.
 
 Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine

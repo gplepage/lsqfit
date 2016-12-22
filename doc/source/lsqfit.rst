@@ -138,124 +138,6 @@ nonlinear_fit Objects
 
 .. autoclass:: lsqfit.nonlinear_fit
 
-   The results from the fit are accessed through the following attributes
-   (of ``fit`` where ``fit = nonlinear_fit(...)``):
-
-   .. attribute:: chi2
-
-      The minimum ``chi**2`` for the fit. ``fit.chi2 / fit.dof`` is usually
-      of order one in good fits; values much less than one suggest
-      that the actual standard deviations in the input data and/or priors are
-      smaller than the standard deviations used in the fit.
-
-   .. attribute:: cov
-
-      Covariance matrix of the best-fit parameters from the fit.
-
-   .. attribute:: dof
-
-      Number of degrees of freedom in the fit, which equals the number of
-      pieces of data being fit when priors are specified for the fit
-      parameters. Without priors, it is the number of pieces of data minus
-      the number of fit parameters.
-
-   .. attribute:: logGBF
-
-      The logarithm of the probability (density) of obtaining
-      the fit data by randomly sampling the parameter model
-      (priors plus fit function) used in the fit. This quantity is
-      useful for comparing fits of the same data to different models,
-      with different priors and/or fit functions. The model with the
-      largest value of ``fit.logGBF`` is the one prefered by the data.
-      The exponential of the difference in ``fit.logGBF`` between two models
-      is the ratio of probabilities (Bayes factor) for those models. Differences
-      in ``fit.logGBF`` smaller than 1 are not very significant. Gaussian
-      statistics are assumed when computing ``fit.logGBF``.
-
-   .. attribute:: p
-
-      Best-fit parameters from fit. Depending upon what was used for
-      the prior (or ``p0``), it is either: a dictionary
-      (:class:`gvar.BufferDict`) of |GVar|\s and/or arrays of |GVar|\s; or
-      an array (:class:`numpy.ndarray`) of |GVar|\s. ``fit.p`` represents a
-      multi-dimensional Gaussian distribution which, in Bayesian terminology,
-      is the *posterior* probability distribution of the fit parameters.
-
-   .. attribute:: pmean
-
-      Means of the best-fit parameters from fit (dictionary or array).
-
-   .. attribute:: psdev
-
-      Standard deviations of the best-fit parameters from fit
-      (dictionary or array).
-
-   .. attribute:: palt
-
-      Same as ``fit.p`` except that the errors are computed directly
-      from ``fit.cov``. This is faster but means that no information about
-      correlations with the input data is retained (unlike in ``fit.p``);
-      and, therefore, ``fit.palt`` cannot be used to generate error
-      budgets. ``fit.p`` and ``fit.palt`` give the same means and normally
-      give the same errors for each parameter. They differ only when the
-      input data's covariance matrix is too singular to invert accurately
-      (because of roundoff error), in which case an SVD cut is advisable.
-
-   .. attribute:: p0
-
-      The parameter values used to start the fit.
-
-   .. attribute:: Q
-
-      The probability that the ``chi**2`` from the fit could have been
-      larger, by chance, assuming the best-fit model is correct. Good fits have
-      ``Q`` values larger than 0.1 or so. Also called the *p-value* of
-      the fit.
-
-   .. attribute:: svdcorrection
-
-      The sum of all SVD corrections, if any, added to the fit
-      data ``y`` or the prior ``prior``.
-
-   .. attribute:: svdn
-
-      The number of eignemodes modified (and/or deleted) by the SVD cut.
-
-   .. attribute:: nblocks
-
-      A dictionary where ``nblocks[s]`` equals the number of block-diagonal
-      sub-matrices of the ``y``--``prior`` covariance matrix that are size
-      ``s``-by-``s``. This is sometimes useful for debugging.
-
-   .. attribute:: time
-
-      CPU time (in secs) taken by fit.
-
-   The input parameters to the fit can be accessed as attributes. Note
-   in particular attributes:
-
-   .. attribute:: prior
-
-      Prior used in the fit. This may differ from the input prior if an
-      SVD cut is used. It is either a dictionary
-      (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
-      depending upon the input. Equals ``None`` if no prior was specified.
-
-   .. attribute:: x
-
-      The first field in the input ``data``. This is sometimes the
-      independent variable (as in 'y vs x' plot), but may be anything. It
-      is set equal to ``False`` if the ``x`` field is omitted from the
-      input ``data``. (This also means that the fit function has no ``x``
-      argument: so ``f(p)`` rather than ``f(x,p)``.)
-
-   .. attribute:: y
-
-      Fit data used in the fit. This may differ from the input data if
-      an SVD cut is used. It is either a dictionary
-      (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`),
-      depending upon the input.
-
    Additional methods are provided for printing out detailed information
    about the fit, testing fits with simulated data,
    doing bootstrap analyses of the fit errors,
@@ -308,17 +190,10 @@ Classes for Bayesian Integrals
 
    .. automethod:: __call__(f=None, mpi=False, pdf=None, **kargs)
 
-Other Classes
----------------
-
-.. autoclass:: lsqfit.multifit(x0, n, f, tol=1e-4, maxit=1000, alg='lmsder', analyzer=None)
-
-.. autoclass:: lsqfit.multiminex(x0, f, tol=1e-4, maxit=1000, step=1, alg='nmsimplex2', analyzer=None)
-
 Requirements
 ------------
 :mod:`lsqfit` relies heavily on the :mod:`gvar`, and :mod:`numpy` modules.
-Several utility functions are in :mod:`lsqfit_util`. Also the minimization
-routines are from the Gnu Scientific Library (*GSL*).
+Also the fitting and minimization routines are f
+rom the Gnu Scientific Library (GSL) and/or the Python :mod:`scipy` module.
 
 

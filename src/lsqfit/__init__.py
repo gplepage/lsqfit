@@ -100,9 +100,37 @@ import gvar as _gvar
 from ._extras import empbayes_fit, wavg
 from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
-from ._gsl import multiminex, gammaQ
-from ._gsl import gsl_multifit, gsl_v1_multifit
 from ._version import version as __version__
+
+# default parameters for nonlinear_fit
+_FITTER_DEFAULTS = dict(
+    extend=False,
+    svdcut=1e-15,
+    debug=False,
+    tol=1e-5,
+    maxit=1000,
+    )
+
+# dictionary containing all fitters available to nonlinear_fit.
+_FITTERS = { }
+
+try:
+    from ._scipy import scipy_least_squares, scipy_multiminex, gammaQ
+    _no_scipy = False
+    _FITTERS['scipy_least_squares'] = scipy_least_squares
+    _FITTER_DEFAULTS['fitter'] = 'scipy_least_squares'
+except:
+    _no_scipy = True
+
+try:
+    from ._gsl import gsl_multiminex, gammaQ
+    from ._gsl import gsl_multifit, gsl_v1_multifit
+    _no_gsl = False
+    _FITTERS['gsl_multifit'] = gsl_multifit
+    _FITTERS['gsl_v1_multifit'] = gsl_v1_multifit
+    _FITTER_DEFAULTS['fitter'] = 'gsl_multifit'
+except:
+    _no_gsl = True
 
 
 _FDATA = collections.namedtuple(
@@ -122,141 +150,316 @@ class nonlinear_fit(object):
 
     The best-fit values for the parameters are in ``fit.p``, while the
     ``chi**2``, the number of degrees of freedom, the logarithm of Gaussian
-    Bayes Factor, the number of iterations, and the cpu time needed for the
-    fit are in ``fit.chi2``, ``fit.dof``, ``fit.logGBF``, ``fit.nit``, and
-    ``fit.time``, respectively. Results for individual parameters in
-    ``fit.p`` are of type |GVar|, and therefore carry information about
-    errors and correlations with other parameters. The fit data and prior
-    can be recovered using ``fit.x`` (equals ``False`` if there is no ``x``),
-    ``fit.y``, and ``fit.prior``; the data and prior are corrected for the
-    *svd* cut, if there is one (that is, their covariance matrices have been
-    modified in accordance with the *svd* cut).
+    Bayes Factor, the number of iterations (or function evaluations),  and the
+    cpu time needed for the fit are in ``fit.chi2``, ``fit.dof``,
+    ``fit.logGBF``, ``fit.nit``, and ``fit.time``, respectively. Results for
+    individual parameters in ``fit.p`` are of type |GVar|, and therefore carry
+    information about errors and correlations with other parameters. The fit
+    data and prior can be recovered using ``fit.x`` (equals ``False`` if there
+    is no ``x``), ``fit.y``, and ``fit.prior``; the data and prior are
+    corrected for the *svd* cut, if there is one (that is, their covariance
+    matrices have been modified in accordance with the *svd* cut).
 
-    :param data: Data to be fit by :class:`lsqfit.nonlinear_fit`. It can
-        have any of the following formats:
+    Args:
 
-            ``data = x, y``
-                ``x`` is the independent data that is passed to the fit
-                function with the fit parameters: ``fcn(x, p)``. ``y`` is a
-                dictionary (or array) of |GVar|\s that encode the means and
-                covariance matrix for the data that is to be fit being fit.
-                The fit function must return a result having the same
-                layout as ``y``.
+        data (dict, array or tuple):
+            Data to be fit by :class:`lsqfit.nonlinear_fit`
+            can have any of the following forms:
 
-            ``data = y``
-                ``y`` is a dictionary (or array) of |GVar|\s that encode
-                the means and covariance matrix for the data being fit.
-                There is no independent data so the fit function depends
-                only upon the fit parameters: ``fit(p)``. The fit function
-                must return a result having the same layout as ``y``.
+                ``data = x, y``
+                    ``x`` is the independent data that is passed to the fit
+                    function with the fit parameters: ``fcn(x, p)``. ``y`` is a
+                    dictionary (or array) of |GVar|\s that encode the means and
+                    covariance matrix for the data that is to be fit being fit.
+                    The fit function must return a result having the same
+                    layout as ``y``.
 
-            ``data = x, ymean, ycov``
-                ``x`` is the independent data that is passed to the fit
-                function with the fit parameters: ``fcn(x, p)``. ``ymean``
-                is an array containing the mean values of the fit data.
-                ``ycov`` is an array containing the covariance matrix of
-                the fit data; ``ycov.shape`` equals ``2*ymean.shape``.
-                The fit function must return an array having the same
-                shape as ``ymean``.
+                ``data = y``
+                    ``y`` is a dictionary (or array) of |GVar|\s that encode
+                    the means and covariance matrix for the data being fit.
+                    There is no independent data so the fit function depends
+                    only upon the fit parameters: ``fit(p)``. The fit function
+                    must return a result having the same layout as ``y``.
 
-            ``data = x, ymean, ysdev``
-                ``x`` is the independent data that is passed to the fit
-                function with the fit parameters: ``fcn(x, p)``. ``ymean``
-                is an array containing the mean values of the fit data.
-                ``ysdev`` is an array containing the standard deviations of
-                the fit data; ``ysdev.shape`` equals ``ymean.shape``. The
-                data are assumed to be uncorrelated. The fit function must
-                return an array having the same shape as ``ymean``.
+                ``data = x, ymean, ycov``
+                    ``x`` is the independent data that is passed to the fit
+                    function with the fit parameters: ``fcn(x, p)``. ``ymean``
+                    is an array containing the mean values of the fit data.
+                    ``ycov`` is an array containing the covariance matrix of
+                    the fit data; ``ycov.shape`` equals ``2*ymean.shape``.
+                    The fit function must return an array having the same
+                    shape as ``ymean``.
 
-        Setting ``x=False`` in the first, third or fourth of these formats
-        implies that the fit function depends only on the fit parameters:
-        that is, ``fcn(p)`` instead of ``fcn(x, p)``. (This is not assumed
-        if ``x=None``.)
-    :param fcn: The function to be fit to ``data``. It is either a
-        function of the independent data ``x`` and the fit parameters ``p``
-        (``fcn(x, p)``), or a function of just the fit parameters
-        (``fcn(p)``) when there is no ``x`` data or ``x=False``. The
-        parameters are tuned in the fit until the function returns values
-        that agree with the ``y`` data to within the ``y``\s' errors. The
-        function's return value must have the same layout as the ``y`` data
-        (a dictionary or an array). The fit parameters ``p`` are either: 1)
-        a dictionary where each ``p[k]`` is a single parameter or an array
-        of parameters (any shape); or, 2) a single array of parameters. The
-        layout of the parameters is the same as that of prior ``prior`` if
-        it is specified; otherwise, it is inferred from of the starting
-        value ``p0`` for the fit.
-    :type fcn: function
-    :param prior: A dictionary (or array) containing *a priori* estimates
-        for all parameters ``p`` used by fit function ``fcn(x, p)`` (or
-        ``fcn(p)``). Fit parameters ``p`` are stored in a dictionary (or
-        array) with the same keys and structure (or shape) as ``prior``.
-        The default value is ``None``; ``prior`` must be defined if ``p0``
-        is ``None``.
-    :type prior: dictionary, array, or ``None``
-    :param p0: Starting values for fit parameters in fit.
-        :class:`lsqfit.nonlinear_fit` adjusts ``p0`` to make it consistent
-        in shape and structure with ``prior`` when the latter is
-        specified: elements missing from ``p0`` are filled
-        in using ``prior``, and elements in
-        ``p0`` that are not in ``prior`` are discarded. If ``p0`` is a
-        string, it is taken as a file name and
-        :class:`lsqfit.nonlinear_fit` attempts to read starting values from
-        that file; best-fit parameter values are written out to the same
-        file after the fit (for priming future fits). If ``p0`` is ``None``
-        or the attempt to read the file fails, starting values are
-        extracted from ``prior``. The default value is ``None``; ``p0``
-        must be defined if ``prior`` is ``None``.
-    :type p0: dictionary, array, string or ``None``
-    :param svdcut: If ``svdcut`` is nonzero (not ``None``), *svd* cuts
-        are applied to every block-diagonal sub-matrix of the covariance
-        matrix for the data ``y`` and ``prior`` (if there is a prior).
-        The blocks are first rescaled so that all
-        diagonal elements equal 1 -- that is, the blocks are replaced
-        by the correlation matrices for the corresponding subsets of variables.
-        Then, if ``svdcut > 0``,
-        eigenvalues of the rescaled matrices that are smaller than ``svdcut``
-        times the maximum eigenvalue are replaced by ``svdcut`` times the
-        maximum eigenvalue. This makes the covariance matrix less singular
-        and less susceptible to roundoff error. When ``svdcut < 0``,
-        eigenvalues smaller than ``|svdcut|`` times the maximum eigenvalue
-        are discarded and the corresponding components in ``y`` and
-        ``prior`` are zeroed out.
-    :type svdcut: ``None`` or ``float``
-    :param extend: Log-normal and sqrt-normal distributions can be used
-        for fit priors when ``extend=True``, provided the parameters are
-        specified by a dictionary (as opposed to an array). To use such a
-        distribution  for a parameter ``'c'`` in the fit prior, replace
-        ``prior['c']``  with a prior specifying its logarithm or  square
-        root, designated by ``prior['log(c)']``  or ``prior['sqrt(c)']``,
-        respectively. The dictionaries containing parameters generated by
-        |nonlinear_fit| will have entries for both ``'c'``   and ``'log(c)'``
-        or ``'sqrt(c)'``, so only the prior need be changed to  switch to
-        log-normal/sqrt-normal distributions. Setting ``extend=False`` (the
-        default) restricts all parameters to Gaussian distributions.
-        Additional distributions can be added using
-        :meth:`gvar.add_parameter_distribution`.
+                ``data = x, ymean, ysdev``
+                    ``x`` is the independent data that is passed to the fit
+                    function with the fit parameters: ``fcn(x, p)``. ``ymean``
+                    is an array containing the mean values of the fit data.
+                    ``ysdev`` is an array containing the standard deviations of
+                    the fit data; ``ysdev.shape`` equals ``ymean.shape``. The
+                    data are assumed to be uncorrelated. The fit function must
+                    return an array having the same shape as ``ymean``.
 
-    :param debug: Set to ``True`` for extra debugging of the fit function
-        and a check for roundoff errors. (Default is ``False``.)
-    :type debug: boolean
-    :param fitterargs: Dictionary of arguments passed on to
-        :class:`lsqfit.multifit`, which does the fitting. The most
-        relevant of these parameters are the tolerance
-        ``tol`` and the maximum number of iterations ``maxit``, both of
-        which affect when the fit algorithm stops.
+            Setting ``x=False`` in the first, third or fourth of these formats
+            implies that the fit function depends only on the fit parameters:
+            that is, ``fcn(p)`` instead of ``fcn(x, p)``. (This is not assumed
+            if ``x=None``.)
+
+        fcn (callable): The function to be fit to ``data``. It is either a
+            function of the independent data ``x`` and the fit parameters ``p``
+            (``fcn(x, p)``), or a function of just the fit parameters
+            (``fcn(p)``) when there is no ``x`` data or ``x=False``. The
+            parameters are tuned in the fit until the function returns values
+            that agree with the ``y`` data to within the ``y``\s' errors. The
+            function's return value must have the same layout as the ``y`` data
+            (a dictionary or an array). The fit parameters ``p`` are either: 1)
+            a dictionary where each ``p[k]`` is a single parameter or an array
+            of parameters (any shape); or, 2) a single array of parameters. The
+            layout of the parameters is the same as that of prior ``prior`` if
+            it is specified; otherwise, it is inferred from of the starting
+            value ``p0`` for the fit.
+
+        prior (dict, array, str, gvar.GVar or None): A dictionary (or array)
+            containing *a priori* estimates for all parameters ``p`` used by
+            fit function ``fcn(x, p)`` (or ``fcn(p)``). Fit parameters ``p``
+            are stored in a dictionary (or array) with the same keys and
+            structure (or shape) as ``prior``. The default value is ``None``;
+            ``prior`` must be defined if ``p0`` is ``None``.
+
+        p0 (dict, array, float or None): Starting values for fit
+            parameters in fit. :class:`lsqfit.nonlinear_fit` adjusts ``p0`` to
+            make it consistent in shape and structure with ``prior`` when the
+            latter is specified: elements missing from ``p0`` are filled in
+            using ``prior``, and elements in ``p0`` that are not in ``prior``
+            are discarded. If ``p0`` is a string, it is taken as a file name
+            and :class:`lsqfit.nonlinear_fit` attempts to read starting values
+            from that file; best-fit parameter values are written out to the
+            same file after the fit (for priming future fits). If ``p0`` is
+            ``None`` or the attempt to read the file fails, starting values
+            are extracted from ``prior``. The default value is ``None``;
+            ``p0`` must be defined if ``prior`` is ``None``.
+
+        svdcut (float or None): If ``svdcut`` is nonzero
+            (but not ``None``), *svd* cuts are applied to every block-diagonal
+            sub-matrix of the covariance matrix for the data ``y`` and ``prior``
+            (if there is a prior). The blocks are first rescaled so that all
+            diagonal elements equal 1 -- that is, the blocks are replaced by
+            the correlation matrices for the corresponding subsets of
+            variables. Then, if ``svdcut > 0``, eigenvalues of the rescaled
+            matrices that are smaller than ``svdcut`` times the maximum
+            eigenvalue are replaced by ``svdcut`` times the maximum
+            eigenvalue. This makes the covariance matrix less singular and
+            less susceptible to roundoff error. When ``svdcut < 0``,
+            eigenvalues smaller than ``|svdcut|`` times the maximum eigenvalue
+            are discarded and the corresponding components in ``y`` and
+            ``prior`` are zeroed out.
+
+        extend (bool): Log-normal and sqrt-normal distributions can be used
+            for fit priors when ``extend=True``, provided the parameters are
+            specified by a dictionary (as opposed to an array). To use such a
+            distribution  for a parameter ``'c'`` in the fit prior, replace
+            ``prior['c']``  with a prior specifying its logarithm or  square
+            root, designated by ``prior['log(c)']``  or ``prior['sqrt(c)']``,
+            respectively. The dictionaries containing parameters generated by
+            |nonlinear_fit| will have entries for both ``'c'``   and
+            ``'log(c)'`` or ``'sqrt(c)'``, so only the prior need be changed
+            to  switch to log-normal/sqrt-normal distributions. Setting
+            ``extend=False`` (the default) restricts all parameters to
+            Gaussian distributions. Additional distributions can be added
+            using :meth:`gvar.add_parameter_distribution`.
+
+        fitter (str or None): Fitter code. Options if GSL is installed
+            include: ``'gsl_multifit'`` (default) and ``'gsl_v1_multifit'``
+            (original fitter). Options if :mod:`scipy` is installed include:
+            ``'scipy_least_squares'`` (default if GSL not installed).
+            ``gsl_multifit`` has many options, providing extensive user
+            control. ``scipy_least_squares`` can be used for fits where the
+            parameters are bounded. (Bounded parameters can also be
+            implemented, for any of the fitters, using non-Gaussian priors ---
+            see the tutorial.)
+
+        tol (float or tuple): Assigning ``tol=(xtol, gtol, ftol)`` causes the
+            fit to stop searching for a minimum when any of
+
+
+                1. ``xtol >=`` relative change in parameters between iterations
+
+                2. ``gtol >=`` relative size of gradient of ``chi**2`` function
+
+                3. ``ftol >=`` relative change in ``chi**2`` between iterations
+
+            is statisfied. See the fitter documentation for detailed
+            definitions of these stopping conditions. Typically one sets
+            ``xtol=1/10**d`` where ``d`` is the number of digits of precision
+            desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting
+            ``tol=eps`` where ``eps`` is a number is equivalent to setting
+            ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is
+            equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is
+            ``tol=1e-5``. (Note: the ``ftol`` option is disabled in some
+            versions of the GSL library.)
+
+        maxit (int): Maximum number of alorithm iterations (or function
+            evaluations for some fitters) in search for minimum;
+            default is 1000.
+
+        debug (bool): Set to ``True`` for extra debugging of the fit function
+            and a check for roundoff errors. (Default is ``False``.)
+
+        fitterargs (dict): Dictionary of additional arguments passed through
+            to the underlying fitter. Different fitters offer different
+            paramenters; see the documentation for each.
+
+    Objects of type :class:`lsqfit.nonlinear_fit` have the following
+    attributes:
+
+    Attributes:
+
+        chi2 (float): The minimum ``chi**2`` for the fit.
+            ``fit.chi2 / fit.dof`` is usually of order one in good fits;
+            values much less than one suggest that the actual standard
+            deviations in the input data and/or priors are smaller than the
+            standard deviations used in the fit.
+        cov (array): Covariance matrix of the best-fit parameters from the fit.
+
+        dof (int): Number of degrees of freedom in the fit, which equals
+            the number of pieces of data being fit when priors are specified
+            for the fit parameters. Without priors, it is the number of pieces
+            of data minus the number of fit parameters.
+
+        error (str): Error message generated by the underlying fitter when
+            an error occurs. ``None`` otherwise.
+
+        fitter_results: Results returned by the underlying fitter. Refer to
+            the appropriate fitter's documentation for details.
+
+        logGBF (float or None):The logarithm of the probability (density)
+            of obtaining the fit data by randomly sampling the parameter model
+            (priors plus fit function) used in the fit --- that is, it is
+            ``P(data|model)``. This quantity is useful for comparing fits of
+            the same data to different models, with different priors and/or
+            fit functions. The model with the largest value of ``fit.logGBF``
+            is the one prefered by the data. The exponential of the difference
+            in ``fit.logGBF`` between two models is the ratio of probabilities
+            (Bayes factor) for those models. Differences in ``fit.logGBF``
+            smaller than 1 are not very significant. Gaussian statistics are
+            assumed when computing ``fit.logGBF``.
+
+        p (dict, array or gvar.GVar): Best-fit parameters from fit. Depending
+            upon what was used for the prior (or ``p0``), it is either: a
+            dictionary (:class:`gvar.BufferDict`) of |GVar|\s and/or arrays of
+            |GVar|\s; or an array (:class:`numpy.ndarray`) of |GVar|\s.
+            ``fit.p`` represents a multi-dimensional Gaussian distribution
+            which, in Bayesian terminology, is the *posterior* probability
+            distribution of the fit parameters.
+
+        pmean (dict, array or float): Means of the best-fit parameters
+            from fit.
+
+        psdev (dict, array or float): Standard deviations of the best-fit
+            parameters from fit.
+
+        palt (dict, array or gvar.GVar): Same as ``fit.p`` except that the errors
+            are computed directly from ``fit.cov``. This is faster but means
+            that no information about correlations with the input data is
+            retained (unlike in ``fit.p``); and, therefore, ``fit.palt``
+            cannot be used to generate error budgets. ``fit.p`` and
+            ``fit.palt`` give the same means and normally give the same errors
+            for each parameter. They differ only when the input data's
+            covariance matrix is too singular to invert accurately (because of
+            roundoff error), in which case an *SVD* cut is advisable.
+
+        p0 (dict, array or float): The parameter values used to start the fit.
+            This will differ from the input ``p0`` if the latter was
+            incomplete.
+
+        prior (dict, array, gvar.GVar or None): Prior used in the fit. This may
+            differ  from the input prior if an *SVD* cut is used. It is either
+            a  dictionary (:class:`gvar.BufferDict`) or an array
+            (:class:`numpy.ndarray`), depending upon the input. Equals
+            ``None`` if no prior was specified.
+
+        Q (float or None): The probability that the ``chi**2`` from the fit
+            could have been larger, by chance, assuming the best-fit model
+            is correct. Good fits have ``Q`` values larger than 0.1 or so.
+            Also called the *p-value* of the fit.
+
+        stopping_criterion (int): Criterion used to
+            stop fit:
+
+                0: didn't converge
+
+                1: ``xtol >=`` relative change in parameters between iterations
+
+                2: ``gtol >=`` relative size of gradient of ``chi**2``
+
+                3: ``ftol >=`` relative change in ``chi**2`` between iterations
+
+        svdcorrection (gvar.GVar): Sum of all *SVD* corrections, if any, added
+            to the fit data ``y`` or the prior ``prior``.
+
+        svdn (int): Number of eigenmodes modified (and/or deleted) by the
+            *SVD* cut.
+
+        time (float): *CPU* time (in secs) taken by fit.
+
+        tol (tuple): Tolerance used in fit. This differs from the input
+            tolerance if the latter was incompletely specified.
+
+        x (obj): The first field in the input ``data``. This is sometimes the
+            independent variable (as in 'y vs x' plot), but may be anything.
+            It is set equal to ``False`` if the ``x`` field is omitted from
+            the input ``data``. (This also means that the fit function has no
+            ``x`` argument: so ``f(p)`` rather than ``f(x,p)``.)
+
+        y (dict, array or gvar.GVar): Fit data used in the fit. This may differ
+            from the input data if an *SVD* cut is used. It is either a
+            dictionary (:class:`gvar.BufferDict`) or an array
+            (:class:`numpy.ndarray`), depending upon the input.
+
+        nblocks (dict): ``nblocks[s]`` equals the number of block-diagonal
+            sub-matrices of the ``y``--``prior`` covariance matrix that are
+            size ``s``-by-``s``. This is sometimes useful for debugging.
+
+    The global defaults used by |nonlinear_fit| can be changed by
+    changing entries in dictionary ``lsqfit.nonlinear_fit.DEFAULTS``
+    for keys 'extend', 'svdcut', 'debug', `tol`, 'maxit', and
+    'fitter'. Additional defaults can be added to that dictionary
+    to be are passed through |nonlinear_fit| to the underlying
+    fitter (via dictionary ``fitterargs``).
     """
+
+    DEFAULTS = _FITTER_DEFAULTS
+
+    FITTERS = _FITTERS
+
     def __init__(
-        self, data, fcn, prior=None, p0=None, extend=False,
-        svdcut=1e-15, debug=False, **kargs
+        self, data, fcn, prior=None, p0=None, extend=None,
+        svdcut=False, debug=None, tol=None, maxit=None,
+        fitter=None, **fitterargs
         ):
-        # capture arguments; initialize parameters
-        self.fitterargs = kargs
-        if isinstance(svdcut, tuple):
-            svdcut = svdcut[0]
-            warnings.warn(
-                'svdcut = tuple is no longer supported; replace by a single number',
-                UserWarning, stacklevel=2
+
+        # install defaults where needed
+        if extend is None:
+            extend = nonlinear_fit.DEFAULTS.get('extend', False)
+        if svdcut is False:
+            svdcut = nonlinear_fit.DEFAULTS.get('svdcut', 1e-15)
+        if debug is None:
+            debug = nonlinear_fit.DEFAULTS.get('debug', False)
+        if tol is None:
+            tol = nonlinear_fit.DEFAULTS.get('tol', 1e-5)
+        if maxit is None:
+            maxit = nonlinear_fit.DEFAULTS.get('maxit', 1000)
+        if fitter is None:
+            fitter = nonlinear_fit.DEFAULTS.get(
+                'fitter',
+                'scipy_least_squares' if _no_gsl else 'gsl_multifit'
                 )
+        for k in nonlinear_fit.DEFAULTS:
+            if k in ['extend', 'svdcut', 'debug', 'maxit', 'fitter', 'tol']:
+                continue
+            fitterargs[k] = nonlinear_fit.DEFAULTS[k]
+
+        # capture arguments; initialize parameters
+        self.fitterargs = fitterargs
         self.svdcut = svdcut
         self.data = data
         self.p0file = p0 if isinstance(p0, str) else None
@@ -265,12 +468,9 @@ class nonlinear_fit(object):
         self._p = None
         self._palt = None
         self.debug = debug
-        if 'svdnum' in kargs:
-            del kargs['svdnum']
-            warnings.warn(
-                'svdnum is no longer supported by lsqfit',
-                UserWarning, stacklevel=2
-                )
+        self.fitter = DEFAULT_FITTER if fitter is None else fitter
+        if self.fitter not in nonlinear_fit.FITTERS:
+            raise ValueError('unknown fitter: ' + str(self.fitter))
         cpu_time = time.clock()
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
@@ -338,11 +538,26 @@ class nonlinear_fit(object):
                         "Internal error -- len(chivw): (%s, %s)"
                         %(len(vw), nchivw))
 
+        if self.fitter == 'scipy_least_squares' and 'bounds' in self.fitterargs:
+            lower, upper = self.fitterargs['bounds']
+            if self.p0.shape is None:
+                larray = []
+                uarray = []
+                for k in self.p0:
+                    larray.extend(numpy.reshape(lower[k], -1))
+                    uarray.extend(numpy.reshape(upper[k], -1))
+                larray = numpy.array(larray)
+                uarray = numpy.array(uarray)
+            else:
+                lower, upper = self.fitterargs['bounds']
+                larray = numpy.reshape(lower, -1)
+                uarray = numpy.reshape(upper, -1)
+            self.fitterargs['bounds'] = (larray, uarray)
+
         # do the fit and save results
-        # if self.fitterargs.get('alg', None) == 'scipy':
-        #     multifit = LSQFitter
-        # fit = multifit(p0, nf, self._chiv, **self.fitterargs)
-        fit = gsl_multifit(p0, nf, self._chiv, **self.fitterargs)
+        fit = nonlinear_fit.FITTERS[self.fitter](
+            p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
+            )
         self.error = fit.error
         self.cov = fit.cov
         self.chi2 = numpy.sum(fit.f**2)
@@ -350,7 +565,8 @@ class nonlinear_fit(object):
         self.nit = fit.nit
         self.tol = fit.tol
         self.stopping_criterion = fit.stopping_criterion
-        self.alg = fit.alg
+        self.description = getattr(fit, 'description', '')
+        self.fitter_results = fit.results
         self._p = None          # lazy evaluation
         try:
             self._trimmed_palt = _reformat(
@@ -365,6 +581,7 @@ class nonlinear_fit(object):
             )
         self.psdev = _gvar.sdev(self.palt)
         self.pmean = _gvar.mean(self.palt)
+
         # compute logGBF
         if self.prior is None:
             self.logGBF = None
@@ -651,7 +868,8 @@ class nonlinear_fit(object):
                 table += (fst % tuple(di)) + stars + '\n'
 
         # settings
-        settings = "\nSettings:\n  svdcut/n = {svdcut}/{svdn}".format(
+        settings = "\nSettings:"
+        settings += "\n  svdcut/n = {svdcut}/{svdn}".format(
             svdcut=self.svdcut, svdn=self.svdn
             )
         fmtstr = [
@@ -662,16 +880,23 @@ class nonlinear_fit(object):
             ][self.stopping_criterion]
         settings += fmtstr.format(*self.tol)
         if self.stopping_criterion == 0:
-            settings +="    (itns/time = {itns}*/{time:.1f})\n".format(
+            settings +="    (itns/time = {itns}*/{time:.1f})".format(
                 itns=self.nit, time=self.time
                 )
         else:
-            settings +="    (itns/time = {itns}/{time:.1f})\n".format(
+            settings +="    (itns/time = {itns}/{time:.1f})".format(
                 itns=self.nit, time=self.time
                 )
-        if self.alg != "lmsder":
-            settings += "  alg = %s\n" % self.alg
-
+        default_line = (
+            '\n  fitter = scipy_least_squares    method = trf\n'
+            if _no_gsl else
+            '\n  fitter = gsl_multifit    methods = lm/more/qr\n'
+            )
+        newline = "\n  fitter = {}    {}\n".format(self.fitter, self.description)
+        if newline != default_line:
+            settings += newline
+        else:
+            settings += '\n'
         if maxline <= 0 or self.data is None:
             return table + settings
         # create table comparing fit results to data
@@ -843,14 +1068,17 @@ class nonlinear_fit(object):
         """
         pexact = self.pmean if pexact is None else pexact
         # Note: don't need svdcut since these are built into the data_iter
-        fargs = dict(fcn=self.fcn, svdcut=None, p0=pexact)
+        fargs = dict(
+            fcn=self.fcn, svdcut=None, p0=pexact, fitter=self.fitter,
+            extend=self.extend,
+            )
         fargs.update(self.fitterargs)
         fargs.update(kargs)
         for ysim, priorsim in self._simulated_data_iter(
             n, pexact=pexact, bootstrap=bootstrap
             ):
             fit = nonlinear_fit(
-                data=(self.x, ysim), prior=priorsim, extend=self.extend,
+                data=(self.x, ysim), prior=priorsim,
                 **fargs
                 )
             fit.pexact = pexact
@@ -959,9 +1187,8 @@ class nonlinear_fit(object):
             containing results from the fit to the next data set in
             ``datalist``
         """
-        fargs = {}
+        fargs = dict(fitter=self.fitter, extend=self.extend, fcn=self.fcn)
         fargs.update(self.fitterargs)
-        fargs['fcn'] = self.fcn
         prior = self.prior
         if datalist is None:
             x = self.x
@@ -971,8 +1198,7 @@ class nonlinear_fit(object):
             if prior is None:
                 for yb in _gvar.bootstrap_iter(y, n):
                     fit = nonlinear_fit(
-                        data=(x, yb), prior=None, p0=self.pmean,
-                        extend=self.extend, **fargs
+                        data=(x, yb), prior=None, p0=self.pmean, **fargs
                         )
                     yield fit
             else:
@@ -981,24 +1207,21 @@ class nonlinear_fit(object):
                     yb = _reformat(y, buf=gb['y'])
                     priorb = _reformat(prior, buf=gb['prior'])
                     fit = nonlinear_fit(
-                        data=(x, yb), prior=priorb, p0=self.pmean,
-                        extend=self.extend, **fargs
+                        data=(x, yb), prior=priorb, p0=self.pmean, **fargs
                         )
                     yield fit
         else:
             if prior is None:
                 for datab in datalist:
                     fit = nonlinear_fit(
-                        data=datab, prior=None, p0=self.pmean,
-                        extend=self.extend, **fargs
+                        data=datab, prior=None, p0=self.pmean, **fargs
                         )
                     yield fit
             else:
                 piter = _gvar.bootstrap_iter(prior)
                 for datab in datalist:
                     fit = nonlinear_fit(
-                        data=datab, prior=next(piter), p0=self.pmean,
-                        extend=self.extend, **fargs
+                        data=datab, prior=next(piter), p0=self.pmean, **fargs
                         )
                     yield fit
 
@@ -1561,37 +1784,3 @@ GPrior = _legacy_constructor(
     _gvar.BufferDict,"GPrior is deprecated; use gvar.BufferDict instead.")
 LSQFit = _legacy_constructor(
     nonlinear_fit,"LSQFit is deprecated; use lsqfit.nonlinear_fit instead.")
-
-# from scipy import optimize
-# class LSQFitter(object):
-#     # have this choose itself unless alg=lmder or lmsder in which case it takes the other
-#     def __init__(self, p0, nf, f, reltol=0.0001, abstol=0.0, maxit=1000, alg="scipy", analyzer=None):
-#         def func(x, ans=numpy.empty(nf, float)):
-#             ans[:] = f(x)
-#             return ans
-#         def Dfun(x, ans=numpy.empty((nf, len(p0)), float)):
-#             xv = _gvar.valder(x)
-#             fx = f(xv)
-#             for i, fxi in enumerate(fx):
-#                 ans[i] = fxi.der
-#             return ans
-#         x, cov_x, infodict, mesg, ier = optimize.leastsq(
-#             func=func,
-#             x0=p0,
-#             Dfun=Dfun,
-#             full_output=True,
-#             xtol=reltol,
-#             maxfev=maxit,
-#             # diag=numpy.ones(len(p0), float),
-#             )
-#         self.x = x
-#         self.error = None if ier in [1,2,3,4] else mesg  # error message or None
-#         self.cov = cov_x         # cov matrix from fit
-#         self.nit = infodict['nfev']         # number of iterations used in fit
-#         self.f = infodict['fvec']       # value of f at min point
-#         self.J = None               # df_i / dx[j]
-#         self.abstol = 0.0
-#         self.reltol = reltol
-#         self.alg = alg
-
-# # multifit = LSQFitter

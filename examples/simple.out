@@ -15,7 +15,8 @@ Fit:
         b/a     2.00 (50)     1.78 (30)  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 6/0.0)
+  fitter = gsl_multifit    methods = lm/more/qr
 
 Values:
                   a: 0.253(32)           

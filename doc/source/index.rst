@@ -16,6 +16,8 @@ Contents:
    case-pendulum.rst
    case-outliers.rst
    lsqfit.rst
+   gsl.rst
+   scipy.rst
 
 Indices and tables
 ==================

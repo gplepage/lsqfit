@@ -7,6 +7,6 @@ Parameters:
           50a-1   -0.44 (64)     [  0.00 (80) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 9/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 11/0.0)
 
 a = 0.011(13)

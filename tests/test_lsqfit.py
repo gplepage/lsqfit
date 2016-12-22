@@ -27,6 +27,11 @@ import gvar as gv
 from lsqfit import *
 import lsqfit
 
+## test_lsqfit should work for any of the fitters. Use DEFAULTS to choose:
+#
+# lsqfit.nonlinear_fit.DEFAULTS.update(dict(
+#   fitter=['gsl_multifit', 'gsl_v1_multifit', 'scipy_least_squares'][1],
+#   ))
 
 FAST = False         # skips embayes and bootstrap tests
 
@@ -118,13 +123,13 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
     def t_basicfit(self,yfac,pfac,p0file):
         """ checks means, sdevs, fit.cov, etc in extreme cases """
-        ycov = np.array([[2.,.25],[.25,4.]])*yfac
-        y = gv.gvar([1.,4.],ycov)
+        ycov = np.array([[2., .25], [.25, 4.]]) * yfac
+        y = gv.gvar([1., 4.], ycov)
         pr = gv.BufferDict()
-        pcov = np.array([[2.,.5],[.5,1.]])*pfac
-        pr['p'] = gv.gvar([4.,16.],pcov)
+        pcov = np.array([[2., .5], [.5, 1.]])*pfac
+        pr['p'] = gv.gvar([4., 16.], pcov)
         def fcn(x,p):
-            return dict(y=p['p']**2)
+            return dict(y=p['p'] ** 2)
 
         y = dict(y=y)
         fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,p0=p0file,debug=True)
@@ -212,15 +217,17 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
     def test_format(self):
         """ fit.format """
-        tol = 1e-8
+        tol = (1e-15, 1e-15, 1e-15)
         # case 1 - y and prior dictionaries
         y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
         prior = gv.BufferDict(p=gv.gvar(0,2))
         def f(p):
             return dict(a=p['p'], b=p['p'])
 
-        fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol)
-        out = "\n".join([ #
+        fit = nonlinear_fit(
+            data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol,
+            )
+        out = [
             'Least Square Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
@@ -234,11 +241,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '        b    0.80 (50)    0.90 (44)  ',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    tol = (1e-08*,0,0)    (itns/time = 4/0.0)',
-            ''])
-        self.assertEqual(out, fit.format(True))
-        self.assertEqual(out, fit.format(True, pstyle='v'))
-        out = "\n".join([ #
+            '  svdcut/n = 1e-15/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 2*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(True).split('\n')[:len(out)])
+        self.assertEqual(out, fit.format(True, pstyle='v').split('\n')[:len(out)])
+        out = [
             'Least Square Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
@@ -246,12 +253,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '              p   0.895238 +- 0.436436          [     0 +- 2 ]  ',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    tol = (1e-08*,0,0)    (itns/time = 4/0.0)',
-            ''])
-        self.assertEqual(out,fit.format(pstyle="vv"))
+            '  svdcut/n = 1e-15/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 2*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(pstyle="vv").split('\n')[:len(out)])
         prior['dummy'] = gv.gvar(10,1)
-        fit = nonlinear_fit(data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol)
-        out = "\n".join([ #
+        fit = nonlinear_fit(
+            data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol,
+            )
+        out = [
             'Least Square Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
@@ -259,9 +268,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '              p    0.90 (44)     [  0.0 (2.0) ]  ',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    tol = (1e-08*,0,0)    (itns/time = 4/0.0)',
-            ''])
-        self.assertEqual(out, fit.format(pstyle='m'))
+            '  svdcut/n = 1e-15/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 2*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(pstyle='m').split('\n')[:len(out)])
         self.assert_gvclose(fit.p['p'], wavg([y['a'],y['b'],prior['p']]))
 
         # case 2 - x and y; no prior
@@ -272,8 +281,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def f(x,p):
             return p['p']*x
 
-        fit = nonlinear_fit(p0=p0, data=(x,y), fcn=f, svdcut=None, tol=tol)
-        out = "\n".join([ #
+        fit = nonlinear_fit(
+            p0=p0, data=(x,y), fcn=f, svdcut=None, tol=tol,
+            )
+        out = [
             'Least Square Fit (no prior):',
             '  chi2/dof [dof] = 0.8 [1]    Q = 0.37    logGBF = None',
             '',
@@ -287,17 +298,19 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '        2    1.90 (50)    2.19 (38)  ',
             '',
             'Settings:',
-            '  svdcut/n = None/0    tol = (1e-08*,0,0)    (itns/time = 4/0.0)',
-            ''])
-        self.assertEqual(out,fit.format(100))
+            '  svdcut/n = None/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 2*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(100).split('\n')[:len(out)])
 
         # case three vectors
         y = gv.gvar([['1.0(1)', '2.0(1)'], ['0.9(2)', '2.2(1)']])
         prior = gv.gvar(dict(a=['1.0(5)', '1.0(5)']))
         def fcn(p):
             return [p['a'], p['a']]
-        fit = nonlinear_fit(prior=prior, data=y, fcn=fcn, debug=True, tol=tol)
-        out = '\n'.join([
+        fit = nonlinear_fit(
+            prior=prior, data=y, fcn=fcn, debug=True, tol=tol,
+            )
+        out = [
             'Least Square Fit:',
             '  chi2/dof [dof] = 1.7 [4]    Q = 0.14    logGBF = -2.3346',
             '',
@@ -314,17 +327,16 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '      1,1    2.20 (10)    2.078 (70)  *',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    tol = (1e-08*,0,0)    (itns/time = 4/0.0)',
-            '',
-            ])
-        self.assertEqual(out, fit.format(True))
+            '  svdcut/n = 1e-15/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 2*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(True).split('\n')[:len(out)])
 
         # log-normal
         prior = {'log(a)':gv.log(gv.gvar(['1.0(5)', '1.0(5)']))}
         fit = nonlinear_fit(
-            prior=prior, data=y, fcn=fcn, extend=True, debug=True, tol=tol
+            prior=prior, data=y, fcn=fcn, extend=True, debug=True, tol=tol,
             )
-        out = '\n'.join([
+        out = [
             'Least Square Fit:',
             '  chi2/dof [dof] = 1.1 [4]    Q = 0.36    logGBF = -1.77',
             '',
@@ -344,10 +356,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             '      1,1    2.20 (10)    2.093 (71)  *',
             '',
             'Settings:',
-            '  svdcut/n = 1e-15/0    tol = (1e-08*,0,0)    (itns/time = 7/0.0)',
-            '',
-            ])
-        self.assertEqual(out, fit.format(True))
+            '  svdcut/n = 1e-15/0    tol = (1e-15,1e-15,1e-15)    (itns/time = 5*/0.0)',
+            ][:-1]
+        self.assertEqual(out, fit.format(True).split('\n')[:len(out)])
 
     def test_unusual_cases(self):
         """ unusual cases """
@@ -382,7 +393,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 return p['rooty']**2
 
             fit = nonlinear_fit(data=(None,y),prior=pr,fcn=fcn,
-                            tol=1e-16,debug=True)
+                            tol=1e-10,debug=True)
             print_fit(fit,dict(y=wavg(fit.p['rooty']**2)))
             output = avg(fit.p['rooty']**2)
             # self.assertEqual(wavg.dof,ny-1)
@@ -411,7 +422,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 return p['rooty']**2
 
             fit = nonlinear_fit(
-                data=(None,y), prior=pr, fcn=fcn, tol=1e-16, debug=True
+                data=(None,y), prior=pr, fcn=fcn, tol=1e-10, debug=True
                 )
             print_fit(fit,dict(y=wavg(fit.p['rooty']**2)))
             # check mean and std devn
@@ -1325,36 +1336,125 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
 
+    def test_gsl_multifit(self):
+        """ gsl_multifit """
+        try:
+            from lsqfit import gsl_multifit as multifit
+        except:
+            return
+        nx = 3
+        xans = np.arange(nx) + 1.
+        def f(x, xans=xans):
+            return  (x - xans) ** 2 + (x - xans) ** 4
+            # return x ** 3 - 3 * x ** 2 * xans + 3 * x * xans **2 - xans ** 3
+            # return (x-xans)**3
+
+        ans = multifit(
+            x0=np.ones(nx), n=nx, f=f, alg='lm', tol=(1e-10, 0.0, 0.0),
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+        self.assertEqual(ans.stopping_criterion, 1)
+        ans = multifit(
+            x0=np.zeros(nx), n=nx, f=f, alg='lmaccel', tol=(0.0, 1e-10, 0.0),
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+        self.assertEqual(ans.stopping_criterion, 2)
+        ans = multifit(
+            x0=np.zeros(nx),n=nx,f=f, tol=(1e-10, 0, 0), alg='subspace2D'
+            )
+        self.assertEqual(ans.stopping_criterion, 1)
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+
     def test_gsl_v1_multifit(self):
         """ gsl_v1_multifit """
+        try:
+            from lsqfit import gsl_v1_multifit as multifit
+        except:
+            return
         nx = 3
-        x0 = np.arange(nx)+1.
-        def f(x,x0=x0):
-            return x ** 3 - 3 * x ** 2 * x0 + 3 * x * x0 **2 - x0 ** 3
-            # return (x-x0)**3
+        xans = np.arange(nx) + 1.
+        def f(x, xans=xans):
+            return  (x - xans) ** 2 + (x - xans) ** 4
+            # return x ** 3 - 3 * x ** 2 * xans + 3 * x * xans **2 - xans ** 3
+            # return (x-xans)**3
 
-        if PRINT_FIT:
-            def tabulate(x,f,df):
-                print(x[:3],'->',f[:3])
-
-        else:
-            tabulate = None
-
-        ans = gsl_v1_multifit(x0=np.ones(nx),n=nx,f=f,analyzer=tabulate,
-                        alg='lmsder')
-        self.assert_arraysclose(ans.x,x0, rtol=1e-3)
-        ans = gsl_v1_multifit(x0=np.zeros(nx),n=nx,f=f,analyzer=tabulate,
-                        alg='lmder')
-        self.assert_arraysclose(ans.x,x0, rtol=1e-3)
+        ans = multifit(
+            x0=np.ones(nx), n=nx, f=f, alg='lmsder', tol=(1e-10, 0.0, 0.0),
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
         self.assertEqual(ans.stopping_criterion, 1)
-        ans = gsl_v1_multifit(x0=np.zeros(nx),n=nx,f=f,analyzer=tabulate,
-                        alg='lmniel', tol=(0, 1e-16, 0))
+        ans = multifit(
+            x0=np.zeros(nx), n=nx, f=f, alg='lmder', tol=(0.0, 1e-10, 0.0),
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
         self.assertEqual(ans.stopping_criterion, 2)
-        self.assert_arraysclose(ans.x,x0, rtol=1e-3)
+        ans = multifit(
+            x0=np.zeros(nx),n=nx,f=f, tol=(1e-10, 0, 0), alg='lmniel'
+            )
+        self.assertEqual(ans.stopping_criterion, 1)
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+
+    def test_bounds(self):
+        " scipy_least_squares with bounds "
+        data = gv.gvar(['0.9(1)', '2.2(2)'])
+
+        # dictionary p0
+        def fcn(p):
+            return p['a']
+        p0 = dict(a=[0.25, 0.5])
+        lower = dict(a=[0.0, 0.0])
+        upper = dict(a=[0.5, 1.0])
+        fit = nonlinear_fit(
+            p0=p0, fcn=fcn, data=data,
+            fitter='scipy_least_squares', bounds=(lower, upper),
+            )
+        self.assertAlmostEqual(fit.pmean['a'][0], 0.5)
+        self.assertAlmostEqual(fit.pmean['a'][1], 1.0)
+
+        # array p0
+        def fcn(p):
+            return p
+        p0 = [0.25, 0.5]
+        lower = [0.0, 0.0]
+        upper = [0.5, 1.0]
+        fit = nonlinear_fit(
+            p0=p0, fcn=fcn, data=data,
+            fitter='scipy_least_squares', bounds=(lower, upper),
+            )
+        self.assertAlmostEqual(fit.pmean[0], 0.5)
+        self.assertAlmostEqual(fit.pmean[1], 1.0)
 
 
-    def test_multiminex_exceptions(self):
-        """ multiminex exceptions """
+    def test_fitters(self):
+        """ check that fitters work """
+        data = gv.gvar(['0.9(1)', '2.2(2)'])
+        prior = gv.gvar(['1.0(5)', '2.0(5)'])
+        def fcn(p):
+            return p
+        options = dict(
+            gsl_multifit=[
+                dict(alg='lm'), dict(alg='lmaccel'), dict(alg='subspace2D'),
+                ],
+            gsl_v1_multifit=[
+                dict(alg='lmsder'), dict(alg='lmder'), dict(alg='lmniel'),
+                ],
+            scipy_least_squares=[
+                dict(method='trf'), dict(method='dogbox'), dict(method='lm'),
+                ]
+            )
+        for k in lsqfit._FITTERS:
+            for opt in options[k]:
+                fit = nonlinear_fit(
+                    fcn=fcn, data=data, prior=prior, fitter=k, **opt
+                    )
+                self.assertEqual(str(fit.p), '[0.904(98) 2.17(19)]')
+
+    def test_gsl_multiminex_exceptions(self):
+        """ gsl_multiminex exceptions """
+        try:
+            import lsqfit.gsl_multiminex as multiminex
+        except:
+            return
         x0 = np.array([6.0,-4.0])
         with self.assertRaises(ZeroDivisionError):
             def f(x):
@@ -1371,28 +1471,39 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             ans = multiminex(x0,f)
 
-    def test_multiminex(self):
-        """ multiminex """
+    def test_gsl_multiminex(self):
+        """ gsl_multiminex """
+        try:
+            from lsqfit import gsl_multiminex as multiminex
+        except:
+            return
         def f(x):
             ff = (x[0]-5)**2 + (x[1]+3)**2
             return -np.cos(ff)
 
-        if PRINT_FIT:
-            def tabulate(x,f,it):
-                print(it,x,'->',f)
-
-        else:
-            tabulate = None
-        x0 = np.array([6.0,-4.0])
-        ans = multiminex(x0,f,tol=1e-4,step=1.0,
-                            analyzer=tabulate,alg="nmsimplex")
-        self.assert_arraysclose(ans.x,[5.,-3.],rtol=1e-4)
-        self.assert_arraysclose(ans.f,-1.,rtol=1e-4)
+        x0 = np.array([6.0, -4.0])
+        ans = multiminex(x0, f, tol=1e-4, step=1.0, alg="nmsimplex")
+        self.assert_arraysclose(ans.x,[5.,-3.], rtol=1e-4)
+        self.assert_arraysclose(ans.f,-1., rtol=1e-4)
         x0 = np.array([4.0,-2.0])
-        ans = multiminex(x0,f,tol=1e-4,step=1.0,
-                            analyzer=tabulate,alg="nmsimplex2")
-        self.assert_arraysclose(ans.x,[5.,-3.],rtol=1e-4)
-        self.assert_arraysclose(ans.f,-1.,rtol=1e-4)
+        ans = multiminex(x0, f, tol=1e-4, step=1.0, alg="nmsimplex2")
+        self.assert_arraysclose(ans.x, [5.,-3.], rtol=1e-4)
+        self.assert_arraysclose(ans.f, -1., rtol=1e-4)
+
+    def test_scipy_multiminex(self):
+        """ gsl_multiminex """
+        try:
+            from lsqfit import scipy_multiminex as multiminex
+        except:
+            return
+        def f(x):
+            ff = (x[0]-5)**2 + (x[1]+3)**2
+            return -np.cos(ff)
+
+        x0 = np.array([6.0, -4.0])
+        ans = multiminex(x0, f, tol=1e-4)
+        self.assert_arraysclose(ans.x,[5.,-3.], rtol=1e-4)
+        self.assert_arraysclose(ans.f, -1., rtol=1e-4)
 
     def test_gammaQ(self):
         " gammaQ(a, x) "
@@ -1454,8 +1565,6 @@ def partialerrors(outputs,inputs):
         for ki in inputs:
             err[ko,ki] = outputs[ko].partialsdev(*inputs[ki])
     return err
-
-
 
 
 if __name__ == '__main__':

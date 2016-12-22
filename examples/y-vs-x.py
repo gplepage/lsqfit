@@ -62,7 +62,7 @@ def main():
         # prior['a'] *= eps
         # y *= eps
         fit = lsqfit.nonlinear_fit(
-            data=(x,y),fcn=f,prior=prior, p0=p0,svdcut=SVDCUT, reltol=1e-5
+            data=(x,y),fcn=f,prior=prior, p0=p0,svdcut=SVDCUT, tol=1e-5
             )
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters

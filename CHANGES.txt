@@ -1,5 +1,7 @@
-Version 8.???
+Version 9.0
 =================
+This version modernizes the underlying fitter, providing many new options
+for those interested in playing with them.
 
 - Slight enhancement of lsqfit.nonlinear_fit.format(...): setting
   pstyle=None suppresses the parameter list. Otherwise unchanged.™

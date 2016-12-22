@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Overview and Tutorial &mdash; lsqfit 8.1 documentation</title>
+    <title>Overview and Tutorial &mdash; lsqfit 9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.1',
+        VERSION:     '9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.0 documentation" href="index.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
     <link rel="prev" title="lsqfit Documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -154,7 +154,7 @@ Fit:
           1     1.58 (12)    1.612 (82)  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 6/0.0)
 
 Values:
                   a: 0.253(32)           
@@ -625,7 +625,7 @@ Parameters:
             E 0    1.2467 (89)      [  1.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 7/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 15/0.0)
 
 
 ************************************* nexp = 2
@@ -639,7 +639,7 @@ Parameters:
               1   1.83335 (71)      [  2.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 
 ************************************* nexp = 3
@@ -655,7 +655,7 @@ Parameters:
               2      2.85 (19)      [  3.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 30/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 53/0.0)
 
 E1/E0 = 2.0050(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -675,7 +675,7 @@ Parameters:
               3      4.00 (40)      [  4.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -697,7 +697,7 @@ Parameters:
               4      5.00 (40)      [  5.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 3/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -733,7 +733,7 @@ Parameters:
               9     10.00 (40)      [ 10.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05,1e-10,1e-10)    (itns/time = 1*/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -937,7 +937,7 @@ keeping <code class="docutils literal"><span class="pre">nexp&lt;=4</span></code
 </div>
 <p>The result of the new fit (to one piece of new data) is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 1.3 [1]    Q = 0.25    logGBF = 2.3618
+  chi2/dof [dof] = 1.3 [1]    Q = 0.25    logGBF = 2.3617
 
 Parameters:
             a 0    0.4018 (40)      [  0.4020 (40) ]  
@@ -950,7 +950,7 @@ Parameters:
               3      4.01 (40)      [    4.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 12/0.0)
 
 E1/E0 = 1.9993(11)   E2/E0 = 2.99(14)
 a1/a0 = 1.000000(10)   a2/a0 = 0.91(73)
@@ -993,10 +993,10 @@ onto the end of the <code class="docutils literal"><span class="pre">main()</spa
 </pre></div>
 </div>
 <p>gives the following output:</p>
-<div class="highlight-python"><div class="highlight"><pre>chi2/dof = 1.30
+<div class="highlight-python"><div class="highlight"><pre>chi2/dof = 2.99
 
 E: [0.90030(51) 1.8000(12) 2.69(13) 4.01(40)]
-a: [0.4018(40) 0.4018(41) 0.36(29) 0.49(40)]
+a: [0.4070(40) 0.4071(41) 0.36(29) 0.49(40)]
 a1/a0: 1.000000(10)
 </pre></div>
 </div>
@@ -1128,28 +1128,28 @@ we accumulate histogram data, using <code class="xref py py-class docutils liter
 <p>The output from this codes is (for <code class="docutils literal"><span class="pre">nexp=4</span></code>):</p>
 <div class="highlight-python"><div class="highlight"><pre>itn   integral        average         chi2/dof        Q
 -------------------------------------------------------
-  1   0.275(38)       0.275(38)           0.00     1.00
-  2   0.273(27)       0.274(23)           0.60     0.90
-  3   0.232(22)       0.260(17)           0.63     0.95
-  4   0.232(15)       0.253(13)           0.74     0.91
-  5   0.274(55)       0.257(15)           0.81     0.87
-  6   0.287(43)       0.262(15)           0.84     0.86
-  7   0.283(47)       0.265(14)           0.90     0.76
-  8   0.257(27)       0.264(13)           0.85     0.89
-  9   0.205(13)       0.258(12)           0.85     0.90
- 10   0.259(23)       0.258(11)           0.86     0.90
+  1   0.241(29)       0.241(29)           0.00     1.00
+  2   0.229(30)       0.235(21)           0.69     0.81
+  3   0.250(32)       0.240(18)           0.86     0.70
+  4   0.269(32)       0.247(15)           0.80     0.85
+  5   0.204(21)       0.239(13)           0.80     0.88
+  6   0.239(35)       0.239(12)           0.76     0.95
+  7   0.208(17)       0.234(11)           0.77     0.96
+  8   0.224(23)       0.2331(99)          0.75     0.98
+  9   0.81(60)        0.297(67)           0.76     0.98
+ 10   0.248(28)       0.292(60)           0.81     0.96
 
 Results from Bayesian Integration:
-a0: mean = 0.40210(16)   sdev = 0.00401(11)
-E0: mean = 0.900460(19)   sdev = 0.000528(31)
-covariance from Bayesian integral = [[0.00001610(87) -1.5(5.8)e-08]
-                                     [-1.5(5.8)e-08 2.79(32)e-07]]
+a0: mean = 0.4030(10)   sdev = 0.00440(15)
+E0: mean = 0.900478(18)   sdev = 0.000450(59)
+covariance from Bayesian integral = [[0.0000193(13) 5.9(8.6)e-08]
+                                     [5.9(8.6)e-08 2.03(53)e-07]]
 
 Results from Least-Squares Fit:
-a0: mean = 0.40197397247   sdev = 0.00401779882449
-E0: mean = 0.900453307997   sdev = 0.000529523389062
-covariance from least-squares fit = [[  1.614e-05   2.166e-08]
-                                     [  2.166e-08   2.804e-07]]
+a0: mean = 0.401974016686   sdev = 0.00400720068626
+E0: mean = 0.900453316447   sdev = 0.000529300969012
+covariance from least-squares fit = [[  1.606e-05   2.607e-08]
+                                     [  2.607e-08   2.802e-07]]
 </pre></div>
 </div>
 <p>The table shows results from each of the <code class="docutils literal"><span class="pre">nitn=10</span></code> <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>
@@ -1281,7 +1281,7 @@ Parameters:
              10    19.99957 (20)       [ 19.99957 (20) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 E1/E0 = 2.011(62)   E2/E0 = 3.34(44)
 a1/a0 = 1.06(23)   a2/a0 = 1.2(1.0)
@@ -1355,7 +1355,7 @@ Parameters:
               4     4.503 (18)      [  4.60 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 6/0.0)
 
 E1/E0 = 2.0023(42)   E2/E0 = 3.002(12)
 a1/a0 = 1.009(14)   a2/a0 = 0.92(12)
@@ -1462,7 +1462,7 @@ Parameters:
               3     3.603 (15)      [  3.70 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 1/0.0)
 
 E1/E0 = 2.0008(39)   E2/E0 = 3.002(12)
 a1/a0 = 1.004(13)   a2/a0 = 0.96(10)
@@ -1491,7 +1491,7 @@ Parameters:
               1   1.80017 (73)      [  1.90 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 
 ************************************* nexp = 3
@@ -1507,7 +1507,7 @@ Parameters:
               2     2.702 (11)      [  2.80 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 4/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 </pre></div>
 </div>
 <p>Measured by their <code class="docutils literal"><span class="pre">chi**2</span></code>s, the two fits are almost equally good. The
@@ -1538,11 +1538,11 @@ extract such information using <code class="xref py py-meth docutils literal"><s
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">2.0023(42)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]))</span>
-<span class="go">0.00166261727498</span>
+<span class="go">0.00166261698123</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]))</span>
-<span class="go">0.000472922525865</span>
+<span class="go">0.000472922442914</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">((</span><span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">partialsdev</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
-<span class="go">0.00387452586852</span>
+<span class="go">0.00387452500862</span>
 </pre></div>
 </div>
 <p>This shows that the total uncertainty in <code class="docutils literal"><span class="pre">E[1]/E[0]</span></code>, 0.0042, is
@@ -1698,7 +1698,7 @@ Fit:
       2.8    0.0323 (47)    0.032223 (58)  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/2    tol = (1e-05*,1e-10,1e-10)    (itns/time = 6/0.0)
 
 
 ************************************* nexp = 2
@@ -1726,7 +1726,7 @@ Fit:
       2.8    0.03479 (40)    0.034784 (72)  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = 1e-15/2    tol = (1e-05*,1e-10,1e-10)    (itns/time = 29/0.0)
 
 
 ************************************* nexp = 3
@@ -1744,11 +1744,11 @@ Parameters:
 Fit:
      x[k]             y[k]        f(x[k],p)
 -------------------------------------------
-        1       0.253 (19)      0.2557 (54)  
+        1       0.253 (19)      0.2557 (53)  
       1.2      0.1968 (91)      0.1977 (28)  
-      1.4      0.1545 (45)      0.1548 (15)  
-      1.6      0.1224 (22)     0.12256 (75)  
-      1.8      0.0979 (11)     0.09793 (39)  
+      1.4      0.1545 (45)      0.1548 (14)  
+      1.6      0.1224 (22)     0.12256 (74)  
+      1.8      0.0979 (11)     0.09793 (38)  
         2     0.07885 (54)     0.07886 (20)  
       2.2     0.06391 (27)     0.06391 (10)  
       2.4     0.05206 (13)    0.052065 (51)  
@@ -1756,7 +1756,7 @@ Fit:
       2.8    0.034983 (33)    0.034982 (13)  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0*    (itns/time = 4/0.0)
+  svdcut/n = 1e-15/2    tol = (1e-05*,1e-10,1e-10)    (itns/time = 45/0.0)
 
 
 ************************************* nexp = 4
@@ -1780,15 +1780,15 @@ Fit:
       1.2       0.2027 (32)      0.20297 (97)  
       1.4       0.1573 (13)      0.15737 (42)  
       1.6      0.12378 (54)      0.12381 (18)  
-      1.8      0.09853 (22)     0.098540 (79)  
-        2     0.079153 (93)     0.079155 (34)  
-      2.2     0.064051 (39)     0.064051 (15)  
-      2.4     0.052134 (16)    0.0521344 (64)  
-      2.6    0.0426348 (67)    0.0426347 (29)  
-      2.8    0.0349985 (28)    0.0349985 (13)  
+      1.8      0.09853 (22)     0.098540 (76)  
+        2     0.079153 (93)     0.079155 (32)  
+      2.2     0.064051 (39)     0.064051 (14)  
+      2.4     0.052134 (16)    0.0521344 (58)  
+      2.6    0.0426348 (67)    0.0426347 (25)  
+      2.8    0.0349985 (28)    0.0349985 (11)  
 
 Settings:
-  svdcut/n = 1e-15/2    reltol/abstol = 0.0001/0*    (itns/time = 4/0.0)
+  svdcut/n = 1e-15/2    tol = (1e-05*,1e-10,1e-10)    (itns/time = 157/0.1)
 
 
 E1/E0 = 1.999(25)   E2/E0 = 3.00(21)
@@ -1850,14 +1850,14 @@ in the problem discussed in the previous section. Had we run that fit,
 for example, with an SVD cut of 1e-19, instead of 1e-15, we would have
 obtained the following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.847
+  chi2/dof [dof] = 0.057 [10]    Q = 1    logGBF = 99.842
 
 Parameters:
             a 0   0.39994 (77)      [  0.50 (50) ]  
-              1     0.398 (32)      [  0.50 (50) ]  
+              1     0.399 (32)      [  0.50 (50) ]  
               2      0.40 (10)      [  0.50 (50) ]  
               3      0.40 (15)      [  0.50 (50) ]  
-            E 0   0.89997 (30)      [  1.00 (50) ]  
+            E 0   0.89998 (30)      [  1.00 (50) ]  
               1     1.799 (23)      [  1.90 (54) ]  
               2      2.70 (19)      [  2.80 (57) ]  
               3      3.61 (28)      [  3.70 (61) ]  
@@ -1865,23 +1865,23 @@ Parameters:
 Fit:
      x[k]              y[k]        f(x[k],p)
 --------------------------------------------
-        1       0.2656 (78)      0.2666 (57)  
-      1.2       0.2027 (32)      0.2030 (23)  
-      1.4       0.1573 (13)     0.15737 (92)  
-      1.6      0.12378 (54)     0.12381 (35)  
-      1.8      0.09853 (22)     0.09854 (12)  
-        2     0.079153 (93)    0.079155 (37)  
-      2.2     0.064051 (39)    0.064051 (18)  
-      2.4     0.052134 (16)    0.052134 (20)  
-      2.6    0.0426348 (67)    0.042635 (19)  
-      2.8    0.0349985 (28)    0.034998 (17)  
+        1       0.2656 (78)      0.2666 (97)  
+      1.2       0.2027 (32)      0.2030 (42)  
+      1.4       0.1573 (13)      0.1574 (17)  
+      1.6      0.12378 (54)     0.12381 (70)  
+      1.8      0.09853 (22)     0.09854 (26)  
+        2     0.079153 (93)    0.079155 (82)  
+      2.2     0.064051 (39)    0.064051 (17)  
+      2.4     0.052134 (16)    0.052134 (13)  
+      2.6    0.0426348 (67)    0.042635 (15)  
+      2.8    0.0349985 (28)    0.034998 (12)  
 
 Settings:
-  svdcut/n = 1e-19/0    reltol/abstol = 0.0001/0    (itns/time = 5/0.0)
+  svdcut/n = 1e-19/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 198/0.2)
 
 
-E1/E0 = 2.00(49)   E2/E0 = 3.0(3.8)
-a1/a0 = 1.0(1.5)   a2/a0 = 1.0(3.3)
+E1/E0 = 2.00(25)   E2/E0 = 3.0(2.3)
+a1/a0 = 1.00(78)   a2/a0 = 1.0(2.8)
 </pre></div>
 </div>
 <p>The standard deviations quoted for <code class="docutils literal"><span class="pre">E1/E0</span></code>, <em>etc.</em> are much too large
@@ -1954,11 +1954,11 @@ code,</p>
 Partial % Errors:
                E2/E0     E1/E0     a2/a0     a1/a0
 --------------------------------------------------
-        a:      3.84      0.72     12.11      4.46
+        a:      3.73      0.71     11.71      4.38
       svd:      0.29      0.10      0.13      0.55
-        E:      5.86      0.99     22.26      6.30
+        E:      5.91      1.00     22.52      6.33
 --------------------------------------------------
-    total:      7.01      1.23     25.35      7.74
+    total:      7.00      1.23     25.39      7.72
 </pre></div>
 </div>
 <p>Here the contribution from the SVD cut is almost negligible, which might
@@ -2050,9 +2050,9 @@ the <code class="docutils literal"><span class="pre">main()</span></code> subrou
 <p>The results are consistent with the results obtained directly from the fit
 (when using <code class="docutils literal"><span class="pre">svdcut=1e-15</span></code>):</p>
 <div class="highlight-python"><div class="highlight"><pre>Bootstrap results:
-E1/E0 = 1.999(22)   E2/E1 = 2.96(22)
-a1/a0 = 0.995(68)   a2/a0 = 1.00(38)
-E1 = 1.799(20)   a1 = 0.398(28)
+E1/E0 = 1.999(23)   E2/E1 = 2.92(26)
+a1/a0 = 0.992(72)   a2/a0 = 0.96(32)
+E1 = 1.799(21)   a1 = 0.397(29)
 </pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms our previous error estimates
@@ -2144,7 +2144,7 @@ Parameters:
               3     3.607 (15)      [  3.70 (50) ]  
 
 Settings:
-  svdcut/n = None/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = None/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 E1/E0 = 2.0053(42)   E2/E0 = 3.004(12)
 a1/a0 = 1.022(14)   a2/a0 = 0.82(12)
@@ -2170,7 +2170,7 @@ Parameters:
               3     3.607 (15)      [  3.70 (50) ]  
 
 Settings:
-  svdcut/n = None/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = None/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 E1/E0 = 2.0068(42)   E2/E0 = 3.006(12)
 a1/a0 = 1.023(14)   a2/a0 = 0.82(12)
@@ -2196,7 +2196,7 @@ Parameters:
               3     3.600 (15)      [  3.70 (50) ]  
 
 Settings:
-  svdcut/n = None/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = None/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 E1/E0 = 2.0004(42)   E2/E0 = 3.001(12)
 a1/a0 = 1.000(14)   a2/a0 = 1.00(12)
@@ -2282,7 +2282,7 @@ Parameters:
               a   0.004 (18)     [ 0.020 (20) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 3/0.0)
 
 a = 0.004(18)
 </pre></div>
@@ -2316,7 +2316,7 @@ Parameters:
               a   0.012 (11)     [ 0.020 (20) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 12/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 15/0.0)
 
 a = 0.012(11)
 </pre></div>
@@ -2357,7 +2357,7 @@ Parameters:
           50a-1   -0.44 (64)     [  0.00 (80) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 9/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 11/0.0)
 
 a = 0.011(13)
 </pre></div>
@@ -2390,6 +2390,72 @@ is chosen to make the prior probability
 distribution for parameter <code class="docutils literal"><span class="pre">a</span></code> almost flat
 across most (80%) of the interval 0.2±0.2.</p>
 </div>
+<div class="section" id="changing-fitters">
+<h2>Changing Fitters<a class="headerlink" href="#changing-fitters" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> uses fitters from the Gnu Scientific Library (GSL) and/or
+from the <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> Python module to do the actual fitting, depending
+upon which of these is installed. It is worth trying a different fitter
+if a fit is causing trouble, since different fitters are optimized for
+different problems. The fitter is selected using the <code class="docutils literal"><span class="pre">fitter</span></code> argument
+in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. There are currently three fitters available:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">fitter='gsl_multifit'</span></code></dt>
+<dd>The standard GSL least-squares fitter which
+is wrapped in Python class <a class="reference internal" href="gsl.html#lsqfit.gsl_multifit" title="lsqfit.gsl_multifit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.gsl_multifit</span></code></a>. This is the
+default fitter provided GSL is installed. It offers a wide range
+of options, including several different algorithms that are selected
+by setting <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">alg</span></code> equal to <code class="docutils literal"><span class="pre">'lm'</span></code>,
+<code class="docutils literal"><span class="pre">'subspace2D'</span></code>, and so on. See the documentation.</dd>
+<dt><code class="docutils literal"><span class="pre">fitter='gsl_v1_multifit'</span></code></dt>
+<dd>The GSL fitter from version&nbsp;1 of the
+GSL library. This is wrapped in Python class
+<a class="reference internal" href="gsl.html#lsqfit.gsl_v1_multifit" title="lsqfit.gsl_v1_multifit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.gsl_v1_multifit</span></code></a>. It was the fitter used in <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>
+versions earlier than version&nbsp;9.0.</dd>
+<dt><code class="docutils literal"><span class="pre">fitter='scipy_least_squares'</span></code></dt>
+<dd>The standard <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> least-squares
+fitter, here provided with an <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> interface by
+class <a class="reference internal" href="scipy.html#lsqfit.scipy_least_squares" title="lsqfit.scipy_least_squares"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.scipy_least_squares</span></code></a>. This is the default fitter
+when GSL is not available.</dd>
+</dl>
+</div></blockquote>
+<p>The default configurations for these fitters are chosen to emphasize
+robustness rather than speed, and therefore some of the non-default options
+can be much faster. For example, adding the arguments</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">fitter</span><span class="o">=</span><span class="s">&#39;gsl_multifit&#39;</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s">&#39;subspace2D&#39;</span><span class="p">,</span> <span class="n">scaler</span><span class="o">=</span><span class="s">&#39;more&#39;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s">&#39;cholesky&#39;</span>
+</pre></div>
+</div>
+<p>to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>&#8216;s argument list tripled the fitter&#8217;s speed for a particular
+medium-large analysis that simultaneously fit multiple correlators from
+lattice QCD. The more robust choices are important for challenging fits, but
+straightforward fits can be greatly accelerated by using different options.
+The <code class="docutils literal"><span class="pre">scipy_least_squares</span></code> fitter can also be much faster than the default.
+It is worth experimenting when fits become costly.</p>
+<p>The global defaults used by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be modified by changing
+the values of the various parameters stored in dictionary
+<code class="docutils literal"><span class="pre">lsqfit.nonlinear_fit.DEFAULTS</span></code>. For example, we can make the fast
+option mentioned above the default choice for any subsequent fit
+using:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">DEFAULTS</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">fitter</span><span class="o">=</span><span class="s">&#39;gsl_multifit&#39;</span><span class="p">,</span>
+    <span class="n">alg</span><span class="o">=</span><span class="s">&#39;subspace2D&#39;</span><span class="p">,</span>
+    <span class="n">scaler</span><span class="o">=</span><span class="s">&#39;more&#39;</span><span class="p">,</span>
+    <span class="n">solver</span><span class="o">=</span><span class="s">&#39;cholesky&#39;</span><span class="p">,</span>
+    <span class="p">))</span>
+</pre></div>
+</div>
+<p>Default values for parameters <code class="docutils literal"><span class="pre">extend</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>,
+<code class="docutils literal"><span class="pre">debug</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, <code class="docutils literal"><span class="pre">fitter</span></code>, and <code class="docutils literal"><span class="pre">tol</span></code> can be reset,
+as can any parameters that are
+sent to the underlying fitter (e.g., &#8216;alg&#8217; here).</p>
+<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> is easier to use than the underlying fitters because it can
+handle correlated data, and it automatically generates Jacobian functions for the fitter,
+using automatic differentiation. It also is integrated with the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>
+module, which provides powerful tools for error propagation, generating error
+budgets, and creating potentially complicated priors for Bayesian fitting. The
+underlying fitters are available from <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> for use in other
+more specialized applications.</p>
+</div>
 <div class="section" id="debugging-and-troubleshooting">
 <h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
 <p>It is a very good idea to set parameter <code class="docutils literal"><span class="pre">debug=True</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>, at
@@ -2404,11 +2470,11 @@ parameters <code class="docutils literal"><span class="pre">p</span></code> are 
 <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> should get into a fit  function is through the parameters; if a fit
 function requires an extra <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>, that <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> should be turned into a
 parameter by adding it to the prior.</p>
-<p>Error messages that come from inside the <em>gsl</em> routines used by
+<p>Error messages that come from inside the GSL routines used by
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> are sometimes less than useful. They are usually due to errors
 in one of the inputs to the fit  (that is, the fit data, the prior, or the fit
 function). Again setting <code class="docutils literal"><span class="pre">debug=True</span></code> may catch the errors before they
-land in <em>gsl</em>.</p>
+land in GSL.</p>
 <p>Occasionally <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> appears to go crazy, with gigantic
 <code class="docutils literal"><span class="pre">chi**2</span></code>s (<em>e.g.</em>, <code class="docutils literal"><span class="pre">1e78</span></code>). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
@@ -2486,6 +2552,7 @@ succinct way of writing this line is:</p>
 <li><a class="reference internal" href="#bootstrap-error-analysis">Bootstrap Error Analysis</a></li>
 <li><a class="reference internal" href="#testing-fits-with-simulated-data">Testing Fits with Simulated Data</a></li>
 <li><a class="reference internal" href="#positive-parameters-non-gaussian-priors">Positive Parameters; Non-Gaussian Priors</a></li>
+<li><a class="reference internal" href="#changing-fitters">Changing Fitters</a></li>
 <li><a class="reference internal" href="#debugging-and-troubleshooting">Debugging and Troubleshooting</a></li>
 </ul>
 </li>
@@ -2529,11 +2596,11 @@ succinct way of writing this line is:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2009-2014, G. P. Lepage.
+        &copy; Copyright 2009-2016, G. P. Lepage.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

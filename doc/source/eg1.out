@@ -7,7 +7,7 @@ Parameters:
             E 0    1.2467 (89)      [  1.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 7/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 15/0.0)
 
 
 ************************************* nexp = 2
@@ -21,7 +21,7 @@ Parameters:
               1   1.83335 (71)      [  2.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 5/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 
 ************************************* nexp = 3
@@ -37,7 +37,7 @@ Parameters:
               2      2.85 (19)      [  3.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 30/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 53/0.0)
 
 E1/E0 = 2.0050(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -57,7 +57,7 @@ Parameters:
               3      4.00 (40)      [  4.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 3/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 9/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -79,7 +79,7 @@ Parameters:
               4      5.00 (40)      [  5.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 3/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)
@@ -115,7 +115,7 @@ Parameters:
               9     10.00 (40)      [ 10.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05,1e-10,1e-10)    (itns/time = 1*/0.0)
 
 E1/E0 = 2.0051(52)   E2/E0 = 3.17(21)
 a1/a0 = 1.022(20)   a2/a0 = 1.47(88)

@@ -18,8 +18,12 @@ import gvar
 import lsqfit
 import time
 import collections
-from ._gsl import multiminex, gammaQ
-
+try:
+    from ._gsl import gsl_multiminex as multiminex
+    from ._gsl import gammaQ
+except ImportError:
+    from ._scipy import scipy_multiminex as multiminex
+    from ._scipy import gammaQ
 
 def empbayes_fit(z0, fitargs, **minargs):
     """ Call ``lsqfit.nonlinear_fit(**fitargs(z))`` varying ``z``,
@@ -210,7 +214,7 @@ class BufferDictWAvg(gvar.BufferDict):
         self.svdcorrection = fit.svdcorrection
         self.fit = fit
 
-def wavg(dataseq, prior=None, fast=False, **kargs):
+def wavg(dataseq, prior=None, fast=False, **fitterargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
 
     The weighted average of several |GVar|\s is what one obtains from
@@ -280,54 +284,42 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
     of list ``dataseq``. The results are approximately correct when
     ``dataseq[i]`` and ``dataseq[j]`` are correlated for ``i!=j``.
 
-    :param dataseq: The |GVar|\s to be averaged. ``dataseq`` is a one-dimensional
-        sequence of |GVar|\s, or of arrays of |GVar|\s, or of dictionaries
-        containing |GVar|\s or arrays of |GVar|\s. All ``dataseq[i]`` must
-        have the same shape.
-    :param prior: Prior values for the averages, to be included in the weighted
-        average. Default value is ``None``, in which case ``prior`` is ignored.
-    :type prior: |GVar| or array/dictionary of |GVar|\s
-    :param fast: Setting ``fast=True`` causes ``wavg`` to compute an
-        approximation to the weighted average that is much faster to calculate
-        when averaging a large number of samples (100s or more). The default is
-        ``fast=False``.
-    :type fast: bool
-    :param kargs: Additional arguments (e.g., ``svdcut``) to the fitter
-        used to do the averaging.
-    :type kargs: dict
+    Args:
+        dataseq (list): The |GVar|\s to be averaged. ``dataseq`` is
+            a one-dimensional sequence of |GVar|\s, or of arrays of |GVar|\s,
+            or of dictionaries containing |GVar|\s or arrays of |GVar|\s. All
+            ``dataseq[i]`` must have the same shape.
+        prior (dict, array or gvar.GVar): Prior values for the averages, to
+            be included in the weighted average. Default value is ``None``, in
+            which case ``prior`` is ignored.
+        fast (bool): Setting ``fast=True`` causes ``wavg`` to compute an
+            approximation to the weighted average that is much faster to
+            calculate when averaging a large number of samples (100s or more).
+            The default is ``fast=False``.
+        fitterargs (dict): Additional arguments (e.g., ``svdcut``) for the
+            :class:`lsqfit.nonlinear_fit` fitter used to do the averaging.
 
     Results returned by :func:`gvar.wavg` have the following extra
     attributes describing the average:
 
-    .. attribute:: chi2
+        **chi2** - ``chi**2`` for weighted average.
 
-        ``chi**2`` for weighted average.
+        **dof** - Effective number of degrees of freedom.
 
-    .. attribute:: dof
+        **Q** - The probability that the ``chi**2`` could have been larger,
+            by chance, assuming that the data are all Gaussain and consistent
+            with each other. Values smaller than 0.1 or suggest that the
+            data are not Gaussian or are inconsistent with each other. Also
+            called the *p-value*.
 
-        Effective number of degrees of freedom.
+            Quality factor `Q` (or *p-value*) for fit.
 
-    .. attribute:: Q
+        **time** - Time required to do average.
 
-        The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
-        with each other. Values smaller than 0.1 or suggest that the
-        data are not Gaussian or are inconsistent with each other. Also
-        called the *p-value*.
+        **svdcorrection** - The *svd* corrections made to the data
+            when ``svdcut`` is not ``None``.
 
-        Quality factor `Q` (or *p-value*) for fit.
-
-    .. attribute:: time
-
-        Time required to do average.
-
-    .. attribute:: svdcorrection
-
-        The *svd* corrections made to the data when ``svdcut`` is not ``None``.
-
-    .. attribute:: fit
-
-        Fit output from average.
+        **fit** - Fit output from average.
     """
     if len(dataseq) <= 0:
         if prior is None:
@@ -367,7 +359,7 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
             if ans is None:
                 ans = dataseq_i
             else:
-                ans = wavg([ans, dataseq_i], fast=False, **kargs)
+                ans = wavg([ans, dataseq_i], fast=False, **fitterargs)
                 chi2 += wavg.chi2
                 dof += wavg.dof
                 time += wavg.time
@@ -416,7 +408,7 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         data = numpy.array(data)
         def fcn(p):
             return len(data) * [p]
-    fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **kargs)
+    fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **fitterargs)
     # wavg.Q = fit.Q
     # wavg.chi2 = fit.chi2
     # wavg.dof = fit.dof

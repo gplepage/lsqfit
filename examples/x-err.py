@@ -3,13 +3,13 @@
 """
 x-err.py - Code for "x has Error Bars"
 """
-# Copyright (c) 2012 G. Peter Lepage. 
+# Copyright (c) 2012-16 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # any later version (see <http://www.gnu.org/licenses/>).
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -61,7 +61,9 @@ def main():
     for nexp in range(3,8):
         print('************************************* nexp =',nexp)
         prior = make_prior(nexp,x)
-        fit = lsqfit.nonlinear_fit(data=y,fcn=f,prior=prior,p0=p0,svdcut=SVDCUT)
+        fit = lsqfit.nonlinear_fit(
+            data=y, fcn=f, prior=prior, p0=p0, svdcut=SVDCUT,
+            )
         fit.check_roundoff()
         print(fit)                  # print the fit results
         E = fit.p['E']              # best-fit parameters
@@ -71,7 +73,7 @@ def main():
         print()
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
-    
+
     #
     if DO_BOOTSTRAP:
         Nbs = 10                                     # number of bootstrap copies
@@ -97,11 +99,11 @@ def main():
         print('E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0'])
         print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])
         print('E1 =',outputs['E1'],'  a1 =',outputs['a1'])
-    
+
     if DO_PLOT:
         print(fit.format(100))                   # print the fit results
-        import pylab as pp   
-        from gvar import mean,sdev     
+        import pylab as pp
+        from gvar import mean,sdev
         fity = f(x,fit.pmean)
         ratio = y/fity
         pp.xlim(0,21)

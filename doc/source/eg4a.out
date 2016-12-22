@@ -12,7 +12,7 @@ Parameters:
               3     3.603 (15)      [  3.70 (50) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 1/0.0)
+  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 1/0.0)
 
 E1/E0 = 2.0008(39)   E2/E0 = 3.002(12)
 a1/a0 = 1.004(13)   a2/a0 = 0.96(10)

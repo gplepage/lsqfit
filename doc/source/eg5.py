@@ -31,15 +31,15 @@ def f(x,p):                         # function used to fit x,y data
 
 def make_data(p):                   # make x,y fit data
     x = np.arange(1.,10*0.2+1.,0.2)
-    ymod = f_exact(x)-f(x,p)   
-    # ymod = gd.rebuild(ymod)     
+    ymod = f_exact(x)-f(x,p)
+    # ymod = gd.rebuild(ymod)
     return x,ymod
 
 def make_prior(nexp):               # make priors for fit parameters
     prior = lsqfit.GPrior()         # Gaussian prior -- dictionary-like
     prior['a'] = [gd.gvar(0.5,0.5) for i in range(nexp)]
     de = [gd.gvar(0.9,0.2) for i in range(nexp)]
-    de[0] = gd.gvar(1,0.5)     
+    de[0] = gd.gvar(1,0.5)
     prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
     return prior
 
@@ -79,11 +79,11 @@ def main():
     print 'E1/E0 =',(E[1]/E[0]).fmt(),'  E2/E0 =',(E[2]/E[0]).fmt()
     print 'a1/a0 =',(a[1]/a[0]).fmt(),'  a2/a0 =',(a[2]/a[0]).fmt()
     sys.stdout = sys_stdout
-    
+
     if DO_ERRORBUDGET:
         if USE_SVD:
             sys.stdout = tee.tee(sys_stdout,open("eg5d.out","w"))
-        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],         
+        outputs = {'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],
                  'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]}
         inputs = {'E':max_prior['E'],'a':max_prior['a'],'svd':fit.svdcorrection}
         print fit.fmt_values(outputs)
@@ -116,11 +116,11 @@ def main():
         print 'E1/E0 =',outputs['E1/E0'].fmt(),'  E2/E1 =',outputs['E2/E0'].fmt()
         print 'a1/a0 =',outputs['a1/a0'].fmt(),'  a2/a0 =',outputs['a2/a0'].fmt()
         print 'E1 =',outputs['E1'].fmt(),'  a1 =',outputs['a1'].fmt()
-        
+
     # print fit.format(100)                   # print the fit results
-    
-    # import pylab as pp   
-    # from gvar import mean,sdev     
+
+    # import pylab as pp
+    # from gvar import mean,sdev
     # fity = f(x,fit.pmean)
     # ratio = y/fity
     # pp.xlim(0,21)
