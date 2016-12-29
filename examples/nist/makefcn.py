@@ -20,6 +20,7 @@ Have tested various fitters (2016-12-29) and find that all work for all
 problems using the 2nd starting value. That includes:
 
     gsl_multifit: lm/more/qr, lmaccel, subspace2D, dogleg, ddogleg
+    gsl_v1_multifit: lmsder, lmder
     scipy_least_squares: trf, lm
 
 They all agree with each other and with NIST's "certified values".

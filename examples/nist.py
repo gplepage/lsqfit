@@ -38,6 +38,8 @@ import gvar as gv
 import numpy as np
 import lsqfit
 
+# lsqfit.nonlinear_fit.set_defaults(fitter='gsl_multifit', alg='subspace2D')
+
 log = np.log
 exp = np.exp
 arctan = np.arctan
