@@ -1,0 +1,16 @@
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
+
+Parameters:
+  erfinv(50a-1)   -0.42 (68)     [  0.00 (71) ]  
+-----------------------------------------------
+          50a-1   -0.44 (64)     [  0.00 (80) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0)
+
+a = 0.011(13)
+
+Histogram Analysis:
+   mean = 0.014045(12)   sdev = 0.010681(11)   skew = 0.6247(12)   ex_kurt = -0.5530(25)
+   median = 0.011824(14)   plus = 0.014451(28)   minus = 0.008725(17)

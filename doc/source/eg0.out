@@ -15,7 +15,7 @@ Fit:
           1     1.58 (12)    1.612 (82)  
 
 Settings:
-  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 6/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 8/0.0)
 
 Values:
                   a: 0.253(32)           

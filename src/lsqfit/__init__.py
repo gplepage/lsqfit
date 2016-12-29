@@ -105,9 +105,9 @@ from ._version import version as __version__
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
     extend=False,
-    svdcut=1e-15,
+    tol=1e-8,
+    svdcut=1e-12,
     debug=False,
-    tol=1e-5,
     maxit=1000,
     )
 
@@ -251,7 +251,7 @@ class nonlinear_fit(object):
             less susceptible to roundoff error. When ``svdcut < 0``,
             eigenvalues smaller than ``|svdcut|`` times the maximum eigenvalue
             are discarded and the corresponding components in ``y`` and
-            ``prior`` are zeroed out.
+            ``prior`` are zeroed out. Default is 1e-12.
 
         extend (bool): Log-normal and sqrt-normal distributions can be used
             for fit priors when ``extend=True``, provided the parameters are
@@ -294,7 +294,7 @@ class nonlinear_fit(object):
             ``tol=eps`` where ``eps`` is a number is equivalent to setting
             ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is
             equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is
-            ``tol=1e-5``. (Note: the ``ftol`` option is disabled in some
+            ``tol=1e-8``. (Note: the ``ftol`` option is disabled in some
             versions of the GSL library.)
 
         maxit (int): Maximum number of alorithm iterations (or function
@@ -427,7 +427,7 @@ class nonlinear_fit(object):
     fitter (via dictionary ``fitterargs``).
     """
 
-    DEFAULTS = _FITTER_DEFAULTS
+    DEFAULTS = {}
 
     FITTERS = _FITTERS
 
@@ -439,24 +439,34 @@ class nonlinear_fit(object):
 
         # install defaults where needed
         if extend is None:
-            extend = nonlinear_fit.DEFAULTS.get('extend', False)
+            extend = nonlinear_fit.DEFAULTS.get(
+                'extend', _FITTER_DEFAULTS['extend'],
+                )
         if svdcut is False:
-            svdcut = nonlinear_fit.DEFAULTS.get('svdcut', 1e-15)
+            svdcut = nonlinear_fit.DEFAULTS.get(
+                'svdcut', _FITTER_DEFAULTS['svdcut'],
+                )
         if debug is None:
-            debug = nonlinear_fit.DEFAULTS.get('debug', False)
+            debug = nonlinear_fit.DEFAULTS.get(
+                'debug', _FITTER_DEFAULTS['debug'],
+                )
         if tol is None:
-            tol = nonlinear_fit.DEFAULTS.get('tol', 1e-5)
+            tol = nonlinear_fit.DEFAULTS.get(
+                'tol', _FITTER_DEFAULTS['tol'],
+                )
         if maxit is None:
-            maxit = nonlinear_fit.DEFAULTS.get('maxit', 1000)
+            maxit = nonlinear_fit.DEFAULTS.get(
+                'maxit', _FITTER_DEFAULTS['maxit'],
+                )
         if fitter is None:
             fitter = nonlinear_fit.DEFAULTS.get(
-                'fitter',
-                'scipy_least_squares' if _no_gsl else 'gsl_multifit'
+                'fitter',  _FITTER_DEFAULTS['fitter'],
                 )
         for k in nonlinear_fit.DEFAULTS:
             if k in ['extend', 'svdcut', 'debug', 'maxit', 'fitter', 'tol']:
                 continue
-            fitterargs[k] = nonlinear_fit.DEFAULTS[k]
+            if k not in fitterargs:
+                fitterargs[k] = nonlinear_fit.DEFAULTS[k]
 
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
@@ -605,6 +615,44 @@ class nonlinear_fit(object):
         self.time = time.clock()-cpu_time
         if self.debug:
             self.check_roundoff()
+
+    @staticmethod
+    def set_defaults(clear=False, **defaults):
+        """ Set default parameters for :class:`lsqfit.nonlinear_fit`.
+
+        Use to set default values for parameters: ``extend``, ``svdcut``,
+        ``debug``, ``tol``, ``maxit``, and ``fitter``. Can also set
+        parameters specific to the underlying fitter.
+
+        Sample usage::
+
+            import lsqfit
+
+            old_defaults = lsqfit.nonlinear_fit.set_defaults(
+                fitter='gsl_multifit', alg='subspace2D', solver='cholesky',
+                tol=1e-10, debug=True,
+                )
+
+        ``nonlinear_fit.set_defaults()`` without arguments returns a
+        dictionary containing the current defaults.
+
+        Args:
+            clear (bool): Remove the old defaults before adding new
+                defaults. The default value is ``clear=False``.
+            defaults (dict): Dictionary containing new defaults.
+
+        Returns:
+            A dictionary containing the old defaults, before they were
+            updated.
+        """
+        old_defaults = dict(nonlinear_fit.DEFAULTS)
+        if clear:
+            nonlinear_fit.DEFAULTS = {}
+        for k in defaults:
+            if k == 'fitter' and defaults[k] not in nonlinear_fit.FITTERS:
+                raise ValueError('unknown fitter: ' + str(defaults[k]))
+            nonlinear_fit.DEFAULTS[k] = defaults[k]
+        return old_defaults
 
     def __str__(self):
         return self.format()
@@ -887,12 +935,10 @@ class nonlinear_fit(object):
             settings +="    (itns/time = {itns}/{time:.1f})".format(
                 itns=self.nit, time=self.time
                 )
-        default_line = (
-            '\n  fitter = scipy_least_squares    method = trf\n'
-            if _no_gsl else
-            '\n  fitter = gsl_multifit    methods = lm/more/qr\n'
+        default_line = '\n  fitter = gsl_multifit    methods = lm/more/qr\n'
+        newline = "\n  fitter = {}    {}\n".format(
+            self.fitter, self.description
             )
-        newline = "\n  fitter = {}    {}\n".format(self.fitter, self.description)
         if newline != default_line:
             settings += newline
         else:
@@ -1226,6 +1272,8 @@ class nonlinear_fit(object):
                     yield fit
 
     bootstrap_iter = bootstrapped_fit_iter
+
+nonlinear_fit.set_defaults(**_FITTER_DEFAULTS)
 
 def _reformat(p, buf, extend=False):
     """ Apply format of ``p`` to data in 1-d array ``buf``. """

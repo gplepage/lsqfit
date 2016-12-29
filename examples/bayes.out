@@ -7,10 +7,9 @@ Parameters:
               g    1.2 (1.1)     [  2.0 (2.0) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    tol = (1e-05*,1e-10,1e-10)    (itns/time = 12/0.0)
-  fitter = gsl_multifit    methods = lm/more/qr
+  svdcut/n = 1e-15/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0)
 
 s*g from Bayesian integral:
-   mean = 0.4696(79)   sdev = 0.5801(89)   skew = 0.466(41)   ex_kurt = 0.30(11)
-   median = 0.4295(73)   plus = 0.567(19)   minus = 0.516(13)
+   mean = 0.4697(79)   sdev = 0.5800(89)   skew = 0.466(41)   ex_kurt = 0.30(11)
+   median = 0.4296(72)   plus = 0.567(19)   minus = 0.516(13)
 s*g from fit: 0.78(66)

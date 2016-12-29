@@ -681,6 +681,12 @@ class gsl_multifit(object):
         # identify stopping criterion
         if info >= 0 and info <= 3:
             self.stopping_criterion = info
+        elif info == 30:
+            self.stopping_criterion = 1
+        elif info == 31:
+            self.stopping_criterion = 2
+        elif info == 29:
+            self.stopping_criterion = 3
         else:
             self.stopping_criterion = 0
 
@@ -695,6 +701,8 @@ class gsl_multifit(object):
         self.f = vector2array(gsl_multifit_nlinear_residual(w))
         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
         self.nit = gsl_multifit_nlinear_niter(w)
+        if status == 11 and self.nit < self.maxit:
+            self.error = "gsl_multifit can't improve on starting value; may have converged already."
         if info == 0 and self.error is None:
             self.error = "gsl_multifit didn't converge in {} iterations".format(maxit)
         self.results = None

@@ -4,6 +4,8 @@
 .. |~| unicode:: U+00A0
    :trim:
 
+.. _outliers:
+
 Case Study: Outliers and Bayesian Integrals
 =====================================================
 In this case study, we analyze a fit with outliers in the data that

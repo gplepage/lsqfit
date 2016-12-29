@@ -60,7 +60,7 @@
           <div class="body" role="main">
             
   <div class="section" id="case-study-outliers-and-bayesian-integrals">
-<h1>Case Study: Outliers and Bayesian Integrals<a class="headerlink" href="#case-study-outliers-and-bayesian-integrals" title="Permalink to this headline">¶</a></h1>
+<span id="outliers"></span><h1>Case Study: Outliers and Bayesian Integrals<a class="headerlink" href="#case-study-outliers-and-bayesian-integrals" title="Permalink to this headline">¶</a></h1>
 <p>In this case study, we analyze a fit with outliers in the data that
 distort the least-squares solution. We show one approach to dealing with
 the outliers that requires using Bayesian integrals
@@ -133,7 +133,7 @@ Parameters:
               1   0.261 (42)     [  0.0 (5.0) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08,1e-10*,1e-10)    (itns/time = 4/0.1)
 </pre></div>
 </div>
 <p>The problem is evident if we plot the data:</p>
@@ -312,14 +312,14 @@ and correlation matrices for the fit parameters.</p>
   chi2/dof [dof] = 13 [19]    Q = 1.2e-40    logGBF = -117.45
 
 Parameters:
-            c 0      1.149 (95)      [  0.0 (5.0) ]  
-              1      0.261 (42)      [  0.0 (5.0) ]  
-   erfinv(2w-1)   2e-16 +- 0.71      [  0.00 (71) ]  
----------------------------------------------------
-           2w-1    3e-16 +- 0.8      [  0.00 (80) ]  
+            c 0       1.149 (95)       [  0.0 (5.0) ]  
+              1       0.261 (42)       [  0.0 (5.0) ]  
+   erfinv(2w-1)   -2e-16 +- 0.71       [  0.00 (71) ]  
+-----------------------------------------------------
+           2w-1    -2e-16 +- 0.8       [  0.00 (80) ]  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08,1e-10*,1e-10)    (itns/time = 4/0.0)
 
 itn   integral        average         chi2/dof        Q
 -------------------------------------------------------

@@ -25,6 +25,8 @@ run:
 	- diff -w -I svdcut -I fitter err-budget.out err-budget.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
 	- diff -w -I svdcut -I fitter pendulum.out pendulum.tmp
+	$(PYTHON) nist.py > nist.tmp
+	- diff -w -I svdcut -I fitter nist.out nist.tmp
 	$(PYTHON) bayes.py > bayes.tmp
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 	# mpi tests
@@ -42,6 +44,7 @@ _time:
 	$(PYTHON) p-corr.py > /dev/null
 	$(PYTHON) err-budget.py > /dev/null
 	$(PYTHON) pendulum.py > /dev/null
+	$(PYTHON) nist.py > /dev/null
 	$(PYTHON) bayes.py > /dev/null
 
 update-all:
@@ -51,6 +54,7 @@ update-all:
 	$(PYTHON) p-corr.py > p-corr.out
 	$(PYTHON) err-budget.py > err-budget.out
 	$(PYTHON) pendulum.py > pendulum.out
+	$(PYTHON) nist.py > nist.out
 	$(PYTHON) bayes.py > bayes.out
 
 clean:

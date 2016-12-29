@@ -132,7 +132,7 @@ module for fits and, especially, error budgets.</p>
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.nonlinear_fit">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">nonlinear_fit</code><span class="sig-paren">(</span><em>data</em>, <em>fcn</em>, <em>prior=None</em>, <em>p0=None</em>, <em>extend=None</em>, <em>svdcut=False</em>, <em>debug=None</em>, <em>tol=None</em>, <em>maxit=None</em>, <em>fitter=None</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">nonlinear_fit</code><span class="sig-paren">(</span><em>data</em>, <em>fcn</em>, <em>prior=None</em>, <em>p0=None</em>, <em>extend=False</em>, <em>svdcut=1e-12</em>, <em>debug=False</em>, <em>tol=1e-8</em>, <em>maxit=1000</em>, <em>fitter='gsl_multifit'</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fits a (nonlinear) function <code class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></code>
 to data <code class="docutils literal"><span class="pre">y</span></code> by varying parameters <code class="docutils literal"><span class="pre">p</span></code>, and stores the results: for
@@ -241,7 +241,7 @@ eigenvalue. This makes the covariance matrix less singular and
 less susceptible to roundoff error. When <code class="docutils literal"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>,
 eigenvalues smaller than <code class="docutils literal"><span class="pre">|svdcut|</span></code> times the maximum eigenvalue
 are discarded and the corresponding components in <code class="docutils literal"><span class="pre">y</span></code> and
-<code class="docutils literal"><span class="pre">prior</span></code> are zeroed out.</li>
+<code class="docutils literal"><span class="pre">prior</span></code> are zeroed out. Default is 1e-12.</li>
 <li><strong>extend</strong> (<em>bool</em>) &#8211; Log-normal and sqrt-normal distributions can be used
 for fit priors when <code class="docutils literal"><span class="pre">extend=True</span></code>, provided the parameters are
 specified by a dictionary (as opposed to an array). To use such a
@@ -280,7 +280,7 @@ desired in the result, while <code class="docutils literal"><span class="pre">gt
 <code class="docutils literal"><span class="pre">tol=eps</span></code> where <code class="docutils literal"><span class="pre">eps</span></code> is a number is equivalent to setting
 <code class="docutils literal"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2)</span></code> is
 equivlent to setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
-<code class="docutils literal"><span class="pre">tol=1e-5</span></code>. (Note: the <code class="docutils literal"><span class="pre">ftol</span></code> option is disabled in some
+<code class="docutils literal"><span class="pre">tol=1e-8</span></code>. (Note: the <code class="docutils literal"><span class="pre">ftol</span></code> option is disabled in some
 versions of the GSL library.)</p>
 </li>
 <li><strong>maxit</strong> (<em>int</em>) &#8211; Maximum number of alorithm iterations (or function
@@ -831,6 +831,43 @@ agree to within relative tolerance <code class="docutils literal"><span class="p
 case an <em>svd</em> cut might be advisable).</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="lsqfit.nonlinear_fit.set_defaults">
+<em class="property">static </em><code class="descname">set_defaults</code><span class="sig-paren">(</span><em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set_defaults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
+<p>Use to set default values for parameters: <code class="docutils literal"><span class="pre">extend</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>,
+<code class="docutils literal"><span class="pre">debug</span></code>, <code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, and <code class="docutils literal"><span class="pre">fitter</span></code>. Can also set
+parameters specific to the underlying fitter.</p>
+<p>Sample usage:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="n">old_defaults</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
+    <span class="n">fitter</span><span class="o">=</span><span class="s">&#39;gsl_multifit&#39;</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s">&#39;subspace2D&#39;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s">&#39;cholesky&#39;</span><span class="p">,</span>
+    <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">nonlinear_fit.set_defaults()</span></code> without arguments returns a
+dictionary containing the current defaults.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>clear</strong> (<em>bool</em>) &#8211; Remove the old defaults before adding new
+defaults. The default value is <code class="docutils literal"><span class="pre">clear=False</span></code>.</li>
+<li><strong>defaults</strong> (<em>dict</em>) &#8211; Dictionary containing new defaults.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary containing the old defaults, before they were
+updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -839,26 +876,84 @@ case an <em>svd</em> cut might be advisable).</p>
 <dl class="function">
 <dt id="lsqfit.empbayes_fit">
 <code class="descclassname">lsqfit.</code><code class="descname">empbayes_fit</code><span class="sig-paren">(</span><em>z0</em>, <em>fitargs</em>, <em>**minargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Call <code class="docutils literal"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> varying <code class="docutils literal"><span class="pre">z</span></code>,
-starting at <code class="docutils literal"><span class="pre">z0</span></code>, to maximize <code class="docutils literal"><span class="pre">logGBF</span></code> (empirical Bayes procedure).</p>
-<p>The fit is redone for each value of <code class="docutils literal"><span class="pre">z</span></code> that is tried, in order
-to determine <code class="docutils literal"><span class="pre">logGBF</span></code>.</p>
+<dd><p>Return fit and <code class="docutils literal"><span class="pre">z</span></code> corresponding to the fit
+<code class="docutils literal"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> that maximizes <code class="docutils literal"><span class="pre">logGBF</span></code>.</p>
+<p>This function maximizes the logarithm of the Bayes Factor from
+fit  <code class="docutils literal"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> by varying <code class="docutils literal"><span class="pre">z</span></code>,
+starting at <code class="docutils literal"><span class="pre">z0</span></code>. The fit is redone for each value of <code class="docutils literal"><span class="pre">z</span></code>
+that is tried, in order to determine <code class="docutils literal"><span class="pre">logGBF</span></code>.</p>
+<p>The Bayes Factor is proportional to the probability that the data
+came from the model (fit function and priors) used in the fit.
+<a class="reference internal" href="#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal"><span class="pre">empbayes_fit()</span></code></a> finds the model or data that maximizes this
+probability.</p>
+<p>One application is illustrated by the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+
+<span class="c"># fit data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.4422</span><span class="p">,</span> <span class="mf">1.2929</span><span class="p">,</span> <span class="mf">0.4798</span><span class="p">,</span> <span class="mf">0.1725</span><span class="p">])</span>
+
+<span class="c"># fit function</span>
+<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="c"># find optimal dy</span>
+<span class="k">def</span> <span class="nf">fitargs</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">one_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">newy</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">newy</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+
+<span class="n">fit</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">([</span><span class="mf">0.001</span><span class="p">],</span> <span class="n">fitargs</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we want to fit data <code class="docutils literal"><span class="pre">y</span></code> with fit function <code class="docutils literal"><span class="pre">fcn</span></code> but we don&#8217;t
+know the uncertainties in our <code class="docutils literal"><span class="pre">y</span></code> values. We assume that the errors
+are <code class="docutils literal"><span class="pre">x</span></code>-independent and uncorrelated. We add the error <code class="docutils literal"><span class="pre">dy</span></code> that
+maximizes the Bayes Factor, as this is the most likely choice. This
+fit gives the following output:</p>
+<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.67 [4]    Q = 0.61    logGBF = 7.7643
+
+Parameters:
+              0    9.207 (47)     [ 10.0 (1.0) ]
+              1   0.9834 (42)     [  1.00 (10) ]
+
+Fit:
+     x[k]           y[k]      f(x[k],p)
+---------------------------------------
+        1    3.4422 (66)    3.4435 (66)
+        2    1.2929 (66)    1.2879 (50)
+        3    0.4798 (66)    0.4817 (38)
+        4    0.1725 (66)    0.1802 (22)  *
+
+Settings:
+  svdcut/n = 1e-15/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+</pre></div>
+</div>
+<p>We have, in effect, used the variation in the data relative to the best
+fit curve to estimate that the uncertainty in eacy data point is
+of order 0.0066.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>z0</strong> (<em>array</em>) &#8211; Starting point for search.</li>
-<li><strong>fitargs</strong> (<em>function</em>) &#8211; Function of array <code class="docutils literal"><span class="pre">z</span></code> that determines which fit
-parameters to use. The function returns these as an argument
-dictionary for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-func docutils literal"><span class="pre">lsqfit.nonlinear_fit()</span></code></a>.</li>
-<li><strong>minargs</strong> (<em>dictionary</em>) &#8211; Optional argument dictionary, passed on to
-<code class="xref py py-class docutils literal"><span class="pre">lsqfit.multiminex</span></code>, which finds the minimum.</li>
+<li><strong>fitargs</strong> (<em>callable</em>) &#8211; Function of array <code class="docutils literal"><span class="pre">z</span></code> that returns a
+dictionary containing the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+arguments corresponding to <code class="docutils literal"><span class="pre">z</span></code>.</li>
+<li><strong>minargs</strong> (<em>dict</em>) &#8211; Optional argument dictionary, passed on to
+<a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
+<a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A tuple containing the best fit (object of type
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>) and the optimal value for parameter <code class="docutils literal"><span class="pre">z</span></code>.</p>
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>) and the
+optimal value for parameter <code class="docutils literal"><span class="pre">z</span></code>.</p>
 </td>
 </tr>
 </tbody>

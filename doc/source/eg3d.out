@@ -1,0 +1,7 @@
+Histogram Analysis:
+p1/p0:
+   mean = 19.970(23)   sdev = 0.722(16)   skew = 0.127(75)   ex_kurt = -0.01(14)
+   median = 19.939(28)   plus = 0.737(35)   minus = 0.654(31)
+p3/p2:
+   mean = 0.5206(76)   sdev = 0.2396(64)   skew = 0.671(83)   ex_kurt = 0.88(18)
+   median = 0.4894(79)   plus = 0.309(18)   minus = 0.1492(54)

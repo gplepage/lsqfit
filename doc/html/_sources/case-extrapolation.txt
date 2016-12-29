@@ -41,7 +41,7 @@ parameters.
 This approach gives the following fit, where the gray band shows the 1-sigma
 uncertainty in the fit function evaluated with the best-fit parameters:
 
-.. image:: appendix_1.*
+.. image:: eg-appendix1a.*
    :width: 80%
 
 This fit was generated using the following code::
@@ -132,7 +132,7 @@ This code also gives an excellent fit, with a ``chi**2`` per degree of
 freedom of ``0.35`` (note that the data point at ``x=0.95`` is off the chart,
 but agrees with the fit to within its 1% errors):
 
-.. image:: appendix_2.*
+.. image:: eg-appendix1b.*
    :width: 80%
 
 The fit code output is:
@@ -181,7 +181,7 @@ and also a less optimal ``logGBF``:
 Setting ``prior = gv.gvar(91 * ['0(20)'])`` gives very wide priors and
 a rather strange looking fit:
 
-.. image:: appendix_4.*
+.. image:: eg-appendix1d.*
    :width: 80%
 
 Here fit errors are comparable to the data errors at the data points, as you
@@ -297,7 +297,7 @@ Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
 effectively linear). The fit here is:
 
-.. image:: appendix_3.*
+.. image:: eg-appendix1c.*
    :width: 80%
 
 The constant is consistent with all of the data in ``ymod[i]``,

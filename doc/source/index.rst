@@ -12,6 +12,7 @@ Contents:
    :maxdepth: 2
 
    overview.rst
+   testing.rst
    case-extrapolation.rst
    case-pendulum.rst
    case-outliers.rst

@@ -19,33 +19,93 @@ import lsqfit
 import time
 import collections
 try:
-    from ._gsl import gsl_multiminex as multiminex
-    from ._gsl import gammaQ
+    from ._gsl import gsl_multiminex as _multiminex
+    from ._gsl import gammaQ as _gammaQ
 except ImportError:
-    from ._scipy import scipy_multiminex as multiminex
-    from ._scipy import gammaQ
+    from ._scipy import scipy_multiminex as _multiminex
+    from ._scipy import gammaQ as _gammaQ
 
 def empbayes_fit(z0, fitargs, **minargs):
-    """ Call ``lsqfit.nonlinear_fit(**fitargs(z))`` varying ``z``,
-    starting at ``z0``, to maximize ``logGBF`` (empirical Bayes procedure).
+    """ Return fit and ``z`` corresponding to the fit
+    ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``logGBF``.
 
-    The fit is redone for each value of ``z`` that is tried, in order
-    to determine ``logGBF``.
+    This function maximizes the logarithm of the Bayes Factor from
+    fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` by varying ``z``,
+    starting at ``z0``. The fit is redone for each value of ``z``
+    that is tried, in order to determine ``logGBF``.
 
-    :param z0: Starting point for search.
-    :type z0: array
-    :param fitargs: Function of array ``z`` that determines which fit
-        parameters to use. The function returns these as an argument
-        dictionary for :func:`lsqfit.nonlinear_fit`.
-    :type fitargs: function
-    :param minargs: Optional argument dictionary, passed on to
-        :class:`lsqfit.multiminex`, which finds the minimum.
-    :type minargs: dictionary
-    :returns: A tuple containing the best fit (object of type
-        :class:`lsqfit.nonlinear_fit`) and the optimal value for parameter ``z``.
+    The Bayes Factor is proportional to the probability that the data
+    came from the model (fit function and priors) used in the fit.
+    :func:`empbayes_fit` finds the model or data that maximizes this
+    probability.
+
+    One application is illustrated by the following code::
+
+        import numpy as np
+        import gvar as gv
+        import lsqfit
+
+        # fit data
+        x = np.array([1., 2., 3., 4.])
+        y = np.array([3.4422, 1.2929, 0.4798, 0.1725])
+
+        # fit function
+        def fcn(x, p):
+            return p[0] * gv.exp( - p[1] * x)
+
+        # find optimal dy
+        def fitargs(z):
+            dy = np.one_like(y) * z[0]**2
+            newy = gv.gvar(y, dy)
+            return dict(data=(x, newy), fcn=fcn, prior=prior)
+
+        fit, z = lsqfit.empbayes_fit([0.001], fitargs)
+        print fit.format(True)
+
+    Here we want to fit data ``y`` with fit function ``fcn`` but we don't
+    know the uncertainties in our ``y`` values. We assume that the errors
+    are ``x``-independent and uncorrelated. We add the error ``dy`` that
+    maximizes the Bayes Factor, as this is the most likely choice. This
+    fit gives the following output::
+
+        Least Square Fit:
+          chi2/dof [dof] = 0.67 [4]    Q = 0.61    logGBF = 7.7643
+
+        Parameters:
+                      0    9.207 (47)     [ 10.0 (1.0) ]
+                      1   0.9834 (42)     [  1.00 (10) ]
+
+        Fit:
+             x[k]           y[k]      f(x[k],p)
+        ---------------------------------------
+                1    3.4422 (66)    3.4435 (66)
+                2    1.2929 (66)    1.2879 (50)
+                3    0.4798 (66)    0.4817 (38)
+                4    0.1725 (66)    0.1802 (22)  *
+
+        Settings:
+          svdcut/n = 1e-15/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+    We have, in effect, used the variation in the data relative to the best
+    fit curve to estimate that the uncertainty in eacy data point is
+    of order 0.0066.
+
+    Args:
+        z0 (array): Starting point for search.
+        fitargs (callable): Function of array ``z`` that returns a
+            dictionary containing the :class:`lsqfit.nonlinear_fit`
+            arguments corresponding to ``z``.
+        minargs (dict): Optional argument dictionary, passed on to
+            :class:`lsqfit.gsl_multiminex` (or
+            :class:`lsqfit.scipy_multiminex`), which finds the minimum.
+
+    Returns:
+        A tuple containing the best fit (object of type
+        :class:`lsqfit.nonlinear_fit`) and the
+        optimal value for parameter ``z``.
     """
-    if minargs == {}: # default
-        minargs = dict(tol=1e-3, step=math.log(1.1), maxit=30, analyzer=None)
+    # if minargs == {}: # default
+    #     minargs = dict(tol=1e-3, step=0.095, maxit=30, analyzer=None)
     save = dict(lastz=None, lastp0=None)
     def minfcn(z, save=save):
         args = fitargs(z)
@@ -59,7 +119,7 @@ def empbayes_fit(z0, fitargs, **minargs):
             save['lastp0'] = fit.pmean
         return -fit.logGBF
     try:
-        z = multiminex(numpy.array(z0), minfcn, **minargs).x
+        z = _multiminex(numpy.array(z0), minfcn, **minargs).x
     except ValueError:
         print('*** empbayes_fit warning: null logGBF')
         z = save['lastz']
@@ -369,7 +429,7 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
         wavg.chi2 = chi2
         wavg.dof = dof
         wavg.time = time
-        wavg.Q = gammaQ(dof / 2., chi2 / 2.)
+        wavg.Q = _gammaQ(dof / 2., chi2 / 2.)
         wavg.svdcorrection = svdcorrection
         wavg.fit = None
         ans.dof = wavg.dof
