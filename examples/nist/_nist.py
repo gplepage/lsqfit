@@ -15,8 +15,7 @@ fits.
 point by have tested the other one as well.)
 
 * The results from the fit are compared (see assert statements) with NIST's
-"certified values". All work with the gsl_multifit and scipy_least_squares
-fitters, at least on my Mac.
+"certified values".
 
 """
 # Copyright (c) 2016 G. Peter Lepage.
