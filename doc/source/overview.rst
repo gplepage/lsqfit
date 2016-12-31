@@ -17,7 +17,12 @@ noisy data by multi-dimensional, nonlinear functions of arbitrarily many
 parameters, each with a (Bayesian) prior.  :mod:`lsqfit` makes heavy use of
 another module, :mod:`gvar` (distributed separately), which provides tools
 that simplify the analysis of error propagation, and also the creation of
-complicated multi-dimensional Gaussian distributions. The power of the
+complicated multi-dimensional Gaussian distributions.
+This technology also allows :mod:`lsqfit`
+to calculate exact derivatives of fit functions from the fit functions
+themselves, using automatic differentiation, thereby avoiding the need to
+code these by hand (the fitters use the derivatives).
+The power of the
 :mod:`gvar` module, particularly for correlated distributions, enables
 a variety of unusual fitting strategies, as we illustrate below;
 it is a feature that distinguishes :mod:`lsqfit` from
@@ -66,8 +71,10 @@ This code fits the function ``f(x,a,b)= exp(a+b*x)`` (see ``fcn(x,p)``)
 to two sets of data, labeled ``data1`` and ``data2``, by varying parameters
 ``a`` and ``b`` until ``f(x['data1'],a,b)`` and ``f(x['data2'],a,b)``
 equal ``y['data1']`` and ``y['data2']``, respectively, to within the
-``y``\s' errors. The means and covariance matrices for the ``y``\s are
-specified in the ``gv.gvar(...)``\s used to create them: for example, ::
+``y``\s' errors.
+
+The means and covariance matrices for the ``y``\s are
+specified in the ``gv.gvar(...)``\s used to create them: thus, for example, ::
 
    >>> print(y['data1'])
    [1.376(69) 2.01(24)]
@@ -79,12 +86,17 @@ specified in the ``gv.gvar(...)``\s used to create them: for example, ::
 
 shows the means, standard deviations and covariance matrix for the data in
 the first data set (0.0685565 is the square root of the 0.0047 in
-the covariance matrix). The dictionary ``prior`` gives *a priori* estimates
+the covariance matrix).
+
+The dictionary ``prior`` gives *a priori* estimates
 for the two parameters, ``a`` and ``b``: each is assumed to be 0.5±0.5
 before fitting. The parameters ``p[k]`` in the fit function ``fcn(x, p)``
 are stored in a dictionary having the same keys and layout as
 ``prior`` (since ``prior`` specifies the fit parameters for
-the fitter). In addition, there is an extra piece of input data,
+the fitter).
+
+In addition to the ``data1`` and ``data2`` data sets,
+there is an extra piece of input data,
 ``y['b/a']``, which indicates that ``b/a`` is 2±0.5. The fit
 function for this data is simply the ratio ``b/a`` (represented by
 ``p['b']/p['a']`` in fit function ``fcn(x,p)``). The fit function returns
@@ -185,7 +197,7 @@ There are several things worth noting from this example:
      (``prior``).
 
    * Parameter ``debug=True`` is set in |nonlinear_fit|. This is a good idea,
-     particularly in the eary stages of a project, because it causes the
+     particularly in the early stages of a project, because it causes the
      code to check for various common errors and give more intelligible
      error messages than would otherwise arise. This parameter can be dropped
      once code development is over.
@@ -230,7 +242,8 @@ The inputs and outputs of a nonlinear least squares analysis are probability
 distributions, and these distributions will be Gaussian provided the input
 data are sufficiently accurate. :mod:`lsqfit` assumes this to be the case.
 (It also provides tests for non-Gaussian behavior, together with
-methods for dealing with such behavior.)
+methods for dealing with such behavior. See: :ref:`non-gaussian-behavior`.)
+
 One of the most distinctive features of :mod:`lsqfit` is that it is
 built around a class, |GVar|, of objects that can be used to
 represent arbitrarily complicated Gaussian distributions
@@ -417,7 +430,7 @@ There are five important things to know about them (see the
       although they can be quite useful with other data types as well.
       The values in a pickled |BufferDict| can be individual |GVar|\s or
       arbitrary :mod:`numpy` arrays of |GVar|\s. See the :mod:`gvar`
-      docmentation for more information.
+      documentation for more information.
 
 There is considerably more information about |GVar|\s in the documentation for
 module :mod:`gvar`.
@@ -876,7 +889,7 @@ information on parameters correlated with ``a[1]/a[0]``.
 
 Obviously, we can use further fits in order to incorporate additional data. The
 prior for each new fit is the best-fit output (``fit.p``) from the previous
-fit. The output from the chain's final fit is the cummulative  result of all
+fit. The output from the chain's final fit is the cumulative  result of all
 of these fits.
 
 Finally note that this particular problem can be done much more
@@ -1053,7 +1066,7 @@ Running the code gives the following output:
 Note how the ratio ``p1/p0`` is much more accurate than either quantity
 separately. The prior introduces a strong, positive correlation between
 the two parameters that
-survives the fit: the correlation coefficent is |~| 0.96. Comparing the
+survives the fit: the correlation coefficient is |~| 0.96. Comparing the
 fit function with the best-fit parameters (dashed line)
 with the data shows a good fit:
 
@@ -1305,7 +1318,7 @@ to notice:
     having no errors, it is straightforward to apply the same ideas to
     a situation where the ``y``\s have errors. Often in a fit we are
     interested in only one or two of many fit parameters. Getting rid
-    of the unteresting parameters (by absorbing them into ``ymod``)
+    of the uninteresting parameters (by absorbing them into ``ymod``)
     can greatly reduce the number of parameters varied by the fit,
     thereby speeding up the fit. Here we are in effect doing a
     100-exponential fit to our data, but actually fitting with only
@@ -1351,7 +1364,7 @@ replacing its smallest eigenvalues with a larger, minimum
 eigenvalue. The cost is less precision in the final results
 since we are decreasing the
 precision of the input ``y`` data. This is a conservative move, but numerical
-stability is worth the tradeoff. The listing shows that 3 |~| eigenvalues are
+stability is worth the trade off. The listing shows that 3 |~| eigenvalues are
 modified when ``svdcut=1e-12`` (see entry for ``svdcut/n``); no
 eigenvalues are changed when ``svdcut=1e-19``.
 
@@ -1453,7 +1466,7 @@ This method is implemented in a driver program ::
 
     fit, z = lsqfit.empbayes_fit(z0, fitargs)
 
-which varies array ``z``, starting at ``z0``, to maximize
+which varies parameter ``z``, starting at ``z0``, to maximize
 ``fit.logGBF`` where ::
 
     fit = lsqfit.nonlinear_fit(**fitargs(z)).
@@ -1465,7 +1478,7 @@ varied as functions of ``z``. The optimal fit (that is, the one for which
 
 Here we want to vary the relative error assigned to the data values,
 so we use the following code, where the uncertainty in ``y[i]`` is set
-equal to ``dy[i] = y[i] * z[0]**2``::
+equal to ``dy[i] = y[i] * z``::
 
     import numpy as np
     import gvar as gv
@@ -1478,15 +1491,15 @@ equal to ``dy[i] = y[i] * z[0]**2``::
 
     # fit function
     def fcn(x, p):
-        return p[0] * gv.exp( - p[1] * x)
+        return p[0] * gv.exp(-p[1] * x)
 
     # find optimal dy
     def fitargs(z):
-        dy = y * z[0] ** 2
+        dy = y * z
         newy = gv.gvar(y, dy)
         return dict(data=(x, newy), fcn=fcn, prior=prior)
 
-    fit, z = lsqfit.empbayes_fit([0.001], fitargs)
+    fit, z = lsqfit.empbayes_fit(0.001, fitargs)
     print(fit.format(True))
 
 This code produces the following output:
@@ -1499,11 +1512,11 @@ for the input data. The overall fit is excellent.
 It is important to appreciate that the outcome of a such a fit depends
 in detail on the assumptions you make about ``y``'s uncertainties |~| ``dy``.
 We assume ``dy/y`` is ``x``-independent above, but we get a somewhat different
-answer if instead we assume that ``dy`` is constant. Then ``fitterargs``
+answer if instead we assume that ``dy`` is constant. Then ``fitrargs``
 becomes ::
 
     def fitargs(z):
-        dy =  np.ones_like(y) * z[0] ** 2
+        dy =  np.ones_like(y) * z
         newy = gv.gvar(y, dy)
         return dict(data=(x, newy), fcn=fcn, prior=prior)
 
@@ -1511,7 +1524,7 @@ and the output is:
 
 .. literalinclude:: eg7b.out
 
-The data suggest an uncertainty of 0.0067 in each ``y[i]``.
+The data suggest an uncertainty of 0.0066 in each ``y[i]``.
 Results for the fit parameters ``fit.p[i]`` are similar in the two cases,
 but the error on ``p[0]`` is almost four times smaller with
 constant |~| ``dy``.
@@ -1520,13 +1533,12 @@ There is no way to tell from the data which of these error scenarios for
 |~| ``y`` is correct. ``logGBF`` is slightly larger for the second fit,
 despite its larger ``chi2/dof``, but the difference is not significant.
 There isn't enough data and it doesn't cover a large enough range to
-distinguish between these two options. (With 40 pieces of data, instead
-of 4, that cover ``x`` values from 0.1 to 10, it becomes easy to distinguish
-between constant ``dy`` and constant |~| ``dy/y``.)
+distinguish between these two options. Additional information about
+the data or data taking is needed to decide.
 
 The Empirical Bayes method for setting ``dy`` becomes trivial when there
-are no priors and when ``dy`` is assumed to be ``x``-indendent. Then it is
-possible to mimimize the *chi**2* function without knowing ``dy``, since
+are no priors and when ``dy`` is assumed to be ``x``-independent. Then it is
+possible to minimize the *chi**2* function without knowing ``dy``, since
 ``dy`` factors out. The
 optimal ``dy`` is just the standard deviation of the fit residuals
 ``y[i] - fcn(x[i],p)`` with the best-fit parameters |~| ``p``. This
@@ -1543,10 +1555,7 @@ Gaussian Bayes Factor after fitting (see ``logGBF`` in fit output or
 ``fit.logGBF``) is the one preferred by the data. We can use this fact to tune
 a prior or set of priors in situations where we are uncertain about the
 correct *a priori* value: we vary the widths and/or central values of the
-priors of interest to maximize ``logGBF``. This leads to complete nonsense if
-it is applied to all the priors in a problem,
-but it is useful for tuning (or testing)
-limited subsets of the priors when other information is unavailable. In effect
+priors of interest to maximize ``logGBF``. In effect
 we are using the data to get a feel for what is a reasonable prior. This
 procedure for setting priors is again, as in the previous section,
 an example of the *Empirical Bayes* method and can be implemented using
@@ -1567,18 +1576,18 @@ The following code illustrates how this is done::
     def fcn(x, p):
         return gv.exp(-p[0] - p[1] * x - p[2] * x**2 - p[3] * x**3)
 
-    def fitterargs(z):
-        dp = z[0] ** 2
+    def fitargs(z):
+        dp = z
         prior = gv.gvar([gv.gvar(0, dp) for i in range(4)])
         return dict(prior=prior, fcn=fcn, data=(x,y))
 
-    fit,z = lsqfit.empbayes_fit([0.01], fitterargs)
+    fit,z = lsqfit.empbayes_fit(1.0, fitargs)
     print(fit.format(True))
 
 Here the fitter varies parameters ``p`` until ``fcn(x,p)`` equals the
 input data ``y``. We don't know *a priori* how large the coefficients
-``p[i]`` are. In ``fitterargs`` we assume they are all of order
-``dp = z[0] ** 2``. Function ``empbayes_fit`` varies ``z`` to maximize
+``p[i]`` are. In ``fitargs`` we assume they are all of order
+``dp = z``. Function ``empbayes_fit`` varies ``z`` to maximize
 |~| ``fit.logGBF``. The output is as follows:
 
 .. literalinclude:: eg4a.out
@@ -1603,13 +1612,50 @@ we find that fits with 3 or 4 |~| ``p[i]``\s give the following results:
 
 The two fits are almost equally good, giving almost the same ``chi**2``
 values. The first fit, with only 3 |~| ``p[i]``\s, however, has a
-signficantly larger ``logGBF``. This indicates that this data is
+significantly larger ``logGBF``. This indicates that this data is
 ``exp(27.1-22.6) = 90`` times more likely to come from the theory with
 only 3 |~| ``p[i]``\s than from the one with |~| 4. The data much prefer
 the 3-parameter theory, and they do, in fact,
 come from such a theory. Note that the value for ``p[3]`` in
 the second case is consistent with zero, but the errors on the other
 parameters are much larger if it is included in the fit.
+
+The Empirical Bayes procedure can be abused. It is possible to make ``logGBF``
+arbitrarily large. For example, setting ::
+
+    prior = gv.gvar([
+        '2.5904 +- 2.6e-16', '-6.53012 +- 6.5e-16',
+        '7.83211 +- 7.8e-16', '-1.68813 +- 1.7e-16',
+        ])
+
+in the problem above and then fitting gives ``logGBF=52.2``,  which is much
+larger than the  alternatives above. This "prior" is ridiculous, however: it
+has means equal to the best-fit results with standard deviations that are  16
+|~| orders of magnitude smaller. This is the kind of solution you  get from
+Empirical Bayes if you vary the means and standard deviations of all
+parameters independently.
+
+Bayes Theorem explains what is wrong with such priors. The Bayes Factor is
+proportional to the probability ``P(y|model)``  that the fit data would arise
+given the model (priors plus fit function). When selecting models, we really
+want to maximize ``P(model|y)``, the probability of the model given the data.
+These two probabilities are different, but are related by Bayes Theorem:
+``P(model|y)`` is proportional to ``P(y|model)`` times ``P(model)``, where
+``P(model)`` is the *a priori* probability of the model being correct. When we
+choose a model by maximizing ``logGBF`` we are implicitly assuming that the
+various models we are considering are all equally likely candidates --- that
+is, we are assuming that ``P(model)`` is approximately constant across the
+model space we are exploring. The *a priori* probability for the prior just
+above is vanishingly small (because it is ridiculous),
+and so comparing its ``logGBF`` to
+the others is nonsensical. Empirical Bayes typically makes sense only when
+varying a single a parameter, or varying a group of parameters together.
+
+Note that :func:`empbayes_fit` allows ``fitargs(z)`` to return
+a dictionary of arguments for the fitter together with a ``plausibility``
+for |~| ``z``, which corresponds to ``log(P(model))`` in the discussion
+above. This allows you steer the search away from completely
+implausible solutions.
 
 .. _positive-parameters:
 
@@ -1628,7 +1674,7 @@ definition of the fit function itself.
 |nonlinear_fit| supports log-normal distributions when ``extend=True`` is set
 in its argument list. This argument only affects fits that use dictionaries
 for their parameters. The prior for a parameter ``'c'`` is switched from a
-Gaussian distribution to a log-normal distribtuion by replacing parameter
+Gaussian distribution to a log-normal distribution by replacing parameter
 ``'c'`` in the fit prior with a prior for its logarithm, using the key
 ``'log(c)'``. This causes |nonlinear_fit| to use the logarithm as the fit
 parameter (with its Gaussian prior). Parameter dictionaries produced by
@@ -1702,7 +1748,7 @@ Setting ``extend=True`` in |nonlinear_fit| also allows parameters to  be
 replaced by their square roots as fit parameters, or by the inverse error
 function. The latter option is
 useful here because it allows us to define a prior distribution
-for parameter ``a`` that is uniform between 0 and 0.4::
+for parameter ``a`` that is uniform between 0 and 0.04::
 
    prior = {}
    prior['erfinv(50*a-1)'] = gv.gvar('0(1)') / gv.sqrt(2)
@@ -1717,8 +1763,8 @@ for parameter ``a`` that is uniform between 0 and 0.4::
 
 In general, setting a prior ``prior['erfinv(w)']`` equal to (0±1)/sqrt(2)
 means that the prior probability for variable ``w`` is constant between -1 and
-1, and zero elsewhere. Here ``w=5*a-1``, so that the prior distribution for
-``a`` is uniform between 0 and 0.4, and zero elsewhere. This again guarantees
+1, and zero elsewhere. Here ``w=50*a-1``, so that the prior distribution for
+``a`` is uniform between 0 and 0.04, and zero elsewhere. This again guarantees
 a positive parameter.
 
 The result from this last fit is:
@@ -1759,7 +1805,7 @@ to lie between 0 and 0.04. This fit gives ``a=0.012(12)``, which
 again agrees well with log-normal fit. The prior 0±0.75 for ``f(a)``
 is chosen to make the prior probability
 distribution for parameter ``a`` almost flat
-across most (80%) of the interval 0.2±0.2.
+across most (80%) of the interval 0.02±0.02.
 
 Faster Fitters
 -------------------
@@ -1843,7 +1889,7 @@ It is a very good idea to set parameter ``debug=True`` in |nonlinear_fit|, at
 least in the early stages of a project. This causes the code to look for
 common mistakes and report on them with  more intelligible error messages. The
 code also then checks for significant roundoff errors in the matrix inversion
-of the covariance matrice.
+of the covariance matrix.
 
 A common mistake is a mismatch between the format of the data and the
 format of what comes back from the fit function. Another mistake is when  a

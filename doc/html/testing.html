@@ -60,7 +60,7 @@
           <div class="body" role="main">
             
   <div class="section" id="non-gaussian-behavior-testing-fits">
-<h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Permalink to this headline">¶</a></h1>
+<span id="non-gaussian-behavior"></span><h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The various analyses in the Tutorial assume implicitly that every
@@ -190,9 +190,9 @@ corr(p0,p1) = 0.949819729559
 </div>
 <p>In particular, the bootstrap analysis confirms the previous error estimates
 (to within 10-30%, since <code class="docutils literal"><span class="pre">Nbs=40</span></code>) except for <code class="docutils literal"><span class="pre">p3/p2</span></code>, where the error
-is substantial larger in the bootstrap analysis.</p>
+is substantially larger in the bootstrap analysis.</p>
 <p>If <code class="docutils literal"><span class="pre">p3/p2</span></code> is important, one might want to look
-more closely at its distrubution.
+more closely at its distribution.
 We use the bootstrap to create histograms of the probability distributions
 of <code class="docutils literal"><span class="pre">p3/p2</span></code> and <code class="docutils literal"><span class="pre">p1/p01</span></code>
 by adding the following code to the end of the <code class="docutils literal"><span class="pre">main()</span></code>
@@ -279,7 +279,7 @@ specified by their best-fit means and covariance matrix (from <code class="docut
 <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a> to evaluate Bayesian expectation values.
 <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a> uses the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> module for adaptive
 multi-dimensional integration to evaluate expectation values. It integrates
-arbitrary functions of the parameters, mutliplied by the probability
+arbitrary functions of the parameters, multiplied by the probability
 density function, over the entire parameter space. (Module <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>
 must be installed for <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>.)</p>
 <p>To illustrate <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>,

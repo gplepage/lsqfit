@@ -25,14 +25,22 @@ def fcn(x, p):
     return gv.exp(-p[0] - p[1] * x - p[2] * x**2 - p[3] * x**3)
 
 def fitterargs(z):
-    prior = gv.gvar([gv.gvar(0, z[0]**2) for i in range(4)])
+    prior = [gv.gvar(0, z) for i in range(4)]
     return dict(prior=prior, fcn=fcn, data=(x,y))
 
-fit,z = lsqfit.empbayes_fit([0.01, 0.01, 0.01, 0.01], fitterargs)
+fit,z = lsqfit.empbayes_fit(1., fitterargs)
 
 sys.stdout = tee.tee(sys_stdout, open('eg4a.out', 'w'))
 print fit.format(True)
 
+sys.stdout = sys_stdout
+
+prior = gv.gvar([
+    '2.5904 +- 2.6e-16', '-6.53012 +- 6.5e-16',
+    '7.83211 +- 7.8e-16', '-1.68813 +- 1.7e-16',
+    ])
+fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=fcn)
+print fit
 
 # 3 vs 4 terms
 sys.stdout = tee.tee(sys_stdout, open('eg4b.out', 'w'))

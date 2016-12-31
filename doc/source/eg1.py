@@ -7,8 +7,8 @@ Created by Peter Lepage on 2016-12.
 Copyright (c) 2016 Cornell University. All rights reserved.
 """
 DO_PLOT = True
-DO_BAYES = False
-DO_BOOTSTRAP = False
+DO_BAYES = False        # should be False
+DO_BOOTSTRAP = False    # should be False
 
 import collections
 import sys
@@ -17,7 +17,7 @@ import lsqfit
 import numpy as np
 import gvar as gv
 
-def f(x,p):                         # function used to fit x,y data
+def fcn(x,p):                       # function used to fit x,y data
     a = p['a']                      # array of a[i]s
     E = p['E']                      # array of E[i]s
     return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
@@ -76,7 +76,7 @@ def main():
     sys.stdout = tee.tee(sys.stdout, open("eg1.out","w"))
     for nexp in range(1, 7):
         prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0)
+        fit = lsqfit.nonlinear_fit(data=(x,y), fcn=fcn, prior=prior, p0=p0)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
         print '************************************* nexp =',nexp
@@ -110,7 +110,7 @@ def main():
 
     # redo fit with 4 parameters since that is enough
     prior = make_prior(4)
-    fit = lsqfit.nonlinear_fit(data=(x,y), fcn=f, prior=prior, p0=fit.pmean)
+    fit = lsqfit.nonlinear_fit(data=(x,y), fcn=fcn, prior=prior, p0=fit.pmean)
     sys.stdout = sys_stdout
     print fit
     # extra data 1

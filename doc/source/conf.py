@@ -28,6 +28,10 @@ import lsqfit
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
 extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
 pngmath_use_preview = True
+pngmath_use_preview = True
+pngmath_latex_preamble = "\usepackage{arev}"
+pngmath_dvipng_args = ['-gamma 0.5' , '-D 100']
+
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
 napoleon_include_private_with_doc = False

@@ -6,6 +6,8 @@
 
 .. highlight:: python
 
+.. _non-gaussian-behavior:
+
 Non-Gaussian Behavior; Testing Fits
 =====================================
 
@@ -119,10 +121,10 @@ the fit:
 
 In particular, the bootstrap analysis confirms the previous error estimates
 (to within 10-30%, since ``Nbs=40``) except for ``p3/p2``, where the error
-is substantial larger in the bootstrap analysis.
+is substantially larger in the bootstrap analysis.
 
 If ``p3/p2`` is important, one might want to look
-more closely at its distrubution.
+more closely at its distribution.
 We use the bootstrap to create histograms of the probability distributions
 of ``p3/p2`` and ``p1/p01``
 by adding the following code to the end of the ``main()``
@@ -206,7 +208,7 @@ Here we use
 :class:`lsqfit.BayesIntegrator` to evaluate Bayesian expectation values.
 :class:`lsqfit.BayesIntegrator` uses the :mod:`vegas` module for adaptive
 multi-dimensional integration to evaluate expectation values. It integrates
-arbitrary functions of the parameters, mutliplied by the probability
+arbitrary functions of the parameters, multiplied by the probability
 density function, over the entire parameter space. (Module :mod:`vegas`
 must be installed for :class:`lsqfit.BayesIntegrator`.)
 

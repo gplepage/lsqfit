@@ -35,11 +35,11 @@ def main():
 
     # find optimal dy
     def fitargs(z):
-        dy = y * z[0] ** 2
+        dy = y * z
         newy = gv.gvar(y, dy)
         return dict(data=(x, newy), fcn=fcn, prior=prior)
 
-    fit, z = lsqfit.empbayes_fit([0.001], fitargs)
+    fit, z = lsqfit.empbayes_fit(0.001, fitargs)
     print fit.format(True)
     if MAKE_PLOT:
         ratio = fit.y / fcn(x, fit.pmean)
@@ -50,11 +50,11 @@ def main():
     sys.stdout = tee.tee(sys_stdout, open("eg7b.out","w"))
 
     def fitargs(z):
-        dy =  np.ones_like(y) * z[0] ** 2
+        dy =  np.ones_like(y) * z
         newy = gv.gvar(y, dy)
         return dict(data=(x, newy), fcn=fcn, prior=prior)
 
-    fit, z = lsqfit.empbayes_fit([0.001], fitargs)
+    fit, z = lsqfit.empbayes_fit(0.001, fitargs)
     print fit.format(True)
 
     if MAKE_PLOT:

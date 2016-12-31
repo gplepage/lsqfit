@@ -194,7 +194,7 @@ Classes for Bayesian Integrals
 Requirements
 ------------
 :mod:`lsqfit` relies heavily on the :mod:`gvar`, and :mod:`numpy` modules.
-Also the fitting and minimization routines are f
-rom the Gnu Scientific Library (GSL) and/or the Python :mod:`scipy` module.
+Also the fitting and minimization routines are from
+the Gnu Scientific Library (GSL) and/or the Python :mod:`scipy` module.
 
 

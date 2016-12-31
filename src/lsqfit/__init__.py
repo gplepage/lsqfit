@@ -157,8 +157,8 @@ class nonlinear_fit(object):
     information about errors and correlations with other parameters. The fit
     data and prior can be recovered using ``fit.x`` (equals ``False`` if there
     is no ``x``), ``fit.y``, and ``fit.prior``; the data and prior are
-    corrected for the *svd* cut, if there is one (that is, their covariance
-    matrices have been modified in accordance with the *svd* cut).
+    corrected for the SVD cut, if there is one (that is, their covariance
+    matrices have been modified in accordance with the SVD cut).
 
     Args:
 
@@ -239,7 +239,7 @@ class nonlinear_fit(object):
             ``p0`` must be defined if ``prior`` is ``None``.
 
         svdcut (float or None): If ``svdcut`` is nonzero
-            (but not ``None``), *svd* cuts are applied to every block-diagonal
+            (but not ``None``), SVD cuts are applied to every block-diagonal
             sub-matrix of the covariance matrix for the data ``y`` and ``prior``
             (if there is a prior). The blocks are first rescaled so that all
             diagonal elements equal 1 -- that is, the blocks are replaced by
@@ -287,17 +287,17 @@ class nonlinear_fit(object):
 
                 3. ``ftol >=`` relative change in ``chi**2`` between iterations
 
-            is statisfied. See the fitter documentation for detailed
+            is satisfied. See the fitter documentation for detailed
             definitions of these stopping conditions. Typically one sets
             ``xtol=1/10**d`` where ``d`` is the number of digits of precision
             desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting
             ``tol=eps`` where ``eps`` is a number is equivalent to setting
             ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is
-            equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is
+            equivalent to setting ``tol=(eps1,eps2,1e-10)``. Default is
             ``tol=1e-8``. (Note: the ``ftol`` option is disabled in some
             versions of the GSL library.)
 
-        maxit (int): Maximum number of alorithm iterations (or function
+        maxit (int): Maximum number of algorithm iterations (or function
             evaluations for some fitters) in search for minimum;
             default is 1000.
 
@@ -306,7 +306,7 @@ class nonlinear_fit(object):
 
         fitterargs (dict): Dictionary of additional arguments passed through
             to the underlying fitter. Different fitters offer different
-            paramenters; see the documentation for each.
+            parameters; see the documentation for each.
 
     Objects of type :class:`lsqfit.nonlinear_fit` have the following
     attributes:
@@ -337,7 +337,7 @@ class nonlinear_fit(object):
             ``P(data|model)``. This quantity is useful for comparing fits of
             the same data to different models, with different priors and/or
             fit functions. The model with the largest value of ``fit.logGBF``
-            is the one prefered by the data. The exponential of the difference
+            is the one preferred by the data. The exponential of the difference
             in ``fit.logGBF`` between two models is the ratio of probabilities
             (Bayes factor) for those models. Differences in ``fit.logGBF``
             smaller than 1 are not very significant. Gaussian statistics are
@@ -663,7 +663,7 @@ class nonlinear_fit(object):
         Compares standard deviations from fit.p and fit.palt to see if they
         agree to within relative tolerance ``rtol`` and absolute tolerance
         ``atol``. Generates a warning if they do not (in which
-        case an *svd* cut might be advisable).
+        case an SVD cut might be advisable).
         """
         psdev = _gvar.sdev(self.p.flat)
         paltsdev = _gvar.sdev(self.palt.flat)
@@ -1303,7 +1303,7 @@ def _unpack_data(data, prior, svdcut, extend):
     ``prior`` is the collection of priors for the fit, and ``fdata``
     contains the information about the data and prior needed for the
     fit function. Both ``y`` and ``prior`` are modified to account
-    for *svd* cuts if ``svdcut>0``.
+    for SVD cuts if ``svdcut>0``.
 
     Note that redundant keys (eg, 'c' if 'logc' is a key) are removed
     from the prior if extend=True (and the prior is a dictionary).
@@ -1317,11 +1317,11 @@ def _unpack_data(data, prior, svdcut, extend):
 
     Output data in ``fdata`` is: ``fdata.mean`` containing the mean values of
     ``y.flat`` and ``prior.flat`` (if there is a prior);
-    ``fdata.svdcorrection``  containing the sum of the *svd* corrections to
+    ``fdata.svdcorrection``  containing the sum of the SVD corrections to
     ``y.flat`` and ``prior.flat``; ``fdata.logdet`` containing  the logarithm
     of the  determinant of the covariance matrix of ``y.flat`` and
     ``prior.flat``; and ``fdata.inv_wgts`` containing a representation of the
-    inverse of the covariance matrix, after *svd* cuts (see :func:`gvar.svd`
+    inverse of the covariance matrix, after SVD cuts (see :func:`gvar.svd`
     for a description of the format).
     """
     # unpack data tuple
@@ -1641,7 +1641,7 @@ try:
         but they can differ significantly for nonlinear fits.
 
         ``BayesIntegrator`` integrates over the entire parameter space but
-        first reexpresses the integrals in terms of variables that
+        first re-expresses the integrals in terms of variables that
         diagonalize the covariance matrix of the best-fit parameters
         ``fit.p`` from :class:`nonlinear_fit` and are centered at the
         best-fit values. This greatly facilitates the integration using

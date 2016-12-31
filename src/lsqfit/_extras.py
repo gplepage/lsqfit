@@ -1,7 +1,7 @@
 """ part of lsqfit module: extra functions  """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012-14 G. Peter Lepage.
+# Copyright (c) 2012-16 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,52 +49,65 @@ def empbayes_fit(z0, fitargs, **minargs):
         x = np.array([1., 2., 3., 4.])
         y = np.array([3.4422, 1.2929, 0.4798, 0.1725])
 
+        # prior
+        prior = gv.gvar(['10(1)', '1.0(1)'])
+
         # fit function
         def fcn(x, p):
             return p[0] * gv.exp( - p[1] * x)
 
         # find optimal dy
         def fitargs(z):
-            dy = np.one_like(y) * z[0]**2
+            dy = y * z
             newy = gv.gvar(y, dy)
             return dict(data=(x, newy), fcn=fcn, prior=prior)
 
-        fit, z = lsqfit.empbayes_fit([0.001], fitargs)
+        fit, z = lsqfit.empbayes_fit(0.1, fitargs)
         print fit.format(True)
 
-    Here we want to fit data ``y`` with fit function ``fcn`` but we don't
-    know the uncertainties in our ``y`` values. We assume that the errors
+    Here we want to fit data ``y`` with fit function ``fcn`` but we don't know
+    the uncertainties in our ``y`` values. We assume that the relative errors
     are ``x``-independent and uncorrelated. We add the error ``dy`` that
-    maximizes the Bayes Factor, as this is the most likely choice. This
-    fit gives the following output::
+    maximizes the Bayes Factor, as this is the most likely choice. This fit
+    gives the following output::
 
         Least Square Fit:
-          chi2/dof [dof] = 0.67 [4]    Q = 0.61    logGBF = 7.7643
+          chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 7.4834
 
         Parameters:
-                      0    9.207 (47)     [ 10.0 (1.0) ]
-                      1   0.9834 (42)     [  1.00 (10) ]
+                      0     9.44 (18)     [ 10.0 (1.0) ]
+                      1   0.9979 (69)     [  1.00 (10) ]
 
         Fit:
              x[k]           y[k]      f(x[k],p)
         ---------------------------------------
-                1    3.4422 (66)    3.4435 (66)
-                2    1.2929 (66)    1.2879 (50)
-                3    0.4798 (66)    0.4817 (38)
-                4    0.1725 (66)    0.1802 (22)  *
+                1     3.442 (54)     3.481 (45)
+                2     1.293 (20)     1.283 (11)
+                3    0.4798 (75)    0.4731 (41)
+                4    0.1725 (27)    0.1744 (23)
 
         Settings:
-          svdcut/n = 1e-15/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
 
     We have, in effect, used the variation in the data relative to the best
-    fit curve to estimate that the uncertainty in eacy data point is
-    of order 0.0066.
+    fit curve to estimate that the uncertainty in each data point is
+    of order 1.6%.
 
     Args:
-        z0 (array): Starting point for search.
-        fitargs (callable): Function of array ``z`` that returns a
-            dictionary containing the :class:`lsqfit.nonlinear_fit`
-            arguments corresponding to ``z``.
+        z0 (number, array or dict): Starting point for search.
+        fitargs (callable): Function of ``z`` that returns a
+            dictionary ``args`` containing the :class:`lsqfit.nonlinear_fit`
+            arguments corresponding to ``z``. ``z`` should have
+            the same layout (number, array or dictionary) as ``z0``.
+            ``fitargs(z)`` can instead return a tuple ``(args, plausibility)``,
+            where ``args`` is again the dictionary for
+            :class:`lsqfit.nonlinear_fit`. ``plausibility`` is the logarithm
+            of the *a priori* probabilitiy that ``z`` is sensible. When
+            ``plausibility`` is provided, :func:`lsqfit.empbayes_fit`
+            maximizes the sum ``logGBF + plausibility``. Specifying
+            ``plausibility`` is a way of steering selections away from
+            completely implausible values for ``z``.
         minargs (dict): Optional argument dictionary, passed on to
             :class:`lsqfit.gsl_multiminex` (or
             :class:`lsqfit.scipy_multiminex`), which finds the minimum.
@@ -104,11 +117,32 @@ def empbayes_fit(z0, fitargs, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
-    # if minargs == {}: # default
-    #     minargs = dict(tol=1e-3, step=0.095, maxit=30, analyzer=None)
     save = dict(lastz=None, lastp0=None)
-    def minfcn(z, save=save):
+    if hasattr(z0, 'keys'):
+        # z is a dictionary
+        if not isinstance(z0, gvar.BufferDict):
+            z0 = gvar.BufferDict(z0)
+        z0buf = z0.buf
+        def convert(zbuf):
+            return gvar.BufferDict(z0, buf=zbuf)
+    elif numpy.shape(z0) == ():
+        # z is a number
+        z0buf = numpy.array([z0])
+        def convert(zbuf):
+            return zbuf[0]
+    else:
+        # z is an array
+        z0 = numpy.asarray(z0)
+        z0buf = z0
+        def convert(zbuf):
+            return zbuf
+    def minfcn(zbuf, save=save, convert=convert):
+        z = convert(zbuf)
         args = fitargs(z)
+        if not hasattr(args, 'keys'):
+            args, plausibility = args
+        else:
+            plausibility = 0.0
         if save['lastp0'] is not None:
             args['p0'] = save['lastp0']
         fit = lsqfit.nonlinear_fit(**args)
@@ -117,13 +151,15 @@ def empbayes_fit(z0, fitargs, **minargs):
         else:
             save['lastz'] = z
             save['lastp0'] = fit.pmean
-        return -fit.logGBF
+        return -fit.logGBF - plausibility
     try:
-        z = _multiminex(numpy.array(z0), minfcn, **minargs).x
+        z = convert(_multiminex(z0buf, minfcn, **minargs).x)
     except ValueError:
         print('*** empbayes_fit warning: null logGBF')
         z = save['lastz']
     args = fitargs(z)
+    if not hasattr(args, 'keys'):
+        args, plausibility = args
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
     return lsqfit.nonlinear_fit(**args), z
@@ -146,7 +182,7 @@ class GVarWAvg(gvar.GVar):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -191,7 +227,7 @@ class ArrayWAvg(numpy.ndarray):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -246,7 +282,7 @@ class BufferDictWAvg(gvar.BufferDict):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -367,8 +403,8 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
         **dof** - Effective number of degrees of freedom.
 
         **Q** - The probability that the ``chi**2`` could have been larger,
-            by chance, assuming that the data are all Gaussain and consistent
-            with each other. Values smaller than 0.1 or suggest that the
+            by chance, assuming that the data are all Gaussian and consistent
+            with each other. Values smaller than 0.1 or so suggest that the
             data are not Gaussian or are inconsistent with each other. Also
             called the *p-value*.
 

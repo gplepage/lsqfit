@@ -150,8 +150,8 @@ individual parameters in <code class="docutils literal"><span class="pre">fit.p<
 information about errors and correlations with other parameters. The fit
 data and prior can be recovered using <code class="docutils literal"><span class="pre">fit.x</span></code> (equals <code class="docutils literal"><span class="pre">False</span></code> if there
 is no <code class="docutils literal"><span class="pre">x</span></code>), <code class="docutils literal"><span class="pre">fit.y</span></code>, and <code class="docutils literal"><span class="pre">fit.prior</span></code>; the data and prior are
-corrected for the <em>svd</em> cut, if there is one (that is, their covariance
-matrices have been modified in accordance with the <em>svd</em> cut).</p>
+corrected for the SVD cut, if there is one (that is, their covariance
+matrices have been modified in accordance with the SVD cut).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -229,7 +229,7 @@ same file after the fit (for priming future fits). If <code class="docutils lite
 are extracted from <code class="docutils literal"><span class="pre">prior</span></code>. The default value is <code class="docutils literal"><span class="pre">None</span></code>;
 <code class="docutils literal"><span class="pre">p0</span></code> must be defined if <code class="docutils literal"><span class="pre">prior</span></code> is <code class="docutils literal"><span class="pre">None</span></code>.</li>
 <li><strong>svdcut</strong> (<em>float or None</em>) &#8211; If <code class="docutils literal"><span class="pre">svdcut</span></code> is nonzero
-(but not <code class="docutils literal"><span class="pre">None</span></code>), <em>svd</em> cuts are applied to every block-diagonal
+(but not <code class="docutils literal"><span class="pre">None</span></code>), SVD cuts are applied to every block-diagonal
 sub-matrix of the covariance matrix for the data <code class="docutils literal"><span class="pre">y</span></code> and <code class="docutils literal"><span class="pre">prior</span></code>
 (if there is a prior). The blocks are first rescaled so that all
 diagonal elements equal 1 &#8211; that is, the blocks are replaced by
@@ -273,24 +273,24 @@ fit to stop searching for a minimum when any of</p>
 <li><code class="docutils literal"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal"><span class="pre">chi**2</span></code> between iterations</li>
 </ol>
 </div></blockquote>
-<p>is statisfied. See the fitter documentation for detailed
+<p>is satisfied. See the fitter documentation for detailed
 definitions of these stopping conditions. Typically one sets
 <code class="docutils literal"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal"><span class="pre">d</span></code> is the number of digits of precision
 desired in the result, while <code class="docutils literal"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
 <code class="docutils literal"><span class="pre">tol=eps</span></code> where <code class="docutils literal"><span class="pre">eps</span></code> is a number is equivalent to setting
 <code class="docutils literal"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2)</span></code> is
-equivlent to setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
+equivalent to setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
 <code class="docutils literal"><span class="pre">tol=1e-8</span></code>. (Note: the <code class="docutils literal"><span class="pre">ftol</span></code> option is disabled in some
 versions of the GSL library.)</p>
 </li>
-<li><strong>maxit</strong> (<em>int</em>) &#8211; Maximum number of alorithm iterations (or function
+<li><strong>maxit</strong> (<em>int</em>) &#8211; Maximum number of algorithm iterations (or function
 evaluations for some fitters) in search for minimum;
 default is 1000.</li>
 <li><strong>debug</strong> (<em>bool</em>) &#8211; Set to <code class="docutils literal"><span class="pre">True</span></code> for extra debugging of the fit function
 and a check for roundoff errors. (Default is <code class="docutils literal"><span class="pre">False</span></code>.)</li>
 <li><strong>fitterargs</strong> (<em>dict</em>) &#8211; Dictionary of additional arguments passed through
 to the underlying fitter. Different fitters offer different
-paramenters; see the documentation for each.</li>
+parameters; see the documentation for each.</li>
 </ul>
 </td>
 </tr>
@@ -351,7 +351,7 @@ of obtaining the fit data by randomly sampling the parameter model
 <code class="docutils literal"><span class="pre">P(data|model)</span></code>. This quantity is useful for comparing fits of
 the same data to different models, with different priors and/or
 fit functions. The model with the largest value of <code class="docutils literal"><span class="pre">fit.logGBF</span></code>
-is the one prefered by the data. The exponential of the difference
+is the one preferred by the data. The exponential of the difference
 in <code class="docutils literal"><span class="pre">fit.logGBF</span></code> between two models is the ratio of probabilities
 (Bayes factor) for those models. Differences in <code class="docutils literal"><span class="pre">fit.logGBF</span></code>
 smaller than 1 are not very significant. Gaussian statistics are
@@ -828,7 +828,7 @@ parameters <code class="docutils literal"><span class="pre">p</span></code> is t
 <p>Compares standard deviations from fit.p and fit.palt to see if they
 agree to within relative tolerance <code class="docutils literal"><span class="pre">rtol</span></code> and absolute tolerance
 <code class="docutils literal"><span class="pre">atol</span></code>. Generates a warning if they do not (in which
-case an <em>svd</em> cut might be advisable).</p>
+case an SVD cut might be advisable).</p>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -895,56 +895,68 @@ probability.</p>
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">3.4422</span><span class="p">,</span> <span class="mf">1.2929</span><span class="p">,</span> <span class="mf">0.4798</span><span class="p">,</span> <span class="mf">0.1725</span><span class="p">])</span>
 
+<span class="c"># prior</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;10(1)&#39;</span><span class="p">,</span> <span class="s">&#39;1.0(1)&#39;</span><span class="p">])</span>
+
 <span class="c"># fit function</span>
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span> <span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
 
 <span class="c"># find optimal dy</span>
 <span class="k">def</span> <span class="nf">fitargs</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">one_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">y</span> <span class="o">*</span> <span class="n">z</span>
     <span class="n">newy</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">newy</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 
-<span class="n">fit</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">([</span><span class="mf">0.001</span><span class="p">],</span> <span class="n">fitargs</span><span class="p">)</span>
+<span class="n">fit</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">fitargs</span><span class="p">)</span>
 <span class="k">print</span> <span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Here we want to fit data <code class="docutils literal"><span class="pre">y</span></code> with fit function <code class="docutils literal"><span class="pre">fcn</span></code> but we don&#8217;t
-know the uncertainties in our <code class="docutils literal"><span class="pre">y</span></code> values. We assume that the errors
+<p>Here we want to fit data <code class="docutils literal"><span class="pre">y</span></code> with fit function <code class="docutils literal"><span class="pre">fcn</span></code> but we don&#8217;t know
+the uncertainties in our <code class="docutils literal"><span class="pre">y</span></code> values. We assume that the relative errors
 are <code class="docutils literal"><span class="pre">x</span></code>-independent and uncorrelated. We add the error <code class="docutils literal"><span class="pre">dy</span></code> that
-maximizes the Bayes Factor, as this is the most likely choice. This
-fit gives the following output:</p>
+maximizes the Bayes Factor, as this is the most likely choice. This fit
+gives the following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.67 [4]    Q = 0.61    logGBF = 7.7643
+  chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 7.4834
 
 Parameters:
-              0    9.207 (47)     [ 10.0 (1.0) ]
-              1   0.9834 (42)     [  1.00 (10) ]
+              0     9.44 (18)     [ 10.0 (1.0) ]
+              1   0.9979 (69)     [  1.00 (10) ]
 
 Fit:
      x[k]           y[k]      f(x[k],p)
 ---------------------------------------
-        1    3.4422 (66)    3.4435 (66)
-        2    1.2929 (66)    1.2879 (50)
-        3    0.4798 (66)    0.4817 (38)
-        4    0.1725 (66)    0.1802 (22)  *
+        1     3.442 (54)     3.481 (45)
+        2     1.293 (20)     1.283 (11)
+        3    0.4798 (75)    0.4731 (41)
+        4    0.1725 (27)    0.1744 (23)
 
 Settings:
-  svdcut/n = 1e-15/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
 </pre></div>
 </div>
 <p>We have, in effect, used the variation in the data relative to the best
-fit curve to estimate that the uncertainty in eacy data point is
-of order 0.0066.</p>
+fit curve to estimate that the uncertainty in each data point is
+of order 1.6%.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>z0</strong> (<em>array</em>) &#8211; Starting point for search.</li>
-<li><strong>fitargs</strong> (<em>callable</em>) &#8211; Function of array <code class="docutils literal"><span class="pre">z</span></code> that returns a
-dictionary containing the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
-arguments corresponding to <code class="docutils literal"><span class="pre">z</span></code>.</li>
+<li><strong>z0</strong> (<em>number, array or dict</em>) &#8211; Starting point for search.</li>
+<li><strong>fitargs</strong> (<em>callable</em>) &#8211; Function of <code class="docutils literal"><span class="pre">z</span></code> that returns a
+dictionary <code class="docutils literal"><span class="pre">args</span></code> containing the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+arguments corresponding to <code class="docutils literal"><span class="pre">z</span></code>. <code class="docutils literal"><span class="pre">z</span></code> should have
+the same layout (number, array or dictionary) as <code class="docutils literal"><span class="pre">z0</span></code>.
+<code class="docutils literal"><span class="pre">fitargs(z)</span></code> can instead return a tuple <code class="docutils literal"><span class="pre">(args,</span> <span class="pre">plausibility)</span></code>,
+where <code class="docutils literal"><span class="pre">args</span></code> is again the dictionary for
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. <code class="docutils literal"><span class="pre">plausibility</span></code> is the logarithm
+of the <em>a priori</em> probabilitiy that <code class="docutils literal"><span class="pre">z</span></code> is sensible. When
+<code class="docutils literal"><span class="pre">plausibility</span></code> is provided, <a class="reference internal" href="#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal"><span class="pre">lsqfit.empbayes_fit()</span></code></a>
+maximizes the sum <code class="docutils literal"><span class="pre">logGBF</span> <span class="pre">+</span> <span class="pre">plausibility</span></code>. Specifying
+<code class="docutils literal"><span class="pre">plausibility</span></code> is a way of steering selections away from
+completely implausible values for <code class="docutils literal"><span class="pre">z</span></code>.</li>
 <li><strong>minargs</strong> (<em>dict</em>) &#8211; Optional argument dictionary, passed on to
 <a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
 <a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</li>
@@ -1055,7 +1067,7 @@ attributes describing the average:</p>
 <p><strong>dof</strong> - Effective number of degrees of freedom.</p>
 <dl class="docutils">
 <dt><strong>Q</strong> - The probability that the <code class="docutils literal"><span class="pre">chi**2</span></code> could have been larger,</dt>
-<dd><p class="first">by chance, assuming that the data are all Gaussain and consistent
+<dd><p class="first">by chance, assuming that the data are all Gaussian and consistent
 with each other. Values smaller than 0.1 or suggest that the
 data are not Gaussian or are inconsistent with each other. Also
 called the <em>p-value</em>.</p>
@@ -1231,7 +1243,7 @@ For linear fits, it is equivalent to <code class="docutils literal"><span class=
 since the <code class="docutils literal"><span class="pre">chi**2</span></code> function is  quadratic in the fit parameters;
 but they can differ significantly for nonlinear fits.</p>
 <p><code class="docutils literal"><span class="pre">BayesIntegrator</span></code> integrates over the entire parameter space but
-first reexpresses the integrals in terms of variables that
+first re-expresses the integrals in terms of variables that
 diagonalize the covariance matrix of the best-fit parameters
 <code class="docutils literal"><span class="pre">fit.p</span></code> from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> and are centered at the
 best-fit values. This greatly facilitates the integration using
@@ -1362,8 +1374,8 @@ information.</p>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> relies heavily on the <code class="xref py py-mod docutils literal"><span class="pre">gvar</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">numpy</span></code> modules.
-Also the fitting and minimization routines are f
-rom the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> module.</p>
+Also the fitting and minimization routines are from
+the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> module.</p>
 </div>
 </div>
 

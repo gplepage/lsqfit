@@ -162,7 +162,7 @@ nonlinear_fit Objects
 
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 
-   .. automethod:: set_defaults(**defaults)
+   .. automethod:: set_defaults(clear=False, **defaults)
 
 Functions
 ---------
@@ -194,7 +194,7 @@ Classes for Bayesian Integrals
 Requirements
 ------------
 :mod:`lsqfit` relies heavily on the :mod:`gvar`, and :mod:`numpy` modules.
-Also the fitting and minimization routines are f
-rom the Gnu Scientific Library (GSL) and/or the Python :mod:`scipy` module.
+Also the fitting and minimization routines are from
+the Gnu Scientific Library (GSL) and/or the Python :mod:`scipy` module.
 
 

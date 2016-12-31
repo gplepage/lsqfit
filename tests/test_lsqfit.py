@@ -708,10 +708,26 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         else:
             analyzer = None
-        z0 = np.log([5.])
+        z0 = np.log([0.7]) # [5.])
         fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
         self.assertAlmostEqual(np.exp(z[0]), 0.6012, places=2)
         # know correct answer from the process for creating the data
+
+        # variation: use a number
+        def fitargs(z):
+            prior = gv.gvar(91 * ['0 +- %g' % np.exp(z)])
+            return dict(data=(x, y), prior=prior, fcn=f)
+        z0 = np.log(0.7) # 5.)
+        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        self.assertAlmostEqual(np.exp(z), 0.6012, places=2)
+
+        # variation: use a dictionary
+        def fitargs(z):
+            prior = gv.gvar(91 * ['0 +- %g' % np.exp(z['z'])])
+            return dict(data=(x, y), prior=prior, fcn=f)
+        z0 = dict(z=np.log(0.7))
+        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        self.assertAlmostEqual(np.exp(z['z']), 0.6012, places=2)
 
     def test_unpack_data(self):
         """ lsqfit._unpack_data """
