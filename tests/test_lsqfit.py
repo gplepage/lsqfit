@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012-2016 G. Peter Lepage.
+# Copyright (c) 2012-2017 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1554,7 +1554,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def g(p):
             c = p['c']
             return dict(mean=c, outer=np.outer(c, c))
-        r = expval(g, neval=1000, nitn=10, adapt=False)
+        r = expval(g, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         mean = r['mean']
         cov = r['outer'] - np.outer(mean, mean)
@@ -1567,7 +1567,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 )
 
         pdf = BayesPDF(fit)
-        r = expval(g, neval=1000, nitn=10, pdf=pdf, adapt=False)
+        r = expval(g, neval=1000, nitn=5, pdf=pdf, adapt=False)
         mean = r['mean']
         cov = r['outer'] - np.outer(mean, mean)
         dmean = mean - fit.pmean['c']
@@ -1580,7 +1580,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         def ga(p):
             return p['c']
-        r = expval(ga, neval=1000, nitn=10, adapt=False)
+        r = expval(ga, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         dmean = r - fit.pmean['c']
         self.assertTrue(
@@ -1589,7 +1589,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         def gs(p):
             return p['c'][0]
-        r = expval(gs, neval=1000, nitn=10, adapt=False)
+        r = expval(gs, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         dmean = r - fit.pmean['c'][0]
         self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
@@ -1613,7 +1613,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         def g(p):
             return dict(mean=p, outer=np.outer(p, p))
-        r = expval(g, neval=1000, nitn=10, adapt=False)
+        r = expval(g, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         mean = r['mean']
         cov = r['outer'] - np.outer(mean, mean)
@@ -1626,7 +1626,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 )
 
         pdf = BayesPDF(fit)
-        r = expval(g, neval=1000, nitn=10, pdf=pdf, adapt=False)
+        r = expval(g, neval=1000, nitn=5, pdf=pdf, adapt=False)
         mean = r['mean']
         cov = r['outer'] - np.outer(mean, mean)
         dmean = mean - fit.pmean
@@ -1639,7 +1639,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         def ga(p):
             return p
-        r = expval(ga, neval=1000, nitn=10, adapt=False)
+        r = expval(ga, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         dmean = r - fit.pmean
         self.assertTrue(
@@ -1648,12 +1648,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         def gs(p):
             return p[0]
-        r = expval(gs, neval=1000, nitn=10, adapt=False)
+        r = expval(gs, neval=1000, nitn=5, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         dmean = r - fit.pmean[0]
         self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
 
-        r = expval(gs, neval=1000, nitn=10, adapt_to_pdf=False, adapt=False)
+        r = expval(gs, neval=1000, nitn=5, adapt_to_pdf=False, adapt=False)
         self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         dmean = r - fit.pmean[0]
         self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
