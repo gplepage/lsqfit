@@ -10,7 +10,7 @@ data. In general a fit has four inputs:
        and their errors.
 
     2) A collection ``x`` of independent data --- ``x`` can have any
-       structure and contain any data (or no data).
+       structure and contain any data, or it can be omitted.
 
     3) A fit function ``f(x, p)`` whose parameters ``p`` are adjusted by
        the fit until ``f(x, p)`` equals ``y`` to within ``y``\s errors
@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2016 G. Peter Lepage.
+# Copyright (c) 2008-2017 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -132,6 +132,8 @@ try:
 except:
     _no_gsl = True
 
+if _no_scipy and _no_gsl:
+    raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
 _FDATA = collections.namedtuple(
     '_FDATA', 'mean inv_wgts svdcorrection logdet nblocks svdn'
@@ -1615,9 +1617,13 @@ try:
                 can reduce uncertainties in the :mod:`vegas` estimates.
                 Default is ``1.0``.
 
-            pdf (function): Probability density function ``pdf(p)`` of the
+            pdf (callable): Probability density function ``pdf(p)`` of the
                 fit parameters to use in place of the normal PDF associated
                 with the least-squares fit used to create the integrator.
+
+            adapt_to_pdf (bool): :mod:`vegas` adapts to the PDF if
+                ``True`` (default); otherwise it adapts to ``f(p)``
+                times the PDF.
 
             svdcut (non-negative float or None): If not ``None``, replace
                 covariance matrix of ``g`` with a new matrix whose
@@ -1740,14 +1746,18 @@ try:
         (tens or hundreds of thousands) for more difficult high-dimension
         integrals.
         """
-        def __init__(self, fit, limit=1e15, scale=1.0, pdf=None, svdcut=1e-15, **kargs):
+        def __init__(
+            self, fit, limit=1e15, scale=1.0, pdf=None,
+            adapt_to_pdf=True, svdcut=1e-15, **kargs
+            ):
             super(BayesIntegrator, self).__init__(
                 BayesPDF(fit, svdcut=svdcut),
                 scale=scale, svdcut=svdcut, limit=limit, **kargs
                 )
             self.pdf_function = pdf
+            self.adapt_to_pdf = adapt_to_pdf
 
-        def __call__(self, f=None, pdf=None, **kargs):
+        def __call__(self, f=None, pdf=None, adapt_to_pdf=None, **kargs):
             """ Estimate expectation value of function ``f(p)``.
 
             Uses multi-dimensional integration modules :mod:`vegas`  to
@@ -1756,26 +1766,44 @@ try:
             :class:`nonlinear_fit` ``fit``.
 
             Args:
-                f (function): Function ``f(p)`` to integrate. Integral is
+                f (callable): Function ``f(p)`` to integrate. Integral is
                     the expectation value of the function with respect
                     to the distribution. The function can return a number,
                     an array of numbers, or a dictionary whose values are
-                    numbers or arrays of numbers.
+                    numbers or arrays of numbers. Its argument ``p``
+                    has the same format as ``self.fit.pmean`` (that is,
+                    either a number, an array, or a dictionary).
+                    Omitting ``f`` (or setting it to ``None``) implies that
+                    only the PDF is integrated.
 
-                pdf (function): Probability density function ``pdf(p)`` of the
+                pdf (callable): Probability density function ``pdf(p)`` of the
                     fit parameters to use in place of the normal PDF associated
                     with the least-squares fit used to create the integrator.
+                    The PDF need not be normalized; vegas will normalize it.
+                    Ignored if ``pdf=None`` (the default).
+
+                adapt_to_pdf (bool): :mod:`vegas` adapts to the PDF if
+                    ``True`` (default); otherwise it adapts to ``f(p)``
+                    times the PDF.
 
             All other keyword arguments are passed on to a :mod:`vegas`
             integrator; see the :mod:`vegas` documentation for further
             information.
+
+            The results returned are similar to what :mod:`vegas` returns
+            but with an extra attribute: ``results.norm``, which contains
+            the :mod:`vegas` estimate for the norm of the PDF. This should
+            equal 1 within errors if the PDF is normalized (and so can serve
+            as a check on the integration in those cases).
             """
 
             if pdf is None:
                 pdf = self.pdf_function
+            if adapt_to_pdf is None:
+                adapt_to_pdf = self.adapt_to_pdf
             self._buffer = None
-            def _fstd(p, pdf=pdf):
-                """ convert output to an array """
+            def fstd(p, pdf=pdf):
+                """ convert output to an array, with extra slot for the pdf """
                 fp = [] if f is None else f(p)
                 if pdf is None:
                     pdf = numpy.exp(self.pdf.logpdf(p))
@@ -1793,24 +1821,143 @@ try:
                         self._fp = numpy.asarray(fp)
                         bufsize = self._fp.size + 1
                     self._buffer = numpy.empty(bufsize, float)
-                    self._buffer[0] = 1.
+                    if adapt_to_pdf:
+                        self._buffer[0] = 1.
+                        self._slice = slice(1,None)
+                    else:
+                        self._buffer[-1] = 1.
+                        self._slice = slice(0, -1)
                 if self._is_bdict:
-                    self._buffer[1:] = fp.buf
+                    self._buffer[self._slice] = fp.buf
                 elif self._is_dict:
-                    self._buffer[1:] = BufferDict(fp).buf
+                    self._buffer[self._slice] = BufferDict(fp).buf
                 else:
-                    self._buffer[1:] = numpy.asarray(fp).flat[:]
+                    self._buffer[self._slice] = numpy.asarray(fp).flat[:]
                 return self._buffer * pdf
             results = super(BayesIntegrator, self).__call__(
-                _fstd=_fstd, nopdf=True, **kargs
+                fstd, nopdf=True, **kargs
                 )
-            self.norm = results[0]
-            if self._fp.shape is None:
-                return vegas._RAvgDictWrapper(self._fp, results)
-            elif self._fp.shape != ():
-                return vegas._RAvgArrayWrapper(self._fp.shape, results)
+            # reformat output
+            if adapt_to_pdf:
+                norm = results[0] # if adapt_to_pdf else -1]
+                buf = results[1:] / results[0]
             else:
-                return vegas._RAvgWrapper(results)
+                norm = results[-1]
+                buf = results[:-1] / results[-1]
+            if self._fp.shape is None:
+                return _RAvgDictWrapper(self._fp, results, norm, buf)
+            elif self._fp.shape != ():
+                return _RAvgArrayWrapper(self._fp.shape, results, norm,buf)
+            else:
+                return _RAvgWrapper(results, norm, buf)
+
+    class _RAvgWrapper(_gvar.GVar):
+        """ Wrapper for BayesIntegrator GVar result. """
+        def __init__(self, results, norm, buf):
+            self.results = results
+            self.norm = norm
+            super(_RAvgWrapper, self).__init__(*buf[0].internaldata)
+
+        def _dof(self):
+            return self.results.dof
+
+        dof = property(
+            _dof,
+            None,
+            None,
+            "Number of degrees of freedom in weighted average."
+            )
+
+        def _Q(self):
+            return self.results.Q
+
+        Q = property(
+            _Q,
+            None,
+            None,
+            "*Q* or *p-value* of weighted average's *chi**2*.",
+            )
+
+        def summary(self, extended=False, weighted=None):
+            return self.results.summary(extended=extended, weighted=weighted)
+
+    class _RAvgDictWrapper(_gvar.BufferDict):
+        """ Wrapper for BayesIntegrator dictionary result """
+        def __init__(self, fp, results, norm, buf):
+            super(_RAvgDictWrapper, self).__init__(fp)
+            self.results = results
+            self.buf = buf
+            self.norm = norm
+
+        def _dof(self):
+            return self.results.dof
+
+        dof = property(
+            _dof,
+            None,
+            None,
+            "Number of degrees of freedom in weighted average."
+            )
+
+        def _Q(self):
+            return self.results.Q
+
+        Q = property(
+            _Q,
+            None,
+            None,
+            "*Q* or *p-value* of weighted average's *chi**2*.",
+            )
+
+        def summary(self, extended=False, weighted=None):
+            return self.results.summary(extended=extended, weighted=weighted)
+
+    class _RAvgArrayWrapper(numpy.ndarray):
+        """ Wrapper for BayesIntegrator array result. """
+        def __new__(
+            subtype, shape, results, norm, buf,
+            dtype=object, buffer=None, offset=0, strides=None, order=None
+            ):
+            obj = numpy.ndarray.__new__(
+                subtype, shape=shape, dtype=object, buffer=buffer, offset=offset,
+                strides=strides, order=order
+                )
+            if buffer is None:
+                obj.flat = numpy.array(obj.size * [_gvar.gvar(0,0)])
+            obj.results = results
+            obj.norm = norm
+            obj.flat = buf
+            return obj
+
+        def __array_finalize__(self, obj):
+            if obj is None:
+                return
+            self.results = getattr(obj, 'results', None)
+            self.norm = getattr(obj, 'norm', None)
+
+        def _dof(self):
+            return self.results.dof
+
+        dof = property(
+            _dof,
+            None,
+            None,
+            "Number of degrees of freedom in weighted average."
+            )
+
+        def _Q(self):
+            return self.results.Q
+
+        Q = property(
+            _Q,
+            None,
+            None,
+            "*Q* or *p-value* of weighted average's *chi**2*.",
+            )
+
+        def summary(self, extended=False, weighted=None):
+            return self.results.summary(extended=extended, weighted=weighted)
+
 except ImportError:
     pass
 

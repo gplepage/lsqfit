@@ -111,15 +111,19 @@ def main():
     # redo fit with 4 parameters since that is enough
     prior = make_prior(4)
     fit = lsqfit.nonlinear_fit(data=(x,y), fcn=fcn, prior=prior, p0=fit.pmean)
-    sys.stdout = sys_stdout
-    print fit
-    # extra data 1
-    print '\n--------------------- fit with extra information'
     sys.stdout = tee.tee(sys_stdout, open("eg1a.out", "w"))
+    print fit.format()
+    E = fit.p['E']              # best-fit parameters
+    a = fit.p['a']
+    print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
+    print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+    print
+    # extra data 1
+    print '\n--------------------- new fit adding extra information'
     def ratio(p):
         return p['a'][1] / p['a'][0]
     newfit = lsqfit.nonlinear_fit(data=gv.gvar(1,1e-5), fcn=ratio, prior=fit.p)
-    print (newfit)
+    print (newfit.format())
     E = newfit.p['E']
     a = newfit.p['a']
     print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]

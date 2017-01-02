@@ -3,7 +3,7 @@ Version 9.0
 This version offers a major overhaul of the underlying fitting
 strategies used by lsqfit, offering more modern alternatives.
 
-- New fitter option in nonlinear_fit to select the fitting package
+- New 'fitter' parameter in nonlinear_fit to select the fitting package
   used to do the actual minimization. Three choices are 'gsl_multifit'
   (default), 'gsl_v1_multifit' (previous default), and 'scipy_least_squares'
   (default if GSL not present). It is worth experimenting with different
@@ -14,7 +14,7 @@ strategies used by lsqfit, offering more modern alternatives.
   fitters are under consideration.
 
 - lsqfit will now compile without GSL, using scipy functions instead.
-  The GSL package (which is rewritten) is nevertheless recommended because of
+  The GSL package (newly rewritten) is nevertheless recommended because of
   its many options. Ideally both GSL and scipy are available, together
   offering the most options.
 
@@ -24,6 +24,12 @@ strategies used by lsqfit, offering more modern alternatives.
 - nonlinear_fit is almost but not quite backwards compatible. Setting
   alg='lmder', for example, will not work unless fitter='gsl_v1_multifit',
   which is not the default. Also analyzers aren't available for everything.
+
+- BayesIntegrator.__call__ now accepts an extra flag adapt_to_pdf.
+  The default is True, which means that vegas adapts to the pdf.
+  Set it to False and vegas will adapt to the funciton times the pdf.
+  In either case, the results have an new attribute results.norm which
+  gives the vegas estimate for the norm of the pdf.
 
 - lsqfit.empbayes_fit now accepts z0 arguments that are numbers, arrays
   or dictionaries (as opposed to just arrays). z in fitargs(z) uses

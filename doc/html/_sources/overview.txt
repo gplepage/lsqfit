@@ -842,35 +842,56 @@ following code added to the end of ``main()`` (outside the loop)::
 Chained Fits
 -------------
 The priors in a fit represent knowledge that we have about the parameters
-before we do the fit. This knowledge might come from theoretical considerations
-or experiment. Or it might come from another fit. Imagine that we want to add
-new information to that extracted from the fit in the previous section.
-For example, we might learn from some other source that the ratio of
-amplitudes ``a[1]/a[0]`` equals 1±1e-5. The challenge is to combine
-this new information with information extracted from the fit above without rerunning
+before we do the fit. This knowledge might come from theoretical
+considerations or experiment. Or it might come from another fit. Imagine that
+we want to add new information to that extracted from the fit in the previous
+section. For example, we might learn from some other source that the ratio of
+amplitudes ``a[1]/a[0]`` equals 1±1e-5. The challenge is to combine this new
+information with information extracted from the fit above without rerunning
 that fit. (We assume it is not possible to rerun.)
 
 We can combine the new data with the old fit results by creating a new
-fit using the best-fit parameters, ``fit.p``, from the old fit as the
-priors for the new fit. To try this out, we add the following code
-onto the end of the ``main()`` function in the previous section,
-keeping ``nexp=4`` (since that is all that is needed)::
+fit that uses the best-fit parameters, ``fit.p``, from the old fit as its
+prior. To try this out, we modify
+the ``main()`` function in the previous section, adding the new fit at the
+end::
 
-  def ratio(p):                       # new fit function
-      a = p['a']
-      return a[1] / a[0]
+    def main():
+        x, y = make_data()              # collect fit data
+        p0 = None                       # make larger fits go faster (opt.)
+        for nexp in range(1, 5):
+            print('************************************* nexp =', nexp)
+            prior = make_prior(nexp)
+            fit = lsqfit.nonlinear_fit(data=(x, y), fcn=fcn, prior=prior, p0=p0)
+            if nexp > 2:
+                E = fit.p['E']          # best-fit parameters
+                a = fit.p['a']
+                print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+                print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
+            if fit.chi2 / fit.dof < 1.:
+                p0 = fit.pmean          # starting point for next fit (opt.)
+            print()
 
-  prior = fit.p                       # prior = best-fit parameters from 1st fit
-  data = gv.gvar(1, 1e-5)             # new data for the ratio
+        # print nexp=4 fit results
+        print(fit)
 
-  newfit = lsqfit.nonlinear_fit(data=data, fcn=ratio, prior=prior)
-  print(newfit)
-  E = newfit.p['E']
-  a = newfit.p['a']
-  print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
-  print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
+        # new fit adds new data about a[1] / a[0]
+        def ratio(p):                   # new fit function
+            a = p['a']
+            return a[1] / a[0]
 
-The result of the new fit (to one piece of new data) is:
+        prior = fit.p                   # prior = best-fit parameters from nexp=4 fit
+        data = gv.gvar(1, 1e-5)         # new data for the ratio
+
+        newfit = lsqfit.nonlinear_fit(data=data, fcn=ratio, prior=prior)
+        print(newfit)
+        E = newfit.p['E']
+        a = newfit.p['a']
+        print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+        print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
+
+The results of the new fit (to one piece of new data) are at the end of the
+output:
 
 .. literalinclude:: eg1a.out
 
@@ -895,7 +916,7 @@ of these fits.
 Finally note that this particular problem can be done much more
 simply using a weighted average (:func:`lsqfit.wavg`).
 Adding the following code
-onto the end of the ``main()`` function in the previous section ::
+onto the end of the ``main()`` function above ::
 
     fit.p['a1/a0'] = fit.p['a'][1] / fit.p['a'][0]
     new_data = {'a1/a0' : gv.gvar(1,1e-5)}
@@ -1615,13 +1636,13 @@ values. The first fit, with only 3 |~| ``p[i]``\s, however, has a
 significantly larger ``logGBF``. This indicates that this data is
 ``exp(27.1-22.6) = 90`` times more likely to come from the theory with
 only 3 |~| ``p[i]``\s than from the one with |~| 4. The data much prefer
-the 3-parameter theory, and they do, in fact,
+the 3-parameter theory, and they do, as it turns out,
 come from such a theory. Note that the value for ``p[3]`` in
 the second case is consistent with zero, but the errors on the other
 parameters are much larger if it is included in the fit.
 
-The Empirical Bayes procedure can be abused. It is possible to make ``logGBF``
-arbitrarily large. For example, setting ::
+The Empirical Bayes procedure can be abused, because it is possible to make
+``logGBF`` arbitrarily large. For example, setting ::
 
     prior = gv.gvar([
         '2.5904 +- 2.6e-16', '-6.53012 +- 6.5e-16',
@@ -1648,14 +1669,19 @@ is, we are assuming that ``P(model)`` is approximately constant across the
 model space we are exploring. The *a priori* probability for the prior just
 above is vanishingly small (because it is ridiculous),
 and so comparing its ``logGBF`` to
-the others is nonsensical. Empirical Bayes typically makes sense only when
-varying a single a parameter, or varying a group of parameters together.
+the others is nonsensical.
 
 Note that :func:`empbayes_fit` allows ``fitargs(z)`` to return
 a dictionary of arguments for the fitter together with a ``plausibility``
 for |~| ``z``, which corresponds to ``log(P(model))`` in the discussion
 above. This allows you steer the search away from completely
 implausible solutions.
+
+Empirical Bayes tends to be most useful when varying the width of the prior for
+a single parameter,  or varying the widths of a group of parameters together.
+It is also useful for validating (rather than setting) the choice of a
+prior or set of priors for a fit, by comparing the optimal choice (according
+to the data) with choice actually used.
 
 .. _positive-parameters:
 
@@ -1717,7 +1743,7 @@ the average is around 0.02. The output from this code is:
 This is not such a useful result since much of the one-sigma range for ``a``
 is negative, and yet we know that ``a`` must be postive.
 
-A better analysis is to use a log-normal distribution for ``a``::
+A better analysis uses a log-normal distribution for ``a``::
 
    prior = {}
    prior['log(a)'] = gv.log(gv.gvar('0.02(2)'))   # log(a) not a
@@ -1823,20 +1849,23 @@ in |nonlinear_fit|. There are currently three fitters available:
     default fitter provided GSL is installed. It offers a wide range
     of options, including several different algorithms that are selected
     by setting |nonlinear_fit| parameter ``alg`` equal to ``'lm'``,
-    ``'subspace2D'``, and so on. See the documentation.
+    ``'subspace2D'``, ``'dogleg'``, and so on. See the documentation.
 
   ``fitter='gsl_v1_multifit'``
     The GSL fitter from version |~| 1 of the
     GSL library. This is wrapped in Python class
     :class:`lsqfit.gsl_v1_multifit`. It was the fitter used in :mod:`lsqfit`
-    versions earlier than version |~| 9.0.
+    versions earlier than version |~| 9.0. It supports a few
+    different algorithms (parameter ``alg``) including
+    ``'lmsder'`` and ``'lmder'``.
 
   ``fitter='scipy_least_squares'``
     The standard :mod:`scipy` least-squares
     fitter, here provided with an :mod:`lsqfit` interface by
     class :class:`lsqfit.scipy_least_squares`. This is the default fitter
     when GSL is not available. It also provides a variety of algorithms
-    (set parameter ``method``) and other options. See the documentation.
+    (set parameter ``method``), and other options, such as loss functions
+    for handling outliers. See the :mod:`scipy` documentation.
 
 The default configurations for these fitters are chosen to emphasize
 robustness rather than speed, and therefore some of the non-default options

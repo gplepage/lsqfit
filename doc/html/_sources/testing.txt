@@ -35,19 +35,19 @@ The bootstrap provides an efficient way to check on a fit's
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:
 
-    1) make a large number of "bootstrap copies" of the
-    original input data and prior that differ from each other
-    by random amounts characteristic of the underlying randomness
-    in the original data and prior (see
-    the documentation for :meth:`lsqfit.nonlinear_fit.bootstrap_iter`
-    for more information);
+    1.  make a large number of "bootstrap copies" of the
+        original input data and prior that differ from each other
+        by random amounts characteristic of the underlying randomness
+        in the original data and prior (see
+        the documentation for :meth:`lsqfit.nonlinear_fit.bootstrap_iter`
+        for more information);
 
-    2) repeat the entire fit analysis for each bootstrap copy of
-    the data and prior, extracting fit results from each;
+    2.  repeat the entire fit analysis for each bootstrap copy of
+        the data and prior, extracting fit results from each;
 
-    3) use the variation of the fit results from bootstrap copy
-    to bootstrap copy to determine an approximate probability
-    distribution (possibly non-Gaussian) for the each result.
+    3.  use the variation of the fit results from bootstrap copy
+        to bootstrap copy to determine an approximate probability
+        distribution (possibly non-Gaussian) for the each result.
 
 To illustrate, we return to our fit in the section
 on :ref:`correlated-parameters`, where the uncertainties on the
@@ -360,9 +360,10 @@ for each parameter:
 The means are shifted slightly from the fit results and there
 is modest skewing, but the differences are not great.
 
-As a second example of Bayesian integration, we look briefly at
-the problem described in :ref:`positive-parameters`. The constraint
-on parameter ``a``, forcing it to be positive, is likely to
+As a second example of Bayesian integration, we return briefly to
+the problem described in :ref:`positive-parameters`: we want the
+average ``a`` of noisy data subject the constraint that the average
+must be positive. The constraint is likely to
 introduce strong distortions in the probability density function (PDF)
 given that the fit analysis suggests a value of 0.011±0.013.
 We plot the actual PDF using the following code, beginning with

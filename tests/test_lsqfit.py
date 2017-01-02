@@ -1533,8 +1533,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
 
-    @unittest.skipIf(FAST,"skipping test_bayesintegrator for speed")
-    def test_bayesintegrator(self):
+    @unittest.skipIf(FAST,"skipping test_bayesintegrator_dict for speed")
+    def test_bayesintegrator_dict(self):
         " BayesIntegrator(fit) "
         # linear fit => BayesIntegrator gives same results for everything, norm=1
         if not hasattr(lsqfit, 'BayesIntegrator'):
@@ -1548,16 +1548,19 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         fit = nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 
         expval = BayesIntegrator(fit, limit=7.)
-        expval(neval=1000, nitn=5)
+        norm = expval(neval=1000, nitn=5).norm
+        self.assertTrue(abs(norm.mean - 1) <= 5. * norm.sdev)
+
         def g(p):
             c = p['c']
             return dict(mean=c, outer=np.outer(c, c))
         r = expval(g, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
         mean = r['mean']
         cov = r['outer'] - np.outer(mean, mean)
         dmean = mean - fit.pmean['c']
         dcov = cov - gv.evalcov(fit.p['c'])
-        dnorm = expval.norm - 1.
+        dnorm = r.norm - 1.
         for dd in [dmean, dcov]:
             self.assertTrue(
                 np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
@@ -1569,11 +1572,91 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         cov = r['outer'] - np.outer(mean, mean)
         dmean = mean - fit.pmean['c']
         dcov = cov - gv.evalcov(fit.p['c'])
-        dnorm = expval.norm - 1.
+        dnorm = r.norm - 1.
         for dd in [dmean, dcov]:
             self.assertTrue(
                 np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
                 )
+
+        def ga(p):
+            return p['c']
+        r = expval(ga, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        dmean = r - fit.pmean['c']
+        self.assertTrue(
+            np.all(gv.mean(dmean) ** 2 < 25. * gv.var(dmean))
+            )
+
+        def gs(p):
+            return p['c'][0]
+        r = expval(gs, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        dmean = r - fit.pmean['c'][0]
+        self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
+
+    @unittest.skipIf(FAST,"skipping test_bayesintegrator_array for speed")
+    def test_bayesintegrator_array(self):
+        " BayesIntegrator(fit) "
+        # linear fit => BayesIntegrator gives same results for everything, norm=1
+        if not hasattr(lsqfit, 'BayesIntegrator'):
+            return
+        x = np.array([0.2, 0.6, 0.8, 1.2, 1.4])
+        y = gv.gvar(['0.38(20)', '0.85(20)', '0.59(20)', '1.44(20)', '0.73(20)'])
+        prior = gv.gvar(['0(5)', '0(5)'])
+        def f(x, p):
+            return p[0] + p[1] * x
+        fit = nonlinear_fit(data=(x, y), prior=prior, fcn=f)
+
+        expval = BayesIntegrator(fit, limit=7.)
+        norm = expval(neval=1000, nitn=5).norm
+        self.assertTrue(abs(norm.mean - 1) <= 5. * norm.sdev)
+
+        def g(p):
+            return dict(mean=p, outer=np.outer(p, p))
+        r = expval(g, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        mean = r['mean']
+        cov = r['outer'] - np.outer(mean, mean)
+        dmean = mean - fit.pmean
+        dcov = cov - gv.evalcov(fit.p)
+        dnorm = r.norm - 1.
+        for dd in [dmean, dcov]:
+            self.assertTrue(
+                np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
+                )
+
+        pdf = BayesPDF(fit)
+        r = expval(g, neval=1000, nitn=10, pdf=pdf, adapt=False)
+        mean = r['mean']
+        cov = r['outer'] - np.outer(mean, mean)
+        dmean = mean - fit.pmean
+        dcov = cov - gv.evalcov(fit.p)
+        dnorm = r.norm - 1.
+        for dd in [dmean, dcov]:
+            self.assertTrue(
+                np.all(gv.mean(dd) ** 2 < 25. * gv.var(dd))
+                )
+
+        def ga(p):
+            return p
+        r = expval(ga, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        dmean = r - fit.pmean
+        self.assertTrue(
+            np.all(gv.mean(dmean) ** 2 < 25. * gv.var(dmean))
+            )
+
+        def gs(p):
+            return p[0]
+        r = expval(gs, neval=1000, nitn=10, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        dmean = r - fit.pmean[0]
+        self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
+
+        r = expval(gs, neval=1000, nitn=10, adapt_to_pdf=False, adapt=False)
+        self.assertTrue(abs(r.norm.mean - 1) <= 5. * r.norm.sdev)
+        dmean = r - fit.pmean[0]
+        self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
 
 def partialerrors(outputs,inputs):
     err = {}

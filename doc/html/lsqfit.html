@@ -73,7 +73,7 @@ is a Python dictionary in an <a class="reference internal" href="#module-lsqfit"
 <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s that specify the values of the dependent variables
 and their errors.</li>
 <li>A collection <code class="docutils literal"><span class="pre">x</span></code> of independent data &#8212; <code class="docutils literal"><span class="pre">x</span></code> can have any
-structure and contain any data (or no data).</li>
+structure and contain any data, or it can be omitted.</li>
 <li>A fit function <code class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></code> whose parameters <code class="docutils literal"><span class="pre">p</span></code> are adjusted by
 the fit until <code class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></code> equals <code class="docutils literal"><span class="pre">y</span></code> to within <code class="docutils literal"><span class="pre">y</span></code>s errors
 &#8212; parameters <cite>p`</cite> are usually specified by a dictionary whose
@@ -833,7 +833,7 @@ case an SVD cut might be advisable).</p>
 
 <dl class="staticmethod">
 <dt id="lsqfit.nonlinear_fit.set_defaults">
-<em class="property">static </em><code class="descname">set_defaults</code><span class="sig-paren">(</span><em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set_defaults" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">set_defaults</code><span class="sig-paren">(</span><em>clear=False</em>, <em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set_defaults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <p>Use to set default values for parameters: <code class="docutils literal"><span class="pre">extend</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>,
 <code class="docutils literal"><span class="pre">debug</span></code>, <code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, and <code class="docutils literal"><span class="pre">fitter</span></code>. Can also set
@@ -1068,7 +1068,7 @@ attributes describing the average:</p>
 <dl class="docutils">
 <dt><strong>Q</strong> - The probability that the <code class="docutils literal"><span class="pre">chi**2</span></code> could have been larger,</dt>
 <dd><p class="first">by chance, assuming that the data are all Gaussian and consistent
-with each other. Values smaller than 0.1 or suggest that the
+with each other. Values smaller than 0.1 or so suggest that the
 data are not Gaussian or are inconsistent with each other. Also
 called the <em>p-value</em>.</p>
 <p class="last">Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit.</p>
@@ -1216,9 +1216,12 @@ rescaled to emphasize parameter values of order
 The rescaling does not change the value of the integral but it
 can reduce uncertainties in the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> estimates.
 Default is <code class="docutils literal"><span class="pre">1.0</span></code>.</li>
-<li><strong>pdf</strong> (<em>function</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
+<li><strong>pdf</strong> (<em>callable</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
 fit parameters to use in place of the normal PDF associated
 with the least-squares fit used to create the integrator.</li>
+<li><strong>adapt_to_pdf</strong> (<em>bool</em>) &#8211; <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> adapts to the PDF if
+<code class="docutils literal"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal"><span class="pre">f(p)</span></code>
+times the PDF.</li>
 <li><strong>svdcut</strong> (<em>non-negative float or None</em>) &#8211; If not <code class="docutils literal"><span class="pre">None</span></code>, replace
 covariance matrix of <code class="docutils literal"><span class="pre">g</span></code> with a new matrix whose
 small eigenvalues are modified: eigenvalues smaller than
@@ -1350,14 +1353,23 @@ the probability density function  associated with
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>function</em>) &#8211; Function <code class="docutils literal"><span class="pre">f(p)</span></code> to integrate. Integral is
+<li><strong>f</strong> (<em>callable</em>) &#8211; Function <code class="docutils literal"><span class="pre">f(p)</span></code> to integrate. Integral is
 the expectation value of the function with respect
 to the distribution. The function can return a number,
 an array of numbers, or a dictionary whose values are
-numbers or arrays of numbers.</li>
-<li><strong>pdf</strong> (<em>function</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
+numbers or arrays of numbers. Its argument <code class="docutils literal"><span class="pre">p</span></code>
+has the same format as <code class="docutils literal"><span class="pre">self.fit.pmean</span></code> (that is,
+either a number, an array, or a dictionary).
+Omitting <code class="docutils literal"><span class="pre">f</span></code> (or setting it to <code class="docutils literal"><span class="pre">None</span></code>) implies that
+only the PDF is integrated.</li>
+<li><strong>pdf</strong> (<em>callable</em>) &#8211; Probability density function <code class="docutils literal"><span class="pre">pdf(p)</span></code> of the
 fit parameters to use in place of the normal PDF associated
-with the least-squares fit used to create the integrator.</li>
+with the least-squares fit used to create the integrator.
+The PDF need not be normalized; vegas will normalize it.
+Ignored if <code class="docutils literal"><span class="pre">pdf=None</span></code> (the default).</li>
+<li><strong>adapt_to_pdf</strong> (<em>bool</em>) &#8211; <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> adapts to the PDF if
+<code class="docutils literal"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal"><span class="pre">f(p)</span></code>
+times the PDF.</li>
 </ul>
 </td>
 </tr>
@@ -1366,6 +1378,11 @@ with the least-squares fit used to create the integrator.</li>
 <p>All other keyword arguments are passed on to a <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>
 integrator; see the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> documentation for further
 information.</p>
+<p>The results returned are similar to what <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> returns
+but with an extra attribute: <code class="docutils literal"><span class="pre">results.norm</span></code>, which contains
+the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> estimate for the norm of the PDF. This should
+equal 1 within errors if the PDF is normalized (and so can serve
+as a check on the integration in those cases).</p>
 </dd></dl>
 
 </dd></dl>

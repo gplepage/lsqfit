@@ -1020,35 +1020,77 @@ following code added to the end of <code class="docutils literal"><span class="p
 <div class="section" id="chained-fits">
 <h2>Chained Fits<a class="headerlink" href="#chained-fits" title="Permalink to this headline">¶</a></h2>
 <p>The priors in a fit represent knowledge that we have about the parameters
-before we do the fit. This knowledge might come from theoretical considerations
-or experiment. Or it might come from another fit. Imagine that we want to add
-new information to that extracted from the fit in the previous section.
-For example, we might learn from some other source that the ratio of
-amplitudes <code class="docutils literal"><span class="pre">a[1]/a[0]</span></code> equals 1±1e-5. The challenge is to combine
-this new information with information extracted from the fit above without rerunning
+before we do the fit. This knowledge might come from theoretical
+considerations or experiment. Or it might come from another fit. Imagine that
+we want to add new information to that extracted from the fit in the previous
+section. For example, we might learn from some other source that the ratio of
+amplitudes <code class="docutils literal"><span class="pre">a[1]/a[0]</span></code> equals 1±1e-5. The challenge is to combine this new
+information with information extracted from the fit above without rerunning
 that fit. (We assume it is not possible to rerun.)</p>
 <p>We can combine the new data with the old fit results by creating a new
-fit using the best-fit parameters, <code class="docutils literal"><span class="pre">fit.p</span></code>, from the old fit as the
-priors for the new fit. To try this out, we add the following code
-onto the end of the <code class="docutils literal"><span class="pre">main()</span></code> function in the previous section,
-keeping <code class="docutils literal"><span class="pre">nexp=4</span></code> (since that is all that is needed):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">ratio</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>                       <span class="c"># new fit function</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+fit that uses the best-fit parameters, <code class="docutils literal"><span class="pre">fit.p</span></code>, from the old fit as its
+prior. To try this out, we modify
+the <code class="docutils literal"><span class="pre">main()</span></code> function in the previous section, adding the new fit at the
+end:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>              <span class="c"># collect fit data</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="bp">None</span>                       <span class="c"># make larger fits go faster (opt.)</span>
+    <span class="k">for</span> <span class="n">nexp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39;************************************* nexp =&#39;</span><span class="p">,</span> <span class="n">nexp</span><span class="p">)</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">)</span>
+        <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nexp</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>          <span class="c"># best-fit parameters</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">fit</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">dof</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">:</span>
+            <span class="n">p0</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span>          <span class="c"># starting point for next fit (opt.)</span>
+        <span class="k">print</span><span class="p">()</span>
 
-<span class="n">prior</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                       <span class="c"># prior = best-fit parameters from 1st fit</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>             <span class="c"># new data for the ratio</span>
+    <span class="c"># print nexp=4 fit results</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 
-<span class="n">newfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
-<span class="n">E</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="c"># new fit adds new data about a[1] / a[0]</span>
+    <span class="k">def</span> <span class="nf">ratio</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>                   <span class="c"># new fit function</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                   <span class="c"># prior = best-fit parameters from nexp=4 fit</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>         <span class="c"># new data for the ratio</span>
+
+    <span class="n">newfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>The result of the new fit (to one piece of new data) is:</p>
+<p>The results of the new fit (to one piece of new data) are at the end of the
+output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
+  chi2/dof [dof] = 0.63 [8]    Q = 0.76    logGBF = 116.3
+
+Parameters:
+            a 0    0.4019 (40)      [  0.50 (40) ]  
+              1     0.406 (14)      [  0.50 (40) ]  
+              2      0.61 (36)      [  0.50 (40) ]  
+              3      0.50 (40)      [  0.50 (40) ]  
+            E 0   0.90039 (54)      [  1.00 (40) ]  
+              1    1.8026 (82)      [  2.00 (40) ]  
+              2      2.83 (19)      [  3.00 (40) ]  
+              3      4.00 (40)      [  4.00 (40) ]  
+
+Settings:
+  svdcut/n = 1e-12/1    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+E1/E0 = 2.0020(86)   E2/E0 = 3.14(21)
+a1/a0 = 1.011(32)   a2/a0 = 1.52(89)
+
+
+--------------------- new fit adding extra information
+Least Square Fit:
   chi2/dof [dof] = 0.12 [1]    Q = 0.73    logGBF = 2.4648
 
 Parameters:
@@ -1086,7 +1128,7 @@ of these fits.</p>
 <p>Finally note that this particular problem can be done much more
 simply using a weighted average (<a class="reference internal" href="lsqfit.html#lsqfit.wavg" title="lsqfit.wavg"><code class="xref py py-func docutils literal"><span class="pre">lsqfit.wavg()</span></code></a>).
 Adding the following code
-onto the end of the <code class="docutils literal"><span class="pre">main()</span></code> function in the previous section</p>
+onto the end of the <code class="docutils literal"><span class="pre">main()</span></code> function above</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a1/a0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;a1/a0&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1e-5</span><span class="p">)}</span>
 <span class="n">new_p</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">wavg</span><span class="p">([</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">new_data</span><span class="p">])</span>
@@ -1637,7 +1679,7 @@ Fit:
       2.6    0.04263821 (10)    0.04263818 (35)  
 
 Settings:
-  svdcut/n = 1e-12/3    tol = (1e-10*,1e-10,1e-10)    (itns/time = 246/0.2)
+  svdcut/n = 1e-12/3    tol = (1e-10*,1e-10,1e-10)    (itns/time = 246/0.3)
 
 Values:
               E2/E0: 3.15(12)            
@@ -2091,12 +2133,12 @@ values. The first fit, with only 3&nbsp;<code class="docutils literal"><span cla
 significantly larger <code class="docutils literal"><span class="pre">logGBF</span></code>. This indicates that this data is
 <code class="docutils literal"><span class="pre">exp(27.1-22.6)</span> <span class="pre">=</span> <span class="pre">90</span></code> times more likely to come from the theory with
 only 3&nbsp;<code class="docutils literal"><span class="pre">p[i]</span></code>s than from the one with&nbsp;4. The data much prefer
-the 3-parameter theory, and they do, in fact,
+the 3-parameter theory, and they do, as it turns out,
 come from such a theory. Note that the value for <code class="docutils literal"><span class="pre">p[3]</span></code> in
 the second case is consistent with zero, but the errors on the other
 parameters are much larger if it is included in the fit.</p>
-<p>The Empirical Bayes procedure can be abused. It is possible to make <code class="docutils literal"><span class="pre">logGBF</span></code>
-arbitrarily large. For example, setting</p>
+<p>The Empirical Bayes procedure can be abused, because it is possible to make
+<code class="docutils literal"><span class="pre">logGBF</span></code> arbitrarily large. For example, setting</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
     <span class="s">&#39;2.5904 +- 2.6e-16&#39;</span><span class="p">,</span> <span class="s">&#39;-6.53012 +- 6.5e-16&#39;</span><span class="p">,</span>
     <span class="s">&#39;7.83211 +- 7.8e-16&#39;</span><span class="p">,</span> <span class="s">&#39;-1.68813 +- 1.7e-16&#39;</span><span class="p">,</span>
@@ -2121,13 +2163,17 @@ is, we are assuming that <code class="docutils literal"><span class="pre">P(mode
 model space we are exploring. The <em>a priori</em> probability for the prior just
 above is vanishingly small (because it is ridiculous),
 and so comparing its <code class="docutils literal"><span class="pre">logGBF</span></code> to
-the others is nonsensical. Empirical Bayes typically makes sense only when
-varying a single a parameter, or varying a group of parameters together.</p>
+the others is nonsensical.</p>
 <p>Note that <code class="xref py py-func docutils literal"><span class="pre">empbayes_fit()</span></code> allows <code class="docutils literal"><span class="pre">fitargs(z)</span></code> to return
 a dictionary of arguments for the fitter together with a <code class="docutils literal"><span class="pre">plausibility</span></code>
 for&nbsp;<code class="docutils literal"><span class="pre">z</span></code>, which corresponds to <code class="docutils literal"><span class="pre">log(P(model))</span></code> in the discussion
 above. This allows you steer the search away from completely
 implausible solutions.</p>
+<p>Empirical Bayes tends to be most useful when varying the width of the prior for
+a single parameter,  or varying the widths of a group of parameters together.
+It is also useful for validating (rather than setting) the choice of a
+prior or set of priors for a fit, by comparing the optimal choice (according
+to the data) with choice actually used.</p>
 </div>
 <div class="section" id="positive-parameters-non-gaussian-priors">
 <span id="positive-parameters"></span><h2>Positive Parameters; Non-Gaussian Priors<a class="headerlink" href="#positive-parameters-non-gaussian-priors" title="Permalink to this headline">¶</a></h2>
@@ -2193,7 +2239,7 @@ a = 0.004(18)
 </div>
 <p>This is not such a useful result since much of the one-sigma range for <code class="docutils literal"><span class="pre">a</span></code>
 is negative, and yet we know that <code class="docutils literal"><span class="pre">a</span></code> must be postive.</p>
-<p>A better analysis is to use a log-normal distribution for <code class="docutils literal"><span class="pre">a</span></code>:</p>
+<p>A better analysis uses a log-normal distribution for <code class="docutils literal"><span class="pre">a</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="n">prior</span><span class="p">[</span><span class="s">&#39;log(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0.02(2)&#39;</span><span class="p">))</span>   <span class="c"># log(a) not a</span>
 
@@ -2318,18 +2364,21 @@ is wrapped in Python class <a class="reference internal" href="gsl.html#lsqfit.g
 default fitter provided GSL is installed. It offers a wide range
 of options, including several different algorithms that are selected
 by setting <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">alg</span></code> equal to <code class="docutils literal"><span class="pre">'lm'</span></code>,
-<code class="docutils literal"><span class="pre">'subspace2D'</span></code>, and so on. See the documentation.</dd>
+<code class="docutils literal"><span class="pre">'subspace2D'</span></code>, <code class="docutils literal"><span class="pre">'dogleg'</span></code>, and so on. See the documentation.</dd>
 <dt><code class="docutils literal"><span class="pre">fitter='gsl_v1_multifit'</span></code></dt>
 <dd>The GSL fitter from version&nbsp;1 of the
 GSL library. This is wrapped in Python class
 <a class="reference internal" href="gsl.html#lsqfit.gsl_v1_multifit" title="lsqfit.gsl_v1_multifit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.gsl_v1_multifit</span></code></a>. It was the fitter used in <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a>
-versions earlier than version&nbsp;9.0.</dd>
+versions earlier than version&nbsp;9.0. It supports a few
+different algorithms (parameter <code class="docutils literal"><span class="pre">alg</span></code>) including
+<code class="docutils literal"><span class="pre">'lmsder'</span></code> and <code class="docutils literal"><span class="pre">'lmder'</span></code>.</dd>
 <dt><code class="docutils literal"><span class="pre">fitter='scipy_least_squares'</span></code></dt>
 <dd>The standard <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> least-squares
 fitter, here provided with an <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> interface by
 class <a class="reference internal" href="scipy.html#lsqfit.scipy_least_squares" title="lsqfit.scipy_least_squares"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.scipy_least_squares</span></code></a>. This is the default fitter
 when GSL is not available. It also provides a variety of algorithms
-(set parameter <code class="docutils literal"><span class="pre">method</span></code>) and other options. See the documentation.</dd>
+(set parameter <code class="docutils literal"><span class="pre">method</span></code>), and other options, such as loss functions
+for handling outliers. See the <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> documentation.</dd>
 </dl>
 </div></blockquote>
 <p>The default configurations for these fitters are chosen to emphasize

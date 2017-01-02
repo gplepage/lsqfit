@@ -78,7 +78,7 @@ def main():
         # start plot with data
         plt.errorbar(
             x=gv.mean(t), xerr=gv.sdev(t), y=gv.mean(theta), yerr=gv.sdev(theta),
-            fmt='k.',
+            fmt='b.',
             )
         # use best-fit function to add smooth curve for 100 points
         t = np.linspace(0., 1.1, 100)
@@ -141,8 +141,8 @@ def show_plot(t_array, th_array):
     th_sdev = gv.sdev(th_array)
     thp = th_mean + th_sdev
     thm = th_mean - th_sdev
-    plt.fill_between(t_array, thp, thm, color='0.8')
-    plt.plot(t_array, th_mean, linewidth=0.5)
+    plt.fill_between(t_array, thp, thm, color='r', alpha=0.2) # color='0.8')
+    plt.plot(t_array, th_mean, linewidth=0.5, color='r')
     plt.xlabel('$t$')
     plt.ylabel(r'$\theta(t)$')
     plt.savefig('case-pendulum.png', bbox_inches='tight')

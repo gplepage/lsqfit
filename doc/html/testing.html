@@ -83,17 +83,19 @@ results.</p>
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:</p>
 <blockquote>
-<div><p>1) make a large number of &#8220;bootstrap copies&#8221; of the
+<div><ol class="arabic simple">
+<li>make a large number of &#8220;bootstrap copies&#8221; of the
 original input data and prior that differ from each other
 by random amounts characteristic of the underlying randomness
 in the original data and prior (see
 the documentation for <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.bootstrap_iter" title="lsqfit.nonlinear_fit.bootstrap_iter"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.nonlinear_fit.bootstrap_iter()</span></code></a>
-for more information);</p>
-<p>2) repeat the entire fit analysis for each bootstrap copy of
-the data and prior, extracting fit results from each;</p>
-<p>3) use the variation of the fit results from bootstrap copy
+for more information);</li>
+<li>repeat the entire fit analysis for each bootstrap copy of
+the data and prior, extracting fit results from each;</li>
+<li>use the variation of the fit results from bootstrap copy
 to bootstrap copy to determine an approximate probability
-distribution (possibly non-Gaussian) for the each result.</p>
+distribution (possibly non-Gaussian) for the each result.</li>
+</ol>
 </div></blockquote>
 <p>To illustrate, we return to our fit in the section
 on <a class="reference internal" href="overview.html#correlated-parameters"><span>Correlated Parameters; Gaussian Bayes Factor</span></a>, where the uncertainties on the
@@ -476,9 +478,10 @@ for each parameter:</p>
 <a class="reference internal image-reference" href="_images/eg3e.png"><img alt="_images/eg3e.png" src="_images/eg3e.png" style="width: 85%;" /></a>
 <p>The means are shifted slightly from the fit results and there
 is modest skewing, but the differences are not great.</p>
-<p>As a second example of Bayesian integration, we look briefly at
-the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span>Positive Parameters; Non-Gaussian Priors</span></a>. The constraint
-on parameter <code class="docutils literal"><span class="pre">a</span></code>, forcing it to be positive, is likely to
+<p>As a second example of Bayesian integration, we return briefly to
+the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span>Positive Parameters; Non-Gaussian Priors</span></a>: we want the
+average <code class="docutils literal"><span class="pre">a</span></code> of noisy data subject the constraint that the average
+must be positive. The constraint is likely to
 introduce strong distortions in the probability density function (PDF)
 given that the fit analysis suggests a value of 0.011±0.013.
 We plot the actual PDF using the following code, beginning with
@@ -540,8 +543,8 @@ Settings:
 a = 0.011(13)
 
 Histogram Analysis:
-   mean = 0.014045(12)   sdev = 0.010681(11)   skew = 0.6247(12)   ex_kurt = -0.5530(25)
-   median = 0.011824(14)   plus = 0.014451(28)   minus = 0.008725(17)
+   mean = 0.014034(17)   sdev = 0.010534(14)   skew = 0.6080(13)   ex_kurt = -0.6186(24)
+   median = 0.011854(20)   plus = 0.014434(36)   minus = 0.008584(17)
 </pre></div>
 </div>
 <p>and the probability distribution for <code class="docutils literal"><span class="pre">a</span></code> looks like</p>
