@@ -162,7 +162,7 @@ nonlinear_fit Objects
 
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 
-   .. automethod:: set_defaults(clear=False, **defaults)
+   .. automethod:: set(clear=False, **defaults)
 
 Functions
 ---------

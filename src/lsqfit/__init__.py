@@ -464,11 +464,11 @@ class nonlinear_fit(object):
             fitter = nonlinear_fit.DEFAULTS.get(
                 'fitter',  _FITTER_DEFAULTS['fitter'],
                 )
-        for k in nonlinear_fit.DEFAULTS:
-            if k in ['extend', 'svdcut', 'debug', 'maxit', 'fitter', 'tol']:
-                continue
-            if k not in fitterargs:
-                fitterargs[k] = nonlinear_fit.DEFAULTS[k]
+            for k in nonlinear_fit.DEFAULTS:
+                if k in ['extend', 'svdcut', 'debug', 'maxit', 'fitter', 'tol']:
+                    continue
+                if k not in fitterargs:
+                    fitterargs[k] = nonlinear_fit.DEFAULTS[k]
 
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
@@ -619,33 +619,39 @@ class nonlinear_fit(object):
             self.check_roundoff()
 
     @staticmethod
-    def set_defaults(clear=False, **defaults):
+    def set(clear=False, **defaults):
         """ Set default parameters for :class:`lsqfit.nonlinear_fit`.
 
         Use to set default values for parameters: ``extend``, ``svdcut``,
         ``debug``, ``tol``, ``maxit``, and ``fitter``. Can also set
-        parameters specific to the underlying fitter.
+        parameters specific to the fitter specified by the ``fitter``
+        argument.
 
         Sample usage::
 
             import lsqfit
 
-            old_defaults = lsqfit.nonlinear_fit.set_defaults(
+            old_defaults = lsqfit.nonlinear_fit.set(
                 fitter='gsl_multifit', alg='subspace2D', solver='cholesky',
                 tol=1e-10, debug=True,
                 )
 
-        ``nonlinear_fit.set_defaults()`` without arguments returns a
+        ``nonlinear_fit.set()`` without arguments returns a
         dictionary containing the current defaults.
 
         Args:
-            clear (bool): Remove the old defaults before adding new
+            clear (bool): If ``True`` remove earlier settings,
+                restoring the original defaults, before adding new
                 defaults. The default value is ``clear=False``.
+                ``nonlinear_fit.set(clear=True)`` restores the
+                original defaults.
             defaults (dict): Dictionary containing new defaults.
 
         Returns:
-            A dictionary containing the old defaults, before they were
-            updated.
+            A dictionary containing the old defaults,
+            before they were updated. These can be restored using
+            ``nonlinear_fit.set(old_defaults)`` where ``old_defaults``
+            is the dictionary containint the old defaults.
         """
         old_defaults = dict(nonlinear_fit.DEFAULTS)
         if clear:
@@ -1275,7 +1281,7 @@ class nonlinear_fit(object):
 
     bootstrap_iter = bootstrapped_fit_iter
 
-nonlinear_fit.set_defaults(**_FITTER_DEFAULTS)
+nonlinear_fit.set(**_FITTER_DEFAULTS)
 
 def _reformat(p, buf, extend=False):
     """ Apply format of ``p`` to data in 1-d array ``buf``. """

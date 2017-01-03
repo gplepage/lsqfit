@@ -1880,13 +1880,13 @@ straightforward fits can be greatly accelerated by using different options.
 The ``scipy_least_squares`` fitter can also be much faster than the default.
 It is worth experimenting when fits become costly.
 
-Method :meth:`lsqfit.nonlinear_fit.set_defaults`
+Method :meth:`lsqfit.nonlinear_fit.set`
 modifies the defaults used by |nonlinear_fit|.
 For example, we can make the fast
 option mentioned above the default choice for any subsequent fit
 by calling::
 
-  lsqfit.nonlinear_fit.set_defaults(
+  lsqfit.nonlinear_fit.set(
       fitter='gsl_multifit',
       alg='subspace2D',
       scaler='more',
@@ -1899,7 +1899,7 @@ as can any parameters that are
 sent to the underlying fitter
 (e.g., ``alg``, ``scaler``, and ``solver`` here).
 Calling the function with no arguments returns a
-dictionary containing the current defaults. ``set_defaults(clear=True)``
+dictionary containing the current defaults. ``nonlinear_fit.set(clear=True)``
 restores the original defaults.
 
 |nonlinear_fit| is easier to use than the underlying fitters because it can

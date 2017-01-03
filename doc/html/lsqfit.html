@@ -832,36 +832,42 @@ case an SVD cut might be advisable).</p>
 </dd></dl>
 
 <dl class="staticmethod">
-<dt id="lsqfit.nonlinear_fit.set_defaults">
-<em class="property">static </em><code class="descname">set_defaults</code><span class="sig-paren">(</span><em>clear=False</em>, <em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set_defaults" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.nonlinear_fit.set">
+<em class="property">static </em><code class="descname">set</code><span class="sig-paren">(</span><em>clear=False</em>, <em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <p>Use to set default values for parameters: <code class="docutils literal"><span class="pre">extend</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>,
 <code class="docutils literal"><span class="pre">debug</span></code>, <code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, and <code class="docutils literal"><span class="pre">fitter</span></code>. Can also set
-parameters specific to the underlying fitter.</p>
+parameters specific to the fitter specified by the <code class="docutils literal"><span class="pre">fitter</span></code>
+argument.</p>
 <p>Sample usage:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">lsqfit</span>
 
-<span class="n">old_defaults</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
+<span class="n">old_defaults</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
     <span class="n">fitter</span><span class="o">=</span><span class="s">&#39;gsl_multifit&#39;</span><span class="p">,</span> <span class="n">alg</span><span class="o">=</span><span class="s">&#39;subspace2D&#39;</span><span class="p">,</span> <span class="n">solver</span><span class="o">=</span><span class="s">&#39;cholesky&#39;</span><span class="p">,</span>
     <span class="n">tol</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">nonlinear_fit.set_defaults()</span></code> without arguments returns a
+<p><code class="docutils literal"><span class="pre">nonlinear_fit.set()</span></code> without arguments returns a
 dictionary containing the current defaults.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>clear</strong> (<em>bool</em>) &#8211; Remove the old defaults before adding new
-defaults. The default value is <code class="docutils literal"><span class="pre">clear=False</span></code>.</li>
+<li><strong>clear</strong> (<em>bool</em>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code> remove earlier settings,
+restoring the original defaults, before adding new
+defaults. The default value is <code class="docutils literal"><span class="pre">clear=False</span></code>.
+<code class="docutils literal"><span class="pre">nonlinear_fit.set(clear=True)</span></code> restores the
+original defaults.</li>
 <li><strong>defaults</strong> (<em>dict</em>) &#8211; Dictionary containing new defaults.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary containing the old defaults, before they were
-updated.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary containing the old defaults,
+before they were updated. These can be restored using
+<code class="docutils literal"><span class="pre">nonlinear_fit.set(old_defaults)</span></code> where <code class="docutils literal"><span class="pre">old_defaults</span></code>
+is the dictionary containint the old defaults.</p>
 </td>
 </tr>
 </tbody>

@@ -13,12 +13,15 @@ strategies used by lsqfit, offering more modern alternatives.
   dogleg options) than the defaults (which emphasize robustness). Additional
   fitters are under consideration.
 
+- Extensively rewritten tutorial with simpler examples, more plots, and better
+  organization.
+
 - lsqfit will now compile without GSL, using scipy functions instead.
   The GSL package (newly rewritten) is nevertheless recommended because of
   its many options. Ideally both GSL and scipy are available, together
   offering the most options.
 
-- nonlinear_fit.set_defaults(...) is available to change default values for
+- nonlinear_fit.set(...) is available to change default values for
   parameters like svdcut, fitter, and tol.
 
 - nonlinear_fit is almost but not quite backwards compatible. Setting
@@ -34,7 +37,8 @@ strategies used by lsqfit, offering more modern alternatives.
 - lsqfit.empbayes_fit now accepts z0 arguments that are numbers, arrays
   or dictionaries (as opposed to just arrays). z in fitargs(z) uses
   the same layout. This is a minor change but convenient since so many
-  applications involve just a single z.
+  applications involve just a single z. This function also now works
+  with a prior distribution for z (see "plausibility" in the documentation).
 
 - Slight enhancement of lsqfit.nonlinear_fit.format(...): setting
   pstyle=None suppresses the parameter list. Otherwise unchanged.

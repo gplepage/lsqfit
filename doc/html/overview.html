@@ -2393,12 +2393,12 @@ The more robust choices are important for challenging fits, but
 straightforward fits can be greatly accelerated by using different options.
 The <code class="docutils literal"><span class="pre">scipy_least_squares</span></code> fitter can also be much faster than the default.
 It is worth experimenting when fits become costly.</p>
-<p>Method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.set_defaults" title="lsqfit.nonlinear_fit.set_defaults"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.nonlinear_fit.set_defaults()</span></code></a>
+<p>Method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.set" title="lsqfit.nonlinear_fit.set"><code class="xref py py-meth docutils literal"><span class="pre">lsqfit.nonlinear_fit.set()</span></code></a>
 modifies the defaults used by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.
 For example, we can make the fast
 option mentioned above the default choice for any subsequent fit
 by calling:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">set_defaults</span><span class="p">(</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
     <span class="n">fitter</span><span class="o">=</span><span class="s">&#39;gsl_multifit&#39;</span><span class="p">,</span>
     <span class="n">alg</span><span class="o">=</span><span class="s">&#39;subspace2D&#39;</span><span class="p">,</span>
     <span class="n">scaler</span><span class="o">=</span><span class="s">&#39;more&#39;</span><span class="p">,</span>
@@ -2412,7 +2412,7 @@ as can any parameters that are
 sent to the underlying fitter
 (e.g., <code class="docutils literal"><span class="pre">alg</span></code>, <code class="docutils literal"><span class="pre">scaler</span></code>, and <code class="docutils literal"><span class="pre">solver</span></code> here).
 Calling the function with no arguments returns a
-dictionary containing the current defaults. <code class="docutils literal"><span class="pre">set_defaults(clear=True)</span></code>
+dictionary containing the current defaults. <code class="docutils literal"><span class="pre">nonlinear_fit.set(clear=True)</span></code>
 restores the original defaults.</p>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> is easier to use than the underlying fitters because it can
 handle correlated data, and it automatically generates
