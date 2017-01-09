@@ -255,6 +255,12 @@ to  switch to log-normal/sqrt-normal distributions. Setting
 <code class="docutils literal"><span class="pre">extend=False</span></code> (the default) restricts all parameters to
 Gaussian distributions. Additional distributions can be added
 using <a class="reference internal" href="#gvar.add_parameter_distribution" title="gvar.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">gvar.add_parameter_distribution()</span></code></a>.</li>
+<li><strong>udata</strong> (<em>dict, array or tuple</em>) &#8211; Same as <code class="docutils literal"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
+between different pieces of data.  This speeds up the  fit,
+particularly for large amounts of data, but ignores potentially
+valuable information if the data actually are correlated. Only
+one of <code class="docutils literal"><span class="pre">data</span></code> or <code class="docutils literal"><span class="pre">udata</span></code> should be specified. (Default is
+<code class="docutils literal"><span class="pre">None</span></code>.)</li>
 <li><strong>fitter</strong> (<em>str or None</em>) &#8211; Fitter code. Options if GSL is installed
 include: <code class="docutils literal"><span class="pre">'gsl_multifit'</span></code> (default) and <code class="docutils literal"><span class="pre">'gsl_v1_multifit'</span></code>
 (original fitter). Options if <code class="xref py py-mod docutils literal"><span class="pre">scipy</span></code> is installed include:
@@ -399,7 +405,7 @@ cannot be used to generate error budgets. <code class="docutils literal"><span c
 <code class="docutils literal"><span class="pre">fit.palt</span></code> give the same means and normally give the same errors
 for each parameter. They differ only when the input data&#8217;s
 covariance matrix is too singular to invert accurately (because of
-roundoff error), in which case an <em>SVD</em> cut is advisable.</p>
+roundoff error), in which case an SVD cut is advisable.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -416,7 +422,7 @@ incomplete.</p>
 <code class="descname">prior</code><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>dict, array, gvar.GVar or None</em></p>
 <p>Prior used in the fit. This may
-differ  from the input prior if an <em>SVD</em> cut is used. It is either
+differ  from the input prior if an SVD cut is used. It is either
 a  dictionary (<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>) or an array
 (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>), depending upon the input. Equals
 <code class="docutils literal"><span class="pre">None</span></code> if no prior was specified.</p>
@@ -450,7 +456,7 @@ stop fit:</p>
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
 <code class="descname">svdcorrection</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>gvar.GVar</em></p>
-<p>Sum of all <em>SVD</em> corrections, if any, added
+<p>Sum of all SVD corrections, if any, added
 to the fit data <code class="docutils literal"><span class="pre">y</span></code> or the prior <code class="docutils literal"><span class="pre">prior</span></code>.</p>
 </dd></dl>
 
@@ -459,7 +465,7 @@ to the fit data <code class="docutils literal"><span class="pre">y</span></code>
 <code class="descname">svdn</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>int</em></p>
 <p>Number of eigenmodes modified (and/or deleted) by the
-<em>SVD</em> cut.</p>
+SVD cut.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -493,7 +499,7 @@ the input <code class="docutils literal"><span class="pre">data</span></code>. (
 <code class="descname">y</code><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>dict, array or gvar.GVar</em></p>
 <p>Fit data used in the fit. This may differ
-from the input data if an <em>SVD</em> cut is used. It is either a
+from the input data if an SVD cut is used. It is either a
 dictionary (<code class="xref py py-class docutils literal"><span class="pre">gvar.BufferDict</span></code>) or an array
 (<code class="xref py py-class docutils literal"><span class="pre">numpy.ndarray</span></code>), depending upon the input.</p>
 </dd></dl>

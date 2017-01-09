@@ -2,18 +2,19 @@ These .py files are simple examples showing how to use lsqfit. Use 'make
 run' to run all of them, comparing the output with the corresponding .out
 files.
 
-Some of these examples are discussed in the documentation (which is
+Most of these examples are discussed in the documentation (see
 doc/html/index.html):
 
 	simple.py - "Introduction"
-	y-vs-x.py - "Making Fake Data" and "Basic Fits"
+	y-vs-x.py - "Basic Fits"
 	x-err.py - "x has Error Bars"
 	p-corr.py - "Correlated Parameters; Gaussian Bayes Factor"
-	err-budget.py - "Tuning Priors and the Empirical Bayes Criterion" and
-	                "Partial Errors and Error Budgets"
+    y-noerr.py - "y has No Error; Marginalization"
+	empbayes.py - "Tuning Priors and the Empirical Bayes Criterion"
+    bayes.py - "Bayesian Integrals"
+    pendulum.py - "Case Study: Pendulum"
 
-    pendulum.py - fit pendulum motion using a differential-equation 
-                  integrator inside the fit function.
+nist.py contains 27 examples suggested by NIST as test cases for fitters.
 
 To run under a different version of python, say python3 for example, use
 'make PYTHON=python3 run'.

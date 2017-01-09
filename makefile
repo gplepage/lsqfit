@@ -14,6 +14,7 @@
 PIP = pip
 PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
+VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 
 install :
 	$(PIP) install . --user
@@ -70,9 +71,14 @@ upload-pypi:
 	python setup.py sdist upload
 
 upload-git:
-	make doc-html
+	make doc-all
 	git commit -a -m "prep documentation for upload"
 	git push origin master
+
+tag-git:
+	echo  "version $(VERSION)"
+	git tag -a v$(VERSION) -m "version $(VERSION)"
+	git push origin v$(VERSION)
 
 test-download:
 	-$(PIP) uninstall lsqfit

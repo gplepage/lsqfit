@@ -2,16 +2,22 @@ To install:
 
 1. If not already installed, download and install the following packages:
 
-	a. The Gnu Scientific Library (gsl) - provides standard numerical
-		analysis packages in C. Should the build process for lsqfit
-		have difficulty finding the gsl libraries or headers, modify the
-		build script (setup.py) to point to the directories containing the
-		gsl headers and compiled libraries: add explicit addresses to the
+	a. The Gnu Scientific Library (GSL) (optional) - provides underlying
+		fitters, written in C. Should the build process for lsqfit
+		have difficulty finding the GSL libraries or headers, modify the build
+		script (setup.py) to point to the directories containing the gsl
+		headers and compiled libraries: add explicit addresses to the
 		include_dirs, library_dirs, and runtime_library_dirs lists in
-		setup.py.
+		setup.py. lsqfit can be built without GSL provided scipy is
+		available, but more options are available if both are included.
 		(http://www.gnu.org/software/gsl/)
 
-	b. The numpy python library - provides fast floating-point array
+	b. The scipy Python module (optional) - provides underlying fitters.
+		lsqfit can be built without scipy provided GSL is installed, but
+		more options are available if both GSL and scipy are installed.
+		(http://numpy.scipy.org/)
+
+	c. The numpy python library - provides fast floating-point array
 		operations in python. Versions earlier than 1.6 may not work.
 		(http://numpy.scipy.org/)
 
@@ -26,7 +32,7 @@ To install:
 
 		https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
 
-	d. The gvar python package - provides tools for creating and
+	e. The gvar python package - provides tools for creating and
 		manipulating Gaussian random variables, which are used for
 		designing Bayesian priors, report fit results, etc, etc. This
 		package will be installed automatically when lsqfit is installed
@@ -36,16 +42,15 @@ To install:
 		(eg, something goes wrong), install it yourself (eg, pip install gvar).
 		(https://github.com/gplepage/gvar or on PyPI)
 
-	e. (Optional) The vegas python package is optional for most lsqfit
+	f. (Optional) The vegas python package is optional for almost all lsqfit
 		applications, but is needed in order to use vegas.BayesIntegrator.
-		Use version 3.2 or greater. vegas does adaptive multi-dimensional
+		Use version 3.3 or greater. vegas does adaptive multi-dimensional
 		integration.
 
-	f. pip is used for installing (and uninstalling) gvar. pip usually
+	g. pip is used for installing (and uninstalling) gvar. pip usually
 	    comes with python. pip can be used to install numpy and cython as
 	    well.
 	    (https://pypi.python.org/pypi/pip)
-
 
 	The lsqfit code works for Python 2.6 and 2.7, and Python 3.2-3.4. It
 	does not work for Python versions 2.5.X or earlier. It has not been tested
@@ -111,7 +116,7 @@ Problems:
 	Contact Peter Lepage: g.p.lepage@cornell.edu
 
 
-# Copyright (c) 2008-2015 G. Peter Lepage.
+# Copyright (c) 2008-2017 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

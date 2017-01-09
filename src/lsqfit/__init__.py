@@ -269,6 +269,14 @@ class nonlinear_fit(object):
             Gaussian distributions. Additional distributions can be added
             using :meth:`gvar.add_parameter_distribution`.
 
+        udata (dict, array or tuple):
+            Same as ``data`` but instructs the fitter to ignore  correlations
+            between different pieces of data.  This speeds up the  fit,
+            particularly for large amounts of data, but ignores potentially
+            valuable information if the data actually are correlated. Only
+            one of ``data`` or ``udata`` should be specified. (Default is
+            ``None``.)
+
         fitter (str or None): Fitter code. Options if GSL is installed
             include: ``'gsl_multifit'`` (default) and ``'gsl_v1_multifit'``
             (original fitter). Options if :mod:`scipy` is installed include:
@@ -367,14 +375,14 @@ class nonlinear_fit(object):
             ``fit.palt`` give the same means and normally give the same errors
             for each parameter. They differ only when the input data's
             covariance matrix is too singular to invert accurately (because of
-            roundoff error), in which case an *SVD* cut is advisable.
+            roundoff error), in which case an SVD cut is advisable.
 
         p0 (dict, array or float): The parameter values used to start the fit.
             This will differ from the input ``p0`` if the latter was
             incomplete.
 
         prior (dict, array, gvar.GVar or None): Prior used in the fit. This may
-            differ  from the input prior if an *SVD* cut is used. It is either
+            differ  from the input prior if an SVD cut is used. It is either
             a  dictionary (:class:`gvar.BufferDict`) or an array
             (:class:`numpy.ndarray`), depending upon the input. Equals
             ``None`` if no prior was specified.
@@ -395,11 +403,11 @@ class nonlinear_fit(object):
 
                 3: ``ftol >=`` relative change in ``chi**2`` between iterations
 
-        svdcorrection (gvar.GVar): Sum of all *SVD* corrections, if any, added
+        svdcorrection (gvar.GVar): Sum of all SVD corrections, if any, added
             to the fit data ``y`` or the prior ``prior``.
 
         svdn (int): Number of eigenmodes modified (and/or deleted) by the
-            *SVD* cut.
+            SVD cut.
 
         time (float): *CPU* time (in secs) taken by fit.
 
@@ -413,7 +421,7 @@ class nonlinear_fit(object):
             ``x`` argument: so ``f(p)`` rather than ``f(x,p)``.)
 
         y (dict, array or gvar.GVar): Fit data used in the fit. This may differ
-            from the input data if an *SVD* cut is used. It is either a
+            from the input data if an SVD cut is used. It is either a
             dictionary (:class:`gvar.BufferDict`) or an array
             (:class:`numpy.ndarray`), depending upon the input.
 
@@ -434,10 +442,18 @@ class nonlinear_fit(object):
     FITTERS = _FITTERS
 
     def __init__(
-        self, data, fcn, prior=None, p0=None, extend=None,
-        svdcut=False, debug=None, tol=None, maxit=None,
+        self, data=None, fcn=None, prior=None, p0=None, extend=None,
+        svdcut=False, debug=None, tol=None, maxit=None, udata=None,
         fitter=None, **fitterargs
         ):
+
+        # check arguments
+        if data is None and udata is None:
+            raise ValueError('neither data nor udata is specified')
+        if fcn is None:
+            raise ValueError('no fit function specified')
+        if p0 is None and prior is None:
+            raise ValueError('neither p0 nor prior is specified')
 
         # install defaults where needed
         if extend is None:
@@ -473,7 +489,12 @@ class nonlinear_fit(object):
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
         self.svdcut = svdcut
-        self.data = data
+        if data is None:
+            self.data = udata
+            self.uncorrelated_data = True
+        else:
+            self.data = data
+            self.uncorrelated_data = False
         self.p0file = p0 if isinstance(p0, str) else None
         self.p0 = p0 if self.p0file is None else None
         self.fcn = fcn
@@ -487,7 +508,8 @@ class nonlinear_fit(object):
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
         x, y, prior, fdata = _unpack_data(
-            data=self.data, prior=prior, svdcut=self.svdcut, extend=extend
+            data=self.data, prior=prior, svdcut=self.svdcut,
+            extend=extend, uncorrelated_data=self.uncorrelated_data,
             )
         self.x = x
         self.y = y
@@ -1303,7 +1325,7 @@ def _reformat(p, buf, extend=False):
         ans = numpy.array(buf).reshape(numpy.shape(p))
     return ans
 
-def _unpack_data(data, prior, svdcut, extend):
+def _unpack_data(data, prior, svdcut, extend, uncorrelated_data):
     """ Unpack data and prior into ``(x, y, prior, fdata)``.
 
     This routine unpacks ``data`` and ``prior`` into ``x, y, prior, fdata``
@@ -1313,7 +1335,7 @@ def _unpack_data(data, prior, svdcut, extend):
     fit function. Both ``y`` and ``prior`` are modified to account
     for SVD cuts if ``svdcut>0``.
 
-    Note that redundant keys (eg, 'c' if 'logc' is a key) are removed
+    Note that redundant keys (eg, 'c' if 'log(c)' is a key) are removed
     from the prior if extend=True (and the prior is a dictionary).
 
     Allowed layouts for ``data`` are: ``x, y, ycov``, ``x, y, ysdev``,
@@ -1333,7 +1355,6 @@ def _unpack_data(data, prior, svdcut, extend):
     for a description of the format).
     """
     # unpack data tuple
-    data_is_3tuple = False
     if not isinstance(data, tuple):
         x = False                   # no x in fit fcn
         y = _unpack_gvars(data)
@@ -1342,12 +1363,18 @@ def _unpack_data(data, prior, svdcut, extend):
         ym = numpy.asarray(ym)
         ycov = numpy.asarray(ycov)
         y = _gvar.gvar(ym, ycov)
-        data_is_3tuple = True
     elif len(data) == 2:
         x, y = data
         y = _unpack_gvars(y)
     else:
         raise ValueError("data tuple wrong length: "+str(len(data)))
+
+    # clean up and un-extend prior
+    if prior is not None:
+        prior = _unpack_gvars(prior)
+        if extend and hasattr(prior, 'keys'):
+            # remove redundant keys, if any
+            prior = _gvar.trim_redundant_keys(prior)
 
     def _apply_svd(data, svdcut=svdcut):
         ans, inv_wgts = _gvar.svd(data, svdcut=svdcut, wgts=-1)
@@ -1361,13 +1388,38 @@ def _unpack_data(data, prior, svdcut, extend):
             )
         return ans, fdata
 
-    if prior is None:
+    if uncorrelated_data:
+        ysdev = _gvar.sdev(y.flat)
+        if prior is None:
+            pfdata = _FDATA(
+                mean=[], inv_wgts=[([],[])], svdcorrection=_gvar.gvar(0,0),
+                logdet=0.0, nblocks={1:0}, svdn=0,
+                )
+        else:
+            prior, pfdata = _apply_svd(prior)
+        inv_wgts = [(numpy.arange(y.size, dtype=numpy.intp), 1. / ysdev)]
+        i, wgt = pfdata.inv_wgts[0]
+        if len(i) > 0:
+            inv_wgts = [(
+                numpy.concatenate((inv_wgts[0][0], i + y.size)),
+                numpy.concatenate((inv_wgts[0][1], wgt))
+                )]
+        for i, wgt in pfdata.inv_wgts[1:]:
+            inv_wgts.append((
+                i + y.size, wgt
+                ))
+        pfdata.nblocks[1] = pfdata.nblocks.get(1, 0) + y.size
+        fdata = _FDATA(
+            mean=numpy.concatenate((_gvar.mean(y.flat), pfdata.mean)),
+            inv_wgts=inv_wgts,
+            svdcorrection=pfdata.svdcorrection,
+            logdet=2 * numpy.sum(numpy.log(ysdev)) + pfdata.logdet,
+            nblocks=pfdata.nblocks,
+            svdn=pfdata.svdn,
+            )
+    elif prior is None:
         y, fdata = _apply_svd(y)
     else:
-        prior = _unpack_gvars(prior)
-        if extend and hasattr(prior, 'keys'):
-            # remove redundant keys, if any
-            prior = _gvar.trim_redundant_keys(prior)
         yp, fdata = _apply_svd(numpy.concatenate((y.flat, prior.flat)))
         y.flat = yp[:y.size]
         prior.flat = yp[y.size:]
@@ -1414,13 +1466,10 @@ def _unpack_p0(p0, p0file, prior, extend):
         # repackage as BufferDict or numpy array
         if hasattr(p0, 'keys'):
             p0 = _gvar.BufferDict(p0)
+            if p0.dtype != float:
+                p0.buf = numpy.asarray(p0.buf, dtype=float)
         else:
-            p0 = numpy.array(p0)
-        if p0.dtype != float:
-            raise ValueError(
-                'p0 must contain elements of type float, not type ' +
-                str(p0.dtype)
-                )
+            p0 = numpy.array(p0, float)
     if prior is not None:
         # build new p0 from p0, plus the prior as needed
         pp = _reformat(prior, buf=[x.mean if x.mean != 0.0

@@ -73,8 +73,8 @@ results that are described by Gaussian random variables. These assumptions
 are usually pretty good for high-statistics data, when standard deviations
 are small, but can lead to problems with low statistics.</p>
 <p>Here we present three methods for testing these assumptions.
-We also present techniques like the <em>statistical bootstrap</em> and
-Bayesian integration that can be used to analyze non-Gaussian
+Some of these techniques, like the <em>statistical bootstrap</em> and
+Bayesian integration, can also be used to analyze non-Gaussian
 results.</p>
 </div>
 <div class="section" id="bootstrap-error-analysis-non-gaussian-output">
@@ -133,8 +133,7 @@ fit, in the <code class="docutils literal"><span class="pre">main()</span></code
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="mf">4.</span>    <span class="p">,</span>  <span class="mf">2.</span>    <span class="p">,</span>  <span class="mf">1.</span>    <span class="p">,</span>  <span class="mf">0.5</span>   <span class="p">,</span>  <span class="mf">0.25</span>  <span class="p">,</span>  <span class="mf">0.167</span> <span class="p">,</span>  <span class="mf">0.125</span> <span class="p">,</span>
-        <span class="mf">0.1</span>   <span class="p">,</span>  <span class="mf">0.0833</span><span class="p">,</span>  <span class="mf">0.0714</span><span class="p">,</span>  <span class="mf">0.0625</span>
+        <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0833</span><span class="p">,</span> <span class="mf">0.0714</span><span class="p">,</span> <span class="mf">0.0625</span>
         <span class="p">])</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
         <span class="s">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s">&#39;0.099(49)&#39;</span><span class="p">,</span>
@@ -250,7 +249,7 @@ in the Gaussian approximation):</p>
 <div><a class="reference internal image-reference" href="_images/eg3d.png"><img alt="_images/eg3d.png" src="_images/eg3d.png" style="width: 100%;" /></a>
 </div></blockquote>
 <p>While the distribution for <code class="docutils literal"><span class="pre">p1/p0</span></code> is consistent with the fit
-results and Gaussian,
+results (dashed line) and Gaussian,
 the distribution for <code class="docutils literal"><span class="pre">p3/p2</span></code> is significantly skewed, with
 a much longer tail to the right. The final result for <code class="docutils literal"><span class="pre">p3/p2</span></code> might
 more accurately be summarized as 0.48 with errors of +0.31 and&nbsp;-0.15,
@@ -549,7 +548,7 @@ Histogram Analysis:
 </div>
 <p>and the probability distribution for <code class="docutils literal"><span class="pre">a</span></code> looks like</p>
 <a class="reference internal image-reference" href="_images/eg6.png"><img alt="_images/eg6.png" src="_images/eg6.png" style="width: 70%;" /></a>
-<p>This distribution is distorted at between <code class="docutils literal"><span class="pre">a=0</span></code> and the mean
+<p>This distribution is distorted between <code class="docutils literal"><span class="pre">a=0</span></code> and the mean
 value, but otherwise is fairly similar to the Gaussian result
 0.11±0.13 (dashed line). A more accurate summary of the result
 for <code class="docutils literal"><span class="pre">a</span></code> would be 0.12 with an error of +0.14 and -0.09, though

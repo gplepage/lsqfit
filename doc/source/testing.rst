@@ -24,8 +24,8 @@ are usually pretty good for high-statistics data, when standard deviations
 are small, but can lead to problems with low statistics.
 
 Here we present three methods for testing these assumptions.
-We also present techniques like the *statistical bootstrap* and
-Bayesian integration that can be used to analyze non-Gaussian
+Some of these techniques, like the *statistical bootstrap* and
+Bayesian integration, can also be used to analyze non-Gaussian
 results.
 
 
@@ -86,8 +86,7 @@ fit, in the ``main()`` function::
 
     def make_data():
         x = np.array([
-            4.    ,  2.    ,  1.    ,  0.5   ,  0.25  ,  0.167 ,  0.125 ,
-            0.1   ,  0.0833,  0.0714,  0.0625
+            4., 2., 1., 0.5, 0.25, 0.167, 0.125, 0.1, 0.0833, 0.0714, 0.0625
             ])
         y = gv.gvar([
             '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
@@ -175,7 +174,7 @@ in the Gaussian approximation):
         :width: 100%
 
 While the distribution for ``p1/p0`` is consistent with the fit
-results and Gaussian,
+results (dashed line) and Gaussian,
 the distribution for ``p3/p2`` is significantly skewed, with
 a much longer tail to the right. The final result for ``p3/p2`` might
 more accurately be summarized as 0.48 with errors of +0.31 and |~| -0.15,
@@ -419,7 +418,7 @@ and the probability distribution for ``a`` looks like
 .. image:: eg6.png
     :width: 70%
 
-This distribution is distorted at between ``a=0`` and the mean
+This distribution is distorted between ``a=0`` and the mean
 value, but otherwise is fairly similar to the Gaussian result
 0.11±0.13 (dashed line). A more accurate summary of the result
 for ``a`` would be 0.12 with an error of +0.14 and -0.09, though

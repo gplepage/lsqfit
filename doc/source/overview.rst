@@ -3,6 +3,8 @@
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
 .. |~| unicode:: U+00A0
    :trim:
+.. |x| unicode:: U+00D7
+   :trim:
 
 .. highlight:: python
 
@@ -218,11 +220,11 @@ There are several things worth noting from this example:
      prior need be changed. (In particular, the fit function ``fcn(x,p)``
      need *not* be changed.)
 
-What follows is a tutorial that demonstrates in greater detail how to
-use these modules in a selection of variations on the data fitting problem.
-As above, code for the examples is specified completely and so can be copied
-into a file, and run as is. It can also be modified, allowing for
-experimentation.
+What follows is a tutorial that demonstrates in greater detail how to use
+these modules in a selection of variations on the data fitting problem. As
+above, code for the examples is specified completely (with one exception) and
+so can be copied into a file, and run as is. It can also be modified, allowing
+for experimentation.
 
 Another way to learn about the modules is to examine the case studies
 that follow this section. Each focuses on a single problem, again with
@@ -455,8 +457,9 @@ A fit analysis typically requires three types of input:
 The point of
 the fit is to improve our knowledge of the parameter values, beyond
 our *a priori* impressions, by analyzing the fit data. We now show how
-to do this using the :mod:`lsqfit` module for a problem familiar from
-lattice QCD.
+to do this using the :mod:`lsqfit` module for a more realistic
+problem, one that is
+familiar from numerical simulations of quantum chromodynamics (QCD).
 
 We need code for each of the three fit inputs. The fit data in our example
 is assembled by the following function::
@@ -749,6 +752,29 @@ There are several things to notice here:
      for example, we actually have 20 pieces of data to fit: the 8 |~| ``y``\s
      plus the 12 |~| prior values for the 12 |~| parameters.
 
+     The function of priors as fit data becomes obvious if we rewrite
+     our fit function as ::
+
+           import numpy as np
+
+           def fcn(x, p):       # function used to fit x, y data
+               a = p['a']       # array of a[i]s
+               E = p['E']       # array of E[i]s
+               return dict(
+                  y=sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E)),
+                  a=p['a'],
+                  b=p['b'],
+                  )
+
+     and make the following change to the ``main()`` function::
+
+            prior = make_prior(nexp)
+            data = (x, dict(y=y, a=prior['a'], b=prior['b']))
+            fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, prior=None, p0=p0)
+
+     This gives exactly the same results, but now with the prior
+     explicitly built into the fit function and data.
+
      The effective number of degrees of freedom (``dof`` in the output
      above) is the number of pieces of data minus the number of fit
      parameters, or 20-12=8 in this last case. With priors for every
@@ -839,16 +865,19 @@ following code added to the end of ``main()`` (outside the loop)::
       plt.show()
 
 
-Chained Fits
--------------
+Chained Fits; Large Data Sets
+-------------------------------
 The priors in a fit represent knowledge that we have about the parameters
 before we do the fit. This knowledge might come from theoretical
-considerations or experiment. Or it might come from another fit. Imagine that
-we want to add new information to that extracted from the fit in the previous
-section. For example, we might learn from some other source that the ratio of
-amplitudes ``a[1]/a[0]`` equals 1±1e-5. The challenge is to combine this new
-information with information extracted from the fit above without rerunning
-that fit. (We assume it is not possible to rerun.)
+considerations or experiment. Or it might come from another fit. Here we
+look at two examples that exploit the possibility of chaining fits, where
+the output of one fit is an input (the prior) to another.
+
+Imagine first that we want to add new information to that extracted from the
+fit in the previous section. For example, we might learn from some other
+source that the ratio of amplitudes ``a[1]/a[0]`` equals 1±1e-5. The challenge
+is to combine this new information with information extracted from the fit
+above without rerunning that fit. (We assume it is not possible to rerun.)
 
 We can combine the new data with the old fit results by creating a new
 fit that uses the best-fit parameters, ``fit.p``, from the old fit as its
@@ -860,20 +889,18 @@ end::
         x, y = make_data()              # collect fit data
         p0 = None                       # make larger fits go faster (opt.)
         for nexp in range(1, 5):
-            print('************************************* nexp =', nexp)
             prior = make_prior(nexp)
             fit = lsqfit.nonlinear_fit(data=(x, y), fcn=fcn, prior=prior, p0=p0)
-            if nexp > 2:
-                E = fit.p['E']          # best-fit parameters
-                a = fit.p['a']
-                print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
-                print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
             if fit.chi2 / fit.dof < 1.:
                 p0 = fit.pmean          # starting point for next fit (opt.)
-            print()
 
         # print nexp=4 fit results
+        print('--------------------- original fit')
         print(fit)
+        E = fit.p['E']          # best-fit parameters
+        a = fit.p['a']
+        print('E1/E0 =', E[1] / E[0], '  E2/E0 =', E[2] / E[0])
+        print('a1/a0 =', a[1] / a[0], '  a2/a0 =', a[2] / a[0])
 
         # new fit adds new data about a[1] / a[0]
         def ratio(p):                   # new fit function
@@ -884,6 +911,7 @@ end::
         data = gv.gvar(1, 1e-5)         # new data for the ratio
 
         newfit = lsqfit.nonlinear_fit(data=data, fcn=ratio, prior=prior)
+        print('\\n--------------------- new fit adding extra information')
         print(newfit)
         E = newfit.p['E']
         a = newfit.p['a']
@@ -896,7 +924,7 @@ output:
 .. literalinclude:: eg1a.out
 
 Parameters ``a[0]`` and ``E[0]`` are essentially unchanged by the new
-information, but ``a[i]`` and ``E[i]`` are more precise for ``i=1`` and ``2``,
+information, but ``a[1]`` and ``E[1]`` are much more precise,
 as is ``a[1]/a[0]``, of course.
 
 It might seem odd that ``E[1]``, for example, is changed at
@@ -913,7 +941,7 @@ prior for each new fit is the best-fit output (``fit.p``) from the previous
 fit. The output from the chain's final fit is the cumulative  result of all
 of these fits.
 
-Finally note that this particular problem can be done much more
+Note that this particular problem can be done much more
 simply using a weighted average (:func:`lsqfit.wavg`).
 Adding the following code
 onto the end of the ``main()`` function above ::
@@ -944,6 +972,81 @@ are correlated with ``a[1]/a[0]``. Consequently when the ratio
 is shifted by new data, the  ``E[i]`` and ``a[i]`` are shifted as well.
 The final results in ``new_p``
 are identical to what we obtained above.
+
+One place where chained fits can be useful is when there is lots of fit
+data. Imagine, as a second example, a situation that involves 10,000 highly
+correlated ``y[i]``\s. A straight fit would take a very long time because
+part of the fit process involves diagonalizing the fit data's (dense)
+10,000 |x|\10,000 covariance matrix. Instead we break the data up into
+batches of |~| 100 and do chained fits of one batch after another::
+
+    # read data from disk
+    x, y = read_data()
+    print('x = [{}  {} ... {}]'.format(x[0], x[1], x[-1]))
+    print('y = [{}  {} ... {}]'.format(y[0], y[1], y[-1]))
+    print('corr(y[0],y[9999]) =', gv.evalcorr([y[0], y[-1]])[1,0])
+    print()
+
+    # fit function and prior
+    def fcn(x, p):
+        return p[0] + p[1] * np.exp(- p[2] * x)
+    prior = gv.gvar(['0(1)', '0(1)', '0(1)'])
+
+    # Nstride fits, each to nfit data points
+    nfit = 100
+    Nstride = len(y) // nfit
+    fit_time = 0.0
+    for n in range(0, Nstride):
+        fit = lsqfit.nonlinear_fit(
+            data=(x[n::Nstride], y[n::Nstride]), prior=prior, fcn=fcn
+            )
+        prior = fit.p
+        if n in [0, 9]:
+            print('******* Results from ', (n+1) * nfit, 'data points')
+            print(fit)
+    print('******* Results from ', Nstride * nfit, 'data points (final)')
+    print(fit)
+
+In the loop, we fit only 100 data points at a time, but the prior we use is
+the best-fit result from the fit to the previous 100 data points,
+and its prior comes from fitting the 100 points before those, and so on
+for 100 |~| fits in all.
+The output from this code is:
+
+.. literalinclude:: eg9a.out
+
+It shows the errors on ``p[1]`` and ``p[2]`` decreasing steadily as more
+data points are included. The error on ``p[0]``, however, hardly changes
+at all. This is a consequence of the strong correlation between different
+``y[i]``\s (and its lack of x-dependence).
+The "correct" answers here are 0.5, 0.4 and |~| 0.7.
+
+Chained fits are slower that straight fits with large amounts of
+*uncorrelated* data, provided |nonlinear_fit| is informed ahead of
+time that the data are uncorrelated (by default it checks for
+correlations, which can be expensive for lots of data).
+The fitter is informed by using argument
+``udata`` instead of ``data`` to specify the fit data::
+
+    x, y = read_data()
+    print('x = [{}  {} ... {}]'.format(x[0], x[1], x[-1]))
+    print('y = [{}  {} ... {}]'.format(y[0], y[1], y[-1]))
+    print()
+
+    # fit function and prior
+    def fcn(x, p):
+        return p[0] + p[1] * np.exp(- p[2] * x)
+    prior = gv.gvar(['0(1)', '0(1)', '0(1)'])
+
+    fit = lsqfit.nonlinear_fit(udata=(x, y), prior=prior, fcn=fcn)
+    print(fit)
+
+Using ``udata`` rather than ``data`` causes |nonlinear_fit| to
+ignore correlations in the data, whether they exist or not.
+Uncorrelated fits are typically
+much faster when fitting large amounts of data, so it is then
+possible to fit much larger amounts of data
+(e.g., 1,000,000 or more ``y[i]``\s is straightforward on a laptop).
 
 
 ``x`` has Errors
@@ -1050,8 +1153,7 @@ how this is done::
 
   def make_data():
       x = np.array([
-          4.    ,  2.    ,  1.    ,  0.5   ,  0.25  ,  0.167 ,  0.125 ,
-          0.1   ,  0.0833,  0.0714,  0.0625
+          4., 2., 1., 0.5, 0.25, 0.167, 0.125, 0.1, 0.0833, 0.0714, 0.0625
           ])
       y = gv.gvar([
           '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
@@ -1121,7 +1223,7 @@ usually more ways than one to get a good fit. Some are more plausible
 than others, and the Bayes Factor helps sort out which.
 
 The Gaussian Bayes Factor is an approximation to
-the *Bayes Factor* which is valid in the limit where
+the Bayes Factor which is valid in the limit where
 all distributions can be approximated by Gaussians. The Bayes Factor
 is the probability
 (density) that the fit data would be generated randomly from the
@@ -1130,8 +1232,7 @@ Ratios of Bayes Factors from fits with different models tell us about the
 relative likelihood of the different models given the data. (Actually the
 ratio gives the ratio of probabilities for obtaining the data
 from the models, as opposed to the probabilities for the models given
-the data. The latter ratio is the same as the former, however, provided
-the two models are equally likely *a priori* (from Bayes Theorem).)
+the data. See the discussion in the next section.)
 
 
 ``y`` has No Error; Marginalization
@@ -1153,9 +1254,10 @@ number of exact ``y``\s can tell us about the parameters we want to know.
 
 The key idea here is to use priors to model the part of the fit function
 that we don't care about, and to remove that part of the function from
-the analysis by subtracting it out from the input data.
+the analysis by subtracting it out from the input data. This is called
+*marginalization*.
 
-To illustrate how this is done,
+To illustrate how it is done,
 we consider data that is generated from
 an infinite sum of decaying exponentials, like that in :ref:`basic-fits`::
 
@@ -1164,7 +1266,7 @@ an infinite sum of decaying exponentials, like that in :ref:`basic-fits`::
     def make_data():
         x = np.array([ 1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6])
         y = np.array([
-            0.2740471001620033,  0.2056894154005132,  0.158389402324004 ,
+            0.2740471001620033,  0.2056894154005132,  0.158389402324004,
             0.1241967645280511,  0.0986901274726867,  0.0792134506060024,
             0.0640743982173861,  0.052143504367789 ,  0.0426383022456816,
             ])
@@ -1322,7 +1424,7 @@ to notice:
     is clear from the following plots:
 
     .. image:: eg5.png
-        :width: 70%
+        :width: 80%
 
     The solid lines in these plot show the exact results, from ``y`` in the
     code. The dashed lines show the fit function with the best-fit parameters
@@ -1460,7 +1562,7 @@ is done automatically if ``debug=True`` is added to the argument list of
 ``y`` has Unknown Errors
 -------------------------
 There are situations where the input data ``y`` is known to have
-uncertainties but where we do not know how big those uncertainties are.
+uncertainties, but where we do not know how big those uncertainties are.
 A common approach is to infer these uncertainties from the fluctuations
 of the data around the best-fit result.
 
@@ -1579,7 +1681,7 @@ correct *a priori* value: we vary the widths and/or central values of the
 priors of interest to maximize ``logGBF``. In effect
 we are using the data to get a feel for what is a reasonable prior. This
 procedure for setting priors is again, as in the previous section,
-an example of the *Empirical Bayes* method and can be implemented using
+an example of the Empirical Bayes method and can be implemented using
 function :func:`lsqfit.empbayes_fit`.
 
 The following code illustrates how this is done::
@@ -1652,7 +1754,7 @@ The Empirical Bayes procedure can be abused, because it is possible to make
 in the problem above and then fitting gives ``logGBF=52.2``,  which is much
 larger than the  alternatives above. This "prior" is ridiculous, however: it
 has means equal to the best-fit results with standard deviations that are  16
-|~| orders of magnitude smaller. This is the kind of solution you  get from
+|~| orders of magnitude smaller. This is the kind of prior you  get from
 Empirical Bayes if you vary the means and standard deviations of all
 parameters independently.
 
@@ -1663,7 +1765,9 @@ want to maximize ``P(model|y)``, the probability of the model given the data.
 These two probabilities are different, but are related by Bayes Theorem:
 ``P(model|y)`` is proportional to ``P(y|model)`` times ``P(model)``, where
 ``P(model)`` is the *a priori* probability of the model being correct. When we
-choose a model by maximizing ``logGBF`` we are implicitly assuming that the
+choose a model by maximizing ``logGBF`` (that is, by
+maximizing ``P(y|model)``),
+we are implicitly assuming that the
 various models we are considering are all equally likely candidates --- that
 is, we are assuming that ``P(model)`` is approximately constant across the
 model space we are exploring. The *a priori* probability for the prior just

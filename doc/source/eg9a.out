@@ -1,0 +1,40 @@
+x = [0.2  0.200080008001 ... 1.0]
+y = [0.836(10)  0.835(10) ... 0.686(10)]
+corr(y[0],y[9999]) = 0.990099009901
+
+******* Results from  100 data points
+Least Square Fit:
+  chi2/dof [dof] = 1.1 [100]    Q = 0.23    logGBF = 523.92
+
+Parameters:
+              0    0.494 (13)     [  0.0 (1.0) ]  
+              1   0.3939 (75)     [  0.0 (1.0) ]  
+              2    0.715 (23)     [  0.0 (1.0) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 11/0.1)
+
+******* Results from  1000 data points
+Least Square Fit:
+  chi2/dof [dof] = 1.1 [100]    Q = 0.29    logGBF = 544.96
+
+Parameters:
+              0    0.491 (10)     [  0.492 (10) ]  
+              1   0.3969 (24)     [ 0.3965 (25) ]  
+              2   0.7084 (70)     [ 0.7095 (74) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 6/0.0)
+
+******* Results from  10000 data points (final)
+Least Square Fit:
+  chi2/dof [dof] = 1 [100]    Q = 0.48    logGBF = 548.63
+
+Parameters:
+              0     0.488 (10)      [   0.488 (10) ]  
+              1   0.39988 (77)      [ 0.39982 (78) ]  
+              2    0.7002 (23)      [  0.7003 (23) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.4)
+

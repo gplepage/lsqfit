@@ -19,7 +19,7 @@ point by have tested the other one as well.)
 fitters, at least on my Mac.
 
 """
-# Copyright (c) 2016 G. Peter Lepage.
+# Copyright (c) 2016-17 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

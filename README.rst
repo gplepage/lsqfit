@@ -10,7 +10,7 @@ Gaussian distributions. (``gvar`` is  distributed separately.) ``lsqfit``
 supports Bayesian priors for the fit parameters, with arbitrarily complicated
 multidimensional gaussian distributions. An tutorial on fitting is included in
 the documentation; documentation is in the ``doc/`` subdirectory — see
-``doc/html/index.html`` for the html version.
+``doc/html/index.html`` for the html version and ``doc/lsqfit.pdf`` for pdf.
 
 This code has been used on a laptop to fit functions of tens-to-thousands
 of parameters to tens-to-thousands of pieces of data. The use of
@@ -19,11 +19,11 @@ simultaneous fits to multiple types of data. Fit-function parameters can
 also be represented as dictionaries, usually leading to much more
 intelligible code.
 
-These packages use the Gnu Scientific Library (GSL) to do the fitting,
-numpy for efficient array arithmetic, and cython to compile efficient code
-that interfaces between Python and the C-based GSL. The fitter uses
-automatic differentiation to compute gradients, which greatly simplifies
-the design of fitting functions.
+These packages use the Gnu Scientific Library (GSL) and/or scipy to do the
+fitting, numpy for efficient array arithmetic, and cython to compile efficient
+code that interfaces between Python and the C-based GSL. The fitter uses
+automatic differentiation to compute gradients, which greatly simplifies the
+design of fitting functions.
 
 Information on how to install the components is in the ``INSTALLATION`` file.
 
@@ -40,4 +40,4 @@ patch number bug fixes.
 
 
 | Created by G. Peter Lepage (Cornell University) 2008
-| Copyright (c) 2008-2016 G. Peter Lepage
+| Copyright (c) 2008-2017 G. Peter Lepage
