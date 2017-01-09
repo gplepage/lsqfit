@@ -1,5 +1,52 @@
-Version 8.???
+Version 9.0
 =================
+This version offers a major overhaul of the underlying fitting
+strategies used by lsqfit, offering more modern alternatives which can
+be more robust and/or much faster than before.
+
+- New 'fitter' parameter in nonlinear_fit to select the fitting package
+  used to do the actual minimization. Three choices are 'gsl_multifit'
+  (default), 'gsl_v1_multifit' (previous default), and 'scipy_least_squares'
+  (default if GSL not present). It is worth experimenting with different
+  fitters on any given problem, since they are optimized for different types
+  of problems. Sometimes one option will work where others fail. Also some of
+  the options can be 2-3 times faster (eg, alg='subspace2D' or either of the
+  dogleg options) than the defaults (which emphasize robustness). Additional
+  fitters are under consideration. See the Tutorial section on Faster Fitters
+  in the documentation.
+
+- Extensively rewritten Tutorial with simpler examples, more plots, and better
+  organization.
+
+- lsqfit will now compile without GSL, using scipy functions instead.
+  The GSL package (newly rewritten) is nevertheless recommended because of
+  its many options. Ideally both GSL and scipy are available, together
+  offering the most options.
+
+- nonlinear_fit.set(...) is available to change default values for
+  parameters like svdcut, fitter, and tol.
+
+- nonlinear_fit is almost but not quite backwards compatible. Setting
+  alg='lmder', for example, will not work unless fitter='gsl_v1_multifit',
+  which is not the default. Also analyzers aren't available for everything.
+
+- nonlinear_fit ignores correlations in the data if udata=(x,y) is
+  specified rather than data=(x,y) in the argument list. Uncorrelated fits can
+  be much faster with 10,000s or 1,000,000s of y[i]s. Ignoring correlations
+  that are actually there could make answers wrong, however.
+
+- BayesIntegrator.__call__ now accepts an extra flag adapt_to_pdf.
+  The default is True, which means that vegas adapts to the pdf.
+  Set it to False and vegas will adapt to the function times the pdf.
+  In either case, the results have an new attribute results.norm which
+  gives a vegas estimate for the norm of the pdf (won't be 1 if
+  the pdf is un-normalized, as is typically the case).
+
+- lsqfit.empbayes_fit now accepts z0 arguments that are numbers, arrays
+  or dictionaries (as opposed to just arrays). z in fitargs(z) uses
+  the same layout as z0. This is a minor change but convenient since so many
+  applications involve just a single z. This function also now accepts
+  a prior distribution for z (see "plausibility" in the documentation).
 
 - Slight enhancement of lsqfit.nonlinear_fit.format(...): setting
   pstyle=None suppresses the parameter list. Otherwise unchanged.

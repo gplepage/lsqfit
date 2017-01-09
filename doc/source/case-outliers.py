@@ -4,8 +4,8 @@ import sys
 STDOUT = sys.stdout
 
 # NB: Need to run cases (True, False), (False, False) and (False, True)
-LSQFIT_ONLY = False
-MULTI_W = True
+LSQFIT_ONLY = True
+MULTI_W = False
 
 import matplotlib.pyplot as plt
 import numpy as np

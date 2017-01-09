@@ -28,6 +28,20 @@ import lsqfit
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
 extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
 pngmath_use_preview = True
+pngmath_use_preview = True
+pngmath_latex_preamble = "\usepackage{arev}"
+pngmath_dvipng_args = ['-gamma 0.5' , '-D 100']
+
+napoleon_google_docstring = True
+napoleon_numpy_docstring = True
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = False
+napoleon_use_admonition_for_notes = False
+napoleon_use_admonition_for_references = False
+napoleon_use_ivar = False
+napoleon_use_param = True
+napoleon_use_rtype = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'lsqfit'
-copyright = u'2009-2014, G. P. Lepage'
+copyright = u'2009-2016, G. P. Lepage'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -98,6 +112,7 @@ pygments_style = 'sphinx'
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'sphinxdoc'
 html_theme = 'nature'
+html_theme = 'sphinx_rtd_theme'
 html_theme = 'pyramid'
 
 # Theme options are theme-specific and customize the look and feel of a theme

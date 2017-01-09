@@ -3,120 +3,205 @@
 """
 eg3.py - Code for "Correlated Parameters"
 
-Created by Peter Lepage on 2010-01-04.
-Copyright (c) 2010 Cornell University. All rights reserved.
+Created by Peter Lepage in 2016-12.
+Copyright (c) 2016 Cornell University. All rights reserved.
 """
-DO_PLOT = False
-DO_BOOTSTRAP = False
-DO_SVD = False
+DO_PLOT = True
+DO_BOOTSTRAP = True
+DO_BAYESIAN = True
+DO_SIMULATION = True
 
-SVDCUT = (1e-15,1e-15) if DO_SVD else None
-
+import collections
 import sys
-import lsqfit
-import numpy as np
-import gvar as gv
 import tee
 
-def f_exact(x, nterm=100):                     # exact f(x)
-    return sum(0.4*np.exp(-0.9*(i+1)*x) for i in range(nterm))
+import numpy as np
+import gvar as gv
+import lsqfit
+import matplotlib.pyplot as plt
 
-def f(x,p):                         # function used to fit x,y data
-    a = p['a']                      # array of a[i]s
-    E = p['E']                      # array of E[i]s
-    return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
+# lsqfit.nonlinear_fit.set_defaults(alg='subspace2D', solver='cholesky')
 
-def f1(x,p):                         # function used to fit x,y data
-    a = p['a'][:1]                      # array of a[i]s
-    E = p['E'][:1]                      # array of E[i]s
-    return sum(ai*np.exp(-Ei*x) for ai,Ei in zip(a,E))
-
-def make_data(nterm=100, eps=0.01):                    # make x,y fit data
-    x = np.array([1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,12.,14.,16.,18.,20.])[4:]
-    cr = gv.gvar(0.0,eps)
-    c = [gv.gvar(cr(),eps) for n in range(100)]
-    x_xmax = x/max(x)
-    noise = 1+ sum(c[n]*x_xmax**n for n in range(100))
-    y = f_exact(x, nterm)*noise            # noisy y[i]s
-    return x,y
-
-def make_prior(nexp):               # make priors for fit parameters
-    prior = gv.BufferDict()         # Gaussian prior -- dictionary-like
-    prior['a'] = [gv.gvar(0.5, 0.4) for i in range(nexp)]
-    de = [gv.gvar(0.9,0.01) for i in range(nexp)]
-    de[0] = gv.gvar(1,0.4)
-    prior['E'] = [sum(de[:i+1]) for i in range(nexp)]
-    return prior
+# generates warning which I ignore
+plt.rcParams['figure.autolayout'] = True
 
 def main():
-    gv.ranseed([2009,2010,2011,2012]) # initialize random numbers (opt.)
-    x,y = make_data()               # make fit data
-    p0 = None                       # make larger fits go faster (opt.)
     sys_stdout = sys.stdout
-    for nexp in range(3,8):
-        prior = make_prior(nexp)
-        fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f,prior=prior,p0=p0, svdcut=1e-15) # ,svdcut=SVDCUT)
-        if fit.chi2/fit.dof<1.:
-            p0 = fit.pmean          # starting point for next fit (opt.)
-        if nexp == 5:
-            sys.stdout = tee.tee(sys_stdout, open("eg3.out","w"))
-        print '************************************* nexp =',nexp
-        print fit                   # print the fit results
-        E = fit.p['E']              # best-fit parameters
-        a = fit.p['a']
-        print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
-        print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
-        # print E[1]-E[0], E[-1]-E[-2]
-        # print (E[1]/E[0]).partialsdev(fit.prior['E'])
-        # print (E[1]/E[0]).partialsdev(fit.prior['a'])
-        # print (E[1]/E[0]).partialsdev(fit.y)
-        sys.stdout = sys_stdout
-        print
-    # sys.stdout = tee.tee(sys_stdout, open("eg3a.out", "w"))
-    # for i in range(1):
-    #     print '--------------------- fit with %d extra data sets' % (i+1)
-    #     x, y = make_data(1)
-    #     prior = fit.p
-    #     fit = lsqfit.nonlinear_fit(data=(x,y),fcn=f1,prior=prior, svdcut=SVDCUT)
-    #     print fit
-    sys.stdout = sys_stdout
-
-    if DO_BOOTSTRAP:
-        Nbs = 10                                     # number of bootstrap copies
-        outputs = {'E1/E0':[], 'E2/E0':[], 'a1/a0':[],'a2/a0':[],'E1':[],'a1':[]}   # results
-        for bsfit in fit.bootstrap_iter(n=Nbs):
-            E = bsfit.pmean['E']                     # best-fit parameters
-            a = bsfit.pmean['a']
-            outputs['E1/E0'].append(E[1]/E[0])       # accumulate results
-            outputs['E2/E0'].append(E[2]/E[0])
-            outputs['a1/a0'].append(a[1]/a[0])
-            outputs['a2/a0'].append(a[2]/a[0])
-            outputs['E1'].append(E[1])
-            outputs['a1'].append(a[1])
-            # print E[:2]
-            # print a[:2]
-            # print bsfit.chi2/bsfit.dof
-
-        # extract means and standard deviations from the bootstrap output
-        for k in outputs:
-            outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
-        print 'Bootstrap results:'
-        print 'E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0']
-        print 'a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0']
-        print 'E1 =',outputs['E1'],'  a1 =',outputs['a1']
+    sys.stdout = tee.tee(sys.stdout, open("eg3a.out","w"))
+    x, y = make_data()
+    prior = make_prior()
+    fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
+    print fit
+    print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
+    print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
 
     if DO_PLOT:
-        print fit.format(100)                   # print the fit results
-        import pylab as pp
-        from gvar import mean,sdev
-        fity = f(x,fit.pmean)
-        ratio = y/fity
-        pp.xlim(0,21)
-        pp.xlabel('x')
-        pp.ylabel('y/f(x,p)')
-        pp.errorbar(x=x,y=mean(ratio),yerr=sdev(ratio),fmt='ob')
-        pp.plot([0.0,21.0],[1.0,1.0])
-        pp.show()
+        plt.semilogx()
+        plt.errorbar(
+            x=gv.mean(x), xerr=gv.sdev(x), y=gv.mean(y), yerr=gv.sdev(y),
+            fmt='ob'
+            )
+        # plot fit line
+        xx = np.linspace(0.99 * gv.mean(min(x)), 1.01 * gv.mean(max(x)), 100)
+        yy = fcn(xx, fit.pmean)
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.plot(xx, yy, ':r')
+        plt.savefig('eg3.png', bbox_inches='tight')
+        plt.show()
+
+    sys.stdout = sys_stdout
+    if DO_BOOTSTRAP:
+        gv.ranseed(123)
+        sys.stdout = tee.tee(sys_stdout, open('eg3c.out', 'w'))
+        print fit
+        print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
+        print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
+        Nbs = 40
+        outputs = {'p':[], 'p1/p0':[], 'p3/p2':[]}
+        for bsfit in fit.bootstrap_iter(n=Nbs):
+            p = bsfit.pmean
+            outputs['p'].append(p)
+            outputs['p1/p0'].append(p[1] / p[0])
+            outputs['p3/p2'].append(p[3] / p[2])
+        print '\nBootstrap Averages:'
+        outputs = gv.dataset.avg_data(outputs, bstrap=True)
+        print gv.tabulate(outputs)
+        print 'corr(p0,p1) =', gv.evalcorr(outputs['p'][:2])[1,0]
+
+        # make histograms of p1/p0 and p3/p2
+        sys.stdout = sys_stdout
+        print
+        sys.stdout = tee.tee(sys_stdout, open('eg3d.out', 'w'))
+        print 'Histogram Analysis:'
+        count = {'p1/p0':[], 'p3/p2':[]}
+        hist = {
+            'p1/p0':gv.PDFHistogram(fit.p[1] / fit.p[0]),
+            'p3/p2':gv.PDFHistogram(fit.p[3] / fit.p[2]),
+            }
+        for bsfit in fit.bootstrap_iter(n=1000):
+            p = bsfit.pmean
+            count['p1/p0'].append(hist['p1/p0'].count(p[1] / p[0]))
+            count['p3/p2'].append(hist['p3/p2'].count(p[3] / p[2]))
+        count = gv.dataset.avg_data(count)
+        plt.rcParams['figure.figsize'] = [6.4, 2.4]
+        pltnum = 1
+        for k in count:
+            print k + ':'
+            print hist[k].analyze(count[k]).stats
+            plt.subplot(1, 2, pltnum)
+            plt.xlabel(k)
+            hist[k].make_plot(count[k], plot=plt)
+            if pltnum == 2:
+                plt.ylabel('')
+            pltnum += 1
+        plt.rcParams['figure.figsize'] = [6.4, 4.8]
+        plt.savefig('eg3d.png', bbox_inches='tight')
+        plt.show()
+
+    if DO_BAYESIAN:
+        gv.ranseed(123)
+        sys.stdout = tee.tee(sys_stdout, open('eg3e.out', 'w'))
+        print fit
+        expval = lsqfit.BayesIntegrator(fit)
+
+        # adapt integrator to PDF from fit
+        neval = 1000
+        nitn = 10
+        expval(neval=neval, nitn=nitn)
+
+        # <g(p)> gives mean and covariance matrix, and histograms
+        hist = [
+            gv.PDFHistogram(fit.p[0]), gv.PDFHistogram(fit.p[1]),
+            gv.PDFHistogram(fit.p[2]), gv.PDFHistogram(fit.p[3]),
+            ]
+        def g(p):
+            return dict(
+                mean=p,
+                outer=np.outer(p, p),
+                count=[
+                    hist[0].count(p[0]), hist[1].count(p[1]),
+                    hist[2].count(p[2]), hist[3].count(p[3]),
+                    ],
+                )
+
+        # evaluate expectation value of g(p)
+        results = expval(g, neval=neval, nitn=nitn, adapt=False)
+
+        # analyze results
+        print('\nIterations:')
+        print(results.summary())
+        print('Integration Results:')
+        pmean = results['mean']
+        pcov =  results['outer'] - np.outer(pmean, pmean)
+        print '    mean(p) =', pmean
+        print '    cov(p) =\n', pcov
+
+        # create GVars from results
+        p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
+        print('\nBayesian Parameters:')
+        print(gv.tabulate(p))
+
+        # show histograms
+        print('\nHistogram Statistics:')
+        count = results['count']
+        for i in range(4):
+            print('p[{}] -'.format(i))
+            print(hist[i].analyze(count[i]).stats)
+            plt.subplot(2, 2, i + 1)
+            plt.xlabel('p[{}]'.format(i))
+            hist[i].make_plot(count[i], plot=plt)
+            if i % 2 != 0:
+                plt.ylabel('')
+        plt.savefig('eg3e.png', bbox_inches='tight')
+        plt.show()
+
+    if DO_SIMULATION:
+        gv.ranseed(1234)
+        sys.stdout = tee.tee(sys_stdout, open('eg3f.out', 'w'))
+        print(40 * '*' + ' real fit')
+        print(fit.format(True))
+
+        Q = []
+        p = []
+        for sfit in fit.simulated_fit_iter(n=3, bootstrap=False):
+            print(40 * '=' + ' simulation')
+            print(sfit.format(True))
+            diff = sfit.p - sfit.pexact
+            print '\nsfit.p - pexact =', diff
+            print(gv.fmt_chi2(gv.chi2(diff)))
+            print
+
+    # omit constraint
+    sys.stdout = tee.tee(sys_stdout, open("eg3b.out", "w"))
+    prior = gv.gvar(4 * ['0(1)'])
+    prior[1] = gv.gvar('0(20)')
+    fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
+    print fit
+    print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
+    print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
+
+
+def make_data():
+    x = np.array([
+        4.    ,  2.    ,  1.    ,  0.5   ,  0.25  ,  0.167 ,  0.125 ,
+        0.1   ,  0.0833,  0.0714,  0.0625
+        ])
+    y = gv.gvar([
+        '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
+        '0.142(40)', '0.108(32)', '0.065(26)', '0.044(22)', '0.041(19)',
+        '0.044(16)'
+        ])
+    return x, y
+
+def make_prior():
+    b = gv.gvar(['0(1)', '0(1)', '0(1)', '0(1)'])
+    # b[1] is almost equal to 20 * b[0]
+    b[1] = 20 * b[0] + gv.gvar('0.0(1)')
+    return b
+
+def fcn(x, b):
+    return (b[0] * (x**2 + b[1] * x)) / (x**2 + x * b[2] + b[3])
 
 if __name__ == '__main__':
     main()

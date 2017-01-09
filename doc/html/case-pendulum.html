@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Case Study: Pendulum &mdash; lsqfit 8.1 documentation</title>
+    <title>Case Study: Pendulum &mdash; lsqfit 9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.1',
+        VERSION:     '9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.0 documentation" href="index.html" />
     <link rel="next" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
     <link rel="prev" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -196,7 +196,7 @@ for each value of <code class="docutils literal"><span class="pre">t[i]</span></
 The function returns an array that has the same shape as array <code class="docutils literal"><span class="pre">theta</span></code>.</p>
 <p>The fit is excellent with a <code class="docutils literal"><span class="pre">chi**2</span></code> per degree of freedom of 0.7:</p>
 <a class="reference internal image-reference" href="_images/case-pendulum.png"><img alt="_images/case-pendulum.png" src="_images/case-pendulum.png" style="width: 80%;" /></a>
-<p>The gray band in the figure shows the best fit to the data, with the
+<p>The red band in the figure shows the best fit to the data, with the
 error bars on the fit. The output from this fit is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.7 [10]    Q = 0.73    logGBF = 6.359
@@ -230,7 +230,7 @@ Fit:
         9     0.832 (79)     0.894 (63)  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 4/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 7/0.1)
 </pre></div>
 </div>
 <p>The final result for <code class="docutils literal"><span class="pre">g/l</span></code> is 39.8(9), which is accurate to about 2%.
@@ -293,11 +293,11 @@ the <code class="docutils literal"><span class="pre">t</span></code> values and 
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2009-2014, G. P. Lepage.
+        &copy; Copyright 2009-2016, G. P. Lepage.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

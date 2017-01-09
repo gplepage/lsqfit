@@ -1,7 +1,7 @@
 """ part of lsqfit module: extra functions  """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012-14 G. Peter Lepage.
+# Copyright (c) 2012-16 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,33 +18,131 @@ import gvar
 import lsqfit
 import time
 import collections
-from ._utilities import multiminex, gammaQ
-
+try:
+    from ._gsl import gsl_multiminex as _multiminex
+    from ._gsl import gammaQ as _gammaQ
+except ImportError:
+    from ._scipy import scipy_multiminex as _multiminex
+    from ._scipy import gammaQ as _gammaQ
 
 def empbayes_fit(z0, fitargs, **minargs):
-    """ Call ``lsqfit.nonlinear_fit(**fitargs(z))`` varying ``z``,
-    starting at ``z0``, to maximize ``logGBF`` (empirical Bayes procedure).
+    """ Return fit and ``z`` corresponding to the fit
+    ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``logGBF``.
 
-    The fit is redone for each value of ``z`` that is tried, in order
-    to determine ``logGBF``.
+    This function maximizes the logarithm of the Bayes Factor from
+    fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` by varying ``z``,
+    starting at ``z0``. The fit is redone for each value of ``z``
+    that is tried, in order to determine ``logGBF``.
 
-    :param z0: Starting point for search.
-    :type z0: array
-    :param fitargs: Function of array ``z`` that determines which fit
-        parameters to use. The function returns these as an argument
-        dictionary for :func:`lsqfit.nonlinear_fit`.
-    :type fitargs: function
-    :param minargs: Optional argument dictionary, passed on to
-        :class:`lsqfit.multiminex`, which finds the minimum.
-    :type minargs: dictionary
-    :returns: A tuple containing the best fit (object of type
-        :class:`lsqfit.nonlinear_fit`) and the optimal value for parameter ``z``.
+    The Bayes Factor is proportional to the probability that the data
+    came from the model (fit function and priors) used in the fit.
+    :func:`empbayes_fit` finds the model or data that maximizes this
+    probability.
+
+    One application is illustrated by the following code::
+
+        import numpy as np
+        import gvar as gv
+        import lsqfit
+
+        # fit data
+        x = np.array([1., 2., 3., 4.])
+        y = np.array([3.4422, 1.2929, 0.4798, 0.1725])
+
+        # prior
+        prior = gv.gvar(['10(1)', '1.0(1)'])
+
+        # fit function
+        def fcn(x, p):
+            return p[0] * gv.exp( - p[1] * x)
+
+        # find optimal dy
+        def fitargs(z):
+            dy = y * z
+            newy = gv.gvar(y, dy)
+            return dict(data=(x, newy), fcn=fcn, prior=prior)
+
+        fit, z = lsqfit.empbayes_fit(0.1, fitargs)
+        print fit.format(True)
+
+    Here we want to fit data ``y`` with fit function ``fcn`` but we don't know
+    the uncertainties in our ``y`` values. We assume that the relative errors
+    are ``x``-independent and uncorrelated. We add the error ``dy`` that
+    maximizes the Bayes Factor, as this is the most likely choice. This fit
+    gives the following output::
+
+        Least Square Fit:
+          chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 7.4834
+
+        Parameters:
+                      0     9.44 (18)     [ 10.0 (1.0) ]
+                      1   0.9979 (69)     [  1.00 (10) ]
+
+        Fit:
+             x[k]           y[k]      f(x[k],p)
+        ---------------------------------------
+                1     3.442 (54)     3.481 (45)
+                2     1.293 (20)     1.283 (11)
+                3    0.4798 (75)    0.4731 (41)
+                4    0.1725 (27)    0.1744 (23)
+
+        Settings:
+          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+
+    We have, in effect, used the variation in the data relative to the best
+    fit curve to estimate that the uncertainty in each data point is
+    of order 1.6%.
+
+    Args:
+        z0 (number, array or dict): Starting point for search.
+        fitargs (callable): Function of ``z`` that returns a
+            dictionary ``args`` containing the :class:`lsqfit.nonlinear_fit`
+            arguments corresponding to ``z``. ``z`` should have
+            the same layout (number, array or dictionary) as ``z0``.
+            ``fitargs(z)`` can instead return a tuple ``(args, plausibility)``,
+            where ``args`` is again the dictionary for
+            :class:`lsqfit.nonlinear_fit`. ``plausibility`` is the logarithm
+            of the *a priori* probabilitiy that ``z`` is sensible. When
+            ``plausibility`` is provided, :func:`lsqfit.empbayes_fit`
+            maximizes the sum ``logGBF + plausibility``. Specifying
+            ``plausibility`` is a way of steering selections away from
+            completely implausible values for ``z``.
+        minargs (dict): Optional argument dictionary, passed on to
+            :class:`lsqfit.gsl_multiminex` (or
+            :class:`lsqfit.scipy_multiminex`), which finds the minimum.
+
+    Returns:
+        A tuple containing the best fit (object of type
+        :class:`lsqfit.nonlinear_fit`) and the
+        optimal value for parameter ``z``.
     """
-    if minargs == {}: # default
-        minargs = dict(tol=1e-3, step=math.log(1.1), maxit=30, analyzer=None)
     save = dict(lastz=None, lastp0=None)
-    def minfcn(z, save=save):
+    if hasattr(z0, 'keys'):
+        # z is a dictionary
+        if not isinstance(z0, gvar.BufferDict):
+            z0 = gvar.BufferDict(z0)
+        z0buf = z0.buf
+        def convert(zbuf):
+            return gvar.BufferDict(z0, buf=zbuf)
+    elif numpy.shape(z0) == ():
+        # z is a number
+        z0buf = numpy.array([z0])
+        def convert(zbuf):
+            return zbuf[0]
+    else:
+        # z is an array
+        z0 = numpy.asarray(z0)
+        z0buf = z0
+        def convert(zbuf):
+            return zbuf
+    def minfcn(zbuf, save=save, convert=convert):
+        z = convert(zbuf)
         args = fitargs(z)
+        if not hasattr(args, 'keys'):
+            args, plausibility = args
+        else:
+            plausibility = 0.0
         if save['lastp0'] is not None:
             args['p0'] = save['lastp0']
         fit = lsqfit.nonlinear_fit(**args)
@@ -53,13 +151,15 @@ def empbayes_fit(z0, fitargs, **minargs):
         else:
             save['lastz'] = z
             save['lastp0'] = fit.pmean
-        return -fit.logGBF
+        return -fit.logGBF - plausibility
     try:
-        z = multiminex(numpy.array(z0), minfcn, **minargs).x
+        z = convert(_multiminex(z0buf, minfcn, **minargs).x)
     except ValueError:
         print('*** empbayes_fit warning: null logGBF')
         z = save['lastz']
     args = fitargs(z)
+    if not hasattr(args, 'keys'):
+        args, plausibility = args
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
     return lsqfit.nonlinear_fit(**args), z
@@ -82,7 +182,7 @@ class GVarWAvg(gvar.GVar):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -127,7 +227,7 @@ class ArrayWAvg(numpy.ndarray):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -182,7 +282,7 @@ class BufferDictWAvg(gvar.BufferDict):
     .. attribute:: Q
 
         The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
+        by chance, assuming that the data are all Gaussian and consistent
         with each other. Values smaller than 0.1 or suggest that the
         data are not Gaussian or are inconsistent with each other. Also
         called the *p-value*.
@@ -210,7 +310,7 @@ class BufferDictWAvg(gvar.BufferDict):
         self.svdcorrection = fit.svdcorrection
         self.fit = fit
 
-def wavg(dataseq, prior=None, fast=False, **kargs):
+def wavg(dataseq, prior=None, fast=False, **fitterargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
 
     The weighted average of several |GVar|\s is what one obtains from
@@ -280,54 +380,42 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
     of list ``dataseq``. The results are approximately correct when
     ``dataseq[i]`` and ``dataseq[j]`` are correlated for ``i!=j``.
 
-    :param dataseq: The |GVar|\s to be averaged. ``dataseq`` is a one-dimensional
-        sequence of |GVar|\s, or of arrays of |GVar|\s, or of dictionaries
-        containing |GVar|\s or arrays of |GVar|\s. All ``dataseq[i]`` must
-        have the same shape.
-    :param prior: Prior values for the averages, to be included in the weighted
-        average. Default value is ``None``, in which case ``prior`` is ignored.
-    :type prior: |GVar| or array/dictionary of |GVar|\s
-    :param fast: Setting ``fast=True`` causes ``wavg`` to compute an
-        approximation to the weighted average that is much faster to calculate
-        when averaging a large number of samples (100s or more). The default is
-        ``fast=False``.
-    :type fast: bool
-    :param kargs: Additional arguments (e.g., ``svdcut``) to the fitter
-        used to do the averaging.
-    :type kargs: dict
+    Args:
+        dataseq (list): The |GVar|\s to be averaged. ``dataseq`` is
+            a one-dimensional sequence of |GVar|\s, or of arrays of |GVar|\s,
+            or of dictionaries containing |GVar|\s or arrays of |GVar|\s. All
+            ``dataseq[i]`` must have the same shape.
+        prior (dict, array or gvar.GVar): Prior values for the averages, to
+            be included in the weighted average. Default value is ``None``, in
+            which case ``prior`` is ignored.
+        fast (bool): Setting ``fast=True`` causes ``wavg`` to compute an
+            approximation to the weighted average that is much faster to
+            calculate when averaging a large number of samples (100s or more).
+            The default is ``fast=False``.
+        fitterargs (dict): Additional arguments (e.g., ``svdcut``) for the
+            :class:`lsqfit.nonlinear_fit` fitter used to do the averaging.
 
     Results returned by :func:`gvar.wavg` have the following extra
     attributes describing the average:
 
-    .. attribute:: chi2
+        **chi2** - ``chi**2`` for weighted average.
 
-        ``chi**2`` for weighted average.
+        **dof** - Effective number of degrees of freedom.
 
-    .. attribute:: dof
+        **Q** - The probability that the ``chi**2`` could have been larger,
+            by chance, assuming that the data are all Gaussian and consistent
+            with each other. Values smaller than 0.1 or so suggest that the
+            data are not Gaussian or are inconsistent with each other. Also
+            called the *p-value*.
 
-        Effective number of degrees of freedom.
+            Quality factor `Q` (or *p-value*) for fit.
 
-    .. attribute:: Q
+        **time** - Time required to do average.
 
-        The probability that the ``chi**2`` could have been larger,
-        by chance, assuming that the data are all Gaussain and consistent
-        with each other. Values smaller than 0.1 or suggest that the
-        data are not Gaussian or are inconsistent with each other. Also
-        called the *p-value*.
+        **svdcorrection** - The *svd* corrections made to the data
+            when ``svdcut`` is not ``None``.
 
-        Quality factor `Q` (or *p-value*) for fit.
-
-    .. attribute:: time
-
-        Time required to do average.
-
-    .. attribute:: svdcorrection
-
-        The *svd* corrections made to the data when ``svdcut`` is not ``None``.
-
-    .. attribute:: fit
-
-        Fit output from average.
+        **fit** - Fit output from average.
     """
     if len(dataseq) <= 0:
         if prior is None:
@@ -367,7 +455,7 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
             if ans is None:
                 ans = dataseq_i
             else:
-                ans = wavg([ans, dataseq_i], fast=False, **kargs)
+                ans = wavg([ans, dataseq_i], fast=False, **fitterargs)
                 chi2 += wavg.chi2
                 dof += wavg.dof
                 time += wavg.time
@@ -377,7 +465,7 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         wavg.chi2 = chi2
         wavg.dof = dof
         wavg.time = time
-        wavg.Q = gammaQ(dof / 2., chi2 / 2.)
+        wavg.Q = _gammaQ(dof / 2., chi2 / 2.)
         wavg.svdcorrection = svdcorrection
         wavg.fit = None
         ans.dof = wavg.dof
@@ -416,7 +504,7 @@ def wavg(dataseq, prior=None, fast=False, **kargs):
         data = numpy.array(data)
         def fcn(p):
             return len(data) * [p]
-    fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **kargs)
+    fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **fitterargs)
     # wavg.Q = fit.Q
     # wavg.chi2 = fit.chi2
     # wavg.dof = fit.dof

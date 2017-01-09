@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Case Study: Simple Extrapolation &mdash; lsqfit 8.1 documentation</title>
+    <title>Case Study: Simple Extrapolation &mdash; lsqfit 9.0 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '8.1',
+        VERSION:     '9.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 8.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.0 documentation" href="index.html" />
     <link rel="next" title="Case Study: Pendulum" href="case-pendulum.html" />
-    <link rel="prev" title="Overview and Tutorial" href="overview.html" />
+    <link rel="prev" title="Non-Gaussian Behavior; Testing Fits" href="testing.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -48,9 +48,9 @@
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview and Tutorial"
+          <a href="testing.html" title="Non-Gaussian Behavior; Testing Fits"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -95,7 +95,7 @@ there are only five pieces of data and such a fit would have five
 parameters.
 This approach gives the following fit, where the gray band shows the 1-sigma
 uncertainty in the fit function evaluated with the best-fit parameters:</p>
-<a class="reference internal image-reference" href="_images/appendix_1.png"><img alt="_images/appendix_1.png" src="_images/appendix_1.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/eg-appendix1a.png"><img alt="_images/eg-appendix1a.png" src="_images/eg-appendix1a.png" style="width: 80%;" /></a>
 <p>This fit was generated using the following code:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -120,7 +120,7 @@ uncertainty in the fit function evaluated with the best-fit parameters:</p>
 <code class="docutils literal"><span class="pre">'0.5351(54)'</span></code>, <em>etc.</em> into <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Running the code gives the
 following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit (no prior):
-  chi2/dof [dof] = 1.2e-26 [0]    Q = 0    logGBF = None
+  chi2/dof [dof] = 4.3e-24 [0]    Q = 0    logGBF = None
 
 Parameters:
               0    0.742 (39)     [   1 +- inf ]  
@@ -139,7 +139,7 @@ Fit:
      0.95     4.014 (40)     4.014 (40)  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 11/0.1)
 </pre></div>
 </div>
 <p>This is a &#8220;perfect&#8221; fit in that the fit function agrees exactly with
@@ -200,7 +200,7 @@ actually fitting 91+5 pieces of data with 91 parameters.</p>
 This code also gives an excellent fit, with a <code class="docutils literal"><span class="pre">chi**2</span></code> per degree of
 freedom of <code class="docutils literal"><span class="pre">0.35</span></code> (note that the data point at <code class="docutils literal"><span class="pre">x=0.95</span></code> is off the chart,
 but agrees with the fit to within its 1% errors):</p>
-<a class="reference internal image-reference" href="_images/appendix_2.png"><img alt="_images/appendix_2.png" src="_images/appendix_2.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/eg-appendix1b.png"><img alt="_images/eg-appendix1b.png" src="_images/eg-appendix1b.png" style="width: 80%;" /></a>
 <p>The fit code output is:</p>
 <div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
   chi2/dof [dof] = 0.35 [5]    Q = 0.88    logGBF = -0.45508
@@ -222,9 +222,78 @@ Parameters:
              13       0.19 (97)      [  0.0 (1.0) ]  
              14       0.18 (97)      [  0.0 (1.0) ]  
              15       0.18 (97)      [  0.0 (1.0) ]  
-                .
-                .
-                .
+             16       0.17 (97)      [  0.0 (1.0) ]  
+             17       0.16 (98)      [  0.0 (1.0) ]  
+             18       0.16 (98)      [  0.0 (1.0) ]  
+             19       0.15 (98)      [  0.0 (1.0) ]  
+             20       0.14 (98)      [  0.0 (1.0) ]  
+             21       0.14 (98)      [  0.0 (1.0) ]  
+             22       0.13 (98)      [  0.0 (1.0) ]  
+             23       0.12 (99)      [  0.0 (1.0) ]  
+             24       0.12 (99)      [  0.0 (1.0) ]  
+             25       0.11 (99)      [  0.0 (1.0) ]  
+             26       0.11 (99)      [  0.0 (1.0) ]  
+             27       0.10 (99)      [  0.0 (1.0) ]  
+             28       0.10 (99)      [  0.0 (1.0) ]  
+             29       0.09 (99)      [  0.0 (1.0) ]  
+             30       0.09 (99)      [  0.0 (1.0) ]  
+             31       0.08 (99)      [  0.0 (1.0) ]  
+             32       0.08 (99)      [  0.0 (1.0) ]  
+             33       0.07 (99)      [  0.0 (1.0) ]  
+             34     0.07 (1.00)      [  0.0 (1.0) ]  
+             35     0.07 (1.00)      [  0.0 (1.0) ]  
+             36     0.06 (1.00)      [  0.0 (1.0) ]  
+             37     0.06 (1.00)      [  0.0 (1.0) ]  
+             38     0.06 (1.00)      [  0.0 (1.0) ]  
+             39     0.06 (1.00)      [  0.0 (1.0) ]  
+             40     0.05 (1.00)      [  0.0 (1.0) ]  
+             41     0.05 (1.00)      [  0.0 (1.0) ]  
+             42     0.05 (1.00)      [  0.0 (1.0) ]  
+             43     0.04 (1.00)      [  0.0 (1.0) ]  
+             44     0.04 (1.00)      [  0.0 (1.0) ]  
+             45     0.04 (1.00)      [  0.0 (1.0) ]  
+             46     0.04 (1.00)      [  0.0 (1.0) ]  
+             47     0.04 (1.00)      [  0.0 (1.0) ]  
+             48     0.03 (1.00)      [  0.0 (1.0) ]  
+             49     0.03 (1.00)      [  0.0 (1.0) ]  
+             50     0.03 (1.00)      [  0.0 (1.0) ]  
+             51     0.03 (1.00)      [  0.0 (1.0) ]  
+             52     0.03 (1.00)      [  0.0 (1.0) ]  
+             53     0.03 (1.00)      [  0.0 (1.0) ]  
+             54     0.03 (1.00)      [  0.0 (1.0) ]  
+             55     0.02 (1.00)      [  0.0 (1.0) ]  
+             56     0.02 (1.00)      [  0.0 (1.0) ]  
+             57     0.02 (1.00)      [  0.0 (1.0) ]  
+             58     0.02 (1.00)      [  0.0 (1.0) ]  
+             59     0.02 (1.00)      [  0.0 (1.0) ]  
+             60     0.02 (1.00)      [  0.0 (1.0) ]  
+             61     0.02 (1.00)      [  0.0 (1.0) ]  
+             62     0.02 (1.00)      [  0.0 (1.0) ]  
+             63     0.02 (1.00)      [  0.0 (1.0) ]  
+             64     0.02 (1.00)      [  0.0 (1.0) ]  
+             65     0.01 (1.00)      [  0.0 (1.0) ]  
+             66     0.01 (1.00)      [  0.0 (1.0) ]  
+             67     0.01 (1.00)      [  0.0 (1.0) ]  
+             68     0.01 (1.00)      [  0.0 (1.0) ]  
+             69     0.01 (1.00)      [  0.0 (1.0) ]  
+             70     0.01 (1.00)      [  0.0 (1.0) ]  
+             71     0.01 (1.00)      [  0.0 (1.0) ]  
+             72     0.01 (1.00)      [  0.0 (1.0) ]  
+             73     0.01 (1.00)      [  0.0 (1.0) ]  
+             74   0.009 (1.000)      [  0.0 (1.0) ]  
+             75   0.009 (1.000)      [  0.0 (1.0) ]  
+             76   0.008 (1.000)      [  0.0 (1.0) ]  
+             77   0.008 (1.000)      [  0.0 (1.0) ]  
+             78   0.007 (1.000)      [  0.0 (1.0) ]  
+             79   0.007 (1.000)      [  0.0 (1.0) ]  
+             80   0.007 (1.000)      [  0.0 (1.0) ]  
+             81   0.006 (1.000)      [  0.0 (1.0) ]  
+             82   0.006 (1.000)      [  0.0 (1.0) ]  
+             83   0.006 (1.000)      [  0.0 (1.0) ]  
+             84   0.005 (1.000)      [  0.0 (1.0) ]  
+             85   0.005 (1.000)      [  0.0 (1.0) ]  
+             86   0.005 (1.000)      [  0.0 (1.0) ]  
+             87   0.005 (1.000)      [  0.0 (1.0) ]  
              88   0.004 (1.000)      [  0.0 (1.0) ]  
              89   0.004 (1.000)      [  0.0 (1.0) ]  
              90   0.004 (1.000)      [  0.0 (1.0) ]  
@@ -239,7 +308,7 @@ Fit:
      0.95     4.014 (40)     4.014 (40)  
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 8/0.3)
 </pre></div>
 </div>
 <p>This is a much more plausible fit than than the 5-parameter fit, and gives an
@@ -265,7 +334,105 @@ Parameters:
               1       0.38 (48)      [  0.0 (3.0) ]  
               2       0.6 (1.8)      [  0.0 (3.0) ]  
               3       0.5 (2.4)      [  0.0 (3.0) ]  
-              ...
+              4       0.3 (2.6)      [  0.0 (3.0) ]  
+              5       0.2 (2.6)      [  0.0 (3.0) ]  
+              6       0.1 (2.7)      [  0.0 (3.0) ]  
+              7       0.1 (2.8)      [  0.0 (3.0) ]  
+              8       0.2 (2.8)      [  0.0 (3.0) ]  
+              9       0.2 (2.9)      [  0.0 (3.0) ]  
+             10       0.2 (2.9)      [  0.0 (3.0) ]  
+             11       0.2 (2.9)      [  0.0 (3.0) ]  
+             12       0.2 (2.9)      [  0.0 (3.0) ]  
+             13       0.2 (2.9)      [  0.0 (3.0) ]  
+             14       0.2 (2.9)      [  0.0 (3.0) ]  
+             15       0.2 (2.9)      [  0.0 (3.0) ]  
+             16       0.2 (2.9)      [  0.0 (3.0) ]  
+             17       0.2 (2.9)      [  0.0 (3.0) ]  
+             18       0.2 (2.9)      [  0.0 (3.0) ]  
+             19       0.2 (2.9)      [  0.0 (3.0) ]  
+             20       0.1 (2.9)      [  0.0 (3.0) ]  
+             21       0.1 (2.9)      [  0.0 (3.0) ]  
+             22       0.1 (2.9)      [  0.0 (3.0) ]  
+             23       0.1 (3.0)      [  0.0 (3.0) ]  
+             24       0.1 (3.0)      [  0.0 (3.0) ]  
+             25       0.1 (3.0)      [  0.0 (3.0) ]  
+             26       0.1 (3.0)      [  0.0 (3.0) ]  
+             27       0.1 (3.0)      [  0.0 (3.0) ]  
+             28       0.1 (3.0)      [  0.0 (3.0) ]  
+             29       0.1 (3.0)      [  0.0 (3.0) ]  
+             30     0.09 (2.98)      [  0.0 (3.0) ]  
+             31     0.09 (2.98)      [  0.0 (3.0) ]  
+             32     0.08 (2.98)      [  0.0 (3.0) ]  
+             33     0.08 (2.98)      [  0.0 (3.0) ]  
+             34     0.07 (2.99)      [  0.0 (3.0) ]  
+             35     0.07 (2.99)      [  0.0 (3.0) ]  
+             36     0.07 (2.99)      [  0.0 (3.0) ]  
+             37     0.06 (2.99)      [  0.0 (3.0) ]  
+             38     0.06 (2.99)      [  0.0 (3.0) ]  
+             39     0.06 (2.99)      [  0.0 (3.0) ]  
+             40     0.05 (2.99)      [  0.0 (3.0) ]  
+             41     0.05 (2.99)      [  0.0 (3.0) ]  
+             42     0.05 (2.99)      [  0.0 (3.0) ]  
+             43     0.05 (2.99)      [  0.0 (3.0) ]  
+             44     0.04 (2.99)      [  0.0 (3.0) ]  
+             45     0.04 (3.00)      [  0.0 (3.0) ]  
+             46     0.04 (3.00)      [  0.0 (3.0) ]  
+             47     0.04 (3.00)      [  0.0 (3.0) ]  
+             48     0.04 (3.00)      [  0.0 (3.0) ]  
+             49     0.03 (3.00)      [  0.0 (3.0) ]  
+             50     0.03 (3.00)      [  0.0 (3.0) ]  
+             51     0.03 (3.00)      [  0.0 (3.0) ]  
+             52     0.03 (3.00)      [  0.0 (3.0) ]  
+             53     0.03 (3.00)      [  0.0 (3.0) ]  
+             54     0.03 (3.00)      [  0.0 (3.0) ]  
+             55     0.03 (3.00)      [  0.0 (3.0) ]  
+             56     0.02 (3.00)      [  0.0 (3.0) ]  
+             57     0.02 (3.00)      [  0.0 (3.0) ]  
+             58     0.02 (3.00)      [  0.0 (3.0) ]  
+             59     0.02 (3.00)      [  0.0 (3.0) ]  
+             60     0.02 (3.00)      [  0.0 (3.0) ]  
+             61     0.02 (3.00)      [  0.0 (3.0) ]  
+             62     0.02 (3.00)      [  0.0 (3.0) ]  
+             63     0.02 (3.00)      [  0.0 (3.0) ]  
+             64     0.02 (3.00)      [  0.0 (3.0) ]  
+             65     0.02 (3.00)      [  0.0 (3.0) ]  
+             66     0.01 (3.00)      [  0.0 (3.0) ]  
+             67     0.01 (3.00)      [  0.0 (3.0) ]  
+             68     0.01 (3.00)      [  0.0 (3.0) ]  
+             69     0.01 (3.00)      [  0.0 (3.0) ]  
+             70     0.01 (3.00)      [  0.0 (3.0) ]  
+             71     0.01 (3.00)      [  0.0 (3.0) ]  
+             72     0.01 (3.00)      [  0.0 (3.0) ]  
+             73     0.01 (3.00)      [  0.0 (3.0) ]  
+             74   0.009 (3.000)      [  0.0 (3.0) ]  
+             75   0.009 (3.000)      [  0.0 (3.0) ]  
+             76   0.009 (3.000)      [  0.0 (3.0) ]  
+             77   0.008 (3.000)      [  0.0 (3.0) ]  
+             78   0.008 (3.000)      [  0.0 (3.0) ]  
+             79   0.007 (3.000)      [  0.0 (3.0) ]  
+             80   0.007 (3.000)      [  0.0 (3.0) ]  
+             81   0.007 (3.000)      [  0.0 (3.0) ]  
+             82   0.006 (3.000)      [  0.0 (3.0) ]  
+             83   0.006 (3.000)      [  0.0 (3.0) ]  
+             84   0.006 (3.000)      [  0.0 (3.0) ]  
+             85   0.005 (3.000)      [  0.0 (3.0) ]  
+             86   0.005 (3.000)      [  0.0 (3.0) ]  
+             87   0.005 (3.000)      [  0.0 (3.0) ]  
+             88   0.005 (3.000)      [  0.0 (3.0) ]  
+             89   0.004 (3.000)      [  0.0 (3.0) ]  
+             90   0.004 (3.000)      [  0.0 (3.0) ]  
+
+Fit:
+     x[k]           y[k]      f(x[k],p)
+---------------------------------------
+      0.1    0.5351 (54)    0.5351 (54)  
+      0.3    0.6762 (67)    0.6763 (67)  
+      0.5    0.9227 (91)    0.9226 (91)  
+      0.7     1.380 (13)     1.380 (13)  
+     0.95     4.014 (40)     4.014 (40)  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08,1e-10*,1e-10)    (itns/time = 9/0.3)
 </pre></div>
 </div>
 <p>but with a very small <code class="docutils literal"><span class="pre">chi2/dof</span></code> and somewhat larger errors on the best-fit
@@ -292,12 +459,110 @@ Parameters:
               1    0.454 (98)     [  0.00 (30) ]  *
               2     0.50 (23)     [  0.00 (30) ]  *
               3     0.40 (25)     [  0.00 (30) ]  *
-              ...
+              4     0.31 (26)     [  0.00 (30) ]  *
+              5     0.26 (27)     [  0.00 (30) ]  
+              6     0.23 (28)     [  0.00 (30) ]  
+              7     0.21 (29)     [  0.00 (30) ]  
+              8     0.21 (29)     [  0.00 (30) ]  
+              9     0.20 (29)     [  0.00 (30) ]  
+             10     0.19 (29)     [  0.00 (30) ]  
+             11     0.19 (29)     [  0.00 (30) ]  
+             12     0.18 (29)     [  0.00 (30) ]  
+             13     0.17 (29)     [  0.00 (30) ]  
+             14     0.17 (29)     [  0.00 (30) ]  
+             15     0.16 (29)     [  0.00 (30) ]  
+             16     0.15 (29)     [  0.00 (30) ]  
+             17     0.15 (29)     [  0.00 (30) ]  
+             18     0.14 (29)     [  0.00 (30) ]  
+             19     0.13 (29)     [  0.00 (30) ]  
+             20     0.13 (29)     [  0.00 (30) ]  
+             21     0.12 (30)     [  0.00 (30) ]  
+             22     0.11 (30)     [  0.00 (30) ]  
+             23     0.11 (30)     [  0.00 (30) ]  
+             24     0.10 (30)     [  0.00 (30) ]  
+             25     0.10 (30)     [  0.00 (30) ]  
+             26     0.09 (30)     [  0.00 (30) ]  
+             27     0.09 (30)     [  0.00 (30) ]  
+             28     0.08 (30)     [  0.00 (30) ]  
+             29     0.08 (30)     [  0.00 (30) ]  
+             30     0.08 (30)     [  0.00 (30) ]  
+             31     0.07 (30)     [  0.00 (30) ]  
+             32     0.07 (30)     [  0.00 (30) ]  
+             33     0.07 (30)     [  0.00 (30) ]  
+             34     0.06 (30)     [  0.00 (30) ]  
+             35     0.06 (30)     [  0.00 (30) ]  
+             36     0.06 (30)     [  0.00 (30) ]  
+             37     0.05 (30)     [  0.00 (30) ]  
+             38     0.05 (30)     [  0.00 (30) ]  
+             39     0.05 (30)     [  0.00 (30) ]  
+             40     0.05 (30)     [  0.00 (30) ]  
+             41     0.04 (30)     [  0.00 (30) ]  
+             42     0.04 (30)     [  0.00 (30) ]  
+             43     0.04 (30)     [  0.00 (30) ]  
+             44     0.04 (30)     [  0.00 (30) ]  
+             45     0.04 (30)     [  0.00 (30) ]  
+             46     0.03 (30)     [  0.00 (30) ]  
+             47     0.03 (30)     [  0.00 (30) ]  
+             48     0.03 (30)     [  0.00 (30) ]  
+             49     0.03 (30)     [  0.00 (30) ]  
+             50     0.03 (30)     [  0.00 (30) ]  
+             51     0.03 (30)     [  0.00 (30) ]  
+             52     0.02 (30)     [  0.00 (30) ]  
+             53     0.02 (30)     [  0.00 (30) ]  
+             54     0.02 (30)     [  0.00 (30) ]  
+             55     0.02 (30)     [  0.00 (30) ]  
+             56     0.02 (30)     [  0.00 (30) ]  
+             57     0.02 (30)     [  0.00 (30) ]  
+             58     0.02 (30)     [  0.00 (30) ]  
+             59     0.02 (30)     [  0.00 (30) ]  
+             60     0.02 (30)     [  0.00 (30) ]  
+             61     0.02 (30)     [  0.00 (30) ]  
+             62     0.01 (30)     [  0.00 (30) ]  
+             63     0.01 (30)     [  0.00 (30) ]  
+             64     0.01 (30)     [  0.00 (30) ]  
+             65     0.01 (30)     [  0.00 (30) ]  
+             66     0.01 (30)     [  0.00 (30) ]  
+             67     0.01 (30)     [  0.00 (30) ]  
+             68     0.01 (30)     [  0.00 (30) ]  
+             69     0.01 (30)     [  0.00 (30) ]  
+             70     0.01 (30)     [  0.00 (30) ]  
+             71   0.009 (300)     [  0.00 (30) ]  
+             72   0.009 (300)     [  0.00 (30) ]  
+             73   0.008 (300)     [  0.00 (30) ]  
+             74   0.008 (300)     [  0.00 (30) ]  
+             75   0.008 (300)     [  0.00 (30) ]  
+             76   0.007 (300)     [  0.00 (30) ]  
+             77   0.007 (300)     [  0.00 (30) ]  
+             78   0.006 (300)     [  0.00 (30) ]  
+             79   0.006 (300)     [  0.00 (30) ]  
+             80   0.006 (300)     [  0.00 (30) ]  
+             81   0.006 (300)     [  0.00 (30) ]  
+             82   0.005 (300)     [  0.00 (30) ]  
+             83   0.005 (300)     [  0.00 (30) ]  
+             84   0.005 (300)     [  0.00 (30) ]  
+             85   0.005 (300)     [  0.00 (30) ]  
+             86   0.004 (300)     [  0.00 (30) ]  
+             87   0.004 (300)     [  0.00 (30) ]  
+             88   0.004 (300)     [  0.00 (30) ]  
+             89   0.004 (300)     [  0.00 (30) ]  
+             90   0.003 (300)     [  0.00 (30) ]  
+
+Fit:
+     x[k]           y[k]      f(x[k],p)
+---------------------------------------
+      0.1    0.5351 (54)    0.5344 (53)  
+      0.3    0.6762 (67)    0.6787 (56)  
+      0.5    0.9227 (91)    0.9191 (75)  
+      0.7     1.380 (13)     1.382 (13)  
+     0.95     4.014 (40)     4.008 (40)  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 6/0.3)
 </pre></div>
 </div>
 <p>Setting <code class="docutils literal"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(20)'])</span></code> gives very wide priors and
 a rather strange looking fit:</p>
-<a class="reference internal image-reference" href="_images/appendix_4.png"><img alt="_images/appendix_4.png" src="_images/appendix_4.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/eg-appendix1d.png"><img alt="_images/eg-appendix1d.png" src="_images/eg-appendix1d.png" style="width: 80%;" /></a>
 <p>Here fit errors are comparable to the data errors at the data points, as you
 would expect, but balloon up in between. This is an example of
 <em>over-fitting</em>: the data and priors are not sufficiently accurate to fit the
@@ -315,7 +580,7 @@ data to suggest a plausible width for a set of priors. We do this by setting
 the width equal to the value
 that maximizes <code class="docutils literal"><span class="pre">logGBF</span></code>. This approach suggests priors of <code class="docutils literal"><span class="pre">0.0(6)</span></code> for
 the fit above, which gives results very similar to the fit
-with priors of <code class="docutils literal"><span class="pre">0(1)</span></code>. See <a class="reference internal" href="overview.html#empirical-bayes"><span>Tuning Priors and the Empirical Bayes Criterion</span></a> for more details.</p>
+with priors of <code class="docutils literal"><span class="pre">0(1)</span></code>. See <a class="reference internal" href="overview.html#empirical-bayes"><span>Tuning Priors with the Empirical Bayes Criterion</span></a> for more details.</p>
 <p>The priors are responsible for about half of the final error in our best
 estimate of <code class="docutils literal"><span class="pre">p[0]</span></code> (with priors of <code class="docutils literal"><span class="pre">0(1)</span></code>); the rest comes from the
 uncertainty in the data. This can be  established by creating an error budget
@@ -327,12 +592,12 @@ using the code</p>
 </div>
 <p>which prints the following table:</p>
 <div class="highlight-python"><div class="highlight"><pre>Partial % Errors:
-                            p0
-------------------------------
-                  y:      2.67
-              prior:      2.23
-------------------------------
-              total:      3.48
+                  p0
+--------------------
+        y:      2.67
+    prior:      2.23
+--------------------
+    total:      3.48
 </pre></div>
 </div>
 <p>The table shows that the final 3.5% error comes from a 2.7% error due
@@ -397,7 +662,7 @@ Fit:
      0.95    4.0 (3.0)    0.489 (17)  *
 
 Settings:
-  svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0    (itns/time = 2/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
 </pre></div>
 </div>
 <p>Remarkably this one-parameter fit gives results for <code class="docutils literal"><span class="pre">p[0]</span></code>
@@ -409,7 +674,7 @@ in this way has no effect if the fit function is linear in that parameter.
 Marginalization has almost no effect for nonlinear fits as well,
 provided the fit data have small errors (in which case the parameters are
 effectively linear). The fit here is:</p>
-<a class="reference internal image-reference" href="_images/appendix_3.png"><img alt="_images/appendix_3.png" src="_images/appendix_3.png" style="width: 80%;" /></a>
+<a class="reference internal image-reference" href="_images/eg-appendix1c.png"><img alt="_images/eg-appendix1c.png" src="_images/eg-appendix1c.png" style="width: 80%;" /></a>
 <p>The constant is consistent with all of the data in <code class="docutils literal"><span class="pre">ymod[i]</span></code>,
 even at <code class="docutils literal"><span class="pre">x[i]=0.95</span></code>, because <code class="docutils literal"><span class="pre">ymod[i]</span></code> has much larger errors for
 larger <code class="docutils literal"><span class="pre">x[i]</span></code> because of the correction terms.</p>
@@ -448,8 +713,8 @@ larger error.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="overview.html"
-                        title="previous chapter">Overview and Tutorial</a></p>
+  <p class="topless"><a href="testing.html"
+                        title="previous chapter">Non-Gaussian Behavior; Testing Fits</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="case-pendulum.html"
                         title="next chapter">Case Study: Pendulum</a></p>
@@ -483,13 +748,13 @@ larger error.</p>
           <a href="case-pendulum.html" title="Case Study: Pendulum"
              >next</a> |</li>
         <li class="right" >
-          <a href="overview.html" title="Overview and Tutorial"
+          <a href="testing.html" title="Non-Gaussian Behavior; Testing Fits"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 8.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2009-2014, G. P. Lepage.
+        &copy; Copyright 2009-2016, G. P. Lepage.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>

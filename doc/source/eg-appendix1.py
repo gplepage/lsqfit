@@ -15,7 +15,7 @@ MAKE_PLOTS = True # False
 N = 91
 STDOUT = sys.stdout
 OUTDIR = ''
-OUTDIR = 'tmp/'
+# OUTDIR = 'tmp/'
 
 def main():
 	bad_analysis()
@@ -40,16 +40,17 @@ def bad_analysis():
 	p0 = np.ones(5.)              # starting value for chi**2 minimization
 	fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
 	print fit.format(maxline=True)
-	make_plot(x, y, fit)
+	make_plot(x, y, fit, name='eg-appendix1a')
 	return fit
 
-def good_analysis():
+def good_analysis(plot=MAKE_PLOTS):
 	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1b.out', 'w'))
 	x, y = make_data()
 	prior = gv.gvar(N * ['0(1)'])   # prior for the fit
 	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 	print fit.format(maxline=True)
-	make_plot(x, y, fit)
+	if plot:
+		make_plot(x, y, fit, name='eg-appendix1b')
 	inputs = gv.BufferDict(prior=prior)
 	for xi, yi in zip(x, y):
 		inputs['y(%.2f)' % xi] = yi
@@ -69,7 +70,7 @@ def marginalized_analysis():
 	print fit.format(maxline=True)
 	sys.stdout = STDOUT
 	print lsqfit.wavg(list(ymod) + list(priormod))
-	make_plot(x, ymod, fit, 'ymod(x)')
+	make_plot(x, ymod, fit, 'ymod(x)', name='eg-appendix1c')
 	inputs = dict(prior=prior, y0=y[0], y1=y[1], y2=y[2], y3=y[3], y4=y[4])
 	outputs = dict(p0=fit.p[0])
 	print gv.fmt_errorbudget(inputs=inputs, outputs=outputs)
@@ -87,7 +88,7 @@ def prior_analysis():
 	prior = gv.gvar(91 * ['0(20)'])   # prior for the fit
 	fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=f)
 	print fit.format(maxline=True)
-	make_plot(x, y, fit, xmax=0.96)
+	make_plot(x, y, fit, xmax=0.96, name='eg-appendix1d')
 	# tight prior
 	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1e.out', 'w'))
 	prior = gv.gvar(91 * ['0.0(3)'])   # prior for the fit
@@ -96,7 +97,7 @@ def prior_analysis():
 
 def test_fit():
 	sys.stdout = STDOUT
-	fit = good_analysis()
+	fit = good_analysis(plot=False)
 	sp0 = []
 	q = []
 	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1f.out', 'w'))
@@ -106,7 +107,9 @@ def test_fit():
 		q.append(sfit.Q)
 	print(np.average(sp0), np.std(sp0), np.average(q))
 
-def make_plot(x, y, fit, ylabel='y(x)', xmax=1.0):
+NPLT = 0
+def make_plot(x, y, fit, ylabel='y(x)', xmax=1.0, name='appendix1'):
+	global NPLT
 	if not MAKE_PLOTS:
 		return
 	plt.errorbar(x, gv.mean(y), gv.sdev(y), fmt='bo')
@@ -119,9 +122,10 @@ def make_plot(x, y, fit, ylabel='y(x)', xmax=1.0):
 	plt.xlim(0,1)
 	plt.ylim(0.3,1.9)
 	plt.xlabel('x')
+	NPLT += 1
 	plt.ylabel(ylabel)
+	plt.savefig(name + '.png', bbox_inches='tight')
 	plt.show()
-
 
 
 if __name__ == '__main__':

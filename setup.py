@@ -21,7 +21,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '8.1'
+LSQFIT_VERSION = '9.0'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -46,7 +46,12 @@ ext_args = dict(
 ext_modules = [
     Extension(
         "lsqfit._utilities",
-        ["src/lsqfit/_utilities.pyx","src/lsqfit/_gsl_stub.c"],
+        ["src/lsqfit/_utilities.pyx"],
+        **ext_args
+        ),
+    Extension(
+        "lsqfit._gsl",
+        ["src/lsqfit/_gsl.pyx"],
         **ext_args
         ),
     ]
@@ -56,7 +61,8 @@ packages = ["lsqfit"]
 package_dir = {"lsqfit":"src/lsqfit"}
 package_data = {}
 
-setup(name='lsqfit',
+setup_args = dict(
+    name='lsqfit',
     version=LSQFIT_VERSION,
     description='Utilities for nonlinear least-squares fits.',
     author='G. Peter Lepage',
@@ -103,4 +109,13 @@ setup(name='lsqfit',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'
         ],
-)
+    )
+
+try:
+    # will fail if gsl not installed
+    setup(**setup_args)
+except:
+    # install without gsl
+    print('\n*** Install failed. Trying again without gsl.\n')
+    setup_args['ext_modules'] = cythonize(ext_modules[:1])
+    setup(**setup_args)
