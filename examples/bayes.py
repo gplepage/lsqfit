@@ -6,6 +6,8 @@ try:
     import numpy as np
     import gvar as gv
     import lsqfit
+    if not hasattr(lsqfit, 'BayesIntegrator'):
+        raise ImportError
 
     gv.ranseed(1)
 
@@ -16,7 +18,7 @@ try:
         print(fit)
 
         # Bayesian integrator
-        expval = lsqfit.BayesIntegrator(fit)
+        expval = lsqfit.BayesIntegrator(fit, sync_ran=False)
 
         # adapt integrator expval to PDF from fit
         neval = 1000
@@ -96,4 +98,4 @@ try:
 except ImportError:
     # fake the run so that `make run` still works
     outfile = open('bayes.out', 'r').read()
-    print(outfile)
+    print(outfile[:-1])

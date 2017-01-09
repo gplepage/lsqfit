@@ -1584,12 +1584,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
 
+    @unittest.skipIf(
+        not hasattr(lsqfit, 'BayesIntegrator'),
+        "skipping test_bayesintegrator_dict because no vegas module"
+        )
     @unittest.skipIf(FAST,"skipping test_bayesintegrator_dict for speed")
     def test_bayesintegrator_dict(self):
         " BayesIntegrator(fit) "
         # linear fit => BayesIntegrator gives same results for everything, norm=1
-        if not hasattr(lsqfit, 'BayesIntegrator'):
-            return
         x = np.array([0.2, 0.6, 0.8, 1.2, 1.4])
         y = gv.gvar(['0.38(20)', '0.85(20)', '0.59(20)', '1.44(20)', '0.73(20)'])
         prior = gv.BufferDict(c=['0(5)', '0(5)'])
@@ -1645,12 +1647,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         dmean = r - fit.pmean['c'][0]
         self.assertTrue(abs(dmean.mean) < 5. * dmean.sdev)
 
+    @unittest.skipIf(
+        not hasattr(lsqfit, 'BayesIntegrator'),
+        "skipping test_bayesintegrator_arrat because no vegas module"
+        )
     @unittest.skipIf(FAST,"skipping test_bayesintegrator_array for speed")
     def test_bayesintegrator_array(self):
         " BayesIntegrator(fit) "
         # linear fit => BayesIntegrator gives same results for everything, norm=1
-        if not hasattr(lsqfit, 'BayesIntegrator'):
-            return
         x = np.array([0.2, 0.6, 0.8, 1.2, 1.4])
         y = gv.gvar(['0.38(20)', '0.85(20)', '0.59(20)', '1.44(20)', '0.73(20)'])
         prior = gv.gvar(['0(5)', '0(5)'])

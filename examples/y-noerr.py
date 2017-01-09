@@ -19,7 +19,7 @@ def main():
 
         # fit modified data with just nexp terms (in fit_prior)
         fit = lsqfit.nonlinear_fit(
-            data=(x, ymod), prior=fit_prior, fcn=fcn, p0=p0, tol=1e-10,
+            data=(x, ymod), prior=fit_prior, fcn=fcn, p0=p0, tol=1e-15,
             )
 
         # print fit information
@@ -30,14 +30,23 @@ def main():
     # print summary information and error budget
     E = fit.p['E']                      # best-fit parameters
     a = fit.p['a']
-    outputs = {
-        'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],
-        'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0]
-        }
-    inputs = {
-        'E prior':prior['E'], 'a prior':prior['a'],
-        'svd cut':fit.svdcorrection,
-        }
+    # outputs = {
+    #     'E1/E0':E[1] / E[0], 'E2/E0':E[2] / E[0],
+    #     'a1/a0':a[1] / a[0], 'a2/a0':a[2] / a[0]
+    #     }
+    # inputs = {
+    #     'E prior':prior['E'], 'a prior':prior['a'],
+    #     'svd cut':fit.svdcorrection,
+    #     }
+    outputs = gv.BufferDict()
+    outputs['E2/E0'] = E[2] / E[0]
+    outputs['E1/E0'] = E[1] / E[0]
+    outputs['a2/a0'] = a[2] / a[0]
+    outputs['a1/a0'] = a[1] / a[0]
+    inputs = gv.BufferDict()
+    inputs['E prior'] = prior['E']
+    inputs['svd cut'] = fit.svdcorrection
+    inputs['a prior'] = prior['a']
     print(fit.fmt_values(outputs))
     print(fit.fmt_errorbudget(outputs, inputs))
 

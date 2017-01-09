@@ -1,5 +1,5 @@
-Version 9.0
-=================
+Version 9.0 - 2017-01-09
+=========================
 This version offers a major overhaul of the underlying fitting
 strategies used by lsqfit, offering more modern alternatives which can
 be more robust and/or much faster than before.

@@ -35,8 +35,8 @@ run:
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 	# mpi tests
 	- mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py
-	- diff -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.1.1
-	- diff -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.out
+	- diff -w -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.1.1
+	- diff -w -I svdcut -I fitter mpi-bayes.1.0 bayes.out
 
 time:
 	time $(MAKE) _time

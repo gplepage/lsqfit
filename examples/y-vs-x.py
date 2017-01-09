@@ -39,11 +39,20 @@ def main():
         print()
 
     # error budget analysis
-    outputs = {
-        'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],
-        'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]
-        }
-    inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
+    # outputs = {
+    #     'E1/E0':E[1]/E[0], 'E2/E0':E[2]/E[0],
+    #     'a1/a0':a[1]/a[0], 'a2/a0':a[2]/a[0]
+    #     }
+    # inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
+    outputs = gv.BufferDict()
+    outputs['E2/E0'] = E[2] / E[0]
+    outputs['E1/E0'] = E[1] / E[0]
+    outputs['a2/a0'] = a[2] / a[0]
+    outputs['a1/a0'] = a[1] / a[0]
+    inputs = gv.BufferDict()
+    inputs['a'] = fit.prior['a']
+    inputs['y'] = y
+    inputs['E'] = fit.prior['E']
     print('================= Error Budget Analysis')
     print(fit.fmt_values(outputs))
     print(fit.fmt_errorbudget(outputs,inputs))

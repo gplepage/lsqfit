@@ -1652,6 +1652,9 @@ class BayesPDF(_gvar.PDF):
 
 try:
     import vegas
+    if vegas.__version__ < '3.3':
+        raise ImportError
+
     class BayesIntegrator(vegas.PDFIntegrator):
         """ :mod:`vegas` integrator for Bayesian fit integrals.
 
