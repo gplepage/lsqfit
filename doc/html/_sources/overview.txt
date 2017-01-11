@@ -1045,7 +1045,7 @@ Using ``udata`` rather than ``data`` causes |nonlinear_fit| to
 ignore correlations in the data, whether they exist or not.
 Uncorrelated fits are typically
 much faster when fitting large amounts of data, so it is then
-possible to fit much larger amounts of data
+possible to fit much more data
 (e.g., 1,000,000 or more ``y[i]``\s is straightforward on a laptop).
 
 
