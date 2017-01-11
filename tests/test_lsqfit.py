@@ -1403,12 +1403,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
 
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multifit'), "GSL not installed")
     def test_gsl_multifit(self):
         """ gsl_multifit """
-        try:
-            from lsqfit import gsl_multifit as multifit
-        except:
-            return
+        from lsqfit import gsl_multifit as multifit
         nx = 3
         xans = np.arange(nx) + 1.
         def f(x, xans=xans):
@@ -1432,12 +1430,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(ans.stopping_criterion, 1)
         self.assert_arraysclose(ans.x, xans, rtol=1e-3)
 
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_v1_multifit'), "GSL not installed")
     def test_gsl_v1_multifit(self):
         """ gsl_v1_multifit """
-        try:
-            from lsqfit import gsl_v1_multifit as multifit
-        except:
-            return
+        from lsqfit import gsl_v1_multifit as multifit
         nx = 3
         xans = np.arange(nx) + 1.
         def f(x, xans=xans):
@@ -1461,6 +1457,32 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(ans.stopping_criterion, 1)
         self.assert_arraysclose(ans.x, xans, rtol=1e-3)
 
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "scipy not installed")
+    def test_scipy_least_squares(self):
+        """ scipy_multifit """
+        from lsqfit import scipy_least_squares as multifit
+        nx = 3
+        xans = np.arange(nx) + 1.
+        def f(x, xans=xans):
+            return  (x - xans) ** 2 + (x - xans) ** 4
+
+        ans = multifit(
+            x0=np.ones(nx), n=nx, f=f, tol=(1e-15, 1e-8, 1e-15), method='trf',
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+        self.assertEqual(ans.stopping_criterion, 2)
+        ans = multifit(
+            x0=np.zeros(nx), n=nx, f=f, tol=(1e-8, 1e-15, 1e-15), method='lm',
+            )
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+        self.assertEqual(ans.stopping_criterion, 1)
+        ans = multifit(
+            x0=np.zeros(nx),n=nx,f=f, tol=(1e-15, 1e-8, 1e-15), method='dogbox',
+            )
+        self.assertEqual(ans.stopping_criterion, 2)
+        self.assert_arraysclose(ans.x, xans, rtol=1e-3)
+
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "scipy not installed")
     def test_bounds(self):
         " scipy_least_squares with bounds "
         data = gv.gvar(['0.9(1)', '2.2(2)'])
@@ -1516,12 +1538,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                     )
                 self.assertEqual(str(fit.p), '[0.904(98) 2.17(19)]')
 
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "GSL not installed")
     def test_gsl_multiminex_exceptions(self):
         """ gsl_multiminex exceptions """
-        try:
-            import lsqfit.gsl_multiminex as multiminex
-        except:
-            return
+        from lsqfit import gsl_multiminex as multiminex
         x0 = np.array([6.0,-4.0])
         with self.assertRaises(ZeroDivisionError):
             def f(x):
@@ -1538,12 +1558,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             ans = multiminex(x0,f)
 
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "GSL not installed")
     def test_gsl_multiminex(self):
         """ gsl_multiminex """
-        try:
-            from lsqfit import gsl_multiminex as multiminex
-        except:
-            return
+        from lsqfit import gsl_multiminex as multiminex
+
         def f(x):
             ff = (x[0]-5)**2 + (x[1]+3)**2
             return -np.cos(ff)
@@ -1557,12 +1576,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(ans.x, [5.,-3.], rtol=1e-4)
         self.assert_arraysclose(ans.f, -1., rtol=1e-4)
 
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_multiminex'), "scipy not installed")
     def test_scipy_multiminex(self):
         """ gsl_multiminex """
-        try:
-            from lsqfit import scipy_multiminex as multiminex
-        except:
-            return
+        from lsqfit import scipy_multiminex as multiminex
+
         def f(x):
             ff = (x[0]-5)**2 + (x[1]+3)**2
             return -np.cos(ff)

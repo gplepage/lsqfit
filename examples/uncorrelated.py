@@ -35,7 +35,7 @@ def f(x,p):
 def main():
     p0 =[0.5, 0.4, 0.7 ]
 
-    N = 50000
+    N = 50000   # takes 2min to do 2000000; scales linearly
     x = np.linspace(0.2, 2., N)
     y = make_fake_data(x, p0, f)
     print('y = [{} {} ... {}]\n'.format(y[0], y[1], y[-1]))

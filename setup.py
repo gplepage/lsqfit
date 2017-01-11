@@ -21,7 +21,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '9.0'
+LSQFIT_VERSION = '9.0.1'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -35,24 +35,32 @@ with open("src/lsqfit/_version.py","w") as version_file:
 # the build process has trouble finding the gsl library
 # or the numpy headers. This should not be necessary if
 # gsl and numpy are installed in standard locations.
-ext_args = dict(
+ext_args_gsl = dict(
     libraries=["gsl", "gslcblas"],
     include_dirs=[numpy.get_include()],
     library_dirs=[],
     runtime_library_dirs=[],
-    extra_link_args=[] # ['-framework','vecLib'], # for Mac OSX ?
+    extra_link_args=[],
+    )
+
+ext_args_nogsl = dict(
+    libraries=[],
+    include_dirs=[numpy.get_include()],
+    library_dirs=[],
+    runtime_library_dirs=[],
+    extra_link_args=[],
     )
 
 ext_modules = [
     Extension(
         "lsqfit._utilities",
         ["src/lsqfit/_utilities.pyx"],
-        **ext_args
+        **ext_args_nogsl
         ),
     Extension(
         "lsqfit._gsl",
         ["src/lsqfit/_gsl.pyx"],
-        **ext_args
+        **ext_args_gsl
         ),
     ]
 

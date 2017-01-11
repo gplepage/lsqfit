@@ -1069,7 +1069,7 @@ end:</p>
     <span class="c"># print nexp=4 fit results</span>
     <span class="k">print</span><span class="p">(</span><span class="s">&#39;--------------------- original fit&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-    <span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>          <span class="c"># best-fit parameters</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>                  <span class="c"># best-fit parameters</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
     <span class="k">print</span><span class="p">(</span><span class="s">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">print</span><span class="p">(</span><span class="s">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -1083,7 +1083,7 @@ end:</p>
     <span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>         <span class="c"># new data for the ratio</span>
 
     <span class="n">newfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">n--------------------- new fit adding extra information&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">n--------------------- new fit to extra information&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
     <span class="n">E</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
@@ -1113,8 +1113,7 @@ Settings:
 E1/E0 = 2.0020(86)   E2/E0 = 3.14(21)
 a1/a0 = 1.011(32)   a2/a0 = 1.52(89)
 
-
---------------------- new fit, adding 1 extra piece of information
+\n--------------------- new fit to extra information
 Least Square Fit:
   chi2/dof [dof] = 0.12 [1]    Q = 0.73    logGBF = 2.4648
 

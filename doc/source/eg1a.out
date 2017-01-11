@@ -18,8 +18,7 @@ Settings:
 E1/E0 = 2.0020(86)   E2/E0 = 3.14(21)
 a1/a0 = 1.011(32)   a2/a0 = 1.52(89)
 
-
---------------------- new fit, adding 1 extra piece of information
+\n--------------------- new fit to extra information
 Least Square Fit:
   chi2/dof [dof] = 0.12 [1]    Q = 0.73    logGBF = 2.4648
 
