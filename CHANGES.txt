@@ -1,3 +1,8 @@
+Version 9.0.1 - 2017-01-09
+============================
+Tiny fix to setup.py so lsqfit compiles without gsl. I didn't quite have
+it right in v9.0.
+
 Version 9.0 - 2017-01-09
 =========================
 This version offers a major overhaul of the underlying fitting
