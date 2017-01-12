@@ -11,7 +11,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-PIP = pip
+PIP = python -m pip
 PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`

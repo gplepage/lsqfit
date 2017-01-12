@@ -21,7 +21,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 import numpy
 
-LSQFIT_VERSION = '9.0.1'
+LSQFIT_VERSION = '9.0.2'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -108,7 +108,6 @@ setup_args = dict(
         'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: POSIX',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',

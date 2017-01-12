@@ -52,18 +52,19 @@ function ``f(x, p)`` must be an array with the same shape as the dependent
 variable. The prior ``prior`` could also be represented by an array
 instead of a dictionary.
 
-By default priors are Gaussian/normal distributions, represented by  |GVar|\s.
-Setting :class:`nonlinear_fit` parameter ``extend=True``  allows for log-normal
-and sqrt-normal distributions as well. The latter are indicated by replacing
-the prior (in a dictionary prior) with key ``c``,  for example, by a prior for
-the parameter's logarithm or square root, with key ``log(c)`` or ``sqrt(c)``,
-respectively.  :class:`nonlinear_fit` adds parameter ``c`` to the parameter
-dictionary, deriving its value from parameter ``log(c)`` or ``sqrt(c)``. The
-fit function can be expressed directly in terms of parameter ``c``  and so is
-the same no matter which distribution is used for ``c``. Note that a
-sqrt-normal distribution with zero mean is equivalent to an exponential
-distribution. Additional distributions can be added using
-:meth:`gvar.add_parameter_distribution`.
+By default priors are Gaussian/normal distributions, represented by
+|GVar|\s. Setting :class:`nonlinear_fit` parameter ``extend=True``
+allows for log-normal and sqrt-normal distributions as well. The
+latter are indicated by replacing the prior (in a dictionary prior)
+with key ``c``,  for example, by a prior for the parameter's logarithm
+or square root, with key ``log(c)`` or ``sqrt(c)``, respectively.
+:class:`nonlinear_fit` adds parameter ``c`` to the parameter
+dictionary, deriving its value from parameter ``log(c)`` or
+``sqrt(c)``. The fit function can be expressed directly in terms of
+parameter ``c``  and so is the same no matter which distribution is
+used for ``c``. Note that a sqrt-normal distribution with zero mean is
+equivalent to an exponential distribution. Additional distributions
+can be added using :meth:`gvar.add_parameter_distribution`.
 
 The :mod:`lsqfit` tutorial contains extended explanations and examples.
 The first appendix in the paper at http://arxiv.org/abs/arXiv:1406.2279
@@ -98,7 +99,6 @@ import gvar as _gvar
 
 # add extras and utilities to lsqfit
 from ._extras import empbayes_fit, wavg
-from ._utilities import dot as _util_dot
 from ._utilities import _build_chiv_chivw
 from ._version import version as __version__
 
