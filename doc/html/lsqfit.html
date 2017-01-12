@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 9.0.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 9.0.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.0.1',
+        VERSION:     '9.0.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 9.0.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.0.2 documentation" href="index.html" />
     <link rel="next" title="GSL Routines" href="gsl.html" />
     <link rel="prev" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -111,18 +111,19 @@ convenient in simpler fits. Then the approximate <code class="docutils literal">
 function <code class="docutils literal"><span class="pre">f(x,</span> <span class="pre">p)</span></code> must be an array with the same shape as the dependent
 variable. The prior <code class="docutils literal"><span class="pre">prior</span></code> could also be represented by an array
 instead of a dictionary.</p>
-<p>By default priors are Gaussian/normal distributions, represented by  <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.
-Setting <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">extend=True</span></code>  allows for log-normal
-and sqrt-normal distributions as well. The latter are indicated by replacing
-the prior (in a dictionary prior) with key <code class="docutils literal"><span class="pre">c</span></code>,  for example, by a prior for
-the parameter&#8217;s logarithm or square root, with key <code class="docutils literal"><span class="pre">log(c)</span></code> or <code class="docutils literal"><span class="pre">sqrt(c)</span></code>,
-respectively.  <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> adds parameter <code class="docutils literal"><span class="pre">c</span></code> to the parameter
-dictionary, deriving its value from parameter <code class="docutils literal"><span class="pre">log(c)</span></code> or <code class="docutils literal"><span class="pre">sqrt(c)</span></code>. The
-fit function can be expressed directly in terms of parameter <code class="docutils literal"><span class="pre">c</span></code>  and so is
-the same no matter which distribution is used for <code class="docutils literal"><span class="pre">c</span></code>. Note that a
-sqrt-normal distribution with zero mean is equivalent to an exponential
-distribution. Additional distributions can be added using
-<a class="reference internal" href="#gvar.add_parameter_distribution" title="gvar.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">gvar.add_parameter_distribution()</span></code></a>.</p>
+<p>By default priors are Gaussian/normal distributions, represented by
+<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. Setting <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> parameter <code class="docutils literal"><span class="pre">extend=True</span></code>
+allows for log-normal and sqrt-normal distributions as well. The
+latter are indicated by replacing the prior (in a dictionary prior)
+with key <code class="docutils literal"><span class="pre">c</span></code>,  for example, by a prior for the parameter&#8217;s logarithm
+or square root, with key <code class="docutils literal"><span class="pre">log(c)</span></code> or <code class="docutils literal"><span class="pre">sqrt(c)</span></code>, respectively.
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">nonlinear_fit</span></code></a> adds parameter <code class="docutils literal"><span class="pre">c</span></code> to the parameter
+dictionary, deriving its value from parameter <code class="docutils literal"><span class="pre">log(c)</span></code> or
+<code class="docutils literal"><span class="pre">sqrt(c)</span></code>. The fit function can be expressed directly in terms of
+parameter <code class="docutils literal"><span class="pre">c</span></code>  and so is the same no matter which distribution is
+used for <code class="docutils literal"><span class="pre">c</span></code>. Note that a sqrt-normal distribution with zero mean is
+equivalent to an exponential distribution. Additional distributions
+can be added using <a class="reference internal" href="#gvar.add_parameter_distribution" title="gvar.add_parameter_distribution"><code class="xref py py-meth docutils literal"><span class="pre">gvar.add_parameter_distribution()</span></code></a>.</p>
 <p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> tutorial contains extended explanations and examples.
 The first appendix in the paper at <a class="reference external" href="http://arxiv.org/abs/arXiv:1406.2279">http://arxiv.org/abs/arXiv:1406.2279</a>
 provides conceptual background on the techniques used in this
@@ -1464,7 +1465,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

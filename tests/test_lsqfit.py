@@ -538,7 +538,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                                         dataycov,rtol=1e-4)
             self.assert_gvclose(fit.p**2,datay,1e-4)
 
-    @unittest.skipIf(FAST,"skipping test_bootstrap for speed")
+    @unittest.skipIf(FAST,"for speed")
     def test_bootstrap(self):
         """ bootstrap_iter """
         # data and priors
@@ -688,7 +688,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(fit.logGBF, np.log(prob(gv.mean(y))))
         self.assertAlmostEqual(fit.chi2, chi2(gv.mean(y)))
 
-    @unittest.skipIf(FAST,"skipping test_empbayes for speed")
+    @unittest.skipIf(FAST,"for speed")
     def test_empbayes(self):
         """ empbayes fit """
         y = gv.gvar([
@@ -1403,7 +1403,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multifit'), "GSL not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multifit'), "because GSL not installed")
     def test_gsl_multifit(self):
         """ gsl_multifit """
         from lsqfit import gsl_multifit as multifit
@@ -1430,7 +1430,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(ans.stopping_criterion, 1)
         self.assert_arraysclose(ans.x, xans, rtol=1e-3)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'gsl_v1_multifit'), "GSL not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_v1_multifit'), "because GSL not installed")
     def test_gsl_v1_multifit(self):
         """ gsl_v1_multifit """
         from lsqfit import gsl_v1_multifit as multifit
@@ -1457,7 +1457,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(ans.stopping_criterion, 1)
         self.assert_arraysclose(ans.x, xans, rtol=1e-3)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "scipy not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "because scipy not installed")
     def test_scipy_least_squares(self):
         """ scipy_multifit """
         from lsqfit import scipy_least_squares as multifit
@@ -1482,7 +1482,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(ans.stopping_criterion, 2)
         self.assert_arraysclose(ans.x, xans, rtol=1e-3)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "scipy not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_least_squares'), "because scipy not installed")
     def test_bounds(self):
         " scipy_least_squares with bounds "
         data = gv.gvar(['0.9(1)', '2.2(2)'])
@@ -1538,7 +1538,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                     )
                 self.assertEqual(str(fit.p), '[0.904(98) 2.17(19)]')
 
-    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "GSL not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "because GSL not installed")
     def test_gsl_multiminex_exceptions(self):
         """ gsl_multiminex exceptions """
         from lsqfit import gsl_multiminex as multiminex
@@ -1558,7 +1558,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             ans = multiminex(x0,f)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "GSL not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'gsl_multiminex'), "because GSL not installed")
     def test_gsl_multiminex(self):
         """ gsl_multiminex """
         from lsqfit import gsl_multiminex as multiminex
@@ -1576,7 +1576,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysclose(ans.x, [5.,-3.], rtol=1e-4)
         self.assert_arraysclose(ans.f, -1., rtol=1e-4)
 
-    @unittest.skipIf(not hasattr(lsqfit, 'scipy_multiminex'), "scipy not installed")
+    @unittest.skipIf(not hasattr(lsqfit, 'scipy_multiminex'), "because scipy not installed")
     def test_scipy_multiminex(self):
         """ gsl_multiminex """
         from lsqfit import scipy_multiminex as multiminex
@@ -1604,9 +1604,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
     @unittest.skipIf(
         not hasattr(lsqfit, 'BayesIntegrator'),
-        "skipping test_bayesintegrator_dict because no vegas module"
+        "because no vegas module"
         )
-    @unittest.skipIf(FAST,"skipping test_bayesintegrator_dict for speed")
+    @unittest.skipIf(FAST,"for speed")
     def test_bayesintegrator_dict(self):
         " BayesIntegrator(fit) "
         # linear fit => BayesIntegrator gives same results for everything, norm=1
@@ -1667,9 +1667,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
     @unittest.skipIf(
         not hasattr(lsqfit, 'BayesIntegrator'),
-        "skipping test_bayesintegrator_arrat because no vegas module"
+        "because no vegas module"
         )
-    @unittest.skipIf(FAST,"skipping test_bayesintegrator_array for speed")
+    @unittest.skipIf(FAST,"for speed")
     def test_bayesintegrator_array(self):
         " BayesIntegrator(fit) "
         # linear fit => BayesIntegrator gives same results for everything, norm=1
