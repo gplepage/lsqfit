@@ -180,6 +180,19 @@ Functions
 
 Classes for Bayesian Integrals
 -------------------------------
+:mod:`lsqfit` provides support for doing Bayesian integrals, using results
+from a least-squares fit to optimize the multi-dimensional integral. This
+is useful for severely non-Gaussian situations. Module :mod:`vegas` is
+used to do the integrals, using an adaptive Monte Carlo algorithm.
+
+The integrator class is:
+
+.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, svdcut=1e-15)
+
+   .. automethod:: __call__(f=None, mpi=False, pdf=None, **kargs)
+
+A class that describes the Bayesian probability distribution associated
+with a fit is:
 
 .. autoclass:: lsqfit.BayesPDF(fit, svdcut=1e-15)
 
@@ -187,9 +200,235 @@ Classes for Bayesian Integrals
 
    .. automethod:: logpdf(p)
 
-.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, svdcut=1e-15)
 
-   .. automethod:: __call__(f=None, mpi=False, pdf=None, **kargs)
+:class:`lsqfit.MultiFitter` Classes
+-------------------------------------
+:class:`lsqfit.MultiFitter` provides a framework for fitting multiple pieces
+of data using a set of custom-designed models, derived  from
+:class:`lsqfit.MultiFitterModel`, each of which  encapsulates a particular fit
+function. This framework was developed to support the :mod:`corrfitter`
+module, but is more general. Instances of model classes  associate specific
+subsets of the fit data with  specific subsets of the fit parameters. This
+allows fit problems to be broken down down into more manageable pieces, which
+are then aggregated by :class:`lsqfit.MultiFitter` into a single fit.
+
+A trivial example of a model would be one that encapsulates
+a linear fit function::
+
+   import numpy as np
+   import lsqfit
+
+   class Linear(lsqfit.MultiFitterModel):
+       def __init__(self, datatag, x, intercept, slope):
+           super(Linear, self).__init__(datatag)
+           # the independent variable
+           self.x = np.array(x)
+           # keys used to find the intercept and slope in a parameter dictionary
+           self.intercept = intercept
+           self.slope = slope
+
+       def fitfcn(self, p):
+           if self.slope in p:
+               return p[self.intercept] + p[self.slope] * self.x
+           else:
+               # slope parameter marginalized
+               return len(self.x) * [p[self.intercept]]
+
+       def buildprior(self, prior, mopt=None, extend=False):
+           " Extract the model's parameters from prior. "
+           newprior = {}
+           newprior[self.intercept] = prior[self.intercept]
+           if mopt is None:
+               # slope parameter marginalized if mopt is not None
+               newprior[self.slope] = prior[self.slope]
+           return newprior
+
+       def builddata(self, data):
+           " Extract the model's fit data from data. "
+           return data[self.datatag]
+
+Imagine four sets of data, each corresponding to ``x=1,2,3,4``, all of which
+have the same intercept but different slopes::
+
+    data = gv.gvar(dict(
+        d1=['1.154(10)', '2.107(16)', '3.042(22)', '3.978(29)'],
+        d2=['0.692(10)', '1.196(16)', '1.657(22)', '2.189(29)'],
+        d3=['0.107(10)', '0.030(16)', '-0.027(22)', '-0.149(29)'],
+        d4=['0.002(10)', '-0.197(16)', '-0.382(22)', '-0.627(29)'],
+        ))
+
+To find the common intercept, we define a model for each set of
+data::
+
+   models = [
+      Linear('d1', x=[1,2,3,4], intercept='a', slope='s1'),
+      Linear('d2', x=[1,2,3,4], intercept='a', slope='s2'),
+      Linear('d3', x=[1,2,3,4], intercept='a', slope='s3'),
+      Linear('d4', x=[1,2,3,4], intercept='a', slope='s4'),
+      ]
+
+This says that ``data['d3']``, for example, should be fit with  function
+``p['a'] + p['s3'] * np.array([1,2,3,4])`` where ``p`` is  a dictionary of fit
+parameters.  The models here all share the same intercept, but have different
+slopes. Assume that we know *a priori* that the intercept and slopes are all
+order one::
+
+   prior = gv.gvar(dict(a='0(1)', s1='0(1)', s2='0(1)', s3='0(1)', s4='0(1)'))
+
+Then we can fit all the data to determine the intercept::
+
+   fitter = lsqfit.MultiFitter(models=models)
+   fit = fitter.lsqfit(data=data, prior=prior)
+   print(fit)
+   print('intercept =', fit.p['a'])
+
+The output from this code is::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.49 [16]    Q = 0.95    logGBF = 18.793
+
+   Parameters:
+                 a    0.2012 (78)      [  0.0 (1.0) ]
+                s1    0.9485 (53)      [  0.0 (1.0) ]
+                s2    0.4927 (53)      [  0.0 (1.0) ]
+                s3   -0.0847 (53)      [  0.0 (1.0) ]
+                s4   -0.2001 (53)      [  0.0 (1.0) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+   intercept = 0.2012(78)
+
+Model class ``Linear`` is configured to allow
+marginalization of the slope parameter, if desired. Calling
+``fitter.lsqfit(data=data, prior=prior, mopt=True)`` moves the slope
+parameters into the data (by subtracting ``m.x * prior[m.slope]``
+from the data for each model ``m``), and does a single-parameter fit for the
+intercept::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.49 [16]    Q = 0.95    logGBF = 18.793
+
+   Parameters:
+                 a   0.2012 (78)     [  0.0 (1.0) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+   intercept = 0.2012(78)
+
+Marginalization can be useful when fitting large data sets since it
+reduces the number of fit parameters and simplifies the fit.
+
+Another variation is to replace the simultaneous fit of the four models
+by a chained fit, where one model is fit at a time and its
+results are fed into the next fit through that fit's prior. Replacing the
+fit code by ::
+
+   fitter = lsqfit.MultiFitter(models=models)
+   fit = fitter.chained_lsqfit(data=data, prior=prior)
+   print(fit.formatall())
+   print('slope =', fit.p['a'])
+
+gives the following output::
+
+   ========== d1
+   Least Square Fit:
+     chi2/dof [dof] = 0.32 [4]    Q = 0.86    logGBF = 2.0969
+
+   Parameters:
+                 a    0.213 (16)     [  0.0 (1.0) ]
+                s1   0.9432 (82)     [  0.0 (1.0) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+   ========== d2
+   Least Square Fit:
+     chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 5.3792
+
+   Parameters:
+                 a    0.206 (11)     [  0.213 (16) ]
+                s2   0.4904 (64)     [   0.0 (1.0) ]
+                s1   0.9462 (64)     [ 0.9432 (82) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+   ========== d3
+   Least Square Fit:
+     chi2/dof [dof] = 0.66 [4]    Q = 0.62    logGBF = 5.3767
+
+   Parameters:
+                 a    0.1995 (90)      [  0.206 (11) ]
+                s3   -0.0840 (57)      [   0.0 (1.0) ]
+                s1    0.9493 (57)      [ 0.9462 (64) ]
+                s2    0.4934 (57)      [ 0.4904 (64) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+   ========== d4
+   Least Square Fit:
+     chi2/dof [dof] = 0.41 [4]    Q = 0.81    logGBF = 5.9402
+
+   Parameters:
+                 a    0.2012 (78)      [  0.1995 (90) ]
+                s4   -0.2001 (53)      [    0.0 (1.0) ]
+                s1    0.9485 (53)      [  0.9493 (57) ]
+                s2    0.4927 (53)      [  0.4934 (57) ]
+                s3   -0.0847 (53)      [ -0.0840 (57) ]
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+   intercept = 0.2012(78)
+
+Note how the value for ``s1`` improves with each fit despite the fact that
+it appears only in the first fit function. This happens because its value
+is correlated with that of the intercept ``a``, which appears in every fit
+function.
+
+Chained fits are most useful
+with very large data sets when it is possible to break the data into
+smaller, more manageable chunks. There are a variety of options for
+organizing the chain of fits that are discussed in the
+:meth:`MultiFitter.chained_lsqfit` documentation.
+
+
+.. autoclass:: lsqfit.MultiFitter(models, mopt=None, ratio=False, fast=True, extend=False, **fitterargs)
+
+   .. automethod:: MultiFitter.lsqfit
+
+   .. automethod:: MultiFitter.chained_lsqfit
+
+   .. automethod:: process_data
+
+   .. automethod:: process_dataset
+
+   .. automethod:: show_plots
+
+:class:`lsqfit.MultiFitter` models are derived from the following
+class. Methods ``buildprior``, ``builddata``, ``fitfcn``, and
+``builddataset`` are not implemented in this base
+class. They need to be overwritten by the derived class (except
+for ``builddataset`` which is optional).
+
+.. autoclass:: lsqfit.MultiFitterModel(datatag, ncg=1)
+
+   .. automethod:: MultiFitterModel.buildprior
+
+   .. automethod:: MultiFitterModel.builddata
+
+   .. automethod:: MultiFitterModel.fitfcn
+
+   .. automethod:: MultiFitterModel.builddataset
+
+   .. automethod:: MultiFitterModel.get_prior_keys
+
+   .. automethod:: MultiFitterModel.prior_key
+
+:class:`lsqfit.MultiFitter` was inspired by an unconventional
 
 Requirements
 ------------

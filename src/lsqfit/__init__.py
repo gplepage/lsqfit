@@ -99,6 +99,7 @@ import gvar as _gvar
 
 # add extras and utilities to lsqfit
 from ._extras import empbayes_fit, wavg
+from ._extras import MultiFitterModel, MultiFitter
 from ._utilities import _build_chiv_chivw
 from ._version import version as __version__
 

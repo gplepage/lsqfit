@@ -71,6 +71,10 @@ sin = np.sin
 pi = np.pi
 
 """
+    if USE_2ND_STARTING_VALUE:
+        text += '# 2nd starting values\n\n'
+    else:
+        text += '# 1st starting values\n\n'
     # main() program
     text += 'def main():\n'
     text += '    # easy\n'

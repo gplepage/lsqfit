@@ -1,3 +1,16 @@
+Version 9.1 2017-02-06
+=======================
+The only significant change is the addition of MultiFitter.
+
+- Added lsqfit.MultiFitter which is a framework from organizing
+  fits around a small number user-defined of models that are fit to many
+  different pieces of data using different sets of parameters. It was
+  developed to support the correfitter module, but is more general.
+
+- Tiny bug fixes to wavg to cover certain edge cases.
+
+- Faster tests.
+
 Version 9.0.1 - 2017-01-11
 ============================
 Tiny fix to setup.py so lsqfit compiles without gsl. I didn't quite have

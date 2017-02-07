@@ -19,7 +19,7 @@ def main():
 
         # fit modified data with just nexp terms (in fit_prior)
         fit = lsqfit.nonlinear_fit(
-            data=(x, ymod), prior=fit_prior, fcn=fcn, p0=p0, tol=1e-15,
+            data=(x, ymod), prior=fit_prior, fcn=fcn, p0=p0, tol=1e-15, svdcut=1e-4,
             )
 
         # print fit information

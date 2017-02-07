@@ -1,35 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-"""
-nist.py - These are all 27 fits used by NIST to test nonlinear fitters.
-See http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml.
-
-* NIST's function formulas have a term 'e' in them, which is the error quoted
-under "standard deviation of residuals"; that is the y error.
-
-* I also gave priors to the fit parameters, generally making them 200x
-wider than the result, with mean 0; these priors are too wide to affect the
-fits.
-
-* The fits have starting points provided by NIST. (I use the 2nd starting
-point by have tested the other one as well.)
-
-* The results from the fit are compared (see assert statements) with NIST's
-"certified values".
-
-"""
-# Copyright (c) 2016 G. Peter Lepage.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version (see <http://www.gnu.org/licenses/>).
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
 
 from __future__ import print_function
 
@@ -37,12 +5,17 @@ import gvar as gv
 import numpy as np
 import lsqfit
 
+# lsqfit.nonlinear_fit.set(alg='subspace2D')
+# lsqfit.nonlinear_fit.set(fitter='scipy_least_squares')  # doesn't work
+
 log = np.log
 exp = np.exp
 arctan = np.arctan
 cos = np.cos
 sin = np.sin
 pi = np.pi
+
+# 1st starting values
 
 def main():
     # easy
@@ -92,7 +65,7 @@ def misra1a():
         y = b1*(1-exp(-b2*x))
         return y
     prior = gv.gvar(['0(47788)', '0.00(11)'])
-    p0 = np.array([  2.50000000e+02,   5.00000000e-04])
+    p0 = np.array([  5.00000000e+02,   1.00000000e-04])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -125,7 +98,7 @@ def chwirut2():
         y = exp(-b1*x)/(b2+b3*x)
         return y
     prior = gv.gvar(['0(33)', '0.0(1.0)', '0.0(2.4)'])
-    p0 = np.array([ 0.15 ,  0.008,  0.01 ])
+    p0 = np.array([ 0.1 ,  0.01,  0.02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -205,7 +178,7 @@ def chwirut1():
         y = exp(-b1*x)/(b2+b3*x)
         return y
     prior = gv.gvar(['0(38)', '0.0(1.2)', '0.0(2.1)'])
-    p0 = np.array([ 0.15 ,  0.008,  0.01 ])
+    p0 = np.array([ 0.1 ,  0.01,  0.02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -229,7 +202,7 @@ def lanczos3():
         y = b1*exp(-b2*x) + b3*exp(-b4*x) + b5*exp(-b6*x)
         return y
     prior = gv.gvar(['0(17)', '0(191)', '0(169)', '0(590)', '0(317)', '0(997)'])
-    p0 = np.array([ 0.5,  0.7,  3.6,  4.2,  4. ,  6.3])
+    p0 = np.array([ 1.2,  0.3,  5.6,  5.5,  6.5,  7.6])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -324,9 +297,9 @@ def gauss1():
         y = b1*exp( -b2*x ) + b3*exp( -(x-b4)**2 / b5**2 )+ b6*exp( -(x-b7)**2 / b8**2 )
         return y
     prior = gv.gvar(['0(19756)', '0.0(2.1)', '0(20098)', '0(13496)', '0(4626)', '0(14399)', '0(35800)', '0(3678)'])
-    p0 = np.array([  9.40000000e+01,   1.05000000e-02,   9.90000000e+01,
-         6.30000000e+01,   2.50000000e+01,   7.10000000e+01,
-         1.80000000e+02,   2.00000000e+01])
+    p0 = np.array([  9.70000000e+01,   9.00000000e-03,   1.00000000e+02,
+         6.50000000e+01,   2.00000000e+01,   7.00000000e+01,
+         1.78000000e+02,   1.65000000e+01])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -421,9 +394,9 @@ def gauss2():
         y = b1*exp( -b2*x ) + b3*exp( -(x-b4)**2 / b5**2 )+ b6*exp( -(x-b7)**2 / b8**2 )
         return y
     prior = gv.gvar(['0(19804)', '0.0(2.2)', '0(20376)', '0(21406)', '0(4716)', '0(14409)', '0(30654)', '0(3905)'])
-    p0 = np.array([  9.80000000e+01,   1.05000000e-02,   1.03000000e+02,
-         1.05000000e+02,   2.00000000e+01,   7.30000000e+01,
-         1.50000000e+02,   2.00000000e+01])
+    p0 = np.array([  9.60000000e+01,   9.00000000e-03,   1.03000000e+02,
+         1.06000000e+02,   1.80000000e+01,   7.20000000e+01,
+         1.51000000e+02,   1.80000000e+01])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -442,7 +415,7 @@ def danwood():
         y  = b1*x**b2
         return y
     prior = gv.gvar(['0(154)', '0(772)'])
-    p0 = np.array([ 0.7,  4. ])
+    p0 = np.array([ 1.,  5.])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -463,7 +436,7 @@ def misra1b():
         y = b1 * (1-(1+b2*x/2)**(-2))
         return y
     prior = gv.gvar(['0(67599)', '0.000(78)'])
-    p0 = np.array([  3.00000000e+02,   2.00000000e-04])
+    p0 = np.array([  5.00000000e+02,   1.00000000e-04])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -553,8 +526,8 @@ def kirby2():
         y = (b1 + b2*x + b3*x**2) /(1 + b4*x + b5*x**2)
         return y
     prior = gv.gvar(['0(335)', '0(28)', '0.00(52)', '0.00(34)', '0.0000(43)'])
-    p0 = np.array([  1.50000000e+00,  -1.50000000e-01,   2.50000000e-03,
-        -1.50000000e-03,   2.00000000e-05])
+    p0 = np.array([  2.00000000e+00,  -1.00000000e-01,   3.00000000e-03,
+        -1.00000000e-03,   1.00000000e-05])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -639,9 +612,9 @@ def hahn1():
         y = (b1+b2*x+b3*x**2+b4*x**3) /(1+b5*x+b6*x**2+b7*x**3)
         return y
     prior = gv.gvar(['0(216)', '0(25)', '0.00(82)', '0.00000(29)', '0.0(1.2)', '0.000(48)', '0.0(2.5)e-05'])
-    p0 = np.array([  1.00000000e+00,  -1.00000000e-01,   5.00000000e-03,
-        -1.00000000e-06,  -5.00000000e-03,   1.00000000e-04,
-        -1.00000000e-07])
+    p0 = np.array([  1.00000000e+01,  -1.00000000e+00,   5.00000000e-02,
+        -1.00000000e-05,  -5.00000000e-02,   1.00000000e-03,
+        -1.00000000e-06])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -704,7 +677,7 @@ def nelson():
         y = b1 - b2*x1 * exp(-b3*x2)
         return y
     prior = gv.gvar(['0(518)', '0.0(1.1)e-06', '0(12)'])
-    p0 = np.array([  2.50000000e+00,   5.00000000e-09,  -5.00000000e-02])
+    p0 = np.array([  2.00000000e+00,   1.00000000e-04,  -1.00000000e-02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -730,7 +703,7 @@ def mgh17():
         y = b1 + b2*exp(-x*b4) + b3*exp(-x*b5)
         return y
     prior = gv.gvar(['0(75)', '0(387)', '0(293)', '0.0(2.6)', '0.0(4.4)'])
-    p0 = np.array([ 0.5 ,  1.5 , -1.  ,  0.01,  0.02])
+    p0 = np.array([  50.,  150., -100.,    1.,    2.])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -755,7 +728,7 @@ def lanczos1():
         y = b1*exp(-b2*x) + b3*exp(-b4*x) + b5*exp(-b6*x)
         return y
     prior = gv.gvar(['0(19)', '0(200)', '0(172)', '0(600)', '0(312)', '0(1000)'])
-    p0 = np.array([ 0.5,  0.7,  3.6,  4.2,  4. ,  6.3])
+    p0 = np.array([ 1.2,  0.3,  5.6,  5.5,  6.5,  7.6])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -780,7 +753,7 @@ def lanczos2():
         y = b1*exp(-b2*x) + b3*exp(-b4*x) + b5*exp(-b6*x)
         return y
     prior = gv.gvar(['0(19)', '0(201)', '0(173)', '0(602)', '0(311)', '0(1001)'])
-    p0 = np.array([ 0.5,  0.7,  3.6,  4.2,  4. ,  6.3])
+    p0 = np.array([ 1.2,  0.3,  5.6,  5.5,  6.5,  7.6])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -875,9 +848,9 @@ def gauss3():
         y = b1*exp( -b2*x ) + b3*exp( -(x-b4)**2 / b5**2 )+ b6*exp( -(x-b7)**2 / b8**2 )
         return y
     prior = gv.gvar(['0(19788)', '0.0(2.2)', '0(20139)', '0(22327)', '0(4660)', '0(14741)', '0(29552)', '0(3934)'])
-    p0 = np.array([  9.60000000e+01,   9.60000000e-03,   8.00000000e+01,
-         1.10000000e+02,   2.50000000e+01,   7.40000000e+01,
-         1.39000000e+02,   2.50000000e+01])
+    p0 = np.array([  9.49000000e+01,   9.00000000e-03,   9.01000000e+01,
+         1.13000000e+02,   2.00000000e+01,   7.38000000e+01,
+         1.40000000e+02,   2.00000000e+01])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -898,7 +871,7 @@ def misra1c():
         y = b1 * (1-(1+2*b2*x)**(-.5))
         return y
     prior = gv.gvar(['0.0(1.3)e+05', '0.000(42)'])
-    p0 = np.array([  6.00000000e+02,   2.00000000e-04])
+    p0 = np.array([  5.00000000e+02,   1.00000000e-04])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -919,7 +892,7 @@ def misra1d():
         y = b1*b2*x*((1+b2*x)**(-1))
         return y
     prior = gv.gvar(['0(87474)', '0.000(60)'])
-    p0 = np.array([  4.50000000e+02,   3.00000000e-04])
+    p0 = np.array([  5.00000000e+02,   1.00000000e-04])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -945,8 +918,8 @@ def roszman1():
         y =  b1 - b2*x - arctan(b3/(x-b4))/pi
         return y
     prior = gv.gvar(['0(40)', '0.0000(12)', '0.0(2.4)e+05', '0(36269)'])
-    p0 = np.array([  2.00000000e-01,  -5.00000000e-06,   1.20000000e+03,
-        -1.50000000e+02])
+    p0 = np.array([  1.00000000e-01,  -1.00000000e-05,   1.00000000e+03,
+        -1.00000000e+02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1001,7 +974,7 @@ def enso():
         y = b1 + b2*cos( 2*pi*x/12 ) + b3*sin( 2*pi*x/12 )+ b5*cos( 2*pi*x/b4 ) + b6*sin( 2*pi*x/b4 )+ b8*cos( 2*pi*x/b7 ) + b9*sin( 2*pi*x/b7 )
         return y
     prior = gv.gvar(['0(2102)', '0(615)', '0(107)', '0(8862)', '0(325)', '0(105)', '0(5378)', '0(42)', '0(299)'])
-    p0 = np.array([ 10. ,   3. ,   0.5,  44. ,  -1.5,   0.5,  26. ,  -0.1,   1.5])
+    p0 = np.array([ 11. ,   3. ,   0.5,  40. ,  -0.7,  -1.3,  25. ,  -0.3,   1.4])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1022,7 +995,7 @@ def mgh09():
         y = b1*(x**2+x*b2) / (x**2+x*b3+b4)
         return y
     prior = gv.gvar(['0(39)', '0(38)', '0(25)', '0(27)'])
-    p0 = np.array([ 0.25 ,  0.39 ,  0.415,  0.39 ])
+    p0 = np.array([ 25. ,  39. ,  41.5,  39. ])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1051,9 +1024,9 @@ def thurber():
         y = (b1 + b2*x + b3*x**2 + b4*x**3) /(1 + b5*x + b6*x**2 + b7*x**3)
         return y
     prior = gv.gvar(['0.0(2.6)e+05', '0.0(3.0)e+05', '0.0(1.2)e+05', '0(15083)', '0(193)', '0(80)', '0.0(9.9)'])
-    p0 = np.array([  1.30000000e+03,   1.50000000e+03,   5.00000000e+02,
-         7.50000000e+01,   1.00000000e+00,   4.00000000e-01,
-         5.00000000e-02])
+    p0 = np.array([  1.00000000e+03,   1.00000000e+03,   4.00000000e+02,
+         4.00000000e+01,   7.00000000e-01,   3.00000000e-01,
+         3.00000000e-02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1072,7 +1045,7 @@ def boxbod():
         y = b1*(1-exp(-b2*x))
         return y
     prior = gv.gvar(['0(42762)', '0(109)'])
-    p0 = np.array([ 100.  ,    0.75])
+    p0 = np.array([ 1.,  1.])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1092,7 +1065,7 @@ def rat42():
         y = b1 / (1+exp(b2-b3*x))
         return y
     prior = gv.gvar(['0(14492)', '0(524)', '0(13)'])
-    p0 = np.array([  7.50000000e+01,   2.50000000e+00,   7.00000000e-02])
+    p0 = np.array([ 100. ,    1. ,    0.1])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1114,7 +1087,7 @@ def mgh10():
         y = b1 * exp(b2/(x+b3))
         return y
     prior = gv.gvar(['0.0(1.1)', '0.0(1.2)e+06', '0(69045)'])
-    p0 = np.array([  2.00000000e-02,   4.00000000e+03,   2.50000000e+02])
+    p0 = np.array([  1.10000000e-02,   1.20000000e+04,   6.90450000e+02])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1148,7 +1121,7 @@ def eckerle4():
         y = (b1/b2) * exp(-0.5*((x-b3)/b2)**2)
         return y
     prior = gv.gvar(['0(311)', '0(818)', '0(90308)'])
-    p0 = np.array([   1.5,    5. ,  450. ])
+    p0 = np.array([   1.,   10.,  500.])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1170,7 +1143,7 @@ def rat43():
         y = b1 / ((1+exp(b2-b3*x))**(1/b4))
         return y
     prior = gv.gvar(['0.0(1.4)e+05', '0(1055)', '0(152)', '0(256)'])
-    p0 = np.array([ 700.  ,    5.  ,    0.75,    1.3 ])
+    p0 = np.array([ 100.,   10.,    1.,    1.])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
@@ -1249,7 +1222,7 @@ def bennett5():
         y = b1 * (b2+x)**(-1/b3)
         return y
     prior = gv.gvar(['0.0(5.0)e+05', '0(9347)', '0(186)'])
-    p0 = np.array([ -1.50000000e+03,   4.50000000e+01,   8.50000000e-01])
+    p0 = np.array([ -2.00000000e+03,   5.00000000e+01,   8.00000000e-01])
     fit = lsqfit.nonlinear_fit(
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )

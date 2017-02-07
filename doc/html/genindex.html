@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &mdash; lsqfit 9.0.2 documentation</title>
+    <title>Index &mdash; lsqfit 9.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.0.2',
+        VERSION:     '9.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 9.0.2 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.1 documentation" href="index.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -43,7 +43,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -66,6 +66,7 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#Q"><strong>Q</strong></a>
@@ -120,10 +121,22 @@
   <dt><a href="lsqfit.html#lsqfit.BayesPDF">BayesPDF (class in lsqfit)</a>
   </dt>
 
+      
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.bootstrap_iter">bootstrap_iter() (lsqfit.nonlinear_fit method)</a>
+  </dt>
+
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.bootstrap_iter">bootstrap_iter() (lsqfit.nonlinear_fit method)</a>
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.builddata">builddata() (lsqfit.MultiFitterModel method)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.builddataset">builddataset() (lsqfit.MultiFitterModel method)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.buildprior">buildprior() (lsqfit.MultiFitterModel method)</a>
   </dt>
 
   </dl></td>
@@ -133,15 +146,19 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.check_roundoff">check_roundoff() (lsqfit.nonlinear_fit method)</a>
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter.chained_lsqfit">chained_lsqfit() (lsqfit.MultiFitter method)</a>
   </dt>
 
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.chi2">chi2 (lsqfit.nonlinear_fit attribute)</a>
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.check_roundoff">check_roundoff() (lsqfit.nonlinear_fit method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.chi2">chi2 (lsqfit.nonlinear_fit attribute)</a>
+  </dt>
+
       
   <dt><a href="gsl.html#gsl_multifit.cov">cov (gsl_multifit attribute)</a>
   </dt>
@@ -167,6 +184,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.datatag">datatag (lsqfit.MultiFitterModel attribute)</a>
+  </dt>
+
+      
   <dt><a href="lsqfit.html#gvar.del_parameter_distribution">del_parameter_distribution() (in module gvar)</a>
   </dt>
 
@@ -180,12 +201,12 @@
   </dt>
 
       </dl></dd>
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.dof">dof (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.dump_p">dump_p() (lsqfit.nonlinear_fit method)</a>
   </dt>
@@ -261,15 +282,19 @@
 
       </dl></dd>
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.fitter_results">fitter_results (lsqfit.nonlinear_fit attribute)</a>
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.fitfcn">fitfcn() (lsqfit.MultiFitterModel method)</a>
   </dt>
 
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.fmt_errorbudget">fmt_errorbudget() (lsqfit.nonlinear_fit method)</a>
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.fitter_results">fitter_results (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.fmt_errorbudget">fmt_errorbudget() (lsqfit.nonlinear_fit method)</a>
+  </dt>
+
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.fmt_values">fmt_values() (lsqfit.nonlinear_fit method)</a>
   </dt>
@@ -286,6 +311,10 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.gammaQ">gammaQ() (in module lsqfit)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.get_prior_keys">get_prior_keys() (lsqfit.MultiFitterModel static method)</a>
   </dt>
 
       
@@ -336,14 +365,34 @@
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.logGBF">logGBF (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.BayesPDF.logpdf">logpdf() (lsqfit.BayesPDF method)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#module-lsqfit">lsqfit (module)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter.lsqfit">lsqfit() (lsqfit.MultiFitter method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter">MultiFitter (class in lsqfit)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel">MultiFitterModel (class in lsqfit)</a>
   </dt>
 
   </dl></td>
@@ -356,6 +405,12 @@
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.nblocks">nblocks (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.ncg">ncg (lsqfit.MultiFitterModel attribute)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="gsl.html#gsl_multifit.nit">nit (gsl_multifit attribute)</a>
   </dt>
@@ -378,8 +433,6 @@
   </dt>
 
       </dl></dd>
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit">nonlinear_fit (class in lsqfit)</a>
   </dt>
@@ -402,14 +455,26 @@
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.palt">palt (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.pmean">pmean (lsqfit.nonlinear_fit attribute)</a>
   </dt>
 
       
   <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.prior">prior (lsqfit.nonlinear_fit attribute)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitterModel.prior_key">prior_key() (lsqfit.MultiFitterModel static method)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter.process_data">process_data() (lsqfit.MultiFitter static method)</a>
+  </dt>
+
+      
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter.process_dataset">process_dataset() (lsqfit.MultiFitter static method)</a>
   </dt>
 
       
@@ -455,11 +520,15 @@
   </dt>
 
       
-  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.simulated_fit_iter">simulated_fit_iter() (lsqfit.nonlinear_fit method)</a>
+  <dt><a href="lsqfit.html#lsqfit.MultiFitter.show_plots">show_plots() (lsqfit.MultiFitter static method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="lsqfit.html#lsqfit.nonlinear_fit.simulated_fit_iter">simulated_fit_iter() (lsqfit.nonlinear_fit method)</a>
+  </dt>
+
       
   <dt><a href="gsl.html#gsl_multifit.stopping_criterion">stopping_criterion (gsl_multifit attribute)</a>
   </dt>
@@ -593,7 +662,7 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.0.2 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
