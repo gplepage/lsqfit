@@ -100,13 +100,17 @@ class test_multifitter(unittest.TestCase):
         # ncg=1
         fitter = MultiFitter(models=self.make_models(ncg=1))
         data = fitter.builddata(self.data)
+        data['extra'] = np.array([1.])
         ndata = fitter.builddata(pdata=data)
+        del data['extra']
         self.assertEqual(str(data), str(ndata))
 
         # ncg=2
         fitter = MultiFitter(models=self.make_models(ncg=2))
         data = fitter.builddata(self.data)
+        data['extra'] = np.array([1.])
         ndata = fitter.builddata(pdata=data)
+        del data['extra']
         self.assertEqual(str(data), str(ndata))
 
     def test_builddata_marginalized(self):

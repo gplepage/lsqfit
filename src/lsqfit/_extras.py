@@ -763,6 +763,11 @@ class MultiFitter(object):
                     m.builddata(data) if m.ncg <= 1 else
                     MultiFitter.coarse_grain(m.builddata(data), m.ncg)
                     )
+        else:
+            npdata = gvar.BufferDict()
+            for m in mf['flatmodels']:
+                npdata[m.datatag] = pdata[m.datatag]
+            pdata = npdata
         if mf['mopt'] is not None:
             # fcn with entire prior
             mf_save_mopt = mf['mopt']
