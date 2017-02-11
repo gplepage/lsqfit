@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 9.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &mdash; lsqfit 9.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.1',
+        VERSION:     '9.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 9.1 documentation" href="index.html" />
+    <link rel="top" title="lsqfit 9.1.2 documentation" href="index.html" />
     <link rel="next" title="GSL Routines" href="gsl.html" />
     <link rel="prev" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -50,7 +50,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -1172,7 +1172,7 @@ used to do the integrals, using an adaptive Monte Carlo algorithm.</p>
 <p>The integrator class is:</p>
 <dl class="class">
 <dt id="lsqfit.BayesIntegrator">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesIntegrator</code><span class="sig-paren">(</span><em>fit</em>, <em>limit=1e15</em>, <em>scale=1</em>, <em>pdf=None</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesIntegrator</code><span class="sig-paren">(</span><em>fit</em>, <em>limit=1e15</em>, <em>scale=1</em>, <em>pdf=None</em>, <em>adapt_to_pdf=True</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> integrator for Bayesian fit integrals.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1318,7 +1318,7 @@ final results. This gives more reliable error estimates  when
 integrals.</p>
 <dl class="method">
 <dt id="lsqfit.BayesIntegrator.__call__">
-<code class="descname">__call__</code><span class="sig-paren">(</span><em>f=None</em>, <em>mpi=False</em>, <em>pdf=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>f=None</em>, <em>pdf=None</em>, <em>adapt_to_pdf=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimate expectation value of function <code class="docutils literal"><span class="pre">f(p)</span></code>.</p>
 <p>Uses multi-dimensional integration modules <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>  to
 estimate the expectation value of <code class="docutils literal"><span class="pre">f(p)</span></code> with  respect to
@@ -1629,6 +1629,12 @@ the fit.</li>
 <li><strong>extend</strong> (<em>bool</em>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code> supports log-normal and other
 non-Gaussian priors. See <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> documentation
 for details. Default is <code class="docutils literal"><span class="pre">False</span></code>.</li>
+<li><strong>fitname</strong> (callable or <code class="docutils literal"><span class="pre">None</span></code>) &#8211; Individual fits in a chained fit are
+assigned default names, constructed from the datatags of
+the corresponding models, for access and reporting. These names
+get unwieldy when lots of models are involved. When <code class="docutils literal"><span class="pre">fitname</span></code>
+is not <code class="docutils literal"><span class="pre">None</span></code> (default), each default name <code class="docutils literal"><span class="pre">dname</span></code> is
+replaced by <code class="docutils literal"><span class="pre">fitname(dname)</span></code>.</li>
 <li><strong>fitterargs</strong> &#8211; Additional arguments for the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>,
 such as <code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>, <code class="docutils literal"><span class="pre">fitter</span></code>, etc., as needed.</li>
 </ul>
@@ -1646,7 +1652,7 @@ a single fit. It returns the <a class="reference internal" href="#lsqfit.nonline
 with the best-fit parameters use</p>
 <blockquote>
 <div>fit.show_plots()</div></blockquote>
-<p>Plotting requires <code class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></code>.</p>
+<p>Plotting requires module <code class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1684,7 +1690,7 @@ the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear
 <dt id="lsqfit.MultiFitter.chained_lsqfit">
 <code class="descname">chained_lsqfit</code><span class="sig-paren">(</span><em>data=None</em>, <em>pdata=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chained least-squares fit of models to data.</p>
-<p>In a chained fit to models <code class="docutils literal"><span class="pre">[m1,</span> <span class="pre">m2,</span> <span class="pre">...]</span></code>, the models are fit one
+<p>In a chained fit to models <code class="docutils literal"><span class="pre">[s1,</span> <span class="pre">s2,</span> <span class="pre">...]</span></code>, the models are fit one
 at a time, with the fit output from one being fed into the prior for
 the next. This can be much faster than  fitting the models together,
 simultaneously. The final result comes from the last fit in the chain,
@@ -1718,7 +1724,7 @@ has an extra attribute <code class="docutils literal"><span class="pre">fit.chai
 dictionary containing fit results from each link <code class="docutils literal"><span class="pre">sn</span></code> in the chain,
 and keyed by the models&#8217; <code class="docutils literal"><span class="pre">datatag</span></code>s. If any of these involves
 parallel fits (see #3 above), it will have an extra attribute
-<code class="docutils literal"><span class="pre">fit.chained_fits[datatag].sub_fits</span></code> that contains results from the
+<code class="docutils literal"><span class="pre">fit.chained_fits[fittag].sub_fits</span></code> that contains results from the
 separate parallel fits. To list results from all the chained and
 parallel fits, use</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">formatall</span><span class="p">())</span>
@@ -1728,7 +1734,7 @@ parallel fits, use</p>
 with the best-fit parameters use</p>
 <blockquote>
 <div>fit.show_plots()</div></blockquote>
-<p>Plotting requires <code class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></code>.</p>
+<p>Plotting requires module <code class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2054,7 +2060,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

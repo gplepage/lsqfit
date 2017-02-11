@@ -1,3 +1,13 @@
+Version 9.1.2 2017-02-11
+=========================
+Very minor release:
+
+- New option fitname in MultiFitter: fitname(x) creates new name
+  for chained fit link from old name x.
+
+- Minor bug fix for MultiFitter.chained_lsqfit having to do with
+  svdcorrection.
+
 Version 9.1.1 2017-02-07
 ========================
 Fixes a bug that caused MultiFitter to crash in unusual circumstances.
@@ -87,7 +97,7 @@ Tiny change to keep lsqfit compatible with gvar v8.0 and later.
 
 Version 8.0.1 2016-08-15
 ========================
-Tiny (but somewhat conspicuouis) fix in documentation.
+Tiny (but somewhat conspicuous) fix in documentation.
 
 Version 8.0 2016-08-14
 =======================

@@ -711,12 +711,18 @@ class MultiFitter(object):
         extend (bool): If ``True`` supports log-normal and other
             non-Gaussian priors. See :mod:`lsqfit` documentation
             for details. Default is ``False``.
+        fitname (callable or ``None``): Individual fits in a chained fit are
+            assigned default names, constructed from the datatags of
+            the corresponding models, for access and reporting. These names
+            get unwieldy when lots of models are involved. When ``fitname``
+            is not ``None`` (default), each default name ``dname`` is
+            replaced by ``fitname(dname)``.
         fitterargs: Additional arguments for the :class:`lsqfit.nonlinear_fit`,
             such as ``tol``, ``maxit``, ``svdcut``, ``fitter``, etc., as needed.
     """
     def __init__(
         self, models, mopt=None, ratio=False, fast=True, extend=False,
-        **fitterargs
+        fitname=None, **fitterargs
         ):
         super(MultiFitter, self).__init__()
         models = [models] if isinstance(models, MultiFitterModel) else models
@@ -727,6 +733,10 @@ class MultiFitter(object):
         self.fast = fast
         self.extend = extend
         self.fitterargs = fitterargs
+        self.fitname = (
+            fitname if fitname is not None else
+            lambda x : x
+            )
 
     def buildfitfcn(self, mf=None):
         """ Create fit function to fit models in list ``models``. """
@@ -857,7 +867,7 @@ class MultiFitter(object):
 
             fit.show_plots()
 
-        Plotting requires :mod:`matplotlib`.
+        Plotting requires module :mod:`matplotlib`.
 
         Args:
             data: Input data. One of ``data`` or ``pdata`` must be
@@ -915,7 +925,7 @@ class MultiFitter(object):
         ):
         """ Compute chained least-squares fit of models to data.
 
-        In a chained fit to models ``[m1, m2, ...]``, the models are fit one
+        In a chained fit to models ``[s1, s2, ...]``, the models are fit one
         at a time, with the fit output from one being fed into the prior for
         the next. This can be much faster than  fitting the models together,
         simultaneously. The final result comes from the last fit in the chain,
@@ -941,7 +951,7 @@ class MultiFitter(object):
         dictionary containing fit results from each link ``sn`` in the chain,
         and keyed by the models' ``datatag``\s. If any of these involves
         parallel fits (see #3 above), it will have an extra attribute
-        ``fit.chained_fits[datatag].sub_fits`` that contains results from the
+        ``fit.chained_fits[fittag].sub_fits`` that contains results from the
         separate parallel fits. To list results from all the chained and
         parallel fits, use ::
 
@@ -953,7 +963,7 @@ class MultiFitter(object):
 
             fit.show_plots()
 
-        Plotting requires :mod:`matplotlib`.
+        Plotting requires module :mod:`matplotlib`.
 
         Args:
             data: Input data. One of ``data`` or ``pdata`` must be
@@ -1049,10 +1059,12 @@ class MultiFitter(object):
         return ans[:-1]
 
     def _seq_lsqfit(self, models, data, prior, p0, mf, **fitterargs):
+        " Fit models sequentially. "
         # chained_prior has everything fit so far in it, but not everything in prior
         chained_prior = (
             gvar.BufferDict() if mf['fast'] else gvar.BufferDict(prior)
             )
+        sum_svd = 0.0
         chained_fits = collections.OrderedDict()
         for m in models:
             if isinstance(m, MultiFitterModel):
@@ -1067,25 +1079,38 @@ class MultiFitter(object):
                     p0=p0, extend=mf['extend'], **fitterargs
                     )
                 prevfit.sub_fits = None
+                sum_svd += prevfit.svdcorrection
+                prevfit.svdcorrection = sum_svd
             elif isinstance(m, tuple):
                 prevfit = self._simul_lsqfit(
                     models=m, prior=prior, chained_prior=chained_prior,
                     data=data, p0=p0, mf=mf, **fitterargs
                     )
                 prevfit.sub_fits = None
+                sum_svd += prevfit.svdcorrection
+                prevfit.svdcorrection = sum_svd
             else:
                 prevfit = self._parallel_lsqfit(
                     models=m, prior=prior, chained_prior=chained_prior,
                     data=data, p0=p0, mf=mf, **fitterargs
                     )
+                sum_svd += prevfit.svdcorrection
+                prevfit.svdcorrection = sum_svd
             if prevfit is not None:
-                chained_fits[MultiFitter._parse_tag(m)] = prevfit
+                if prevfit.sub_fits is not None:
+                    fitname = self.fitname(
+                        '[' + ','.join([k for k in prevfit.sub_fits]) +']'
+                        )
+                else:
+                    fitname = self.fitname(MultiFitter._parse_tag(m))
+                chained_fits[fitname] = prevfit
                 chained_prior.update(prevfit.p)
         if prevfit is None:
             k,v = chained_fits.popitem()
             prevfit = v
             chained_fits[k] = v
         prevfit.chained_fits = chained_fits
+        prevfit.svdcorrection = sum_svd
         return prevfit
 
     @staticmethod
@@ -1112,7 +1137,7 @@ class MultiFitter(object):
     def _simul_lsqfit(
         self, models, data, prior, chained_prior, p0, mf, **fitterargs
         ):
-        """ Simultaneous fit of models. """
+        """ Fit models simultaneously. """
         models = MultiFitter.flatten_models(models)
         if len(models) == 0:
             return None
@@ -1144,7 +1169,7 @@ class MultiFitter(object):
     def _parallel_lsqfit(
         self, models, data, prior, chained_prior, p0, mf, **fitterargs
         ):
-        """ Parallel fits of models. """
+        """ Fit models in parallel. """
         # check for too few models
         if len(models) == 0:
             return None
@@ -1154,6 +1179,7 @@ class MultiFitter(object):
                 )
 
         # individual (parallel) fits
+        sum_svd = 0.0
         sub_fits = collections.OrderedDict()
         for m in models:
             if isinstance(m, MultiFitterModel):
@@ -1167,14 +1193,15 @@ class MultiFitter(object):
                     fcn=self.mfitfcn[m.datatag],
                     p0=p0, extend=mf['extend'], **fitterargs
                     )
-                sub_fits[m.datatag] = m_fit
+                sub_fits[self.fitname(m.datatag)] = m_fit
             else:
                 m_fit = self._simul_lsqfit(
                     models=m, prior=prior, chained_prior=chained_prior,
                     data=data, p0=p0, mf=mf, **fitterargs
                     )
                 if m_fit is not None:
-                    sub_fits[MultiFitter._parse_tag(m)] = m_fit
+                    sub_fits[self.fitname(MultiFitter._parse_tag(m))] = m_fit
+            sum_svd += m_fit.svdcorrection
 
         # weighted average of parallel results
         fitterargs = dict(fitterargs)
@@ -1187,6 +1214,7 @@ class MultiFitter(object):
             ).fit
         if fit is not None:
             fit.sub_fits = sub_fits
+            sum_svd += fit.svdcorrection
         elif len(sub_fits) > 0:
             k,v = sub_fits.popitem()
             sub_fits[k] = v
@@ -1194,6 +1222,7 @@ class MultiFitter(object):
             fit = v
         else:
             fit = None
+        fit.svdcorrection = sum_svd
         return fit
 
     @staticmethod

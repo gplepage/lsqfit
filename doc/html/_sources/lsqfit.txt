@@ -187,9 +187,9 @@ used to do the integrals, using an adaptive Monte Carlo algorithm.
 
 The integrator class is:
 
-.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, svdcut=1e-15)
+.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, adapt_to_pdf=True, svdcut=1e-15)
 
-   .. automethod:: __call__(f=None, mpi=False, pdf=None, **kargs)
+   .. automethod:: __call__(f=None, pdf=None, adapt_to_pdf=None, **kargs)
 
 A class that describes the Bayesian probability distribution associated
 with a fit is:
