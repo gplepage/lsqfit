@@ -717,7 +717,7 @@ class MultiFitter(object):
             get unwieldy when lots of models are involved. When ``fitname``
             is not ``None`` (default), each default name ``dname`` is
             replaced by ``fitname(dname)``.
-        wavg_svdcut (float): SVD cut used for the weighted averages used to
+        wavg_svdcut (float): SVD cut used for the weighted averages that
             combine results from parallel sub-fits in a chained fit (see
             :meth:`MultiFitter.chained_lsqfit`). Default value is ``None``
             which sets the SVD cut equal to 10x the SVD cut used for other
