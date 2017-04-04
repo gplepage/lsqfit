@@ -1222,9 +1222,11 @@ class MultiFitter(object):
 
         # weighted average of parallel results
         fitterargs = dict(fitterargs)
-        svdcut = fitterargs.pop('svdcut', None)
-        svdcut = mf.get('wavg_svdcut', None if svdcut is None else 10 * svdcut)
-        # svdcut = fitterargs.pop('svdcut', None)
+        svdcut = mf['wavg_svdcut']
+        if svdcut is None:
+            svdcut = fitterargs.pop('svdcut', None)
+            if svdcut is not None:
+                svdcut *= 10
         if svdcut is not None:
             fitterargs['svdcut'] = svdcut
         fit = lsqfit.wavg(
