@@ -120,7 +120,7 @@ def main():
     print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
     print
     # extra data 1
-    print '\\n--------------------- new fit to extra information'
+    print '\n--------------------- new fit to extra information'
     def ratio(p):
         return p['a'][1] / p['a'][0]
     newfit = lsqfit.nonlinear_fit(data=gv.gvar(1,1e-5), fcn=ratio, prior=fit.p)

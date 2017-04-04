@@ -1,3 +1,15 @@
+Version 9.1.3 2017-04-04
+========================
+Tiny changes:
+
+- Another fix for a rare bug (an edge case) in MultiFitter.chained_lsqfit.
+
+- Adds an extra feature in response to a request from a user
+  of the corrfitter module: lsqfit.MultiFitter has a new
+  keyword wavg_svdcut --- see the documentation.
+
+- Minor documentation corrections.
+
 Version 9.1.2 2017-02-11
 =========================
 Very minor release:

@@ -717,12 +717,19 @@ class MultiFitter(object):
             get unwieldy when lots of models are involved. When ``fitname``
             is not ``None`` (default), each default name ``dname`` is
             replaced by ``fitname(dname)``.
-        fitterargs: Additional arguments for the :class:`lsqfit.nonlinear_fit`,
-            such as ``tol``, ``maxit``, ``svdcut``, ``fitter``, etc., as needed.
+        wavg_svdcut (float): SVD cut used for the weighted averages used to
+            combine results from parallel sub-fits in a chained fit (see
+            :meth:`MultiFitter.chained_lsqfit`). Default value is ``None``
+            which sets the SVD cut equal to 10x the SVD cut used for other
+            fits (specified by keyword ``svdcut``). Weighted averages often
+            need larger SVD cuts than the other fits.
+        fitterargs: Additional arguments for the :class:`lsqfit.nonlinear_fit`
+            object used to do the fits. These can include
+            ``tol``, ``maxit``, ``svdcut``, ``fitter``, etc., as needed.
     """
     def __init__(
         self, models, mopt=None, ratio=False, fast=True, extend=False,
-        fitname=None, **fitterargs
+        fitname=None, wavg_svdcut=None, **fitterargs
         ):
         super(MultiFitter, self).__init__()
         models = [models] if isinstance(models, MultiFitterModel) else models
@@ -732,6 +739,7 @@ class MultiFitter(object):
         self.mopt = mopt
         self.fast = fast
         self.extend = extend
+        self.wavg_svdcut = wavg_svdcut
         self.fitterargs = fitterargs
         self.fitname = (
             fitname if fitname is not None else
@@ -756,7 +764,7 @@ class MultiFitter(object):
     def _get_mf(self):
         return {
             k:getattr(self, k) for k in
-            ['models', 'mopt', 'fast', 'ratio', 'extend']
+            ['models', 'mopt', 'fast', 'ratio', 'extend', 'wavg_svdcut']
             }
 
     def builddata(self, data=None, pdata=None, prior=None, mf=None):
@@ -887,6 +895,8 @@ class MultiFitter(object):
                 the file with name ``"filename"`` for initial values and to
                 write out best-fit parameter values after the fit (for the
                 next call to ``self.lsqfit()``).
+            wavg_svdcut (float):  SVD cut used in weighted averages for
+                parallel fits.
             kargs: Arguments that override parameters specified when
                 the :class:`MultiFitter` was created. Can also include
                 additional arguments to be passed through to
@@ -1047,7 +1057,7 @@ class MultiFitter(object):
         " Add-on method for fits returned by chained_lsqfit. "
         ans = ''
         for x in self.chained_fits:
-            ans += 10 * '=' + ' ' + x + '\n'
+            ans += 10 * '=' + ' ' + str(x) + '\n'
             if self.chained_fits[x].sub_fits is not None:
                 for y in self.chained_fits[x].sub_fits:
                     ans += 10 * '-' + ' ' + y + '\n'
@@ -1066,7 +1076,7 @@ class MultiFitter(object):
             )
         sum_svd = 0.0
         chained_fits = collections.OrderedDict()
-        for m in models:
+        for im, m in enumerate(models):
             if isinstance(m, MultiFitterModel):
                 if mf['fast']:
                     m_prior = gvar.BufferDict(self.mprior[m.datatag])
@@ -1082,6 +1092,8 @@ class MultiFitter(object):
                 sum_svd += prevfit.svdcorrection
                 prevfit.svdcorrection = sum_svd
             elif isinstance(m, tuple):
+                if len(m) <= 0:
+                    continue
                 prevfit = self._simul_lsqfit(
                     models=m, prior=prior, chained_prior=chained_prior,
                     data=data, p0=p0, mf=mf, **fitterargs
@@ -1089,13 +1101,15 @@ class MultiFitter(object):
                 prevfit.sub_fits = None
                 sum_svd += prevfit.svdcorrection
                 prevfit.svdcorrection = sum_svd
-            else:
+            elif len(m) > 0:
                 prevfit = self._parallel_lsqfit(
                     models=m, prior=prior, chained_prior=chained_prior,
                     data=data, p0=p0, mf=mf, **fitterargs
                     )
                 sum_svd += prevfit.svdcorrection
                 prevfit.svdcorrection = sum_svd
+            else:
+                continue
             if prevfit is not None:
                 if prevfit.sub_fits is not None:
                     fitname = self.fitname(
@@ -1103,6 +1117,7 @@ class MultiFitter(object):
                         )
                 else:
                     fitname = self.fitname(MultiFitter._parse_tag(m))
+                # chained_fits[fitname, im] = prevfit
                 chained_fits[fitname] = prevfit
                 chained_prior.update(prevfit.p)
         if prevfit is None:
@@ -1174,9 +1189,11 @@ class MultiFitter(object):
         if len(models) == 0:
             return None
         if len(models) == 1:
-            return self._simul_lsqfit(
+            fit = self._simul_lsqfit(
                 tuple(models), data, prior, chained_prior, p0, mf, **fitterargs
                 )
+            fit.sub_fits = None
+            return fit
 
         # individual (parallel) fits
         sum_svd = 0.0
@@ -1206,8 +1223,10 @@ class MultiFitter(object):
         # weighted average of parallel results
         fitterargs = dict(fitterargs)
         svdcut = fitterargs.pop('svdcut', None)
+        svdcut = mf.get('wavg_svdcut', None if svdcut is None else 10 * svdcut)
+        # svdcut = fitterargs.pop('svdcut', None)
         if svdcut is not None:
-            fitterargs['svdcut'] = 10 * svdcut
+            fitterargs['svdcut'] = svdcut
         fit = lsqfit.wavg(
             [sub_fits[k].p for k in sub_fits],
             extend=mf['extend'], **fitterargs

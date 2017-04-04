@@ -556,7 +556,7 @@ tabulated; no parameter values are included. Setting
 <code class="docutils literal"><span class="pre">maxline=True</span></code> prints all data points; setting it
 equal <code class="docutils literal"><span class="pre">None</span></code> or <code class="docutils literal"><span class="pre">False</span></code> is the same as setting
 it equal to <code class="docutils literal"><span class="pre">-1</span></code>. Default is <code class="docutils literal"><span class="pre">maxline=0</span></code>.</li>
-<li><strong>pstyle</strong> (<em>&#8216;vv&#8217;, &#8216;v&#8217;, or &#8216;m&#8217;</em>) &#8211; Style used for parameter list. Supported values are
+<li><strong>pstyle</strong> (&#8216;vv&#8217;, &#8216;v&#8217;, &#8216;m&#8217;, or <code class="docutils literal"><span class="pre">None</span></code>) &#8211; Style used for parameter list. Supported values are
 &#8216;vv&#8217; for very verbose, &#8216;v&#8217; for verbose, and &#8216;m&#8217; for minimal.
 When &#8216;m&#8217; is set, only parameters whose values differ from their
 prior values are listed. Setting <code class="docutils literal"><span class="pre">pstyle=None</span></code> implies
@@ -565,76 +565,6 @@ no parameters are listed.</li>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">String containing detailed information about fit.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="lsqfit.nonlinear_fit.fmt_errorbudget">
-<code class="descname">fmt_errorbudget</code><span class="sig-paren">(</span><em>outputs</em>, <em>inputs</em>, <em>ndecimal=2</em>, <em>percent=True</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_errorbudget" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tabulate error budget for <code class="docutils literal"><span class="pre">outputs[ko]</span></code> due to <code class="docutils literal"><span class="pre">inputs[ki]</span></code>.</p>
-<p>For each output <code class="docutils literal"><span class="pre">outputs[ko]</span></code>, <code class="docutils literal"><span class="pre">fmt_errorbudget</span></code> computes the
-contributions to <code class="docutils literal"><span class="pre">outputs[ko]</span></code>&#8216;s standard deviation coming from the
-<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s collected in <code class="docutils literal"><span class="pre">inputs[ki]</span></code>. This is done for each key
-combination <code class="docutils literal"><span class="pre">(ko,ki)</span></code> and the results are tabulated with columns and
-rows labeled by <code class="docutils literal"><span class="pre">ko</span></code> and <code class="docutils literal"><span class="pre">ki</span></code>, respectively. If a <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> in
-<code class="docutils literal"><span class="pre">inputs[ki]</span></code> is correlated with other <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, the contribution from
-the others is included in the <code class="docutils literal"><span class="pre">ki</span></code> contribution as well (since
-contributions from correlated <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s cannot be distinguished). The table
-is returned as a string.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> &#8211; Dictionary of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s for which an error budget
-is computed.</li>
-<li><strong>inputs</strong> &#8211; Dictionary of: <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, arrays/dictionaries of
-<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s, or lists of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s and/or arrays/dictionaries of
-<code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s. <code class="docutils literal"><span class="pre">fmt_errorbudget</span></code> tabulates the parts of the standard
-deviations of each <code class="docutils literal"><span class="pre">outputs[ko]</span></code> due to each <code class="docutils literal"><span class="pre">inputs[ki]</span></code>.</li>
-<li><strong>ndecimal</strong> (<code class="docutils literal"><span class="pre">int</span></code>) &#8211; Number of decimal places displayed in table.</li>
-<li><strong>percent</strong> (<em>boolean</em>) &#8211; Tabulate % errors if <code class="docutils literal"><span class="pre">percent</span> <span class="pre">is</span> <span class="pre">True</span></code>; otherwise
-tabulate the errors themselves.</li>
-<li><strong>colwidth</strong> (<em>positive integer or None</em>) &#8211; Width of each column. This is set automatically, to
-accommodate label widths, if <code class="docutils literal"><span class="pre">colwidth=None</span></code> (default).</li>
-<li><strong>verify</strong> (<em>boolean</em>) &#8211; If <code class="docutils literal"><span class="pre">True</span></code>, a warning is issued if: 1) different inputs are
-correlated (and therefore double count errors); or
-2) the sum (in quadrature) of partial errors is not equal to the
-total error to within 0.1% of the error (and the error budget is incomplete or
-overcomplete). No checking is done if <code class="docutils literal"><span class="pre">verify==False</span></code> (default).</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A table (<code class="docutils literal"><span class="pre">str</span></code>) containing the error budget.
-Output variables are labeled by the keys in <code class="docutils literal"><span class="pre">outputs</span></code>
-(columns); sources of uncertainty are labeled by the keys in
-<code class="docutils literal"><span class="pre">inputs</span></code> (rows).</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="lsqfit.nonlinear_fit.fmt_values">
-<code class="descname">fmt_values</code><span class="sig-paren">(</span><em>outputs</em>, <em>ndecimal=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.fmt_values" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tabulate <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s in <code class="docutils literal"><span class="pre">outputs</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>outputs</strong> &#8211; A dictionary of <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code> objects.</li>
-<li><strong>ndecimal</strong> (<code class="docutils literal"><span class="pre">int</span></code> or <code class="docutils literal"><span class="pre">None</span></code>) &#8211; Format values <code class="docutils literal"><span class="pre">v</span></code> using <code class="docutils literal"><span class="pre">v.fmt(ndecimal)</span></code>.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A table (<code class="docutils literal"><span class="pre">str</span></code>) containing values and standard
-deviations for variables in <code class="docutils literal"><span class="pre">outputs</span></code>, labeled by the keys
-in <code class="docutils literal"><span class="pre">outputs</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -1596,7 +1526,7 @@ function.</p>
 <p>Chained fits are most useful
 with very large data sets when it is possible to break the data into
 smaller, more manageable chunks. There are a variety of options for
-organizing the chain of fits that are discussed in the
+organizing the chain of fits; these are discussed in the
 <a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit" title="lsqfit.MultiFitter.chained_lsqfit"><code class="xref py py-meth docutils literal"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a> documentation.</p>
 <dl class="class">
 <dt id="lsqfit.MultiFitter">
@@ -1635,8 +1565,15 @@ the corresponding models, for access and reporting. These names
 get unwieldy when lots of models are involved. When <code class="docutils literal"><span class="pre">fitname</span></code>
 is not <code class="docutils literal"><span class="pre">None</span></code> (default), each default name <code class="docutils literal"><span class="pre">dname</span></code> is
 replaced by <code class="docutils literal"><span class="pre">fitname(dname)</span></code>.</li>
-<li><strong>fitterargs</strong> &#8211; Additional arguments for the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>,
-such as <code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>, <code class="docutils literal"><span class="pre">fitter</span></code>, etc., as needed.</li>
+<li><strong>wavg_svdcut</strong> (<em>float</em>) &#8211; SVD cut used for the weighted averages used to
+combine results from parallel sub-fits in a chained fit (see
+<a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit" title="lsqfit.MultiFitter.chained_lsqfit"><code class="xref py py-meth docutils literal"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a>). Default value is <code class="docutils literal"><span class="pre">None</span></code>
+which sets the SVD cut equal to 10x the SVD cut used for other
+fits (specified by keyword <code class="docutils literal"><span class="pre">svdcut</span></code>). Weighted averages often
+need larger SVD cuts than the other fits.</li>
+<li><strong>fitterargs</strong> &#8211; Additional arguments for the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+object used to do the fits. These can include
+<code class="docutils literal"><span class="pre">tol</span></code>, <code class="docutils literal"><span class="pre">maxit</span></code>, <code class="docutils literal"><span class="pre">svdcut</span></code>, <code class="docutils literal"><span class="pre">fitter</span></code>, etc., as needed.</li>
 </ul>
 </td>
 </tr>
@@ -1675,6 +1612,8 @@ prior. Setting <code class="docutils literal"><span class="pre">p0=&quot;filenam
 the file with name <code class="docutils literal"><span class="pre">&quot;filename&quot;</span></code> for initial values and to
 write out best-fit parameter values after the fit (for the
 next call to <code class="docutils literal"><span class="pre">self.lsqfit()</span></code>).</li>
+<li><strong>wavg_svdcut</strong> (<em>float</em>) &#8211; SVD cut used in weighted averages for
+parallel fits.</li>
 <li><strong>kargs</strong> &#8211; Arguments that override parameters specified when
 the <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal"><span class="pre">MultiFitter</span></code></a> was created. Can also include
 additional arguments to be passed through to
@@ -1805,6 +1744,12 @@ file names: the file name for the plot corresponding to key
 <code class="docutils literal"><span class="pre">k</span></code> is <code class="docutils literal"><span class="pre">prefix.format(k)</span></code>. It is important that the
 filename end with a suffix indicating the type of plot file
 desired: e.g., <code class="docutils literal"><span class="pre">prefix='plot-{}.pdf'</span></code>.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="lsqfit.MultiFitter.flatten_models">
+<em class="property">static </em><code class="descname">flatten_models</code><span class="sig-paren">(</span><em>models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.flatten_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create 1d-array containing all disctinct models from <code class="docutils literal"><span class="pre">models</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1993,7 +1938,6 @@ priors as discussed in the <a class="reference internal" href="#module-lsqfit" t
 
 </dd></dl>
 
-<p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.MultiFitter</span></code></a> was inspired by an unconventional</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>

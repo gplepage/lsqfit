@@ -813,7 +813,7 @@ There are several things to notice here:
      to create an error budget. This requires dictionaries of
      fit inputs and outputs, and uses the dictionary keys to label
      columns and rows, respectively, in the error budget table. The
-     table shows, for example, that the 0.42% uncertainty in ``E1/E0``
+     table shows, for example, that the 0.43% uncertainty in ``E1/E0``
      comes mostly from the fit data (0.40%), with small contributions
      from the uncertainties in the priors for ``a`` and ``E`` (0.07%
      and 0.12%, respectively). The total uncertainty is the sum in
@@ -911,7 +911,7 @@ end::
         data = gv.gvar(1, 1e-5)         # new data for the ratio
 
         newfit = lsqfit.nonlinear_fit(data=data, fcn=ratio, prior=prior)
-        print('\\n--------------------- new fit to extra information')
+        print('\n--------------------- new fit to extra information')
         print(newfit)
         E = newfit.p['E']
         a = newfit.p['a']
@@ -1232,7 +1232,7 @@ Ratios of Bayes Factors from fits with different models tell us about the
 relative likelihood of the different models given the data. (Actually the
 ratio gives the ratio of probabilities for obtaining the data
 from the models, as opposed to the probabilities for the models given
-the data. See the discussion in the next section.)
+the data. See the discussion below.)
 
 
 ``y`` has No Error; Marginalization
@@ -1453,7 +1453,7 @@ SVD Cuts and Roundoff Error
 All of the fits discussed above have (default) SVD cuts of 1e-12. This
 has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
-for example, with an SVD cut of 1e-19, instead of 1e-15, we would have
+for example, with an SVD cut of 1e-19, instead of 1e-12, we would have
 obtained the following output:
 
 .. literalinclude:: eg5b.out
@@ -1546,7 +1546,7 @@ applies different SVD cuts to the prior and data.
 Note that taking ``svdcut=-1e-12``, with a
 minus sign, causes the problematic modes to be dropped. This is a more
 conventional implementation of SVD cuts, but here it results in much less
-precision than using ``svdcut=1e-15`` (giving, for example, 2.094(94)
+precision than using ``svdcut=1e-12`` (giving, for example, 2.094(94)
 for ``E1/E0``, which is almost five times less precise). Dropping modes is
 equivalent to setting the corresponding variances to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal

@@ -989,7 +989,7 @@ correlation is clear from the correlation matrix:</p>
 to create an error budget. This requires dictionaries of
 fit inputs and outputs, and uses the dictionary keys to label
 columns and rows, respectively, in the error budget table. The
-table shows, for example, that the 0.42% uncertainty in <code class="docutils literal"><span class="pre">E1/E0</span></code>
+table shows, for example, that the 0.43% uncertainty in <code class="docutils literal"><span class="pre">E1/E0</span></code>
 comes mostly from the fit data (0.40%), with small contributions
 from the uncertainties in the priors for <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">E</span></code> (0.07%
 and 0.12%, respectively). The total uncertainty is the sum in
@@ -1083,7 +1083,7 @@ end:</p>
     <span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>         <span class="c"># new data for the ratio</span>
 
     <span class="n">newfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">n--------------------- new fit to extra information&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">--------------------- new fit to extra information&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
     <span class="n">E</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;E&#39;</span><span class="p">]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">]</span>
@@ -1113,7 +1113,8 @@ Settings:
 E1/E0 = 2.0020(86)   E2/E0 = 3.14(21)
 a1/a0 = 1.011(32)   a2/a0 = 1.52(89)
 
-\n--------------------- new fit to extra information
+
+--------------------- new fit to extra information
 Least Square Fit:
   chi2/dof [dof] = 0.12 [1]    Q = 0.73    logGBF = 2.4648
 
@@ -1516,7 +1517,7 @@ Ratios of Bayes Factors from fits with different models tell us about the
 relative likelihood of the different models given the data. (Actually the
 ratio gives the ratio of probabilities for obtaining the data
 from the models, as opposed to the probabilities for the models given
-the data. See the discussion in the next section.)</p>
+the data. See the discussion below.)</p>
 </div>
 <div class="section" id="y-has-no-error-marginalization">
 <h2><code class="docutils literal"><span class="pre">y</span></code> has No Error; Marginalization<a class="headerlink" href="#y-has-no-error-marginalization" title="Permalink to this headline">¶</a></h2>
@@ -1884,7 +1885,7 @@ parameters in this way is called <em>marginalization</em>.</p>
 <p>All of the fits discussed above have (default) SVD cuts of 1e-12. This
 has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
-for example, with an SVD cut of 1e-19, instead of 1e-15, we would have
+for example, with an SVD cut of 1e-19, instead of 1e-12, we would have
 obtained the following output:</p>
 <div class="highlight-python"><div class="highlight"><pre>************************************* nexp = 5
 Least Square Fit:
@@ -2014,7 +2015,7 @@ the fit: for example,</p>
 <p>Note that taking <code class="docutils literal"><span class="pre">svdcut=-1e-12</span></code>, with a
 minus sign, causes the problematic modes to be dropped. This is a more
 conventional implementation of SVD cuts, but here it results in much less
-precision than using <code class="docutils literal"><span class="pre">svdcut=1e-15</span></code> (giving, for example, 2.094(94)
+precision than using <code class="docutils literal"><span class="pre">svdcut=1e-12</span></code> (giving, for example, 2.094(94)
 for <code class="docutils literal"><span class="pre">E1/E0</span></code>, which is almost five times less precise). Dropping modes is
 equivalent to setting the corresponding variances to infinity, which is
 (obviously) much more conservative and less realistic than setting them equal

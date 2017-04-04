@@ -146,10 +146,6 @@ nonlinear_fit Objects
 
    .. automethod:: format(maxline=0, pstyle='v')
 
-   .. automethod:: fmt_errorbudget(outputs, inputs, ndecimal=2, percent=True)
-
-   .. automethod:: fmt_values(outputs, ndecimal=None)
-
    .. automethod:: simulated_fit_iter(n=None, pexact=None, **kargs)
 
    .. automethod:: bootstrap_iter(n=None, datalist=None)
@@ -392,7 +388,7 @@ function.
 Chained fits are most useful
 with very large data sets when it is possible to break the data into
 smaller, more manageable chunks. There are a variety of options for
-organizing the chain of fits that are discussed in the
+organizing the chain of fits; these are discussed in the
 :meth:`MultiFitter.chained_lsqfit` documentation.
 
 
@@ -407,6 +403,8 @@ organizing the chain of fits that are discussed in the
    .. automethod:: process_dataset
 
    .. automethod:: show_plots
+
+   .. automethod:: flatten_models
 
 :class:`lsqfit.MultiFitter` models are derived from the following
 class. Methods ``buildprior``, ``builddata``, ``fitfcn``, and
@@ -428,7 +426,7 @@ for ``builddataset`` which is optional).
 
    .. automethod:: MultiFitterModel.prior_key
 
-:class:`lsqfit.MultiFitter` was inspired by an unconventional
+.. :class:`lsqfit.MultiFitter` was inspired by an unconventional
 
 Requirements
 ------------

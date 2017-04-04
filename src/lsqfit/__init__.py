@@ -608,9 +608,9 @@ class nonlinear_fit(object):
                 self.p0, _gvar.gvar(fit.x.flat, fit.cov), extend=False
                 )
         except:
-            print('xxx', fit.x , fit.error)
-            print('cov', fit.cov)
-            raise ValueError('ugh')
+            print('fit.x, fit.error:', fit.x , fit.error)
+            print('fit.cov:', fit.cov)
+            raise ValueError('something is wrong(?!)')
         self.palt = _reformat(
             self.p0, _gvar.gvar(fit.x.flat, fit.cov), extend=self.extend
             )
@@ -764,7 +764,7 @@ class nonlinear_fit(object):
             When 'm' is set, only parameters whose values differ from their
             prior values are listed. Setting ``pstyle=None`` implies
             no parameters are listed.
-        :type pstyle: 'vv', 'v', or 'm'
+        :type pstyle: 'vv', 'v', 'm', or ``None``
         :returns: String containing detailed information about fit.
         """
         # unpack arguments
