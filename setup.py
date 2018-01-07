@@ -64,6 +64,15 @@ ext_modules = [
         ),
     ]
 
+# fix for ReadTheDocs support
+import os
+if os.environ.get('READTHEDOCS') == 'True':
+    requires = ["cython (>=0.17)","numpy (>=1.7)"]
+    install_requires = ['cython>=0.17', 'numpy>=1.7']
+else:
+    requires = ["cython (>=0.17)","numpy (>=1.7)", "gvar (>=8.0)"]
+    install_requires = ['cython>=0.17', 'numpy>=1.7', 'gvar>=8.0']
+
 # packages
 packages = ["lsqfit"]
 package_dir = {"lsqfit":"src/lsqfit"}
@@ -79,8 +88,8 @@ setup_args = dict(
     package_dir=package_dir,
     package_data=package_data,
     ext_modules= cythonize(ext_modules),
-    install_requires=['cython>=0.17', 'numpy>=1.7', 'gvar>=8.0'],   # for pip (distutils ignores)
-    requires=['cython (>=0.17)', 'numpy (>=1.7)', 'gvar (>=8.0)'],  # for distutils
+    install_requires=install_requires,   # for pip (distutils ignores)
+    requires=requires,  # for distutils
     url="https://github.com/gplepage/lsqfit.git",
     license='GPLv3+',
     platforms='Any',

@@ -604,10 +604,11 @@ class MultiFitterModel(object):
         :meth:`MultiFitter.process_dataset`.
 
         Args:
-            dataset: :class:`gvar.dataset.Dataset` dataset containing
-                the fit data for all models. This is typically a
-                dictionary, whose keys are the ``datatag``\s
-                of the models.
+            dataset: :class:`gvar.dataset.Dataset` (or similar dictionary)
+                dataset containing the fit data for all models. This is
+                typically a dictionary, whose keys are the ``datatag``\s of
+                the models.
+
         """
         raise NotImplementedError("builddataset not defined")
 
@@ -1289,11 +1290,14 @@ class MultiFitter(object):
     def process_dataset(dataset, models, **kargs):
         """ Convert ``dataset`` to processed data using ``models``.
 
-        :class;`gvar.dataset.Dataset` object ``dataset`` is processed
-        by each model in list ``models``, and the results collected
-        into a new dictionary ``pdata`` for use in :meth:`MultiFitter.lsqfit`
-        and :meth:`MultiFitter.chained_lsqft`. Assumes that the
-        models have defined method :meth:`MultiFitterModel.builddataset`.
+        :class:`gvar.dataset.Dataset` (or similar dictionary) object
+        ``dataset`` is processed by each model in list ``models``,
+        and the results collected into a new dictionary ``pdata`` for use in
+        :meth:`MultiFitter.lsqfit` and :meth:`MultiFitter.chained_lsqft`.
+        Assumes that the models have defined method
+        :meth:`MultiFitterModel.builddataset`. Keyword arguments
+        ``kargs`` are passed on to :func:`gvar.dataset.avg_data` when
+        averaging the data.
         """
         dset = collections.OrderedDict()
         for m in MultiFitter.flatten_models(models):
@@ -1305,7 +1309,7 @@ class MultiFitter(object):
 
     @staticmethod
     def show_plots(fitdata, fitval, x=None, save=False):
-        """ Show plots of ``fitdata[k]/fitval[k]`` for each key ``k``.
+        """ Show plots of ``fitdata[k]/fitval[k]`` for each key ``k`` in ``fitval``.
 
         Assumes :mod:`matplotlib` is installed (to make the plots). Plots
         are shown for one correlator at a time. Press key ``n`` to see the
@@ -1324,7 +1328,7 @@ class MultiFitter(object):
         import matplotlib.pyplot as plt
         # collect plotinfo
         plotinfo = collections.OrderedDict()
-        for tag in fitdata:
+        for tag in fitval:
             d = fitdata[tag]
             f = fitval[tag]
             plotinfo[tag] = (
@@ -1364,10 +1368,17 @@ class MultiFitter(object):
             plt.ylabel(str(k)+' / '+'fit')
             plt.xlim(min(x)-0.5,max(x)+0.5)
             ii = (gth != 0.0)       # check for exact zeros (eg, antiperiodic)
-            plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
-            plt.plot(x, numpy.ones(len(x), float), 'r-')
-            plt.plot(x[ii], 1+dgth[ii]/gth[ii], 'r--')
-            plt.plot(x[ii], 1-dgth[ii]/gth[ii], 'r--')
+            if len(x[ii]) > 0:
+                plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
+                if len(x[ii]) > 1:
+                    plt.plot(x, numpy.ones(len(x), float), 'r-')
+                    plt.plot(x[ii], 1+dgth[ii]/gth[ii], 'r--')
+                    plt.plot(x[ii], 1-dgth[ii]/gth[ii], 'r--')
+                else:
+                    extra_x = [x[ii] - 0.5, x[ii] + 0.5]
+                    plt.plot(extra_x, numpy.ones(2, float), 'r-')
+                    plt.plot(extra_x, 2 * [1 + dgth[ii]/gth[ii]], 'r--')
+                    plt.plot(extra_x, 2 * [1 - dgth[ii]/gth[ii]], 'r--')
             if save:
                 plt.savefig(save.format(k), bbox_inches='tight')
             else:

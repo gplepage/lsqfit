@@ -324,6 +324,7 @@ There are five important things to know about them (see the
       example, the |GVar|\s ``a`` and ``b`` above could have been created
       using the following code::
 
+        >>> import gvar as gv
         >>> a = gv.gvar(1, 0.1)
         >>> b = a + gv.gvar(0, 0.001)
         >>> print(a, b)
@@ -377,6 +378,7 @@ There are five important things to know about them (see the
       uncertainty in a derived |GVar| into components coming from each
       of the primary |GVar|\s involved in its creation. For example, ::
 
+          >>> import gvar as gv
           >>> a = gv.gvar('1.0(1)')
           >>> b = gv.gvar('0.9(2)')
           >>> x = gv.log(1 + a ** 2)
@@ -406,33 +408,27 @@ There are five important things to know about them (see the
       because one generally wants to hold onto their correlations as well
       as their mean values and standard deviations. One easy way to do
       this is to put all of the |GVar|\s to be saved into a single
-      dictionary object of type |BufferDict|, and then to save the
-      |BufferDict| using Python's :mod:`pickle` module: for example,
-      using the variables defined above, ::
+      array or dictionary that is saved using function :func:`gvar.dump`:
+      for example,  use ::
 
-        >>> import pickle
-        >>> buffer = gv.BufferDict(a=a, b=b, x=x, y=y)
-        >>> print(buffer)
-        {'a': 1.00(10),'b': 1.00(10),'x': 0.69(10),'y': 1.13(14)}
+        >>> gv.dump([a, b, x, y], 'outputfile.p')
 
-        >>> pickle.dump(buffer, open('outputfile.p', 'wb'))
+      to save the variables defined above in a file named ``'outputfile.p'``.
+      Loading the file into a Python code later, with :func:`gvar.load`,
+      recovers the array with standard deviations and correlations intact::
 
-      This creates a file named ``'outputfile.p'`` containing the |GVar|\s.
-      Loading the file into a Python code later recovers the |BufferDict|
-      with correlations intact::
+        >>> a,b,x,y = gv.load('outputfile.p')
+        >>> print(a, b, x, y)
+        1.00(10) 0.90(20) 0.69(10) 1.01(23)
+        >>> print(y / b, gv.sqrt(gv.exp(x) - 1) / a)
+        1.128(26) 1(0)
 
-        >>> buffer = pickle.load(open('outputfile.p', 'rb'))
-        >>> print(buffer)
-        {'a': 1.00(10),'b': 1.00(10),'x': 0.69(10),'y': 1.13(14)}
+      This recipe works with arrays of any shape, and also with
+      dictionaries whose values are either |GVar|\s or arrays of
+      |GVar|\s. In particular, the best-fit values for the
+      fit parameters from a fit can be saved using something
+      like ``gv.dump(fit.p, 'fitparam.p')``.
 
-        >>> print(buffer['y'] / buffer['x'])
-        1.627(34)
-
-      |BufferDict|\s were created specifically to handle |GVar|\s,
-      although they can be quite useful with other data types as well.
-      The values in a pickled |BufferDict| can be individual |GVar|\s or
-      arbitrary :mod:`numpy` arrays of |GVar|\s. See the :mod:`gvar`
-      documentation for more information.
 
 There is considerably more information about |GVar|\s in the documentation for
 module :mod:`gvar`.
@@ -1770,8 +1766,9 @@ maximizing ``P(y|model)``),
 we are implicitly assuming that the
 various models we are considering are all equally likely candidates --- that
 is, we are assuming that ``P(model)`` is approximately constant across the
-model space we are exploring. The *a priori* probability for the prior just
-above is vanishingly small (because it is ridiculous),
+model space we are exploring. The *a priori* probability for the ridiculous
+prior just
+above is vanishingly small,
 and so comparing its ``logGBF`` to
 the others is nonsensical.
 

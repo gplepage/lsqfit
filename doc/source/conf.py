@@ -12,6 +12,19 @@
 # serve to show the default.
 
 import sys, os
+
+try:
+    from unittest.mock import MagicMock
+    class Mock(MagicMock):
+        @classmethod
+        def __getattr__(cls, name):
+                return MagicMock()
+
+    MOCK_MODULES = ['gvar']
+    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+except:
+    pass
+
 import lsqfit
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -26,11 +39,11 @@ import lsqfit
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.jsmath']
 # jsmath_path = '/usr/local/share/jsmath/easy/load.js'
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
-extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.pngmath'] # ,'rst2pdf.pdfbuilder']
-pngmath_use_preview = True
-pngmath_use_preview = True
-pngmath_latex_preamble = "\usepackage{arev}"
-pngmath_dvipng_args = ['-gamma 0.5' , '-D 100']
+extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.imgmath'] # ,'rst2pdf.pdfbuilder']
+imgmath_image_format = 'png'
+imgmath_use_preview = True
+imgmath_latex_preamble = "\usepackage{arev}"
+imgmath_dvipng_args = ['-gamma', '0.35', '-D', '110', '-bg', 'Transparent']
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True

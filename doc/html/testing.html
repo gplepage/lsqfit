@@ -1,12 +1,12 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Non-Gaussian Behavior; Testing Fits &mdash; lsqfit 9.1.3 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 9.1.3 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,23 +17,25 @@
         VERSION:     '9.1.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="lsqfit 9.1.3 documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
     <link rel="prev" title="Overview and Tutorial" href="overview.html" />
-<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
-<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
 <link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
   </head>
-  <body role="document">
+  <body>
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -50,7 +52,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.3 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -79,12 +81,12 @@ results.</p>
 </div>
 <div class="section" id="bootstrap-error-analysis-non-gaussian-output">
 <h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Permalink to this headline">¶</a></h2>
-<p>The bootstrap provides an efficient way to check on a fit&#8217;s
+<p>The bootstrap provides an efficient way to check on a fit’s
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>make a large number of &#8220;bootstrap copies&#8221; of the
+<li>make a large number of “bootstrap copies” of the
 original input data and prior that differ from each other
 by random amounts characteristic of the underlying randomness
 in the original data and prior (see
@@ -98,7 +100,7 @@ distribution (possibly non-Gaussian) for the each result.</li>
 </ol>
 </div></blockquote>
 <p>To illustrate, we return to our fit in the section
-on <a class="reference internal" href="overview.html#correlated-parameters"><span>Correlated Parameters; Gaussian Bayes Factor</span></a>, where the uncertainties on the
+on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>, where the uncertainties on the
 final parameters were relatively large.
 We will use a booststrap analysis to check the error
 estimates coming out of that fit.
@@ -162,31 +164,31 @@ then calculate averages and covariance matrices from these results using
 <code class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></code>.</p>
 <p>Most of the bootstrap results agree with the results coming directly from
 the fit:</p>
-<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.61 [11]    Q = 0.82    logGBF = 19.129
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
-Parameters:
-              0   0.149 (17)     [  0.0 (1.0) ]  
-              1    2.97 (34)     [     0 (20) ]  
-              2    1.23 (61)     [  0.0 (1.0) ]  *
-              3    0.59 (15)     [  0.0 (1.0) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 
-Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 20/0.1)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">20</span><span class="o">/</span><span class="mf">0.1</span><span class="p">)</span>
 
-p1/p0 = 19.97(67)     p3/p2 = 0.48(22)
-corr(p0,p1) = 0.957067820817
+<span class="n">p1</span><span class="o">/</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">19.97</span><span class="p">(</span><span class="mi">67</span><span class="p">)</span>     <span class="n">p3</span><span class="o">/</span><span class="n">p2</span> <span class="o">=</span> <span class="mf">0.48</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
+<span class="n">corr</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.957067820817</span>
 
-Bootstrap Averages:
-  key/index         value
--------------------------
-        p 0    0.146 (19)
-          1     2.91 (29)
-          2     1.14 (76)
-          3     0.59 (16)
-      p3/p2     0.49 (40)
-      p1/p0    19.86 (80)
-corr(p0,p1) = 0.949819729559
+<span class="n">Bootstrap</span> <span class="n">Averages</span><span class="p">:</span>
+  <span class="n">key</span><span class="o">/</span><span class="n">index</span>         <span class="n">value</span>
+<span class="o">-------------------------</span>
+        <span class="n">p</span> <span class="mi">0</span>    <span class="mf">0.146</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>
+          <span class="mi">1</span>     <span class="mf">2.91</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>
+          <span class="mi">2</span>     <span class="mf">1.14</span> <span class="p">(</span><span class="mi">76</span><span class="p">)</span>
+          <span class="mi">3</span>     <span class="mf">0.59</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+      <span class="n">p3</span><span class="o">/</span><span class="n">p2</span>     <span class="mf">0.49</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+      <span class="n">p1</span><span class="o">/</span><span class="n">p0</span>    <span class="mf">19.86</span> <span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">corr</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.949819729559</span>
 </pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms the previous error estimates
@@ -233,13 +235,13 @@ function:</p>
 to improve the accuracy of the bootstrap
 results. The output from this code shows statistical analyses of the
 histogram data for <code class="docutils literal"><span class="pre">p1/p0</span></code> and <code class="docutils literal"><span class="pre">p3/p2</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre>Histogram Analysis:
-p1/p0:
-   mean = 19.970(23)   sdev = 0.722(16)   skew = 0.127(75)   ex_kurt = -0.01(14)
-   median = 19.939(28)   plus = 0.737(35)   minus = 0.654(31)
-p3/p2:
-   mean = 0.5206(76)   sdev = 0.2396(64)   skew = 0.671(83)   ex_kurt = 0.88(18)
-   median = 0.4894(79)   plus = 0.309(18)   minus = 0.1492(54)
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
+<span class="n">p1</span><span class="o">/</span><span class="n">p0</span><span class="p">:</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">19.970</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.722</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.127</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">19.939</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.737</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.654</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
+<span class="n">p3</span><span class="o">/</span><span class="n">p2</span><span class="p">:</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.5206</span><span class="p">(</span><span class="mi">76</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.2396</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.671</span><span class="p">(</span><span class="mi">83</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.88</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.4894</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.309</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.1492</span><span class="p">(</span><span class="mi">54</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The code also displays histograms of the probability distributions, where the
@@ -271,7 +273,7 @@ calculate mean values of the parameters, their covariances, and the means
 and covariances of any function of the parameters.
 These will agree with the
 best-fit results of our least-squares fits provided <code class="docutils literal"><span class="pre">chi**2</span></code> is well
-approximated by its quadratic expansion in the parameters &#8212; that is,
+approximated by its quadratic expansion in the parameters — that is,
 insofar as
 <code class="docutils literal"><span class="pre">exp(-chi**2/2)</span></code> is well approximated
 by the Gaussian distribution in the parameters
@@ -285,7 +287,7 @@ density function, over the entire parameter space. (Module <code class="xref py 
 must be installed for <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>.)</p>
 <p>To illustrate <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>,
 we again revisit the analysis in the section
-on <a class="reference internal" href="overview.html#correlated-parameters"><span>Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal"><span class="pre">main()</span></code> function
+on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal"><span class="pre">main()</span></code> function
 of our original code
 to evaluate the means and covariances of the parameters, and also
 their probability histograms, using a Bayesian integral:</p>
@@ -399,62 +401,62 @@ of function <code class="docutils literal"><span class="pre">g(p)</span></code> 
 The expectation value of <code class="docutils literal"><span class="pre">g(p)</span></code> is returned
 in dictionary <code class="docutils literal"><span class="pre">results</span></code>.</p>
 <p>The results from this script are:</p>
-<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.61 [11]    Q = 0.82    logGBF = 19.129
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
-Parameters:
-              0   0.149 (17)     [  0.0 (1.0) ]  
-              1    2.97 (34)     [     0 (20) ]  
-              2    1.23 (61)     [  0.0 (1.0) ]  *
-              3    0.59 (15)     [  0.0 (1.0) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 
-Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 20/0.1)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">20</span><span class="o">/</span><span class="mf">0.1</span><span class="p">)</span>
 
 
-Iterations:
-itn   integral        average         chi2/dof        Q
--------------------------------------------------------
-  1   1.051(32)       1.051(32)           0.00     1.00
-  2   1.015(21)       1.033(19)           0.74     0.94
-  3   1.046(24)       1.037(15)           0.74     0.99
-  4   1.058(36)       1.042(15)           0.75     1.00
-  5   1.009(28)       1.036(13)           0.71     1.00
-  6   0.982(24)       1.027(11)           0.72     1.00
-  7   1.016(22)       1.025(10)           0.72     1.00
-  8   1.031(27)       1.0260(97)          0.70     1.00
-  9   1.122(77)       1.037(12)           0.72     1.00
- 10   1.023(24)       1.035(11)           0.73     1.00
+<span class="n">Iterations</span><span class="p">:</span>
+<span class="n">itn</span>   <span class="n">integral</span>        <span class="n">average</span>         <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span>        <span class="n">Q</span>
+<span class="o">-------------------------------------------------------</span>
+  <span class="mi">1</span>   <span class="mf">1.051</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>       <span class="mf">1.051</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>           <span class="mf">0.00</span>     <span class="mf">1.00</span>
+  <span class="mi">2</span>   <span class="mf">1.015</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>       <span class="mf">1.033</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>           <span class="mf">0.74</span>     <span class="mf">0.94</span>
+  <span class="mi">3</span>   <span class="mf">1.046</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>       <span class="mf">1.037</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>           <span class="mf">0.74</span>     <span class="mf">0.99</span>
+  <span class="mi">4</span>   <span class="mf">1.058</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>       <span class="mf">1.042</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>           <span class="mf">0.75</span>     <span class="mf">1.00</span>
+  <span class="mi">5</span>   <span class="mf">1.009</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>       <span class="mf">1.036</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>           <span class="mf">0.71</span>     <span class="mf">1.00</span>
+  <span class="mi">6</span>   <span class="mf">0.982</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>       <span class="mf">1.027</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>           <span class="mf">0.72</span>     <span class="mf">1.00</span>
+  <span class="mi">7</span>   <span class="mf">1.016</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>       <span class="mf">1.025</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>           <span class="mf">0.72</span>     <span class="mf">1.00</span>
+  <span class="mi">8</span>   <span class="mf">1.031</span><span class="p">(</span><span class="mi">27</span><span class="p">)</span>       <span class="mf">1.0260</span><span class="p">(</span><span class="mi">97</span><span class="p">)</span>          <span class="mf">0.70</span>     <span class="mf">1.00</span>
+  <span class="mi">9</span>   <span class="mf">1.122</span><span class="p">(</span><span class="mi">77</span><span class="p">)</span>       <span class="mf">1.037</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>           <span class="mf">0.72</span>     <span class="mf">1.00</span>
+ <span class="mi">10</span>   <span class="mf">1.023</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>       <span class="mf">1.035</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>           <span class="mf">0.73</span>     <span class="mf">1.00</span>
 
-Integration Results:
-    mean(p) = [0.15514(35) 3.1019(71) 1.453(16) 0.6984(34)]
-    cov(p) =
-[[0.000252(11) 0.00488(23) 0.00882(57) 0.001436(88)]
- [0.00488(23) 0.1044(47) 0.177(11) 0.0298(18)]
- [0.00882(57) 0.177(11) 0.362(29) 0.0331(37)]
- [0.001436(88) 0.0298(18) 0.0331(37) 0.0345(16)]]
+<span class="n">Integration</span> <span class="n">Results</span><span class="p">:</span>
+    <span class="n">mean</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.15514</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span> <span class="mf">3.1019</span><span class="p">(</span><span class="mi">71</span><span class="p">)</span> <span class="mf">1.453</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="mf">0.6984</span><span class="p">(</span><span class="mi">34</span><span class="p">)]</span>
+    <span class="n">cov</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span>
+<span class="p">[[</span><span class="mf">0.000252</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="mf">0.00488</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span> <span class="mf">0.00882</span><span class="p">(</span><span class="mi">57</span><span class="p">)</span> <span class="mf">0.001436</span><span class="p">(</span><span class="mi">88</span><span class="p">)]</span>
+ <span class="p">[</span><span class="mf">0.00488</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span> <span class="mf">0.1044</span><span class="p">(</span><span class="mi">47</span><span class="p">)</span> <span class="mf">0.177</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="mf">0.0298</span><span class="p">(</span><span class="mi">18</span><span class="p">)]</span>
+ <span class="p">[</span><span class="mf">0.00882</span><span class="p">(</span><span class="mi">57</span><span class="p">)</span> <span class="mf">0.177</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="mf">0.362</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="mf">0.0331</span><span class="p">(</span><span class="mi">37</span><span class="p">)]</span>
+ <span class="p">[</span><span class="mf">0.001436</span><span class="p">(</span><span class="mi">88</span><span class="p">)</span> <span class="mf">0.0298</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> <span class="mf">0.0331</span><span class="p">(</span><span class="mi">37</span><span class="p">)</span> <span class="mf">0.0345</span><span class="p">(</span><span class="mi">16</span><span class="p">)]]</span>
 
-Bayesian Parameters:
-  index         value
----------------------
-      0    0.155 (16)
-      1     3.10 (32)
-      2     1.45 (60)
-      3     0.70 (19)
+<span class="n">Bayesian</span> <span class="n">Parameters</span><span class="p">:</span>
+  <span class="n">index</span>         <span class="n">value</span>
+<span class="o">---------------------</span>
+      <span class="mi">0</span>    <span class="mf">0.155</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+      <span class="mi">1</span>     <span class="mf">3.10</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+      <span class="mi">2</span>     <span class="mf">1.45</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+      <span class="mi">3</span>     <span class="mf">0.70</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>
 
-Histogram Statistics:
-p[0] -
-   mean = 0.15518(33)   sdev = 0.01659(29)   skew = 0.119(62)   ex_kurt = 0.52(40)
-   median = 0.15471(23)   plus = 0.01610(47)   minus = 0.01553(24)
-p[1] -
-   mean = 3.1056(68)   sdev = 0.3382(61)   skew = 0.158(48)   ex_kurt = 0.15(10)
-   median = 3.0969(46)   plus = 0.3244(97)   minus = 0.3157(48)
-p[2] -
-   mean = 1.454(16)   sdev = 0.626(20)   skew = 0.505(94)   ex_kurt = 0.37(17)
-   median = 1.4082(86)   plus = 0.615(17)   minus = 0.5520(83)
-p[3] -
-   mean = 0.6717(41)   sdev = 0.1956(46)   skew = -0.39(10)   ex_kurt = 1.54(16)
-   median = 0.6730(26)   plus = 0.2013(67)   minus = 0.1537(22)
+<span class="n">Histogram</span> <span class="n">Statistics</span><span class="p">:</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.15518</span><span class="p">(</span><span class="mi">33</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.01659</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.119</span><span class="p">(</span><span class="mi">62</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.52</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.15471</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.01610</span><span class="p">(</span><span class="mi">47</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.01553</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">3.1056</span><span class="p">(</span><span class="mi">68</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.3382</span><span class="p">(</span><span class="mi">61</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.158</span><span class="p">(</span><span class="mi">48</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.15</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">3.0969</span><span class="p">(</span><span class="mi">46</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.3244</span><span class="p">(</span><span class="mi">97</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.3157</span><span class="p">(</span><span class="mi">48</span><span class="p">)</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">1.454</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.626</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.505</span><span class="p">(</span><span class="mi">94</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.37</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">1.4082</span><span class="p">(</span><span class="mi">86</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.615</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.5520</span><span class="p">(</span><span class="mi">83</span><span class="p">)</span>
+<span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.6717</span><span class="p">(</span><span class="mi">41</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.1956</span><span class="p">(</span><span class="mi">46</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.39</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">1.54</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.6730</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.2013</span><span class="p">(</span><span class="mi">67</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.1537</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The iterations table shows results from each of the <code class="docutils literal"><span class="pre">nitn=10</span></code>
@@ -469,8 +471,8 @@ sufficiently accurate here given the size of the standard deviations.
 Estimates for
 the covariance matrix elements are less accurate, which is typical.
 This information is converted into <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s for the parameters and
-tabulated under &#8220;Bayesian Parameters,&#8221; for comparison with the
-original fit results &#8212; the agreement is pretty good.
+tabulated under “Bayesian Parameters,” for comparison with the
+original fit results — the agreement is pretty good.
 This is further confirmed by the
 (posterior) probability distributions
 for each parameter:</p>
@@ -478,7 +480,7 @@ for each parameter:</p>
 <p>The means are shifted slightly from the fit results and there
 is modest skewing, but the differences are not great.</p>
 <p>As a second example of Bayesian integration, we return briefly to
-the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span>Positive Parameters; Non-Gaussian Priors</span></a>: we want the
+the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span class="std std-ref">Positive Parameters; Non-Gaussian Priors</span></a>: we want the
 average <code class="docutils literal"><span class="pre">a</span></code> of noisy data subject the constraint that the average
 must be positive. The constraint is likely to
 introduce strong distortions in the probability density function (PDF)
@@ -528,22 +530,22 @@ a fit that uses a flat prior (between 0 and&nbsp;0.04):</p>
 </pre></div>
 </div>
 <p>The output from this script is</p>
-<div class="highlight-python"><div class="highlight"><pre>Least Square Fit:
-  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.2385</span>
 
-Parameters:
-  erfinv(50a-1)   -0.42 (68)     [  0.00 (71) ]  
------------------------------------------------
-          50a-1   -0.44 (64)     [  0.00 (80) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+  <span class="n">erfinv</span><span class="p">(</span><span class="mi">50</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>   <span class="o">-</span><span class="mf">0.42</span> <span class="p">(</span><span class="mi">68</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.00</span> <span class="p">(</span><span class="mi">71</span><span class="p">)</span> <span class="p">]</span>  
+<span class="o">-----------------------------------------------</span>
+          <span class="mi">50</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span>   <span class="o">-</span><span class="mf">0.44</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.00</span> <span class="p">(</span><span class="mi">80</span><span class="p">)</span> <span class="p">]</span>  
 
-Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">15</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
-a = 0.011(13)
+<span class="n">a</span> <span class="o">=</span> <span class="mf">0.011</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
 
-Histogram Analysis:
-   mean = 0.014034(17)   sdev = 0.010534(14)   skew = 0.6080(13)   ex_kurt = -0.6186(24)
-   median = 0.011854(20)   plus = 0.014434(36)   minus = 0.008584(17)
+<span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
+   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.014034</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.010534</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.6080</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.6186</span><span class="p">(</span><span class="mi">24</span><span class="p">)</span>
+   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.011854</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.014434</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.008584</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>and the probability distribution for <code class="docutils literal"><span class="pre">a</span></code> looks like</p>
@@ -565,7 +567,7 @@ integrals over tens of variables are intrinsically challenging.
 <code class="xref py py-class docutils literal"><span class="pre">BayesIntegrator</span></code> can be used with MPI to run such integrals
 on multiple processors, for a considerable speed-up.</p>
 <p>We used Bayesian integrals here to deal with non-Gaussian behavior in
-fit outputs. The case study <a class="reference internal" href="case-outliers.html#outliers"><span>Case Study: Outliers and Bayesian Integrals</span></a> shows how to use them
+fit outputs. The case study <a class="reference internal" href="case-outliers.html#outliers"><span class="std std-ref">Case Study: Outliers and Bayesian Integrals</span></a> shows how to use them
 when the input data is not quite Gaussian.</p>
 </div>
 <div class="section" id="testing-fits-with-simulated-data">
@@ -590,7 +592,7 @@ simulated data are from the same distribution as the original data. There
 is a problem with the fitting protocol if this is not the case most of the
 time.</p>
 <p>To illustrate we again examine the fits
-in the section on <a class="reference internal" href="overview.html#correlated-parameters"><span>Correlated Parameters; Gaussian Bayes Factor</span></a>:
+in the section on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>:
 we add three fit simulations at the end of the <code class="docutils literal"><span class="pre">main()</span></code> function:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -641,129 +643,130 @@ we add three fit simulations at the end of the <code class="docutils literal"><s
 </div>
 <p>This code produces the following output, showing how the input data
 fluctuate from simulation to simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre>**************************************** real fit
-Least Square Fit:
-  chi2/dof [dof] = 0.61 [11]    Q = 0.82    logGBF = 19.129
+<div class="highlight-python"><div class="highlight"><pre><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
-Parameters:
-              0   0.149 (17)     [  0.0 (1.0) ]  
-              1    2.97 (34)     [     0 (20) ]  
-              2    1.23 (61)     [  0.0 (1.0) ]  *
-              3    0.59 (15)     [  0.0 (1.0) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 
-Fit:
-     x[k]          y[k]      f(x[k],p)
---------------------------------------
-        4    0.198 (14)     0.193 (11)  
-        2    0.216 (15)     0.210 (10)  
-        1    0.184 (23)     0.209 (15)  *
-      0.5    0.156 (44)     0.177 (15)  
-     0.25    0.099 (49)     0.124 (13)  
-    0.167    0.142 (40)     0.094 (12)  *
-    0.125    0.108 (32)     0.075 (11)  *
-      0.1    0.065 (26)    0.0629 (96)  
-   0.0833    0.044 (22)    0.0538 (87)  
-   0.0714    0.041 (19)    0.0471 (79)  
-   0.0625    0.044 (16)    0.0418 (72)  
+<span class="n">Fit</span><span class="p">:</span>
+     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
+<span class="o">--------------------------------------</span>
+        <span class="mi">4</span>    <span class="mf">0.198</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.193</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
+        <span class="mi">2</span>    <span class="mf">0.216</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.210</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
+        <span class="mi">1</span>    <span class="mf">0.184</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.209</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="o">*</span>
+      <span class="mf">0.5</span>    <span class="mf">0.156</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.177</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
+     <span class="mf">0.25</span>    <span class="mf">0.099</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.124</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>  
+    <span class="mf">0.167</span>    <span class="mf">0.142</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.094</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="o">*</span>
+    <span class="mf">0.125</span>    <span class="mf">0.108</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.075</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="o">*</span>
+      <span class="mf">0.1</span>    <span class="mf">0.065</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0629</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
+   <span class="mf">0.0833</span>    <span class="mf">0.044</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0538</span> <span class="p">(</span><span class="mi">87</span><span class="p">)</span>  
+   <span class="mf">0.0714</span>    <span class="mf">0.041</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0471</span> <span class="p">(</span><span class="mi">79</span><span class="p">)</span>  
+   <span class="mf">0.0625</span>    <span class="mf">0.044</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0418</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>  
 
-Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 20/0.1)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">20</span><span class="o">/</span><span class="mf">0.1</span><span class="p">)</span>
 
-======================================== simulation
-Least Square Fit:
-  chi2/dof [dof] = 1.2 [11]    Q = 0.27    logGBF = 15.278
+<span class="o">========================================</span> <span class="n">simulation</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.2</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.27</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">15.278</span>
 
-Parameters:
-              0   0.134 (14)     [  0.0 (1.0) ]  
-              1    2.68 (29)     [     0 (20) ]  
-              2    0.68 (47)     [  0.0 (1.0) ]  
-              3    0.54 (12)     [  0.0 (1.0) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.134</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">2.68</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">0.68</span> <span class="p">(</span><span class="mi">47</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">3</span>    <span class="mf">0.54</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 
-Fit:
-     x[k]          y[k]      f(x[k],p)
---------------------------------------
-        4    0.200 (14)     0.186 (12)  
-        2    0.192 (15)     0.212 (10)  *
-        1    0.242 (23)     0.221 (16)  
-      0.5    0.163 (44)     0.187 (18)  
-     0.25    0.089 (49)     0.126 (15)  
-    0.167    0.130 (40)     0.093 (13)  
-    0.125    0.103 (32)     0.073 (11)  
-      0.1    0.046 (26)    0.0599 (96)  
-   0.0833    0.054 (22)    0.0508 (85)  
-   0.0714    0.004 (19)    0.0441 (77)  **
-   0.0625    0.060 (16)    0.0389 (70)  *
+<span class="n">Fit</span><span class="p">:</span>
+     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
+<span class="o">--------------------------------------</span>
+        <span class="mi">4</span>    <span class="mf">0.200</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.186</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
+        <span class="mi">2</span>    <span class="mf">0.192</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.212</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="o">*</span>
+        <span class="mi">1</span>    <span class="mf">0.242</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.221</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>  
+      <span class="mf">0.5</span>    <span class="mf">0.163</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.187</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>  
+     <span class="mf">0.25</span>    <span class="mf">0.089</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.126</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
+    <span class="mf">0.167</span>    <span class="mf">0.130</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.093</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>  
+    <span class="mf">0.125</span>    <span class="mf">0.103</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.073</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
+      <span class="mf">0.1</span>    <span class="mf">0.046</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0599</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
+   <span class="mf">0.0833</span>    <span class="mf">0.054</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0508</span> <span class="p">(</span><span class="mi">85</span><span class="p">)</span>  
+   <span class="mf">0.0714</span>    <span class="mf">0.004</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0441</span> <span class="p">(</span><span class="mi">77</span><span class="p">)</span>  <span class="o">**</span>
+   <span class="mf">0.0625</span>    <span class="mf">0.060</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0389</span> <span class="p">(</span><span class="mi">70</span><span class="p">)</span>  <span class="o">*</span>
 
-Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 7/0.0)
-
-
-sfit.p - pexact = [-0.015(14) -0.29(29) -0.54(47) -0.05(12)]
-chi2/dof = 0.34 [4]    Q = 0.85
-
-======================================== simulation
-Least Square Fit:
-  chi2/dof [dof] = 1.1 [11]    Q = 0.38    logGBF = 17.048
-
-Parameters:
-              0   0.156 (18)     [  0.0 (1.0) ]  
-              1    3.12 (36)     [     0 (20) ]  
-              2    1.35 (66)     [  0.0 (1.0) ]  *
-              3    0.77 (20)     [  0.0 (1.0) ]  
-
-Fit:
-     x[k]          y[k]      f(x[k],p)
---------------------------------------
-        4    0.207 (14)     0.201 (11)  
-        2    0.224 (15)     0.214 (10)  
-        1    0.163 (23)     0.206 (14)  *
-      0.5    0.162 (44)     0.167 (15)  
-     0.25    0.124 (49)     0.113 (14)  
-    0.167    0.111 (40)     0.084 (12)  
-    0.125    0.085 (32)     0.066 (11)  
-      0.1    0.097 (26)    0.0550 (93)  *
-   0.0833    0.020 (22)    0.0469 (83)  *
-   0.0714    0.043 (19)    0.0409 (75)  
-   0.0625    0.031 (16)    0.0362 (68)  
-
-Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 23/0.0)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="bp">None</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">7</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
 
-sfit.p - pexact = [0.008(18) 0.15(36) 0.13(66) 0.18(20)]
-chi2/dof = 0.22 [4]    Q = 0.93
+<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.015</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.29</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.54</span><span class="p">(</span><span class="mi">47</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">(</span><span class="mi">12</span><span class="p">)]</span>
+<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.34</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.85</span>
 
-======================================== simulation
-Least Square Fit:
-  chi2/dof [dof] = 0.76 [11]    Q = 0.68    logGBF = 17.709
+<span class="o">========================================</span> <span class="n">simulation</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.38</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">17.048</span>
 
-Parameters:
-              0   0.138 (14)     [  0.0 (1.0) ]  
-              1    2.77 (29)     [     0 (20) ]  
-              2    0.72 (46)     [  0.0 (1.0) ]  
-              3    0.53 (11)     [  0.0 (1.0) ]  
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.156</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">3.12</span> <span class="p">(</span><span class="mi">36</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">1.35</span> <span class="p">(</span><span class="mi">66</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+              <span class="mi">3</span>    <span class="mf">0.77</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 
-Fit:
-     x[k]          y[k]      f(x[k],p)
---------------------------------------
-        4    0.196 (14)     0.193 (12)  
-        2    0.218 (15)     0.221 (10)  
-        1    0.240 (23)     0.231 (16)  
-      0.5    0.157 (44)     0.198 (18)  
-     0.25    0.157 (49)     0.134 (14)  
-    0.167    0.022 (40)     0.099 (12)  *
-    0.125    0.070 (32)     0.078 (11)  
-      0.1    0.090 (26)    0.0644 (96)  
-   0.0833    0.045 (22)    0.0547 (86)  
-   0.0714    0.053 (19)    0.0475 (78)  
-   0.0625    0.059 (16)    0.0420 (70)  *
+<span class="n">Fit</span><span class="p">:</span>
+     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
+<span class="o">--------------------------------------</span>
+        <span class="mi">4</span>    <span class="mf">0.207</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.201</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
+        <span class="mi">2</span>    <span class="mf">0.224</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.214</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
+        <span class="mi">1</span>    <span class="mf">0.163</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.206</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  <span class="o">*</span>
+      <span class="mf">0.5</span>    <span class="mf">0.162</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.167</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
+     <span class="mf">0.25</span>    <span class="mf">0.124</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.113</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  
+    <span class="mf">0.167</span>    <span class="mf">0.111</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.084</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
+    <span class="mf">0.125</span>    <span class="mf">0.085</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.066</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
+      <span class="mf">0.1</span>    <span class="mf">0.097</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0550</span> <span class="p">(</span><span class="mi">93</span><span class="p">)</span>  <span class="o">*</span>
+   <span class="mf">0.0833</span>    <span class="mf">0.020</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0469</span> <span class="p">(</span><span class="mi">83</span><span class="p">)</span>  <span class="o">*</span>
+   <span class="mf">0.0714</span>    <span class="mf">0.043</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0409</span> <span class="p">(</span><span class="mi">75</span><span class="p">)</span>  
+   <span class="mf">0.0625</span>    <span class="mf">0.031</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0362</span> <span class="p">(</span><span class="mi">68</span><span class="p">)</span>  
 
-Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 10/0.0)
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="bp">None</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">23</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
 
-sfit.p - pexact = [-0.010(14) -0.21(29) -0.51(46) -0.06(11)]
-chi2/dof = 0.77 [4]    Q = 0.54
+<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.008</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> <span class="mf">0.15</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span> <span class="mf">0.13</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span> <span class="mf">0.18</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
+<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.22</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.93</span>
+
+<span class="o">========================================</span> <span class="n">simulation</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.76</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.68</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">17.709</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="mi">0</span>   <span class="mf">0.138</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">2.77</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">0.72</span> <span class="p">(</span><span class="mi">46</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">3</span>    <span class="mf">0.53</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Fit</span><span class="p">:</span>
+     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
+<span class="o">--------------------------------------</span>
+        <span class="mi">4</span>    <span class="mf">0.196</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.193</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
+        <span class="mi">2</span>    <span class="mf">0.218</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.221</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
+        <span class="mi">1</span>    <span class="mf">0.240</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.231</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>  
+      <span class="mf">0.5</span>    <span class="mf">0.157</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.198</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>  
+     <span class="mf">0.25</span>    <span class="mf">0.157</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.134</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  
+    <span class="mf">0.167</span>    <span class="mf">0.022</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.099</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="o">*</span>
+    <span class="mf">0.125</span>    <span class="mf">0.070</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.078</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
+      <span class="mf">0.1</span>    <span class="mf">0.090</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0644</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
+   <span class="mf">0.0833</span>    <span class="mf">0.045</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0547</span> <span class="p">(</span><span class="mi">86</span><span class="p">)</span>  
+   <span class="mf">0.0714</span>    <span class="mf">0.053</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0475</span> <span class="p">(</span><span class="mi">78</span><span class="p">)</span>  
+   <span class="mf">0.0625</span>    <span class="mf">0.059</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0420</span> <span class="p">(</span><span class="mi">70</span><span class="p">)</span>  <span class="o">*</span>
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="bp">None</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+
+<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.010</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.21</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.51</span><span class="p">(</span><span class="mi">46</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.06</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.77</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.54</span>
+
 </pre></div>
 </div>
 <p>The parameters <code class="docutils literal"><span class="pre">sfit.p</span></code> produced by the simulated fits agree well
@@ -801,14 +804,11 @@ deviations, and correlations.</p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -830,12 +830,12 @@ deviations, and correlations.</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.3 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2009-2016, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
+        &#169; Copyright 2009-2016, G. P. Lepage.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
     </div>
   </body>
 </html>

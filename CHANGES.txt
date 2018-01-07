@@ -1,3 +1,11 @@
+Version ???
+===============
+
+- Slight improvement to MultiFitter's plotting capabilities.
+
+- Fixed interface to scipy.optimize.least_squares so ignores
+  if scipy version earlier than 0.17 (used to crash).
+
 Version 9.1.3 2017-04-04
 ========================
 Tiny changes:

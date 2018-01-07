@@ -37,7 +37,7 @@ def make_data():
 def bad_analysis():
 	sys.stdout = tee.tee(STDOUT, open(OUTDIR+'eg-appendix1a.out', 'w'))
 	x, y = make_data()
-	p0 = np.ones(5.)              # starting value for chi**2 minimization
+	p0 = np.ones(5, float)              # starting value for chi**2 minimization
 	fit = lsqfit.nonlinear_fit(data=(x, y), p0=p0, fcn=f)
 	print fit.format(maxline=True)
 	make_plot(x, y, fit, name='eg-appendix1a')
