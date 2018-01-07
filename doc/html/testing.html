@@ -5,12 +5,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 9.1.3 documentation</title>
-    
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
@@ -106,7 +103,7 @@ We will use a booststrap analysis to check the error
 estimates coming out of that fit.
 We do this by adding code right after the
 fit, in the <code class="docutils literal"><span class="pre">main()</span></code> function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
@@ -115,44 +112,44 @@ fit, in the <code class="docutils literal"><span class="pre">main()</span></code
     <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;p3/p2 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;p3/p2 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="c"># boostrap analysis: collect bootstrap data</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Bootstrap Analysis:&#39;</span><span class="p">)</span>
-    <span class="n">Nbs</span> <span class="o">=</span> <span class="mi">40</span>                <span class="c"># number of bootstrap copies</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;p&#39;</span><span class="p">:[],</span> <span class="s">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
+    <span class="c1"># boostrap analysis: collect bootstrap data</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Bootstrap Analysis:&#39;</span><span class="p">)</span>
+    <span class="n">Nbs</span> <span class="o">=</span> <span class="mi">40</span>                <span class="c1"># number of bootstrap copies</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
     <span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrap_iter</span><span class="p">(</span><span class="n">Nbs</span><span class="p">):</span>
         <span class="n">p</span> <span class="o">=</span> <span class="n">bsfit</span><span class="o">.</span><span class="n">pmean</span>
-        <span class="n">output</span><span class="p">[</span><span class="s">&#39;p&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">output</span><span class="p">[</span><span class="s">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">output</span><span class="p">[</span><span class="s">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
-    <span class="c"># average over bootstrap copies and tabulate results</span>
+    <span class="c1"># average over bootstrap copies and tabulate results</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">bstrap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s">&#39;p&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
         <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0833</span><span class="p">,</span> <span class="mf">0.0714</span><span class="p">,</span> <span class="mf">0.0625</span>
         <span class="p">])</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-        <span class="s">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s">&#39;0.099(49)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s">&#39;0.041(19)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.044(16)&#39;</span>
+        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.044(16)&#39;</span>
         <span class="p">])</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c"># p[1] correlated with p[0]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c1"># p[1] correlated with p[0]</span>
     <span class="k">return</span> <span class="n">p</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -164,7 +161,7 @@ then calculate averages and covariance matrices from these results using
 <code class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></code>.</p>
 <p>Most of the bootstrap results agree with the results coming directly from
 the fit:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -200,33 +197,33 @@ We use the bootstrap to create histograms of the probability distributions
 of <code class="docutils literal"><span class="pre">p3/p2</span></code> and <code class="docutils literal"><span class="pre">p1/p01</span></code>
 by adding the following code to the end of the <code class="docutils literal"><span class="pre">main()</span></code>
 function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&#39;Histogram Analysis:&#39;</span><span class="p">)</span>
-<span class="n">count</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Histogram Analysis:&#39;</span><span class="p">)</span>
+<span class="n">count</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s">&#39;p1/p0&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s">&#39;p3/p2&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+    <span class="s1">&#39;p1/p0&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+    <span class="s1">&#39;p3/p2&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
     <span class="p">}</span>
 
-<span class="c"># collect bootstrap data</span>
+<span class="c1"># collect bootstrap data</span>
 <span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrap_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">bsfit</span><span class="o">.</span><span class="n">pmean</span>
-    <span class="n">count</span><span class="p">[</span><span class="s">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-    <span class="n">count</span><span class="p">[</span><span class="s">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="n">count</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">count</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
 
-<span class="c"># calculate averages and covariances</span>
+<span class="c1"># calculate averages and covariances</span>
 <span class="n">count</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
 
-<span class="c"># print histogram statistics and show plots</span>
+<span class="c1"># print histogram statistics and show plots</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">pltnum</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="s">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pltnum</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
     <span class="n">hist</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pltnum</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">pltnum</span> <span class="o">+=</span> <span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -235,7 +232,7 @@ function:</p>
 to improve the accuracy of the bootstrap
 results. The output from this code shows statistical analyses of the
 histogram data for <code class="docutils literal"><span class="pre">p1/p0</span></code> and <code class="docutils literal"><span class="pre">p3/p2</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
 <span class="n">p1</span><span class="o">/</span><span class="n">p0</span><span class="p">:</span>
    <span class="n">mean</span> <span class="o">=</span> <span class="mf">19.970</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.722</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.127</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
    <span class="n">median</span> <span class="o">=</span> <span class="mf">19.939</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.737</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.654</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
@@ -291,7 +288,7 @@ on <a class="reference internal" href="overview.html#correlated-parameters"><spa
 of our original code
 to evaluate the means and covariances of the parameters, and also
 their probability histograms, using a Bayesian integral:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
@@ -302,15 +299,15 @@ their probability histograms, using a Bayesian integral:</p>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 
-    <span class="c"># Bayesian integrator</span>
+    <span class="c1"># Bayesian integrator</span>
     <span class="n">expval</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">BayesIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 
-    <span class="c"># adapt integrator expval to PDF from fit</span>
+    <span class="c1"># adapt integrator expval to PDF from fit</span>
     <span class="n">neval</span> <span class="o">=</span> <span class="mi">1000</span>
     <span class="n">nitn</span> <span class="o">=</span> <span class="mi">10</span>
     <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="n">neval</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="n">nitn</span><span class="p">)</span>
 
-    <span class="c"># &lt;g(p)&gt; gives mean and covariance matrix, and counts for histograms</span>
+    <span class="c1"># &lt;g(p)&gt; gives mean and covariance matrix, and counts for histograms</span>
     <span class="n">hist</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
         <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
@@ -325,36 +322,36 @@ their probability histograms, using a Bayesian integral:</p>
                 <span class="p">],</span>
             <span class="p">)</span>
 
-    <span class="c"># evaluate expectation value of g(p)</span>
+    <span class="c1"># evaluate expectation value of g(p)</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="n">neval</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="n">nitn</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
-    <span class="c"># analyze results</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Iterations:&#39;</span><span class="p">)</span>
+    <span class="c1"># analyze results</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Iterations:&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;Integration Results:&#39;</span><span class="p">)</span>
-    <span class="n">pmean</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s">&#39;mean&#39;</span><span class="p">]</span>
-    <span class="n">pcov</span> <span class="o">=</span>  <span class="n">results</span><span class="p">[</span><span class="s">&#39;outer&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">pmean</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;    mean(p) =&#39;</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;    cov(p) =</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">pcov</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Integration Results:&#39;</span><span class="p">)</span>
+    <span class="n">pmean</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
+    <span class="n">pcov</span> <span class="o">=</span>  <span class="n">results</span><span class="p">[</span><span class="s1">&#39;outer&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">pmean</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;    mean(p) =&#39;</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;    cov(p) =</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pcov</span><span class="p">)</span>
 
-    <span class="c"># create GVars from results</span>
+    <span class="c1"># create GVars from results</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pmean</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Bayesian Parameters:&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Bayesian Parameters:&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 
-    <span class="c"># show histograms</span>
-    <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Histogram Statistics:&#39;</span><span class="p">)</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s">&#39;count&#39;</span><span class="p">]</span>
+    <span class="c1"># show histograms</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Histogram Statistics:&#39;</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-        <span class="c"># print histogram statistics</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&#39;p[{}]:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="c1"># print histogram statistics</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;p[{}]:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
         <span class="k">print</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
-        <span class="c"># make histogram plots</span>
+        <span class="c1"># make histogram plots</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;p[{}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;p[{}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
         <span class="n">hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
@@ -363,21 +360,21 @@ their probability histograms, using a Bayesian integral:</p>
         <span class="mf">0.1</span>   <span class="p">,</span>  <span class="mf">0.0833</span><span class="p">,</span>  <span class="mf">0.0714</span><span class="p">,</span>  <span class="mf">0.0625</span>
         <span class="p">])</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-        <span class="s">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s">&#39;0.099(49)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s">&#39;0.041(19)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.044(16)&#39;</span>
+        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.044(16)&#39;</span>
         <span class="p">])</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c"># p[1] correlated with p[0]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c1"># p[1] correlated with p[0]</span>
     <span class="k">return</span> <span class="n">p</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -401,7 +398,7 @@ of function <code class="docutils literal"><span class="pre">g(p)</span></code> 
 The expectation value of <code class="docutils literal"><span class="pre">g(p)</span></code> is returned
 in dictionary <code class="docutils literal"><span class="pre">results</span></code>.</p>
 <p>The results from this script are:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -487,50 +484,50 @@ introduce strong distortions in the probability density function (PDF)
 given that the fit analysis suggests a value of 0.011±0.013.
 We plot the actual PDF using the following code, beginning with
 a fit that uses a flat prior (between 0 and&nbsp;0.04):</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
-<span class="c"># data, prior, and fit function</span>
+<span class="c1"># data, prior, and fit function</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-   <span class="s">&#39;-0.17(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.03(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.39(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.10(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.03(20)&#39;</span><span class="p">,</span>
-   <span class="s">&#39;0.06(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.15(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.01(20)&#39;</span><span class="p">,</span>
-   <span class="s">&#39;-0.12(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.05(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.09(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.36(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.09(20)&#39;</span><span class="p">,</span>
-   <span class="s">&#39;-0.07(20)&#39;</span><span class="p">,</span> <span class="s">&#39;-0.31(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.12(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.11(20)&#39;</span><span class="p">,</span> <span class="s">&#39;0.13(20)&#39;</span>
+   <span class="s1">&#39;-0.17(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.39(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.10(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;0.06(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.15(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.01(20)&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;-0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.05(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.09(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.36(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.09(20)&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;-0.07(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.31(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.11(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.13(20)&#39;</span>
    <span class="p">])</span>
 
 <span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">prior</span><span class="p">[</span><span class="s">&#39;erfinv(50*a-1)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0(1)&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">prior</span><span class="p">[</span><span class="s1">&#39;erfinv(50*a-1)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0(1)&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
-   <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">50.</span>
+   <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mf">50.</span>
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 
-<span class="c"># least-squares fit</span>
+<span class="c1"># least-squares fit</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 
-<span class="c"># Bayesian analysis: histogram for a</span>
+<span class="c1"># Bayesian analysis: histogram for a</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">nbin</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
     <span class="k">return</span> <span class="n">hist</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 <span class="n">expval</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">BayesIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="mi">1009</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">count</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
-<span class="c"># print out results and show plot</span>
-<span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">Histogram Analysis:&#39;</span><span class="p">)</span>
+<span class="c1"># print out results and show plot</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Histogram Analysis:&#39;</span><span class="p">)</span>
 <span class="k">print</span> <span class="p">(</span><span class="n">hist</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
 
 <span class="n">hist</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The output from this script is</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.2385</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -594,7 +591,7 @@ time.</p>
 <p>To illustrate we again examine the fits
 in the section on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>:
 we add three fit simulations at the end of the <code class="docutils literal"><span class="pre">main()</span></code> function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
@@ -602,18 +599,18 @@ we add three fit simulations at the end of the <code class="docutils literal"><s
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="s">&#39;*&#39;</span> <span class="o">+</span> <span class="s">&#39; real fit&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="s1">&#39; real fit&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 
-    <span class="c"># 3 simulated fits</span>
+    <span class="c1"># 3 simulated fits</span>
     <span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-        <span class="c"># print simulated fit details</span>
-        <span class="k">print</span><span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="s">&#39;=&#39;</span> <span class="o">+</span> <span class="s">&#39; simulation&#39;</span><span class="p">)</span>
+        <span class="c1"># print simulated fit details</span>
+        <span class="k">print</span><span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="s1">&#39; simulation&#39;</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="n">sfit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 
-        <span class="c"># compare simulated fit results with exact values (pexact=fit.pmean)</span>
+        <span class="c1"># compare simulated fit results with exact values (pexact=fit.pmean)</span>
         <span class="n">diff</span> <span class="o">=</span> <span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">sfit</span><span class="o">.</span><span class="n">pexact</span>
-        <span class="k">print</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">sfit.p - pexact =&#39;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">sfit.p - pexact =&#39;</span><span class="p">,</span> <span class="n">diff</span><span class="p">)</span>
         <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_chi2</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">chi2</span><span class="p">(</span><span class="n">diff</span><span class="p">)))</span>
         <span class="k">print</span>
 
@@ -623,27 +620,27 @@ we add three fit simulations at the end of the <code class="docutils literal"><s
         <span class="mf">0.1</span>   <span class="p">,</span>  <span class="mf">0.0833</span><span class="p">,</span>  <span class="mf">0.0714</span><span class="p">,</span>  <span class="mf">0.0625</span>
         <span class="p">])</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-        <span class="s">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s">&#39;0.099(49)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s">&#39;0.041(19)&#39;</span><span class="p">,</span>
-        <span class="s">&#39;0.044(16)&#39;</span>
+        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.044(16)&#39;</span>
         <span class="p">])</span>
     <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s">&#39;0(1)&#39;</span><span class="p">])</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s">&#39;0.0(1)&#39;</span><span class="p">)</span>        <span class="c"># p[1] correlated with p[0]</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>        <span class="c1"># p[1] correlated with p[0]</span>
     <span class="k">return</span> <span class="n">p</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 
-<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This code produces the following output, showing how the input data
 fluctuate from simulation to simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
 <span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
@@ -835,7 +832,7 @@ deviations, and correlations.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2016, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
