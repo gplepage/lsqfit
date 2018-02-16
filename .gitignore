@@ -1,7 +1,6 @@
 *.pyc
 build/
 __pycache__/
-*.c
 examples/*.p
 examples/*.tmp
 examples/*.1.0
