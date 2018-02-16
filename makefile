@@ -1,5 +1,5 @@
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2015 G. Peter Lepage.
+# Copyright (c) 2008-2018 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@ PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 
-install :
+install-user :
 	$(PIP) install . --user
 
-install-sys :
+install install-sys :
 	$(PIP) install .
 
 # $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)

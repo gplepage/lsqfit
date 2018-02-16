@@ -1,6 +1,6 @@
 """
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-16 G. Peter Lepage.
+Copyright (c) 2011-18 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -17,11 +17,29 @@ GNU General Public License for more details.
 
 from distutils.core import setup
 from distutils.extension import Extension
+from distutils.command.build_ext import build_ext as _build_ext
 
-from Cython.Build import cythonize
-import numpy
+# compile from existing .c files if USE_CYTHON is False
+USE_CYTHON = False # True
 
-LSQFIT_VERSION = '9.1.3'
+class build_ext(_build_ext):
+    # delays using numpy and cython until they are installed;
+    # cython is optional (set USE_CYTHON)
+    # this code adapted from https://github.com/pandas-dev/pandas setup.py
+    def build_extensions(self):
+        import numpy
+        if USE_CYTHON:
+            from Cython.Build import cythonize
+            self.extensions = cythonize(self.extensions)
+        numpy_include = numpy.get_include()
+        for ext in self.extensions:
+            ext.include_dirs.append(numpy_include)
+        _build_ext.build_extensions(self)
+
+# from Cython.Build import cythonize
+# import numpy
+
+LSQFIT_VERSION = '9.1.4'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
@@ -37,7 +55,7 @@ with open("src/lsqfit/_version.py","w") as version_file:
 # gsl and numpy are installed in standard locations.
 ext_args_gsl = dict(
     libraries=["gsl", "gslcblas"],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[],
     library_dirs=[],
     runtime_library_dirs=[],
     extra_link_args=[],
@@ -45,27 +63,40 @@ ext_args_gsl = dict(
 
 ext_args_nogsl = dict(
     libraries=[],
-    include_dirs=[numpy.get_include()],
+    include_dirs=[],
     library_dirs=[],
     runtime_library_dirs=[],
     extra_link_args=[],
     )
 
+ext = '.pyx' if USE_CYTHON else '.c'
+
 ext_modules = [
     Extension(
         "lsqfit._utilities",
-        ["src/lsqfit/_utilities.pyx"],
+        ["src/lsqfit/_utilities" + ext],
         **ext_args_nogsl
         ),
     Extension(
         "lsqfit._gsl",
-        ["src/lsqfit/_gsl.pyx"],
+        ["src/lsqfit/_gsl" + ext],
         **ext_args_gsl
         ),
     ]
 
-requires = ["cython (>=0.17)","numpy (>=1.7)", "gvar (>=8.0)"] # distutils
-install_requires = ['cython>=0.17', 'numpy>=1.7', 'gvar>=8.0'] # pip
+# distutils
+requires = (
+    ["cython (>=0.17)","numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=8.0)"]
+    if USE_CYTHON else
+    ["numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=8.0)"]
+    )
+
+# pip
+install_requires = (
+    ['cython>=0.17', 'numpy>=1.7', 'scipy>=0.16', 'gvar>=8.0']
+    if USE_CYTHON else
+    ['numpy>=1.7', 'scipy>=0.16', 'gvar>=8.0']
+    )
 
 # packages
 packages = ["lsqfit"]
@@ -78,10 +109,11 @@ setup_args = dict(
     description='Utilities for nonlinear least-squares fits.',
     author='G. Peter Lepage',
     author_email='g.p.lepage@cornell.edu',
+    cmdclass={'build_ext':build_ext},
     packages=packages,
     package_dir=package_dir,
     package_data=package_data,
-    ext_modules= cythonize(ext_modules),
+    ext_modules= ext_modules,
     install_requires=install_requires,   # for pip (distutils ignores)
     requires=requires,  # for distutils
     url="https://github.com/gplepage/lsqfit.git",
@@ -100,8 +132,9 @@ setup_args = dict(
     gradients, greatly simplifying the design of fit functions.
 
     In addition to :mod:`gvar`, this package uses the Gnu Scientific
-    Library (GSL) to do the fitting, numpy for efficient array arithmetic,
-    and cython to compile efficient core routines and interface code.
+    Library (GSL) to do the fitting (and/or scipy), numpy for efficient
+    array arithmetic, and cython to compile efficient core routines and
+    interface code.
     """
     ,
     classifiers = [                     #
@@ -115,6 +148,8 @@ setup_args = dict(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'

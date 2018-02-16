@@ -5,8 +5,7 @@ dependencies:
 - python>=3.5
 - cython
 - gsl>=2.2.1
-- numpy
-- scipy
-- pip:
-  - gvar>=8.0
+- numpy>=1.7
+- scipy>=0.16
+- gvar>=8.0
 

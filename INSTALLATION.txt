@@ -2,71 +2,50 @@ To install:
 
 1. If not already installed, download and install the following packages:
 
-	a. The Gnu Scientific Library (GSL v2.2.1 or greater) (optional) - provides
+	a. (Optional) The Gnu Scientific Library (GSL v2.2.1 or greater) - provides
 		underlying fitters, written in C. Should the build process for lsqfit
 		have difficulty finding the GSL libraries or headers, modify the build
 		script (setup.py) to point to the directories containing the gsl
 		headers and compiled libraries: add explicit addresses to the
 		include_dirs, library_dirs, and runtime_library_dirs lists in setup.py
-		(see dictionary ext_args_gsl). lsqfit can be built without GSL
-		provided scipy is available, but more options are available if both
+		(see dictionary ext_args_gsl). lsqfit can be built without GSL, using
+		scipy instead, but more options are available if both
 		are included.
 		(http://www.gnu.org/software/gsl/)
 
-	b. The scipy Python module (optional) - provides underlying fitters.
-		lsqfit can be built without scipy provided GSL is installed, but
-		more options are available if both GSL and scipy are installed.
-		(http://numpy.scipy.org/)
-
-	c. The numpy python library - provides fast floating-point array
-		operations in python. Versions earlier than 1.6 may not work.
-		(http://numpy.scipy.org/)
-
-	c. The cython python package - provides a variant of python that
-		compiles into C code that can itself be compiled and is faster (but
-        less flexible) than ordinary python. Versions earlier than 0.17
-		may not work.
-		(http://www.cython.org/)
-
-		Note that there can be issues compiling cython modules on
-		Windows: for tips on how to deal with them, see
-
-		https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
-
-	e. The gvar python package - provides tools for creating and
-		manipulating Gaussian random variables, which are used for
-		designing Bayesian priors, report fit results, etc, etc. This
-		package will be installed automatically when lsqfit is installed
-		provided setuptools are available (see next entry). gvar
-		is available on PyPI and so can also be installed
-		using 'pip install gvar'. If setuptools fails to install gvar
-		(eg, something goes wrong), install it yourself (eg, pip install gvar).
-		(https://github.com/gplepage/gvar or on PyPI)
-
-	f. (Optional) The vegas python package is optional for almost all lsqfit
+	b. (Optional) The vegas Python package is optional for almost all lsqfit
 		applications, but is needed in order to use vegas.BayesIntegrator.
 		Use version 3.3 or greater. vegas does adaptive multi-dimensional
 		integration.
 
-	g. pip is used for installing (and uninstalling) gvar. pip usually
-	    comes with python. pip can be used to install numpy and cython as
-	    well.
-	    (https://pypi.python.org/pypi/pip)
+ 	The numpy, scipy, and gvar Python packages are also required but these are
+	installed automatically if not present.
 
-	The lsqfit code works for Python 2.7, and Python 3.2-3.6. It does not work
+	The cython package is used to convert .pyx files to .c files. The .c files
+	are included in the distribution so cython is not required to install
+	lsqfit. To force regeneration of the .c files set USE_CYTHON=True in
+	setup.py. Note that there can be issues compiling cython modules on
+	Windows: for tips on how to deal with them, see
+
+		https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
+
+	pip is used to install and uninstall lsqfit. pip accompanies
+	python in most installations.
+
+	lsqfit works for Python 2.7, and Python 3.2-3.6. It does not work
 	for Python versions 2.5.X or earlier. It has not been tested for Python
 	3.0 and 3.1, but likely works at least with the latter. Some of the tests
 	don't work with Python 2.6. It has not been tested with 3.5 but probably
 	works.
 
-2. Use 'make install'. This will build the lsqfit package, and
-	then copy it into a standard directory in the user's space that
-	Python knows about.
+2. Use 'make install' to install gvar into the system's standard library
+	(as opposed to the user's library; use 'make install-user' to install
+	to the user's library).
 
 	N.B. Rather than using make and the makefile, one can instead use
-	standard python installation tools like 'pip install . --user'
-	(from within the main directory) or python distutils commands
-	like 'python setup.py install --user'.
+	standard python installation tools: run 'pip install .' to install
+	to the system library (or 'pip install . --user' to install to
+	the user's directory) from within the top directory.
 
 	N.B. If you have previously installed older versions of lsqfit,
 	consider removing the earlier modules to make sure that the new ones are
@@ -75,12 +54,6 @@ To install:
 	to a different place. Find out where the older modules are stored by
 	using 'pydoc lsqfit' before installing the new software
 	(pydoc lists the location of the module under "FILE").
-
-	N.B. To install lsqfit with an alternative version of pip, say pip3
-	for example, use 'make PIP=pip3 install'. Python's standard
-	directories are structured in such a way that it is necessary to do
-	a separate installation for each python version that will be used for
-	lsqfit.
 
 	N.B. Adjust the entries for variables include_dirs, library_dirs, and
 	runtime_library_dirs in setup.py if 'make install' generates complaints
@@ -109,7 +82,7 @@ To install:
 
 To uninstall:
 
-1. 'make uninstall' (probably) uninstalls most of what was installed. It
+1. 'make uninstall' uninstalls what was installed. It
     uses pip uninstall.
 
 

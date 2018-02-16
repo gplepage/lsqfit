@@ -1,5 +1,10 @@
-Version ???
-===============
+Version 9.1.4 2018-02-16
+=========================
+
+- New setup.py to facilitate installations when numpy and cython
+  are not installed. Also cython is now optional. scipy is now
+  required (to guarantee that lsqfit will work even if the gsl
+  library is absent).
 
 - Slight improvement to MultiFitter's plotting capabilities.
 

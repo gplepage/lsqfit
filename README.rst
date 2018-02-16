@@ -40,4 +40,4 @@ patch number bug fixes.
 
 
 | Created by G. Peter Lepage (Cornell University) 2008
-| Copyright (c) 2008-2017 G. Peter Lepage
+| Copyright (c) 2008-2018 G. Peter Lepage
