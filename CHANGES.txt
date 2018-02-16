@@ -1,4 +1,4 @@
-Version 9.1.4 2018-02-16
+Version 9.1.5 2018-02-16
 =========================
 
 - New setup.py to facilitate installations when numpy and cython
