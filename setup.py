@@ -162,5 +162,5 @@ try:
 except:
     # install without gsl
     print('\n*** Install failed. Trying again without gsl.\n')
-    setup_args['ext_modules'] = cythonize(ext_modules[:1])
+    setup_args['ext_modules'] = ext_modules[:1]
     setup(**setup_args)
