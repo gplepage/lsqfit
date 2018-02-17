@@ -88,9 +88,8 @@ test-download:
 clean:
 	rm -f -r build
 	rm -rf __pycache__
-	rm -f *.so *.tmp *.pyc *.prof *.c .coverage doc.zip
+	rm -f *.so *.tmp *.pyc *.prof .coverage doc.zip
 	rm -f -r dist
-	rm -f src/lsqfit/_utilities.c src/lsqfit/_extras.c
 	$(MAKE) -C doc/source clean
 	$(MAKE) -C tests clean
 	$(MAKE) -C examples clean
