@@ -291,7 +291,7 @@ to minimize ``logGBF``.
             ``"nmsimplex"`` (default); and ``"nmsimplex2rand"``, a version
             of ``"nmsimplex2"`` with random shifts in the start position.
 
-        analyzer: Optional function of ``x``, which is called after
+        **analyzer** (*callable*): Optional function of ``x``, which is called after
             each iteration. This can be used to inspect intermediate steps in
             the minimization, if needed.
 
