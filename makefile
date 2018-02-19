@@ -57,7 +57,7 @@ doc/lsqfit.pdf : $(SRCFILES) $(DOCFILES)
 doc-zip doc.zip:
 	cd doc/html; zip -r doc *; mv doc.zip ../..
 
-doc-all: doc-html doc-pdf doc-zip
+doc-all: doc-html doc-pdf
 
 sdist:			# source distribution
 	$(PYTHON) setup.py sdist
@@ -85,8 +85,9 @@ upload-pypi:
 
 upload-git:
 	echo  "version $(VERSION)"
-	make doc-all
-	git commit -a -m "prep documentation for upload"
+	make doc-html doc-pdf
+	git diff --exit-code
+	git diff --cached --exit-code
 	git push origin master
 
 tag-git:

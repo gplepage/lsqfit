@@ -1888,7 +1888,7 @@ for parameter ``a`` that is uniform between 0 and 0.04::
    print(fit)
    print('a =', (1+fit.p['50*a-1']) / 50)
 
-In general, setting a prior ``prior['erfinv(w)']`` equal to (0±1)/sqrt(2)
+In general,  setting a prior ``prior['erfinv(w)']`` equal to (0±1)/sqrt(2)
 means that the prior probability for variable ``w`` is constant between -1 and
 1, and zero elsewhere. Here ``w=50*a-1``, so that the prior distribution for
 ``a`` is uniform between 0 and 0.04, and zero elsewhere. This again guarantees

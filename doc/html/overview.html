@@ -2374,7 +2374,7 @@ the average is around 0.02. The output from this code is:</p>
               <span class="n">a</span>   <span class="mf">0.004</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.020</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.1</span><span class="p">)</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="mf">0.004</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
 </pre></div>
@@ -2434,7 +2434,7 @@ for parameter <code class="docutils literal"><span class="pre">a</span></code> t
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In general, setting a prior <code class="docutils literal"><span class="pre">prior['erfinv(w)']</span></code> equal to (0±1)/sqrt(2)
+<p>In general,  setting a prior <code class="docutils literal"><span class="pre">prior['erfinv(w)']</span></code> equal to (0±1)/sqrt(2)
 means that the prior probability for variable <code class="docutils literal"><span class="pre">w</span></code> is constant between -1 and
 1, and zero elsewhere. Here <code class="docutils literal"><span class="pre">w=50*a-1</span></code>, so that the prior distribution for
 <code class="docutils literal"><span class="pre">a</span></code> is uniform between 0 and 0.04, and zero elsewhere. This again guarantees

@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-# from setuptools import setup, Extension
+LSQFIT_VERSION = '9.1.6'
 
 from distutils.core import setup
 from distutils.extension import Extension
@@ -38,8 +38,6 @@ class build_ext(_build_ext):
 
 # from Cython.Build import cythonize
 # import numpy
-
-LSQFIT_VERSION = '9.1.5'
 
 # create lsqfit/_version.py so lsqfit knows its version number
 with open("src/lsqfit/_version.py","w") as version_file:
