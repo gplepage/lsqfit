@@ -16,6 +16,12 @@ PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 
+DOCFILES = doc/source/conf.py `ls doc/source/*.{rst,out,png}`
+SRCFILES = setup.py `ls src/lsqfit/*.{py,pyx}`
+
+echo :
+	echo $(DOCFILES)
+	echo $(SRCFILES)
 install-user :
 	$(PIP) install . --user
 
@@ -32,6 +38,12 @@ try:
 
 untry:
 	- cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
+
+doc-html:
+	make doc/html/index.html
+
+doc/html/index.html : $(SRCFILES) $(DOCFILES)
+	rm -rf doc/html; sphinx-build -b html doc/source doc/html
 
 doc-html:
 	rm -rf doc/html; sphinx-build -b html doc/source doc/html

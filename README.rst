@@ -8,9 +8,9 @@ makes heavy use of package ``gvar``, which provides tools for the analysis of
 error propagation, and also for the creation of complicated multi-dimensional
 Gaussian distributions. (``gvar`` is  distributed separately.) ``lsqfit``
 supports Bayesian priors for the fit parameters, with arbitrarily complicated
-multidimensional gaussian distributions. An tutorial on fitting is included in
+multidimensional gaussian distributions. A tutorial on fitting is included in
 the documentation; documentation is in the ``doc/`` subdirectory — see
-``doc/html/index.html`` (or online at <https://lsqfit.readthedocs.io>).
+``doc/html/index.html`` (or <https://lsqfit.readthedocs.io>).
 
 This code has been used on a laptop to fit functions of tens-to-thousands
 of parameters to tens-to-thousands of pieces of data. The use of

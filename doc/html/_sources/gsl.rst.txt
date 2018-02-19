@@ -21,17 +21,17 @@ fitters that are available for use by |nonlinear_fit|.
 
     :class:`gsl_multifit` is a wrapper for the ``multifit`` GSL routine.
 
-    **Parameters:**
+    :parameters:
 
-        **x0** (*array of floats*): Starting point for minimization.
+        * **x0** (*array of floats*): Starting point for minimization.
 
-        **n** (*positive int*): Length of vector returned by the fit function ``f(x)``.
+        * **n** (*positive int*): Length of vector returned by the fit function ``f(x)``.
 
-        **f** (*array-valued function*): ``sum_i f_i(x)**2`` is minimized
+        * **f** (*array-valued function*): ``sum_i f_i(x)**2`` is minimized
             by varying parameters ``x``. The parameters are a 1-d
             :class:`numpy` array of either numbers or :class:`gvar.GVar`\s.
 
-        **tol** (*float or tuple*): Assigning ``tol=(xtol, gtol, ftol)`` causes the
+        * **tol** (*float or tuple*): Assigning ``tol=(xtol, gtol, ftol)`` causes the
             fit to stop searching for a minimum when any of
 
                 ``xtol >=`` relative change in parameters between iterations
@@ -50,10 +50,10 @@ fitters that are available for use by |nonlinear_fit|.
             ``tol=1e-5``. (Note: ``ftol`` option is disabled in some versions
             of  the GSL library.)
 
-        **maxit** (*int*): Maximum number of iterations in search for minimum;
+        * **maxit** (*int*): Maximum number of iterations in search for minimum;
                 default is 1000.
 
-        **alg** (*str*): GSL algorithm to use for minimization. The following
+        * **alg** (*str*): GSL algorithm to use for minimization. The following
             options are supported (see GSL documentation for more
             information):
 
@@ -78,7 +78,7 @@ fitters that are available for use by |nonlinear_fit|.
                 ``'ddogleg'``
                     double dogleg algorithm.
 
-        **scaler** (*str*): Scaling method used in minimization. The following
+        * **scaler** (*str*): Scaling method used in minimization. The following
             options are supported (see GSL documentation for more
             information):
 
@@ -94,7 +94,7 @@ fitters that are available for use by |nonlinear_fit|.
                     Marquardt rescaling. Probably not as good as
                     the other two options.
 
-        **solver** (*str*): Method use to solve the linear equations for the
+        * **solver** (*str*): Method use to solve the linear equations for the
             solution from a given step. The following options
             are supported (see GSL documentation for more information):
 
@@ -110,17 +110,17 @@ fitters that are available for use by |nonlinear_fit|.
                     SVD decomposition. The most robust for singular
                     situations, but also the slowest.
 
-        **factor_up** (*float*): Factor by which search region is increased
+        * **factor_up** (*float*): Factor by which search region is increased
             when a search step is accepted. Values that are too large
             destablize the search; values that are too small slow down
             the search. Default is ``factor_up=3``.
 
-        **factor_down** (*float*): Factor by which search region is decreased
+        * **factor_down** (*float*): Factor by which search region is decreased
             when a search step is rejected. Values that are too large
             destablize the search; values that are too small slow down
             the search. Default is ``factor_up=2``.
 
-        **avmax** (*float*): Damping parameter for geodesic acceleration. It
+        * **avmax** (*float*): Damping parameter for geodesic acceleration. It
             is the maximum allowed value for the acceleration divided
             by the velocity. Smaller values imply less acceleration.
             Default is ``avmax=0.75``.
@@ -177,17 +177,17 @@ fitters that are available for use by |nonlinear_fit|.
     effective as :class:`gsl_multifit`. It is included for legacy
     code.
 
-    **Parameters:**
+    :parameters:
 
-        **x0** (*array of floats*): Starting point for minimization.
+        * **x0** (*array of floats*): Starting point for minimization.
 
-        **n** (*positive int*): Length of vector returned by the fit function ``f(x)``.
+        * **n** (*positive int*): Length of vector returned by the fit function ``f(x)``.
 
-        **f** (*array-valued function*): ``sum_i f_i(x)**2`` is minimized
+        * **f** (*array-valued function*): ``sum_i f_i(x)**2`` is minimized
             by varying parameters ``x``. The parameters are a 1-d
             :class:`numpy` array of either numbers or :class:`gvar.GVar`\s.
 
-        **tol** (*float or tuple*): Assigning ``tol=(xtol, gtol, ftol)`` causes the
+        * **tol** (*float or tuple*): Assigning ``tol=(xtol, gtol, ftol)`` causes the
             fit to stop searching for a minimum when any of
 
                 ``xtol >=`` relative change in parameters between iterations
@@ -206,16 +206,16 @@ fitters that are available for use by |nonlinear_fit|.
             ``tol=1e-5``. (Note: the ``ftol`` option is disabled in some
             versions of  the GSL library.)
 
-        **maxit** (*int*): Maximum number of iterations in search for minimum;
+        * **maxit** (*int*): Maximum number of iterations in search for minimum;
                 default is 1000.
 
-        **alg** (*str*): GSL algorithm to use for minimization. Two options are
+        * **alg** (*str*): GSL algorithm to use for minimization. Two options are
             currently available: ``"lmsder"``, the scaled LMDER algorithm
             (default); and ``"lmder"``, the unscaled LMDER algorithm.
             With version 2 of the GSL library, another option is ``"lmniel"``,
             which can be useful when there is much more data than parameters.
 
-        **analyzer** (*callable*): Optional function of ``x,`` ``[...f_i(x)...],``
+        * **analyzer** (*callable*): Optional function of ``x,`` ``[...f_i(x)...],``
             ``[[..df_ij(x)..]]``
             which is called after each iteration. This can be used to inspect
             intermediate steps in the minimization, if needed.
@@ -270,28 +270,28 @@ to minimize ``logGBF``.
 
     :class:`multiminex` is a wrapper for the ``multimin`` GSL routine.
 
-    **Parameters:**
+    :parameters:
 
-        **x0** (*array*): Starting point for minimization search.
+        * **x0** (*array*): Starting point for minimization search.
 
-        **f** (*callable*): Function ``f(x)`` to be minimized by varying vector ``x``.
+        * **f** (*callable*): Function ``f(x)`` to be minimized by varying vector ``x``.
 
-        **tol** (*float*): Minimization stops when ``x`` has converged to with
+        * **tol** (*float*): Minimization stops when ``x`` has converged to with
             tolerance ``tol``; default is ``1e-4``.
 
-        **maxit** (*int*): Maximum number of iterations in search for minimum;
+        * **maxit** (*int*): Maximum number of iterations in search for minimum;
             default is 1000.
 
-        **step** (*float*): Initial step size to use in varying components of ``x``;
+        * **step** (*float*): Initial step size to use in varying components of ``x``;
             default is 1.
 
-        **alg** (*str*): GSL algorithm to use for minimization. Three options are
+        * **alg** (*str*): GSL algorithm to use for minimization. Three options are
             currently available: ``"nmsimplex"``, Nelder Mead Simplex
             algorithm; ``"nmsimplex2"``, an improved version of
             ``"nmsimplex"`` (default); and ``"nmsimplex2rand"``, a version
             of ``"nmsimplex2"`` with random shifts in the start position.
 
-        **analyzer** (*callable*): Optional function of ``x``, which is called after
+        * **analyzer** (*callable*): Optional function of ``x``, which is called after
             each iteration. This can be used to inspect intermediate steps in
             the minimization, if needed.
 
