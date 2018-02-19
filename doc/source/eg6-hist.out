@@ -12,5 +12,5 @@ Settings:
 a = 0.011(13)
 
 Histogram Analysis:
-   mean = 0.014034(17)   sdev = 0.010534(14)   skew = 0.6080(13)   ex_kurt = -0.6186(24)
-   median = 0.011854(20)   plus = 0.014434(36)   minus = 0.008584(17)
+   mean = 0.014090(18)   sdev = 0.010718(16)   skew = 0.6257(14)   ex_kurt = -0.5498(24)
+   median = 0.011875(17)   plus = 0.014482(31)   minus = 0.008776(19)

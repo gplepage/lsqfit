@@ -45,7 +45,7 @@ prior = BufferDict(a = gvar(0.02, 0.02))
 
 stdout = sys.stdout
 for p in [prior, log_prior, sqrt_prior]:
-	key = list(p.keys())[0]
+	key = list(p.keys())[0].replace('(a)','_a')
 	sys.stdout = tee.tee(sys_stdout, open("eg6-{}.out".format(key), "w"))
 	def fcn(p, N=len(y)):
 		return N*[p['a']]

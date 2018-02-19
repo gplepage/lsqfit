@@ -1864,7 +1864,7 @@ parameter dictionary ``p`` has entries for both ``'a'`` and ``'log(a)'``.
 
 The result from this fit is
 
-.. literalinclude:: eg6-log(a).out
+.. literalinclude:: eg6-log_a.out
 
 which is more compelling. Parameters listed  above the dashed line in the
 parameter table are the actual  parameters used in the fit; those listed below
