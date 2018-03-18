@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.1.5 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.1.6 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.1.5',
+        VERSION:     '9.1.6',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.5 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -1709,7 +1709,7 @@ averaging the data.</p>
 
 <dl class="staticmethod">
 <dt id="lsqfit.MultiFitter.show_plots">
-<em class="property">static </em><code class="descname">show_plots</code><span class="sig-paren">(</span><em>fitdata</em>, <em>fitval</em>, <em>x=None</em>, <em>save=False</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">show_plots</code><span class="sig-paren">(</span><em>fitdata</em>, <em>fitval</em>, <em>x=None</em>, <em>save=False</em>, <em>view='std'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show plots of <code class="docutils literal"><span class="pre">fitdata[k]/fitval[k]</span></code> for each key <code class="docutils literal"><span class="pre">k</span></code> in <code class="docutils literal"><span class="pre">fitval</span></code>.</p>
 <p>Assumes <code class="xref py py-mod docutils literal"><span class="pre">matplotlib</span></code> is installed (to make the plots). Plots
 are shown for one correlator at a time. Press key <code class="docutils literal"><span class="pre">n</span></code> to see the
@@ -1717,12 +1717,29 @@ next correlator; press key <code class="docutils literal"><span class="pre">p</s
 <code class="docutils literal"><span class="pre">q</span></code> to quit the plot and return control to the calling program;
 press a digit to go directly to one of the first ten plots. Zoom,
 pan and save using the window controls.</p>
+<p>There are several different views available for each plot,
+specified by parameter <code class="docutils literal"><span class="pre">view</span></code>:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">view='std'</span></code>:</dt>
+<dd>Data and fit, with 1-sigma errors (default).</dd>
+<dt><code class="docutils literal"><span class="pre">view='ratio'</span></code>:</dt>
+<dd>Data divided by fit.</dd>
+<dt><code class="docutils literal"><span class="pre">view='diff'</span></code>:</dt>
+<dd>Data minus fit, divided by data’s standard deviation.</dd>
+<dt><code class="docutils literal"><span class="pre">view='log'</span></code>:</dt>
+<dd><code class="docutils literal"><span class="pre">'std'</span></code> plot with log scale on the vertical axis.</dd>
+<dt><code class="docutils literal"><span class="pre">vies='loglog'</span></code>:</dt>
+<dd><cite>‘std’`</cite> plot with log scale on both axes.</dd>
+</dl>
+</div></blockquote>
+<p>Press key <code class="docutils literal"><span class="pre">m</span></code> to toggle between these  views.</p>
 <p>Copies of the plots that are viewed can be saved by setting parameter
-<code class="docutils literal"><span class="pre">save=prefix</span></code> where <code class="docutils literal"><span class="pre">prefix</span></code> is a string used to create
+<code class="docutils literal"><span class="pre">save=fmt</span></code> where <code class="docutils literal"><span class="pre">fmt</span></code> is a string used to create
 file names: the file name for the plot corresponding to key
-<code class="docutils literal"><span class="pre">k</span></code> is <code class="docutils literal"><span class="pre">prefix.format(k)</span></code>. It is important that the
+<code class="docutils literal"><span class="pre">k</span></code> is <code class="docutils literal"><span class="pre">fmt.format(k)</span></code>. It is important that the
 filename end with a suffix indicating the type of plot file
-desired: e.g., <code class="docutils literal"><span class="pre">prefix='plot-{}.pdf'</span></code>.</p>
+desired: e.g., <code class="docutils literal"><span class="pre">fmt='plot-{}.pdf'</span></code>.</p>
 </dd></dl>
 
 <dl class="staticmethod">
@@ -1980,7 +1997,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.5 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.1.6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

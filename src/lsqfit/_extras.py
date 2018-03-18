@@ -1,7 +1,7 @@
 """ part of lsqfit module: extra functions  """
 
 # Created by G. Peter Lepage (Cornell University) on 2012-05-31.
-# Copyright (c) 2012-17 G. Peter Lepage.
+# Copyright (c) 2012-18 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -924,9 +924,10 @@ class MultiFitter(object):
             extend=mf['extend'], **fitterargs
             )
         self.fit.formatall = self.fit.format
-        def _show_plots(save=False):
+        def _show_plots(save=False, view='ratio'):
             MultiFitter.show_plots(
-                fitdata=fitdata, fitval=fitfcn(self.fit.p), save=save
+                fitdata=fitdata, fitval=fitfcn(self.fit.p),
+                save=save, view=view
                 )
         self.fit.show_plots = _show_plots
         return self.fit
@@ -1044,11 +1045,11 @@ class MultiFitter(object):
         if p0file is not None:
             self.fit.dump_pmean(p0file)
         self.fit.formatall = types.MethodType(MultiFitter._formatall, self.fit)
-        def _show_plots(save=False):
+        def _show_plots(save=False, view='ratio'):
             MultiFitter.show_plots(
                 fitdata=fitdata,
                 fitval=self.buildfitfcn(mf=mf)(self.fit.p),
-                save=save
+                save=save, view=view,
                 )
         self.fit.show_plots = _show_plots
         return self.fit
@@ -1308,7 +1309,7 @@ class MultiFitter(object):
         return gvar.dataset.avg_data(dset, **kargs)
 
     @staticmethod
-    def show_plots(fitdata, fitval, x=None, save=False):
+    def show_plots(fitdata, fitval, x=None, save=False, view='ratio'):
         """ Show plots of ``fitdata[k]/fitval[k]`` for each key ``k`` in ``fitval``.
 
         Assumes :mod:`matplotlib` is installed (to make the plots). Plots
@@ -1318,12 +1319,29 @@ class MultiFitter(object):
         press a digit to go directly to one of the first ten plots. Zoom,
         pan and save using the window controls.
 
+        There are several different views available for each plot,
+        specified by parameter ``view``:
+
+            ``view='ratio'``: Data divided by fit (default).
+
+            ``view='diff'``: Data minus fit, divided by data's standard deviation.
+
+            ``view='std'``: Data and fit.
+
+            ``view='log'``: ``'std'`` with log scale on the vertical axis.
+
+            ``view='loglog'``: `'std'`` with log scale on both axes.
+
+        Press key ``v`` to cycle through these  views; or press keys
+        ``r``, ``d``, or ``l`` for the ``'ratio'``, ``'diff'``,
+        or ``'log'`` views, respectively.
+
         Copies of the plots that are viewed can be saved by setting parameter
-        ``save=prefix`` where ``prefix`` is a string used to create
+        ``save=fmt`` where ``fmt`` is a string used to create
         file names: the file name for the plot corresponding to key
-        ``k`` is ``prefix.format(k)``. It is important that the
+        ``k`` is ``fmt.format(k)``. It is important that the
         filename end with a suffix indicating the type of plot file
-        desired: e.g., ``prefix='plot-{}.pdf'``.
+        desired: e.g., ``fmt='plot-{}.pdf'``.
         """
         import matplotlib.pyplot as plt
         # collect plotinfo
@@ -1332,11 +1350,12 @@ class MultiFitter(object):
             d = fitdata[tag]
             f = fitval[tag]
             plotinfo[tag] = (
-                numpy.arange(len(d)) if x is None else x[tag],
+                numpy.arange(len(d))+1 if x is None else x[tag],
                 gvar.mean(d), gvar.sdev(d),  gvar.mean(f), gvar.sdev(f)
                 )
         plotinfo_keys = list(plotinfo.keys())
         fig = plt.figure()
+        viewlist = ['ratio', 'diff', 'std', 'log', 'loglog']
         def onpress(event):
             if event is not None:
                 try:    # digit?
@@ -1346,9 +1365,17 @@ class MultiFitter(object):
                         onpress.idx += 1
                     elif event.key == 'p':
                         onpress.idx -= 1
-                    elif event.key == 'q':
-                        plt.close()
-                        return
+                    elif event.key == 'v':
+                        onpress.view = (onpress.view + 1) % len(viewlist)
+                    elif event.key == 'r':
+                        onpress.view = viewlist.index('ratio')
+                    elif event.key == 'd':
+                        onpress.view = viewlist.index('diff')
+                    elif event.key == 'l':
+                        onpress.view = viewlist.index('log')
+                    # elif event.key == 'q':  # unnecessary
+                    #     plt.close()
+                    #     return
                     else:
                         return
             else:
@@ -1363,27 +1390,85 @@ class MultiFitter(object):
             k = plotinfo_keys[i]
             x, g, dg, gth, dgth = plotinfo[k]
             fig.clear()
-            plt.title("%d) %s   (press 'n', 'p', 'q' or a digit)"
+            plt.title("%d) %s   (press 'n', 'p', 'q', 'v' or a digit)"
                         % (i, k))
-            plt.ylabel(str(k)+' / '+'fit')
-            plt.xlim(min(x)-0.5,max(x)+0.5)
-            ii = (gth != 0.0)       # check for exact zeros (eg, antiperiodic)
-            if len(x[ii]) > 0:
-                plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
-                if len(x[ii]) > 1:
-                    plt.plot(x, numpy.ones(len(x), float), 'r-')
-                    plt.plot(x[ii], 1+dgth[ii]/gth[ii], 'r--')
-                    plt.plot(x[ii], 1-dgth[ii]/gth[ii], 'r--')
-                else:
-                    extra_x = [x[ii] - 0.5, x[ii] + 0.5]
-                    plt.plot(extra_x, numpy.ones(2, float), 'r-')
-                    plt.plot(extra_x, 2 * [1 + dgth[ii]/gth[ii]], 'r--')
-                    plt.plot(extra_x, 2 * [1 - dgth[ii]/gth[ii]], 'r--')
+            dx = (max(x) - min(x)) / 50.
+            plt.xlim(min(x)-dx, max(x)+dx)
+            plotview = viewlist[onpress.view]
+            if plotview in ['std', 'log', 'loglog']:
+                if plotview in ['log', 'loglog']:
+                    plt.yscale('log', nonposy='clip')
+                if plotview == 'loglog':
+                    plt.xscale('log', nonposx='clip')
+                plt.ylabel(str(k) + '   [%s]' % plotview)
+                if len(x) > 0:
+                    plt.errorbar(x, g, dg, fmt='o')
+                    if len(x) > 1:
+                        plt.plot(x, gth, 'r-')
+                        plt.fill_between(
+                            x, y2=gth + dgth, y1=gth - dgth,
+                            color='r', alpha=0.075,
+                            )
+                    else:
+                        extra_x = [x[0] * 0.5, x[0] * 1.5]
+                        plt.plot(extra_x, 2 * [gth[0]], 'r-')
+                        plt.fill_between(
+                            x[0], y2=2 * [gth[0] + dgth[0]],
+                            y1=2 * [gth[0] - dgth[0]],
+                            color='r', alpha=0.075,
+                            )
+            elif plotview == 'ratio':
+                plt.ylabel(str(k)+' / '+'fit'  + '   [%s]' % plotview)
+                ii = (gth != 0.0)       # check for exact zeros (eg, antiperiodic)
+                if len(x[ii]) > 0:
+                    plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
+                    if len(x[ii]) > 1:
+                        plt.plot(x, numpy.ones(len(x), float), 'r-')
+                        plt.fill_between(
+                            x[ii], y2=1 + dgth[ii] / gth[ii],
+                            y1=1 - dgth[ii] / gth[ii],
+                            color='r', alpha=0.075,
+                            )
+                    else:
+                        extra_x = [x[ii] * 0.5, x[ii] * 1.5]
+                        plt.plot(extra_x, numpy.ones(2, float), 'r-')
+                        plt.fill_between(
+                            x[ii], y2=2 * [1 + dgth[ii]/gth[ii]],
+                            y1=2 * [1 - dgth[ii]/gth[ii]],
+                            color='r', alpha=0.075,
+                            )
+            elif plotview == 'diff':
+                plt.ylabel('({} - fit) / sigma'.format(str(k))  + '   [%s]' % plotview)
+                ii = (dg != 0.0)       # check for exact zeros
+                if len(x[ii]) > 0:
+                    plt.errorbar(
+                        x[ii], (g[ii] - gth[ii]) / dg[ii], dg[ii] / dg[ii],
+                        fmt='o'
+                        )
+                    if len(x[ii]) > 1:
+                        plt.plot(x, numpy.zeros(len(x), float), 'r-')
+                        plt.fill_between(
+                            x[ii], y2=dgth[ii] / dg[ii],
+                            y1=-dgth[ii] / dg[ii],
+                            color='r', alpha=0.075
+                            )
+                    else:
+                        extra_x = [x[ii] * 0.5, x[ii] * 1.5]
+                        plt.plot(extra_x, numpy.zeros(2, float), 'r-')
+                        plt.fill_between(
+                            x[ii], y2=2 * [dgth[ii] / dg[ii]],
+                            y1=2 * [-dgth[ii] / dg[ii]],
+                            color='r', alpha=0.075
+                            )
             if save:
                 plt.savefig(save.format(k), bbox_inches='tight')
             else:
                 plt.draw()
         onpress.idx = 0
+        try:
+            onpress.view = viewlist.index(view)
+        except ValueError:
+            raise ValueError('unknow view: ' + str(view))
         fig.canvas.mpl_connect('key_press_event', onpress)
         onpress(None)
         plt.show()

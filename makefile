@@ -19,10 +19,6 @@ VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 DOCFILES :=  $(shell ls doc/source/conf.py doc/source/*.{rst,out,png})
 SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
 
-echo :
-	echo $(DOCFILES)
-	echo $(SRCFILES)
-
 install-user :
 	$(PIP) install . --user
 
@@ -82,6 +78,9 @@ register-pypi:
 
 upload-pypi:
 	python setup.py sdist upload
+
+upload-twine:
+	twine upload dist/*
 
 upload-git:
 	echo  "version $(VERSION)"

@@ -19,7 +19,7 @@ point by have tested the other one as well --- see nist directory.)
 fitters, at least on my Mac.
 
 """
-# Copyright (c) 2016-17 G. Peter Lepage.
+# Copyright (c) 2016-18 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -81,6 +81,8 @@ def main():
     rat43()
     bennett5()
 
+def assert_equal(x, xstr):
+    assert ''.join(str(x.tolist()).split(',')) == xstr
 
 def misra1a():
     print(20 * '=', 'misra1a')
@@ -100,7 +102,7 @@ def misra1a():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[238.9(2.7) 0.0005502(73)]'
+    assert_equal(fit.p, '[238.9(2.7) 0.0005502(73)]')
 
 
 def chwirut2():
@@ -133,7 +135,7 @@ def chwirut2():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.167(38) 0.00517(67) 0.0122(15)]'
+    assert_equal(fit.p, '[0.167(38) 0.00517(67) 0.0122(15)]')
 
 
 def chwirut1():
@@ -213,7 +215,7 @@ def chwirut1():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.190(22) 0.00613(35) 0.01053(79)]'
+    assert_equal(fit.p, '[0.190(22) 0.00613(35) 0.01053(79)]')
 
 
 def lanczos3():
@@ -237,7 +239,7 @@ def lanczos3():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.087(17) 0.955(97) 0.844(41) 2.95(11) 1.583(58) 4.986(34)]'
+    assert_equal(fit.p, '[0.087(17) 0.955(97) 0.844(41) 2.95(11) 1.583(58) 4.986(34)]')
 
 
 def gauss1():
@@ -334,7 +336,7 @@ def gauss1():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[98.78(58) 0.01050(11) 100.49(59) 67.48(10) 23.13(17) 71.99(63) 179.00(12)\n 18.39(20)]'
+    assert_equal(fit.p, '[98.78(58) 0.01050(11) 100.49(59) 67.48(10) 23.13(17) 71.99(63) 179.00(12) 18.39(20)]')
 
 
 def gauss2():
@@ -431,7 +433,7 @@ def gauss2():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[99.02(54) 0.01099(13) 101.88(59) 107.03(15) 23.58(23) 72.05(62) 153.27(19)\n 19.53(26)]'
+    assert_equal(fit.p, '[99.02(54) 0.01099(13) 101.88(59) 107.03(15) 23.58(23) 72.05(62) 153.27(19) 19.53(26)]')
 
 
 def danwood():
@@ -450,7 +452,7 @@ def danwood():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.769(18) 3.860(52)]'
+    assert_equal(fit.p, '[0.769(18) 3.860(52)]')
 
 
 def misra1b():
@@ -471,7 +473,7 @@ def misra1b():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[338.0(3.2) 0.0003904(43)]'
+    assert_equal(fit.p, '[338.0(3.2) 0.0003904(43)]')
 
 
 def kirby2():
@@ -562,7 +564,7 @@ def kirby2():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[1.675(88) -0.1393(41) 0.002596(42) -0.001724(59) 0.00002166(20)]'
+    assert_equal(fit.p, '[1.675(88) -0.1393(41) 0.002596(42) -0.001724(59) 0.00002166(20)]')
 
 
 def hahn1():
@@ -649,7 +651,7 @@ def hahn1():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[1.08(17) -0.123(12) 0.00409(23) -1.43(28)e-06 -0.00576(25) 0.000241(10)\n -1.23(13)e-07]'
+    assert_equal(fit.p, '[1.08(17) -0.123(12) 0.00409(23) -1.43(28)e-06 -0.00576(25) 0.000241(10) -1.23(13)e-07]')
 
 
 def nelson():
@@ -712,7 +714,7 @@ def nelson():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[2.591(19) 5.6(6.1)e-09 -0.0577(40)]'
+    assert_equal(fit.p, '[2.591(19) 5.6(6.1)e-09 -0.0577(40)]')
 
 
 def mgh17():
@@ -738,7 +740,7 @@ def mgh17():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.3754(21) 1.94(22) -1.46(22) 0.01287(45) 0.02212(89)]'
+    assert_equal(fit.p, '[0.3754(21) 1.94(22) -1.46(22) 0.01287(45) 0.02212(89)]')
 
 
 def lanczos1():
@@ -763,7 +765,7 @@ def lanczos1():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.0950994 +- 5.3e-11 0.999997 +- 2.7e-10 0.8607 +- 1.4e-10 3 +- 3.3e-10\n 1.5576 +- 1.9e-10 5 +- 1.1e-10]'
+    assert_equal(fit.p, '[0.0950994 +- 5.3e-11 0.999997 +- 2.7e-10 0.8607 +- 1.4e-10 3 +- 3.3e-10 1.5576 +- 1.9e-10 5 +- 1.1e-10]')
 
 
 def lanczos2():
@@ -788,7 +790,7 @@ def lanczos2():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.09625(67) 1.0057(34) 0.8642(17) 3.0078(42) 1.5529(24) 5.0029(14)]'
+    assert_equal(fit.p, '[0.09625(67) 1.0057(34) 0.8642(17) 3.0078(42) 1.5529(24) 5.0029(14)]')
 
 
 def gauss3():
@@ -885,7 +887,7 @@ def gauss3():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[98.94(53) 0.01095(13) 100.70(81) 111.64(35) 23.30(37) 73.7(1.2) 147.76(40)\n 19.67(38)]'
+    assert_equal(fit.p, '[98.94(53) 0.01095(13) 100.70(81) 111.64(35) 23.30(37) 73.7(1.2) 147.76(40) 19.67(38)]')
 
 
 def misra1c():
@@ -906,7 +908,7 @@ def misra1c():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[636.4(4.7) 0.0002081(18)]'
+    assert_equal(fit.p, '[636.4(4.7) 0.0002081(18)]')
 
 
 def misra1d():
@@ -927,7 +929,7 @@ def misra1d():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[437.4(3.6) 0.0003023(29)]'
+    assert_equal(fit.p, '[437.4(3.6) 0.0003023(29)]')
 
 
 def roszman1():
@@ -954,7 +956,7 @@ def roszman1():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.202(19) -6.2(3.2)e-06 1204(74) -181(50)]'
+    assert_equal(fit.p, '[0.202(19) -6.2(3.2)e-06 1204(74) -181(50)]')
 
 
 def enso():
@@ -1009,7 +1011,7 @@ def enso():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[10.51(17) 3.08(24) 0.53(24) 44.31(94) -1.62(28) 0.53(48) 26.89(42)\n 0.21(51) 1.50(25)]'
+    assert_equal(fit.p, '[10.51(17) 3.08(24) 0.53(24) 44.31(94) -1.62(28) 0.53(48) 26.89(42) 0.21(51) 1.50(25)]')
 
 
 def mgh09():
@@ -1030,7 +1032,7 @@ def mgh09():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.193(11) 0.19(20) 0.123(81) 0.136(90)]'
+    assert_equal(fit.p, '[0.193(11) 0.19(20) 0.123(81) 0.136(90)]')
 
 
 def thurber():
@@ -1061,7 +1063,7 @@ def thurber():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[1288.1(4.7) 1491(40) 583(29) 75.4(5.6) 0.966(31) 0.398(15) 0.0497(66)]'
+    assert_equal(fit.p, '[1288.1(4.7) 1491(40) 583(29) 75.4(5.6) 0.966(31) 0.398(15) 0.0497(66)]')
 
 
 def boxbod():
@@ -1080,7 +1082,7 @@ def boxbod():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[214(12) 0.55(10)]'
+    assert_equal(fit.p, '[214(12) 0.55(10)]')
 
 
 def rat42():
@@ -1100,7 +1102,7 @@ def rat42():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[72.5(1.7) 2.618(88) 0.0674(34)]'
+    assert_equal(fit.p, '[72.5(1.7) 2.618(88) 0.0674(34)]')
 
 
 def mgh10():
@@ -1122,7 +1124,7 @@ def mgh10():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.00561(16) 6181(23) 345.22(78)]'
+    assert_equal(fit.p, '[0.00561(16) 6181(23) 345.22(78)]')
 
 
 def eckerle4():
@@ -1156,7 +1158,7 @@ def eckerle4():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[1.554(15) 4.089(47) 451.541(47)]'
+    assert_equal(fit.p, '[1.554(15) 4.089(47) 451.541(47)]')
 
 
 def rat43():
@@ -1178,7 +1180,7 @@ def rat43():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[700(16) 5.3(2.1) 0.76(20) 1.28(69)]'
+    assert_equal(fit.p, '[700(16) 5.3(2.1) 0.76(20) 1.28(69)]')
 
 
 def bennett5():
@@ -1257,7 +1259,7 @@ def bennett5():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[-2524(297) 46.7(1.2) 0.932(20)]'
+    assert_equal(fit.p, '[-2524(297) 46.7(1.2) 0.932(20)]')
 
 
 if __name__ == '__main__':
