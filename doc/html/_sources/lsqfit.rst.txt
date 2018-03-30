@@ -4,6 +4,7 @@
 .. |GVar| replace:: :class:`gvar.GVar`
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
+.. |MultiFitter| replace:: :class:`lsqfit.MultiFitter`
 
 .. moduleauthor:: G.P. Lepage <g.p.lepage@cornell.edu>
 
@@ -148,7 +149,7 @@ nonlinear_fit Objects
 
    .. automethod:: simulated_fit_iter(n=None, pexact=None, **kargs)
 
-   .. automethod:: bootstrap_iter(n=None, datalist=None)
+   .. automethod:: bootstrapped_fit_iter(n=None, datalist=None)
 
    .. automethod:: dump_p(filename)
 
@@ -397,6 +398,8 @@ organizing the chain of fits; these are discussed in the
    .. automethod:: MultiFitter.lsqfit
 
    .. automethod:: MultiFitter.chained_lsqfit
+
+   .. automethod:: MultiFitter.bootstrapped_fit_iter
 
    .. automethod:: process_data
 

@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012-2017 G. Peter Lepage.
+# Copyright (c) 2012-2018 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -567,28 +567,28 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def avg(x): # compute of avg of sequence
             return sum(x)/len(x)
 
-        yc = gvar(4.,0.25)
-        p2c = gvar(4.,0.25)
+        yc = gvar(4., 0.25)
+        p2c = gvar(4., 0.25)
         ny = 3
-        y = np.array([gvar(yc(),yc.sdev) for i in range(ny)])
-        p = np.array([gvar(p2c(),p2c.sdev)**0.5 for i in range(ny)])
-        eps = gvar(1.,1e-4)
+        y = np.array([gvar(yc(), yc.sdev) for i in range(ny)])
+        p = np.array([gvar(p2c(), p2c.sdev)**0.5 for i in range(ny)])
+        eps = gvar(1., 1e-4)
 
-        cases = [(y[:-1],p[:-1],False),
-                (bin(y),bin(p),False),
-                (bin(y),bin(p),True),
-                (bin(y),p[:-1],False),
-                (y[:-1],bin(p),False),
-                (y[:-1]*eps,p[:-1]*eps**0.5,False),
-                (y[:-1],None,False),
-                (y[:-1],None,True),
-                (bin(y),None,False)]
-        for y,p,use_dlist in cases:
+        cases = [(y[:-1], p[:-1], False),
+                (bin(y), bin(p), False),
+                (bin(y), bin(p), True),
+                (bin(y), p[:-1], False),
+                (y[:-1], bin(p), False),
+                (y[:-1]*eps, p[:-1]*eps**0.5, False),
+                (y[:-1], None, False),
+                (y[:-1], None, True),
+                (bin(y), None, False)]
+        for y, p, use_dlist in cases:
             # fit then bootstrap
             prior = None if p is None else np.array(p)
             p0 = gv.mean(y)**0.5 if p is None else None
-            data = None,y
-            def fcn(x,p):
+            data = None, y
+            def fcn(x, p):
                 return p**2 # np.array([p[k]**2 for k in p])
 
             fit = nonlinear_fit(data=data,fcn=fcn,prior=prior,p0=p0,debug=True)
@@ -598,9 +598,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
             bs_ans = gv.dataset.Dataset()
             nbs = 1000 / 10
-            fit_iter = fit.bootstrap_iter(n=None if use_dlist else nbs,
-                        datalist=(((None,yb) for yb in gv.bootstrap_iter(y,nbs))
-                                    if use_dlist else None))
+            if use_dlist:
+                fit_iter = fit.bootstrapped_fit_iter(
+                    datalist=((None,yb) for yb in gv.bootstrap_iter(y,nbs))
+                    )
+            else:
+                fit_iter = fit.bootstrapped_fit_iter(n=nbs)
             for bfit in fit_iter:
                 if bfit.error is None:
                     bs_ans.append(evfcn(bfit.pmean))
@@ -609,8 +612,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             fit_ans = avg(fit.p**2)
             rtol = 10.*fit_ans.sdev/nbs**0.5  # 10 sigma
             # print(bs_ans,fit_ans,target_ans,rtol)
-            self.assert_gvclose(target_ans,fit_ans,rtol=rtol)
-            self.assert_gvclose(bs_ans,fit_ans,rtol=rtol)
+            self.assert_gvclose(target_ans, fit_ans, rtol=rtol)
+            self.assert_gvclose(bs_ans, fit_ans, rtol=rtol)
 
 
     def test_svd(self):

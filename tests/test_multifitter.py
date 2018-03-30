@@ -283,6 +283,45 @@ class test_multifitter(unittest.TestCase):
             )
         self.assertEqual(str(fit6.p), "{'log(a)': -0.00073(48),'a': 0.99927(48)}")
 
+    def test_bootstrap_lsqfit(self):
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        fit = fitter.lsqfit(data=self.data, prior=self.prior)
+        datalist = gv.bootstrap_iter(self.data, n=10)
+        ds = gv.dataset.Dataset()
+        for bf in fitter.bootstrapped_fit_iter(datalist=datalist):
+            ds.append(bf.pmean)
+        p = gv.dataset.avg_data(ds, bstrap=True)
+        self.assertEqual(str(p), "{'a': 0.99921(42),'b': 0.49982(74)}")
+        self.assertEqual(ds.samplesize, 10)
+
+        pdatalist = (
+            fitter.process_data(d, fitter.models)
+            for d in gv.bootstrap_iter(self.data, n=10)
+            )
+        ds = gv.dataset.Dataset()
+        for bf in fitter.bootstrapped_fit_iter(pdatalist=pdatalist):
+            ds.append(bf.pmean)
+        p = gv.dataset.avg_data(ds, bstrap=True)
+        self.assertEqual(str(p), "{'a': 0.99915(77),'b': 0.49971(62)}")
+        self.assertEqual(ds.samplesize, 10)
+
+        ds = gv.dataset.Dataset()
+        for bf in fitter.bootstrapped_fit_iter(n=10):
+            ds.append(bf.pmean)
+        p = gv.dataset.avg_data(ds, bstrap=True)
+        self.assertEqual(str(p), "{'a': 0.99951(77),'b': 0.50005(45)}")
+        self.assertEqual(ds.samplesize, 10)
+
+    def test_bootstrap_chained_lsqfit(self):
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        fit = fitter.chained_lsqfit(data=self.data, prior=self.prior)
+        datalist = gv.bootstrap_iter(self.data, n=10)
+        ds = gv.dataset.Dataset()
+        for bf in fitter.bootstrapped_fit_iter(datalist=datalist):
+            ds.append(bf.pmean)
+        p = gv.dataset.avg_data(ds, bstrap=True)
+        self.assertEqual(str(p), "{'a': 0.99905(40),'b': 0.49995(85)}")
+
     def test_process_data(self):
         data = gv.BufferDict()
         data['l'] = ['1.0(3)', '2.0(4)', '3.0(3)', '4.0(4)']

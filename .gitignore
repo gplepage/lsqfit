@@ -31,7 +31,6 @@ todo/
 gvar-distribution/
 doc/html/_static/dialog-todo.png
 doc/latex/
-src/gvar/_version.py
 doc/source/outputfile.p
 lsqfit.egg-info
 outputfile.p

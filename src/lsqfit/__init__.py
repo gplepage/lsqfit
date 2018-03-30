@@ -101,7 +101,7 @@ import gvar as _gvar
 from ._extras import empbayes_fit, wavg
 from ._extras import MultiFitterModel, MultiFitter
 from ._utilities import _build_chiv_chivw
-from ._version import version as __version__
+# from ._version import version as __version__
 
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
@@ -1211,7 +1211,7 @@ class nonlinear_fit(object):
 
     simulate_iter = simulated_fit_iter
 
-    def bootstrapped_fit_iter(self, n=None, datalist=None):
+    def bootstrapped_fit_iter(self, n=None, datalist=None, **kargs):
         """ Iterator that returns bootstrap copies of a fit.
 
         A bootstrap analysis involves three steps: 1) make a large number
@@ -1243,10 +1243,10 @@ class nonlinear_fit(object):
             ...
 
             glist = []
-            for sfit in fit.bootstrapped_fit_iter(
-                n=100, datalist=datalist, bootstrap=True
+            for bsfit in fit.bootstrapped_fit_iter(
+                n=100, datalist=datalist,
                 ):
-                glist.append(g(sfit.pmean))
+                glist.append(g(bsfit.pmean))
 
             ... analyze samples glist[i] from g(p) distribution ...
 
@@ -1255,54 +1255,59 @@ class nonlinear_fit(object):
         the mean and standard deviation of ``glist[i]`` should agree
         with ``g(fit.p).mean`` and ``g(fit.p).sdev``.
 
-        :param n: Maximum number of iterations if ``n`` is not ``None``;
-            otherwise there is no maximum.
-        :type n: integer
-        :param datalist: Collection of bootstrap ``data`` sets for fitter.
-        :type datalist: sequence or iterator or ``None``
-        :returns: Iterator that returns an |nonlinear_fit| object
+        Args:
+            n (int): Maximum number of iterations if ``n`` is not ``None``;
+                otherwise there is no maximum.
+            datalist (iter): Collection of bootstrap ``data`` sets for fitter.
+            kargs (dict): Overrides arguments in original fit.
+
+        Returns:
+            Iterator that returns an |nonlinear_fit| object
             containing results from the fit to the next data set in
-            ``datalist``
+            ``datalist``.
         """
         fargs = dict(fitter=self.fitter, extend=self.extend, fcn=self.fcn)
         fargs.update(self.fitterargs)
-        prior = self.prior
+        fargs['p0'] = self.pmean
+        fargs['prior'] = self.prior
+        for k in kargs:
+            fargs[k] = kargs[k]
+        prior = fargs['prior']
+        del fargs['prior']
         if datalist is None:
             x = self.x
             y = self.y
-            if n is None:
-                raise ValueError("datalist, n can't both be None.")
             if prior is None:
                 for yb in _gvar.bootstrap_iter(y, n):
-                    fit = nonlinear_fit(
-                        data=(x, yb), prior=None, p0=self.pmean, **fargs
-                        )
+                    fit = nonlinear_fit(data=(x, yb), prior=None, **fargs)
                     yield fit
             else:
                 g = _gvar.BufferDict(y=y.flat, prior=prior.flat)
                 for gb in _gvar.bootstrap_iter(g, n):
                     yb = _reformat(y, buf=gb['y'])
                     priorb = _reformat(prior, buf=gb['prior'])
-                    fit = nonlinear_fit(
-                        data=(x, yb), prior=priorb, p0=self.pmean, **fargs
-                        )
+                    fit = nonlinear_fit(data=(x, yb), prior=priorb, **fargs)
                     yield fit
         else:
             if prior is None:
+                i = 0
                 for datab in datalist:
-                    fit = nonlinear_fit(
-                        data=datab, prior=None, p0=self.pmean, **fargs
-                        )
+                    i += 1
+                    if n is not None and i > n:
+                        break
+                    fit = nonlinear_fit(data=datab, prior=None, **fargs)
                     yield fit
             else:
                 piter = _gvar.bootstrap_iter(prior)
+                i = 0
                 for datab in datalist:
-                    fit = nonlinear_fit(
-                        data=datab, prior=next(piter), p0=self.pmean, **fargs
-                        )
+                    i += 1
+                    if n is not None and i > n:
+                        break
+                    fit = nonlinear_fit(data=datab, prior=next(piter), **fargs)
                     yield fit
 
-    bootstrap_iter = bootstrapped_fit_iter
+    bootstrap_iter = bootstrapped_fit_iter # legacy
 
 nonlinear_fit.set(**_FITTER_DEFAULTS)
 

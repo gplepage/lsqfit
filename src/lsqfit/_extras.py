@@ -914,10 +914,19 @@ class MultiFitter(object):
         mf['flatmodels'] = self.flatten_models(mf['models'])
         if prior is None:
             raise ValueError('no prior')
+
+        # save parameters for bootstrap (in case needed)
+        self.fitter_args_kargs = (
+            self.lsqfit,
+            dict(data=data, prior=prior, pdata=pdata),
+            kargs,
+            )
+
         # build prior, data and function
         fitprior = self.buildprior(prior=prior, mf=mf)
         fitdata = self.builddata(data=data, pdata=pdata, prior=prior, mf=mf)
         fitfcn = self.buildfitfcn(mf=mf)
+
         # fit
         self.fit = lsqfit.nonlinear_fit(
             data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
@@ -1012,6 +1021,13 @@ class MultiFitter(object):
         if prior is None:
             raise ValueError('no prior')
 
+        # save parameters for bootstrap (in case needed)
+        self.fitter_args_kargs = (
+            self.chained_lsqfit,
+            dict(data=data, prior=prior, pdata=pdata),
+            kargs,
+            )
+
         # build prior and data (marginalized and coarse-grained)
         fitdata = self.builddata(data=data, pdata=pdata, prior=prior, mf=mf)
         fitprior = self.buildprior(prior=prior, mf=mf)
@@ -1053,6 +1069,53 @@ class MultiFitter(object):
                 )
         self.fit.show_plots = _show_plots
         return self.fit
+
+    def bootstrapped_fit_iter(self, n=None, datalist=None, pdatalist=None, **kargs):
+        """ Iterator that returns bootstrap copies of a fit.
+
+        Bootstrap iterator for |MultiFitter| fits analogous to
+        :meth:`lsqfit.bootstrapped_fit_iter`. The bootstrap uses the
+        same parameters as the last fit done by the fitter unless they
+        are overridden by ``kargs``.
+
+        Args:
+            n (int): Maximum number of iterations if ``n`` is not ``None``;
+                otherwise there is no maximum. Default is ``None``.
+            datalist (iter): Collection of bootstrap data sets for fitter.
+            pdatalist (iter): Collection of bootstrap processed data sets for
+                fitter.
+            kargs (dict): Overrides arguments in original fit.
+
+        Returns:
+            Iterator that returns an |nonlinear_fit| object
+            containing results from the fit to the next data set in
+            ``datalist``.
+
+        """
+        if not hasattr(self, 'fitter_args_kargs'):
+            raise RuntimeError('must do at least fit before using bootstrap')
+        fitter, args, okargs = self.fitter_args_kargs
+        for k in okargs:
+            if k not in kargs:
+                kargs[k] = okargs[k]
+        if 'p0' not in kargs:
+            kargs['p0'] = self.fit.pmean
+        if datalist is not None:
+            pdatalist = (self.process_data(d, self.models) for d in datalist)
+        elif pdatalist is None:
+            pdata = args['pdata']
+            if pdata is None:
+                pdata = self.process_data(args['data'], self.models)
+            pdatalist = gvar.bootstrap_iter(pdata, n)
+        i = 0
+        for pdata in pdatalist:
+            i += 1
+            if n is not None and i > n:
+                break
+            fit = fitter(pdata=pdata, prior=args['prior'], **kargs)
+            yield fit
+
+    bootstrap_iter = bootstrapped_fit_iter   # legacy
 
     @staticmethod
     def _formatall(self, *args, **kargs):

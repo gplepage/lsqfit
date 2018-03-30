@@ -16,7 +16,7 @@ PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
 VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 
-DOCFILES :=  $(shell ls doc/source/conf.py doc/source/*.{rst,out,png})
+DOCFILES :=  $(shell ls doc/source/conf.py doc/source/*.{rst,out,png} 2>/dev/null)
 SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
 
 install-user :
@@ -80,7 +80,7 @@ upload-pypi:
 	python setup.py sdist upload
 
 upload-twine:
-	twine upload dist/*
+	twine upload dist/lsqfit-$(VERSION).tar.gz
 
 upload-git:
 	echo  "version $(VERSION)"

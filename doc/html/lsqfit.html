@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.2 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.3 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.2',
+        VERSION:     '9.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -640,8 +640,8 @@ arguments in <a class="reference internal" href="#lsqfit.nonlinear_fit" title="l
 </dd></dl>
 
 <dl class="method">
-<dt id="lsqfit.nonlinear_fit.bootstrap_iter">
-<code class="descname">bootstrap_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>datalist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrap_iter" title="Permalink to this definition">¶</a></dt>
+<dt id="lsqfit.nonlinear_fit.bootstrapped_fit_iter">
+<code class="descname">bootstrapped_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>datalist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns bootstrap copies of a fit.</p>
 <p>A bootstrap analysis involves three steps: 1) make a large number
 of “bootstrap copies” of the original input data and prior that differ
@@ -669,10 +669,10 @@ of the fit parameters:</p>
 <span class="o">...</span>
 
 <span class="n">glist</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span>
-    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">datalist</span><span class="o">=</span><span class="n">datalist</span><span class="p">,</span> <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span>
+<span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span>
+    <span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">datalist</span><span class="o">=</span><span class="n">datalist</span><span class="p">,</span>
     <span class="p">):</span>
-    <span class="n">glist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">sfit</span><span class="o">.</span><span class="n">pmean</span><span class="p">))</span>
+    <span class="n">glist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">bsfit</span><span class="o">.</span><span class="n">pmean</span><span class="p">))</span>
 
 <span class="o">...</span> <span class="n">analyze</span> <span class="n">samples</span> <span class="n">glist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kn">from</span> <span class="nn">g</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="n">distribution</span> <span class="o">...</span>
 </pre></div>
@@ -686,15 +686,16 @@ with <code class="docutils literal"><span class="pre">g(fit.p).mean</span></code
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong> (<em>integer</em>) – Maximum number of iterations if <code class="docutils literal"><span class="pre">n</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>;
+<li><strong>n</strong> (<em>int</em>) – Maximum number of iterations if <code class="docutils literal"><span class="pre">n</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>;
 otherwise there is no maximum.</li>
-<li><strong>datalist</strong> (sequence or iterator or <code class="docutils literal"><span class="pre">None</span></code>) – Collection of bootstrap <code class="docutils literal"><span class="pre">data</span></code> sets for fitter.</li>
+<li><strong>datalist</strong> (<em>iter</em>) – Collection of bootstrap <code class="docutils literal"><span class="pre">data</span></code> sets for fitter.</li>
+<li><strong>kargs</strong> (<em>dict</em>) – Overrides arguments in original fit.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Iterator that returns an <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object
 containing results from the fit to the next data set in
-<code class="docutils literal"><span class="pre">datalist</span></code></p>
+<code class="docutils literal"><span class="pre">datalist</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -1683,6 +1684,37 @@ the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="lsqfit.MultiFitter.bootstrapped_fit_iter">
+<code class="descname">bootstrapped_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>datalist=None</em>, <em>pdatalist=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.bootstrapped_fit_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator that returns bootstrap copies of a fit.</p>
+<p>Bootstrap iterator for <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.MultiFitter</span></code></a> fits analogous to
+<code class="xref py py-meth docutils literal"><span class="pre">lsqfit.bootstrapped_fit_iter()</span></code>. The bootstrap uses the
+same parameters as the last fit done by the fitter unless they
+are overridden by <code class="docutils literal"><span class="pre">kargs</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<em>int</em>) – Maximum number of iterations if <code class="docutils literal"><span class="pre">n</span></code> is not <code class="docutils literal"><span class="pre">None</span></code>;
+otherwise there is no maximum. Default is <code class="docutils literal"><span class="pre">None</span></code>.</li>
+<li><strong>datalist</strong> (<em>iter</em>) – Collection of bootstrap data sets for fitter.</li>
+<li><strong>pdatalist</strong> (<em>iter</em>) – Collection of bootstrap processed data sets for
+fitter.</li>
+<li><strong>kargs</strong> (<em>dict</em>) – Overrides arguments in original fit.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Iterator that returns an <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object
+containing results from the fit to the next data set in
+<code class="docutils literal"><span class="pre">datalist</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="staticmethod">
 <dt id="lsqfit.MultiFitter.process_data">
 <em class="property">static </em><code class="descname">process_data</code><span class="sig-paren">(</span><em>data</em>, <em>models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_data" title="Permalink to this definition">¶</a></dt>
@@ -1992,7 +2024,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

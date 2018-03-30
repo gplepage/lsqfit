@@ -1,3 +1,15 @@
+Version 9.3 2018-03-30
+======================
+- Adds bootstrapped_fit_iter to MultiFitter (analogous to same for
+  nonlinear_fit).
+
+- Minor bug fixes in nonlinear_fit.bootstrapped_fit_iter.
+
+- Method name bootstrap_iter replaced by bootstrapped_fit_iter, but old
+  name still present, for legacy code.
+
+- Improved setup.py.
+
 Version 9.2 2018-03-18
 ======================
 Minor update.

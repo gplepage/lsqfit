@@ -13,11 +13,12 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-LSQFIT_VERSION = '9.2'
+LSQFIT_VERSION = '9.3'
 
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.build_ext import build_ext as _build_ext
+from distutils.command.build_py import build_py as _build_py
 
 # compile from existing .c files if USE_CYTHON is False
 USE_CYTHON = False # True
@@ -28,6 +29,7 @@ class build_ext(_build_ext):
     # this code adapted from https://github.com/pandas-dev/pandas setup.py
     def build_extensions(self):
         import numpy
+        # add version number
         if USE_CYTHON:
             from Cython.Build import cythonize
             self.extensions = cythonize(self.extensions)
@@ -36,15 +38,13 @@ class build_ext(_build_ext):
             ext.include_dirs.append(numpy_include)
         _build_ext.build_extensions(self)
 
-# from Cython.Build import cythonize
-# import numpy
-
-# create lsqfit/_version.py so lsqfit knows its version number
-with open("src/lsqfit/_version.py","w") as version_file:
-    version_file.write(
-        "# File created by lsqfit setup.py\nversion = '%s'\n"
-        % LSQFIT_VERSION
-        )
+class build_py(_build_py):
+    # adds version info
+    def run(self):
+        """ Append version number to lsqfit/__init__.py """
+        with open('src/lsqfit/__init__.py', 'a') as lsfile:
+            lsfile.write("\n__version__ = '%s'\n" % LSQFIT_VERSION)
+        _build_py.run(self)
 
 # extension modules
 # Add explicit directories to the ..._dirs variables if
@@ -107,7 +107,7 @@ setup_args = dict(
     description='Utilities for nonlinear least-squares fits.',
     author='G. Peter Lepage',
     author_email='g.p.lepage@cornell.edu',
-    cmdclass={'build_ext':build_ext},
+    cmdclass={'build_ext':build_ext, 'build_py':build_py},
     packages=packages,
     package_dir=package_dir,
     package_data=package_data,
