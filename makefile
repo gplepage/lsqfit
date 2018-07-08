@@ -49,8 +49,8 @@ doc-html:
 doc/html/index.html : $(SRCFILES) $(DOCFILES)
 	rm -rf doc/html; sphinx-build -b html doc/source doc/html
 
-doc-pdf:
-	make doc/lsqfit.pdf
+# doc-pdf:
+# 	make doc/lsqfit.pdf
 
 doc/lsqfit.pdf : $(SRCFILES) $(DOCFILES)
 	rm -rf doc/lsqfit.pdf
@@ -60,7 +60,7 @@ doc/lsqfit.pdf : $(SRCFILES) $(DOCFILES)
 doc-zip doc.zip:
 	cd doc/html; zip -r doc *; mv doc.zip ../..
 
-doc-all: doc-html doc-pdf
+# doc-all: doc-html # doc-pdf
 
 sdist:	$(CYTHONFILES)		# source distribution
 	$(PYTHON) setup.py sdist
@@ -91,7 +91,7 @@ upload-twine: $(CYTHONFILES)
 
 upload-git: $(CYTHONFILES)
 	echo  "version $(VERSION)"
-	make doc-html doc-pdf
+	make doc-html # doc-pdf
 	git diff --exit-code
 	git diff --cached --exit-code
 	git push origin master
