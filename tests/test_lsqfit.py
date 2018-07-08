@@ -1085,6 +1085,16 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(p['s'],nonzero_p0(prior['s']))
         self.assert_arraysequal(p['v'],nonzero_p0(prior['v']))
 
+        # p0 is True
+        prior = BufferDict()
+        prior['s'] = gv.gvar(100.0, 2.5)
+        prior['v'] = gv.gvar([1., 2.], [3., 4.])
+        # prior = lsqfit._unpack_gvars(prior)
+        p = lsqfit._unpack_p0(p0=True, p0file=None, prior=prior, extend=True)
+        self.assertTrue('s' in p)
+        self.assertTrue('v' in p)
+        self.assertGreater(prior['s'].sdev * 10, abs(prior['s'].mean - p['s']))
+        self.assertNotEqual(prior['s'].mean, p['s'])
 
     def test_unpack_gvars(self):
         """ _unpack_gvars """

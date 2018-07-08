@@ -320,7 +320,9 @@ class test_multifitter(unittest.TestCase):
         for bf in fitter.bootstrapped_fit_iter(datalist=datalist):
             ds.append(bf.pmean)
         p = gv.dataset.avg_data(ds, bstrap=True)
-        self.assertEqual(str(p), "{'a': 0.99905(40),'b': 0.49995(85)}")
+        self.assertTrue(abs(p['a'].mean - 1.) < 5 * p['a'].sdev)
+        self.assertTrue(abs(p['b'].mean - 0.5) < 5 * p['a'].sdev)
+        # self.assertEqual(str(p), "{'a': 0.99905(40),'b': 0.49995(85)}")
 
     def test_process_data(self):
         data = gv.BufferDict()

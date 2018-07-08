@@ -21,7 +21,7 @@ import sys
 from numpy cimport npy_intp as INTP_TYPE
 # index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
 
-# gsl interface
+#  gsl interface
 cdef extern from "gsl/gsl_sf.h":
     struct gsl_sf_result_struct:
         double val

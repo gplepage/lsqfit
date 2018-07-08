@@ -1,3 +1,15 @@
+Version 9.4 2018-07-08
+======================
+- p0=True generates a random p0 from the prior in nonlinear_fit. This
+  can be useful for fits that are sensitive to the starting point.
+
+- Updated time measurements for Python3.
+
+- Improved makefile and pypi documentation.
+
+- Fixed issue in tests.
+
+
 Version 9.3 2018-03-30
 ======================
 - Adds bootstrapped_fit_iter to MultiFitter (analogous to same for
@@ -9,6 +21,7 @@ Version 9.3 2018-03-30
   name still present, for legacy code.
 
 - Improved setup.py.
+
 
 Version 9.2 2018-03-18
 ======================

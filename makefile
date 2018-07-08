@@ -18,12 +18,19 @@ VERSION = `python -c 'import lsqfit; print lsqfit.__version__'`
 
 DOCFILES :=  $(shell ls doc/source/conf.py doc/source/*.{rst,out,png} 2>/dev/null)
 SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
+CYTHONFILES := src/lsqfit/_gsl.c src/lsqfit/_utilities.c
 
-install-user :
+install-user : $(CYTHONFILES)
 	$(PIP) install . --user
 
-install install-sys :
+install install-sys : $(CYTHONFILES)
 	$(PIP) install .
+
+src/lsqfit/_gsl.c : src/lsqfit/_gsl.pyx
+	cd src/lsqfit; cython _gsl.pyx
+
+src/lsqfit/_utilities.c : src/lsqfit/_utilities.pyx
+	cd src/lsqfit; cython _utilities.pyx
 
 # $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
 
@@ -55,7 +62,7 @@ doc-zip doc.zip:
 
 doc-all: doc-html doc-pdf
 
-sdist:			# source distribution
+sdist:	$(CYTHONFILES)		# source distribution
 	$(PYTHON) setup.py sdist
 
 .PHONY: tests
@@ -76,13 +83,13 @@ run run-examples:
 register-pypi:
 	python setup.py register # use only once, first time
 
-upload-pypi:
-	python setup.py sdist upload
+# upload-pypi:
+# 	python setup.py sdist upload
 
-upload-twine:
+upload-twine: $(CYTHONFILES)
 	twine upload dist/lsqfit-$(VERSION).tar.gz
 
-upload-git:
+upload-git: $(CYTHONFILES)
 	echo  "version $(VERSION)"
 	make doc-html doc-pdf
 	git diff --exit-code
@@ -97,6 +104,9 @@ tag-git:
 test-download:
 	-$(PIP) uninstall lsqfit
 	$(PIP) install lsqfit --no-cache-dir
+
+test-readme:
+	python setup.py --long-description | rst2html.py > README.html
 
 clean:
 	rm -f -r build

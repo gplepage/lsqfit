@@ -228,7 +228,7 @@ class nonlinear_fit(object):
             structure (or shape) as ``prior``. The default value is ``None``;
             ``prior`` must be defined if ``p0`` is ``None``.
 
-        p0 (dict, array, float or None): Starting values for fit
+        p0 (dict, array, float, None, or True): Starting values for fit
             parameters in fit. :class:`lsqfit.nonlinear_fit` adjusts ``p0`` to
             make it consistent in shape and structure with ``prior`` when the
             latter is specified: elements missing from ``p0`` are filled in
@@ -238,8 +238,10 @@ class nonlinear_fit(object):
             from that file; best-fit parameter values are written out to the
             same file after the fit (for priming future fits). If ``p0`` is
             ``None`` or the attempt to read the file fails, starting values
-            are extracted from ``prior``. The default value is ``None``;
-            ``p0`` must be defined if ``prior`` is ``None``.
+            are extracted from ``prior``. If ``p0`` is ``True``, it
+            is replaced by a starting point drawn at random from the
+            ``prior`` distribution. The default value is ``None``;
+            ``p0`` must be explicitly specified if ``prior`` is ``None``.
 
         svdcut (float or None): If ``svdcut`` is nonzero
             (but not ``None``), SVD cuts are applied to every block-diagonal
@@ -453,7 +455,7 @@ class nonlinear_fit(object):
             raise ValueError('neither data nor udata is specified')
         if fcn is None:
             raise ValueError('no fit function specified')
-        if p0 is None and prior is None:
+        if (p0 is None or p0 is True) and prior is None:
             raise ValueError('neither p0 nor prior is specified')
 
         # install defaults where needed
@@ -505,7 +507,9 @@ class nonlinear_fit(object):
         self.fitter = DEFAULT_FITTER if fitter is None else fitter
         if self.fitter not in nonlinear_fit.FITTERS:
             raise ValueError('unknown fitter: ' + str(self.fitter))
-        cpu_time = time.clock()
+
+        clock = time.process_timer if hasattr(time, 'process_timer') else time.time
+        cpu_time = clock()
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
         x, y, prior, fdata = _unpack_data(
@@ -637,7 +641,7 @@ class nonlinear_fit(object):
         if self.p0file is not None:
             self.dump_pmean(self.p0file)
 
-        self.time = time.clock()-cpu_time
+        self.time = clock()-cpu_time
         if self.debug:
             self.check_roundoff()
 
@@ -1448,7 +1452,8 @@ def _unpack_p0(p0, p0file, prior, extend):
     checked against the prior to make sure that all elements have the
     right shape; if not the p0 elements are adjusted (using info from
     the prior) to be the correct shape. If p0 is a dictionary,
-    keys in p0 that are not in prior are discarded.
+    keys in p0 that are not in prior are discarded. If p0 is True,
+    then a random p0 is generated from the prior.
 
     Note that redundant keys (eg, 'c' if 'logc' is also a key) are
     removed from p0 if extend=True and there is no prior. There is
@@ -1470,6 +1475,8 @@ def _unpack_p0(p0, p0file, prior, extend):
                 p0 = None
     if p0 is not None:
         # repackage as BufferDict or numpy array
+        if p0 is True:
+            p0 = next(_gvar.raniter(prior))
         if hasattr(p0, 'keys'):
             p0 = _gvar.BufferDict(p0)
             if p0.dtype != float:

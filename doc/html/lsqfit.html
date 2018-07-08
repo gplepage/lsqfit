@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.3 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.4 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '9.3',
+        VERSION:     '9.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -49,7 +49,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.4 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -216,7 +216,7 @@ fit function <code class="docutils literal"><span class="pre">fcn(x,</span> <spa
 are stored in a dictionary (or array) with the same keys and
 structure (or shape) as <code class="docutils literal"><span class="pre">prior</span></code>. The default value is <code class="docutils literal"><span class="pre">None</span></code>;
 <code class="docutils literal"><span class="pre">prior</span></code> must be defined if <code class="docutils literal"><span class="pre">p0</span></code> is <code class="docutils literal"><span class="pre">None</span></code>.</li>
-<li><strong>p0</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>float</em><em> or </em><em>None</em>) – Starting values for fit
+<li><strong>p0</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>float</em><em>, </em><em>None</em><em>, or </em><em>True</em>) – Starting values for fit
 parameters in fit. <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a> adjusts <code class="docutils literal"><span class="pre">p0</span></code> to
 make it consistent in shape and structure with <code class="docutils literal"><span class="pre">prior</span></code> when the
 latter is specified: elements missing from <code class="docutils literal"><span class="pre">p0</span></code> are filled in
@@ -226,8 +226,10 @@ and <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.non
 from that file; best-fit parameter values are written out to the
 same file after the fit (for priming future fits). If <code class="docutils literal"><span class="pre">p0</span></code> is
 <code class="docutils literal"><span class="pre">None</span></code> or the attempt to read the file fails, starting values
-are extracted from <code class="docutils literal"><span class="pre">prior</span></code>. The default value is <code class="docutils literal"><span class="pre">None</span></code>;
-<code class="docutils literal"><span class="pre">p0</span></code> must be defined if <code class="docutils literal"><span class="pre">prior</span></code> is <code class="docutils literal"><span class="pre">None</span></code>.</li>
+are extracted from <code class="docutils literal"><span class="pre">prior</span></code>. If <code class="docutils literal"><span class="pre">p0</span></code> is <code class="docutils literal"><span class="pre">True</span></code>, it
+is replaced by a starting point drawn at random from the
+<code class="docutils literal"><span class="pre">prior</span></code> distribution. The default value is <code class="docutils literal"><span class="pre">None</span></code>;
+<code class="docutils literal"><span class="pre">p0</span></code> must be explicitly specified if <code class="docutils literal"><span class="pre">prior</span></code> is <code class="docutils literal"><span class="pre">None</span></code>.</li>
 <li><strong>svdcut</strong> (<em>float</em><em> or </em><em>None</em>) – If <code class="docutils literal"><span class="pre">svdcut</span></code> is nonzero
 (but not <code class="docutils literal"><span class="pre">None</span></code>), SVD cuts are applied to every block-diagonal
 sub-matrix of the covariance matrix for the data <code class="docutils literal"><span class="pre">y</span></code> and <code class="docutils literal"><span class="pre">prior</span></code>
@@ -2024,7 +2026,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.4 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
