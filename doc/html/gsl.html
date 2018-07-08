@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>GSL Routines &#8212; lsqfit 9.4 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '9.4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
 <link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-  </head>
-  <body>
+  </head><body>
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -62,17 +53,17 @@
 <h1>GSL Routines<a class="headerlink" href="#gsl-routines" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="fitters">
 <h2>Fitters<a class="headerlink" href="#fitters" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> uses routines from the GSL C-library provided it is
+<p><a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> uses routines from the GSL C-library provided it is
 installed; GSL is the open-source Gnu Scientific Library. There are two
-fitters that are available for use by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
+fitters that are available for use by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <dl class="class">
 <dt id="lsqfit.gsl_multifit">
 <em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">gsl_multifit</code><span class="sig-paren">(</span><em>n</em>, <em>f</em>, <em>tol=(1e-5</em>, <em>0.0</em>, <em>0.0)</em>, <em>maxit=1000</em>, <em>alg='lm'</em>, <em>solver='qr'</em>, <em>scaler='more'</em>, <em>factor_up=3.0</em>, <em>factor_down=2.0</em>, <em>avmax=0.75</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.gsl_multifit" title="Permalink to this definition">¶</a></dt>
 <dd><p>GSL fitter for nonlinear least-squares multidimensional fits.</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">gsl_multifit</span></code> is a function-class whose constructor does a
-least-squares fit by minimizing <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
-vector <code class="docutils literal"><span class="pre">x</span></code>.</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">gsl_multifit</span></code> is a wrapper for the <code class="docutils literal"><span class="pre">multifit</span></code> GSL routine.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gsl_multifit</span></code> is a function-class whose constructor does a
+least-squares fit by minimizing <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
+vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gsl_multifit</span></code> is a wrapper for the <code class="docutils literal notranslate"><span class="pre">multifit</span></code> GSL routine.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -80,31 +71,31 @@ vector <code class="docutils literal"><span class="pre">x</span></code>.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last">
 <li><p class="first"><strong>x0</strong> (<em>array of floats</em>): Starting point for minimization.</p>
 </li>
-<li><p class="first"><strong>n</strong> (<em>positive int</em>): Length of vector returned by the fit function <code class="docutils literal"><span class="pre">f(x)</span></code>.</p>
+<li><p class="first"><strong>n</strong> (<em>positive int</em>): Length of vector returned by the fit function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</p>
 </li>
 <li><dl class="first docutils">
-<dt><strong>f</strong> (<em>array-valued function</em>): <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized</dt>
-<dd><p class="first last">by varying parameters <code class="docutils literal"><span class="pre">x</span></code>. The parameters are a 1-d
-<code class="xref py py-class docutils literal"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</p>
+<dt><strong>f</strong> (<em>array-valued function</em>): <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized</dt>
+<dd><p class="first last">by varying parameters <code class="docutils literal notranslate"><span class="pre">x</span></code>. The parameters are a 1-d
+<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>tol</strong> (<em>float or tuple</em>): Assigning <code class="docutils literal"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the</dt>
+<dt><strong>tol</strong> (<em>float or tuple</em>): Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the</dt>
 <dd><p class="first">fit to stop searching for a minimum when any of</p>
 <blockquote>
-<div><p><code class="docutils literal"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
-<p><code class="docutils literal"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal"><span class="pre">chi**2</span></code></p>
-<p><code class="docutils literal"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal"><span class="pre">chi**2</span></code> between iterations</p>
+<div><p><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
+<p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p>
 </div></blockquote>
 <p class="last">is statisfied. See the GSL documentation for detailed
 definitions of the stopping conditions. Typically one sets
-<code class="docutils literal"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal"><span class="pre">d</span></code> is the number of digits of precision
-desired in the result, while <code class="docutils literal"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
-<code class="docutils literal"><span class="pre">tol=eps</span></code> where <code class="docutils literal"><span class="pre">eps</span></code> is a number is equivalent to setting
-<code class="docutils literal"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2)</span></code> is
-equivlent to setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
-<code class="docutils literal"><span class="pre">tol=1e-5</span></code>. (Note: <code class="docutils literal"><span class="pre">ftol</span></code> option is disabled in some versions
+<code class="docutils literal notranslate"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal notranslate"><span class="pre">d</span></code> is the number of digits of precision
+desired in the result, while <code class="docutils literal notranslate"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal notranslate"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
+<code class="docutils literal notranslate"><span class="pre">tol=eps</span></code> where <code class="docutils literal notranslate"><span class="pre">eps</span></code> is a number is equivalent to setting
+<code class="docutils literal notranslate"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2)</span></code> is
+equivlent to setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
+<code class="docutils literal notranslate"><span class="pre">tol=1e-5</span></code>. (Note: <code class="docutils literal notranslate"><span class="pre">ftol</span></code> option is disabled in some versions
 of  the GSL library.)</p>
 </dd>
 </dl>
@@ -121,25 +112,25 @@ of  the GSL library.)</p>
 information):</p>
 <blockquote class="last">
 <div><dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">'lm'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'lm'</span></code></dt>
 <dd><p class="first last">Levenberg-Marquardt algorithm (default).</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'lmaccel'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'lmaccel'</span></code></dt>
 <dd><p class="first last">Levenberg-Marquardt algorithm with geodesic
-acceleration. Can be faster than <code class="docutils literal"><span class="pre">'lm'</span></code> but
+acceleration. Can be faster than <code class="docutils literal notranslate"><span class="pre">'lm'</span></code> but
 less stable. Stability is controlled by damping
-parameter <code class="docutils literal"><span class="pre">avmax</span></code>; setting it to zero turns
+parameter <code class="docutils literal notranslate"><span class="pre">avmax</span></code>; setting it to zero turns
 acceleration off.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'subspace2D'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'subspace2D'</span></code></dt>
 <dd><p class="first last">2D generalization of dogleg algorithm. This
-can be substantially faster than the two <code class="docutils literal"><span class="pre">'lm'</span></code>
+can be substantially faster than the two <code class="docutils literal notranslate"><span class="pre">'lm'</span></code>
 algorithms.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'dogleg'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'dogleg'</span></code></dt>
 <dd><p class="first last">dogleg algorithm.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'ddogleg'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'ddogleg'</span></code></dt>
 <dd><p class="first last">double dogleg algorithm.</p>
 </dd>
 </dl>
@@ -153,15 +144,15 @@ algorithms.</p>
 information):</p>
 <blockquote class="last">
 <div><dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">'more'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'more'</span></code></dt>
 <dd><p class="first last">More rescaling, which makes the problem scale
 invariant. Default.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'levenberg'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'levenberg'</span></code></dt>
 <dd><p class="first last">Levenberg rescaling, which is not scale
 invariant but may be more efficient in certain problems.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'marquardt'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'marquardt'</span></code></dt>
 <dd><p class="first last">Marquardt rescaling. Probably not as good as
 the other two options.</p>
 </dd>
@@ -176,15 +167,15 @@ the other two options.</p>
 are supported (see GSL documentation for more information):</p>
 <blockquote class="last">
 <div><dl class="docutils">
-<dt><code class="docutils literal"><span class="pre">'qr'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'qr'</span></code></dt>
 <dd><p class="first last">QR decomposition of the Jacobian. Default.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'cholesky'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'cholesky'</span></code></dt>
 <dd><p class="first last">Cholesky decomposition of the Jacobian. Can
-be substantially faster than <code class="docutils literal"><span class="pre">'qr'</span></code> but not as reliable
+be substantially faster than <code class="docutils literal notranslate"><span class="pre">'qr'</span></code> but not as reliable
 for singular Jacobians.</p>
 </dd>
-<dt><code class="docutils literal"><span class="pre">'svd'</span></code></dt>
+<dt><code class="docutils literal notranslate"><span class="pre">'svd'</span></code></dt>
 <dd><p class="first last">SVD decomposition. The most robust for singular
 situations, but also the slowest.</p>
 </dd>
@@ -197,7 +188,7 @@ situations, but also the slowest.</p>
 <dt><strong>factor_up</strong> (<em>float</em>): Factor by which search region is increased</dt>
 <dd><p class="first last">when a search step is accepted. Values that are too large
 destablize the search; values that are too small slow down
-the search. Default is <code class="docutils literal"><span class="pre">factor_up=3</span></code>.</p>
+the search. Default is <code class="docutils literal notranslate"><span class="pre">factor_up=3</span></code>.</p>
 </dd>
 </dl>
 </li>
@@ -205,7 +196,7 @@ the search. Default is <code class="docutils literal"><span class="pre">factor_u
 <dt><strong>factor_down</strong> (<em>float</em>): Factor by which search region is decreased</dt>
 <dd><p class="first last">when a search step is rejected. Values that are too large
 destablize the search; values that are too small slow down
-the search. Default is <code class="docutils literal"><span class="pre">factor_up=2</span></code>.</p>
+the search. Default is <code class="docutils literal notranslate"><span class="pre">factor_up=2</span></code>.</p>
 </dd>
 </dl>
 </li>
@@ -213,7 +204,7 @@ the search. Default is <code class="docutils literal"><span class="pre">factor_u
 <dt><strong>avmax</strong> (<em>float</em>): Damping parameter for geodesic acceleration. It</dt>
 <dd><p class="first last">is the maximum allowed value for the acceleration divided
 by the velocity. Smaller values imply less acceleration.
-Default is <code class="docutils literal"><span class="pre">avmax=0.75</span></code>.</p>
+Default is <code class="docutils literal notranslate"><span class="pre">avmax=0.75</span></code>.</p>
 </dd>
 </dl>
 </li>
@@ -232,10 +223,10 @@ Default is <code class="docutils literal"><span class="pre">avmax=0.75</span></c
 <dt><strong>description</strong> (<em>str</em>):</dt>
 <dd>Short description of internal fitter settings.</dd>
 <dt><strong>f</strong> (<em>array</em>):</dt>
-<dd>Fit function value <code class="docutils literal"><span class="pre">f(x)</span></code> at the minimum in
+<dd>Fit function value <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum in
 the most recent fit.</dd>
 <dt><strong>J</strong> (<em>array</em>):</dt>
-<dd>Gradient <code class="docutils literal"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</dd>
+<dd>Gradient <code class="docutils literal notranslate"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</dd>
 <dt><strong>nit</strong> (<em>int</em>):</dt>
 <dd>Number of function evaluations used in last fit to find
 the minimum.</dd>
@@ -245,14 +236,14 @@ stop fit:</p>
 <blockquote class="last">
 <div><ol class="arabic simple" start="0">
 <li>didn’t converge</li>
-<li><code class="docutils literal"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
-<li><code class="docutils literal"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal"><span class="pre">chi**2</span></code></li>
-<li><code class="docutils literal"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal"><span class="pre">chi**2</span></code> between iterations</li>
+<li><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
+<li><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</li>
 </ol>
 </div></blockquote>
 </dd>
 <dt><strong>error</strong> (<em>str or None</em>):</dt>
-<dd><code class="docutils literal"><span class="pre">None</span></code> if fit successful; an error
+<dd><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</dd>
 </dl>
 </div></blockquote>
@@ -262,13 +253,13 @@ message otherwise.</dd>
 <dt id="lsqfit.gsl_v1_multifit">
 <em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">gsl_v1_multifit</code><span class="sig-paren">(</span><em>x0</em>, <em>n</em>, <em>f</em>, <em>tol=1e-5</em>, <em>maxit=1000</em>, <em>alg='lmsder'</em>, <em>analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.gsl_v1_multifit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">gsl_v1_</span> <span class="pre">multifit</span></code> is a function-class whose constructor does a
-least-squares fit by minimizing <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
-vector <code class="docutils literal"><span class="pre">x</span></code>.</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">gsl_v1_multifit</span></code> is a wrapper for the (older, v1) <code class="docutils literal"><span class="pre">multifit</span></code>
-GSL routine (see <code class="docutils literal"><span class="pre">nlin.h</span></code>). This package was used in earlier
-versions of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal"><span class="pre">lsqfit</span></code></a> (&lt;9.0) and is typically not as
-effective as <code class="xref py py-class docutils literal"><span class="pre">gsl_multifit</span></code>. It is included for legacy
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gsl_v1_</span> <span class="pre">multifit</span></code> is a function-class whose constructor does a
+least-squares fit by minimizing <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
+vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">gsl_v1_multifit</span></code> is a wrapper for the (older, v1) <code class="docutils literal notranslate"><span class="pre">multifit</span></code>
+GSL routine (see <code class="docutils literal notranslate"><span class="pre">nlin.h</span></code>). This package was used in earlier
+versions of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> (&lt;9.0) and is typically not as
+effective as <code class="xref py py-class docutils literal notranslate"><span class="pre">gsl_multifit</span></code>. It is included for legacy
 code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -277,31 +268,31 @@ code.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last">
 <li><p class="first"><strong>x0</strong> (<em>array of floats</em>): Starting point for minimization.</p>
 </li>
-<li><p class="first"><strong>n</strong> (<em>positive int</em>): Length of vector returned by the fit function <code class="docutils literal"><span class="pre">f(x)</span></code>.</p>
+<li><p class="first"><strong>n</strong> (<em>positive int</em>): Length of vector returned by the fit function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</p>
 </li>
 <li><dl class="first docutils">
-<dt><strong>f</strong> (<em>array-valued function</em>): <code class="docutils literal"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized</dt>
-<dd><p class="first last">by varying parameters <code class="docutils literal"><span class="pre">x</span></code>. The parameters are a 1-d
-<code class="xref py py-class docutils literal"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s.</p>
+<dt><strong>f</strong> (<em>array-valued function</em>): <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized</dt>
+<dd><p class="first last">by varying parameters <code class="docutils literal notranslate"><span class="pre">x</span></code>. The parameters are a 1-d
+<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>tol</strong> (<em>float or tuple</em>): Assigning <code class="docutils literal"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the</dt>
+<dt><strong>tol</strong> (<em>float or tuple</em>): Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the</dt>
 <dd><p class="first">fit to stop searching for a minimum when any of</p>
 <blockquote>
-<div><p><code class="docutils literal"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
-<p><code class="docutils literal"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal"><span class="pre">chi**2</span></code></p>
-<p><code class="docutils literal"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal"><span class="pre">chi**2</span></code> between iterations</p>
+<div><p><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
+<p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p>
 </div></blockquote>
 <p class="last">is statisfied. See the GSL documentation for detailed
 definitions of the stopping conditions. Typically one sets
-<code class="docutils literal"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal"><span class="pre">d</span></code> is the number of digits of precision
-desired in the result, while <code class="docutils literal"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
-<code class="docutils literal"><span class="pre">tol=eps</span></code> where <code class="docutils literal"><span class="pre">eps</span></code> is a number is equivalent to setting
-<code class="docutils literal"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2)</span></code> is
-equivlent to setting <code class="docutils literal"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
-<code class="docutils literal"><span class="pre">tol=1e-5</span></code>. (Note: the <code class="docutils literal"><span class="pre">ftol</span></code> option is disabled in some
+<code class="docutils literal notranslate"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal notranslate"><span class="pre">d</span></code> is the number of digits of precision
+desired in the result, while <code class="docutils literal notranslate"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal notranslate"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
+<code class="docutils literal notranslate"><span class="pre">tol=eps</span></code> where <code class="docutils literal notranslate"><span class="pre">eps</span></code> is a number is equivalent to setting
+<code class="docutils literal notranslate"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2)</span></code> is
+equivlent to setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
+<code class="docutils literal notranslate"><span class="pre">tol=1e-5</span></code>. (Note: the <code class="docutils literal notranslate"><span class="pre">ftol</span></code> option is disabled in some
 versions of  the GSL library.)</p>
 </dd>
 </dl>
@@ -314,16 +305,16 @@ versions of  the GSL library.)</p>
 </li>
 <li><dl class="first docutils">
 <dt><strong>alg</strong> (<em>str</em>): GSL algorithm to use for minimization. Two options are</dt>
-<dd><p class="first last">currently available: <code class="docutils literal"><span class="pre">&quot;lmsder&quot;</span></code>, the scaled LMDER algorithm
-(default); and <code class="docutils literal"><span class="pre">&quot;lmder&quot;</span></code>, the unscaled LMDER algorithm.
-With version 2 of the GSL library, another option is <code class="docutils literal"><span class="pre">&quot;lmniel&quot;</span></code>,
+<dd><p class="first last">currently available: <code class="docutils literal notranslate"><span class="pre">&quot;lmsder&quot;</span></code>, the scaled LMDER algorithm
+(default); and <code class="docutils literal notranslate"><span class="pre">&quot;lmder&quot;</span></code>, the unscaled LMDER algorithm.
+With version 2 of the GSL library, another option is <code class="docutils literal notranslate"><span class="pre">&quot;lmniel&quot;</span></code>,
 which can be useful when there is much more data than parameters.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>analyzer</strong> (<em>callable</em>): Optional function of <code class="docutils literal"><span class="pre">x,</span></code> <code class="docutils literal"><span class="pre">[...f_i(x)...],</span></code></dt>
-<dd><p class="first last"><code class="docutils literal"><span class="pre">[[..df_ij(x)..]]</span></code>
+<dt><strong>analyzer</strong> (<em>callable</em>): Optional function of <code class="docutils literal notranslate"><span class="pre">x,</span></code> <code class="docutils literal notranslate"><span class="pre">[...f_i(x)...],</span></code></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">[[..df_ij(x)..]]</span></code>
 which is called after each iteration. This can be used to inspect
 intermediate steps in the minimization, if needed.</p>
 </dd>
@@ -342,10 +333,10 @@ intermediate steps in the minimization, if needed.</p>
 <dt><strong>cov</strong> (<em>array</em>):</dt>
 <dd>Covariance matrix at the minimum point.</dd>
 <dt><strong>f</strong> (<em>callable</em>):</dt>
-<dd>Fit function value <code class="docutils literal"><span class="pre">f(x)</span></code> at the minimum in
+<dd>Fit function value <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum in
 the most recent fit.</dd>
 <dt><strong>J</strong> (<em>array</em>):</dt>
-<dd>Gradient <code class="docutils literal"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</dd>
+<dd>Gradient <code class="docutils literal notranslate"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</dd>
 <dt><strong>nit</strong> (<em>int</em>):</dt>
 <dd>Number of function evaluations used in last fit to find
 the minimum.</dd>
@@ -355,14 +346,14 @@ stop fit:</p>
 <blockquote class="last">
 <div><ol class="arabic simple" start="0">
 <li>didn’t converge</li>
-<li><code class="docutils literal"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
-<li><code class="docutils literal"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal"><span class="pre">chi**2</span></code></li>
-<li><code class="docutils literal"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal"><span class="pre">chi**2</span></code> between iterations</li>
+<li><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
+<li><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</li>
 </ol>
 </div></blockquote>
 </dd>
 <dt><strong>error</strong> (<em>str or None</em>):</dt>
-<dd><code class="docutils literal"><span class="pre">None</span></code> if fit successful; an error
+<dd><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</dd>
 </dl>
 </div></blockquote>
@@ -371,26 +362,26 @@ message otherwise.</dd>
 </div>
 <div class="section" id="minimizer">
 <h2>Minimizer<a class="headerlink" href="#minimizer" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="lsqfit.html#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal"><span class="pre">lsqfit.empbayes_fit()</span></code></a> uses a minimizer from the GSL library
-to minimize <code class="docutils literal"><span class="pre">logGBF</span></code>.</p>
+<p>The <a class="reference internal" href="lsqfit.html#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsqfit.empbayes_fit()</span></code></a> uses a minimizer from the GSL library
+to minimize <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <dl class="class">
 <dt id="lsqfit.gsl_multiminex">
 <em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">gsl_multiminex</code><span class="sig-paren">(</span><em>x0</em>, <em>f</em>, <em>tol=1e-4</em>, <em>maxit=1000</em>, <em>step=1</em>, <em>alg='nmsimplex2'</em>, <em>analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.gsl_multiminex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Minimizer for multidimensional functions.</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">multiminex</span></code> is a function-class whose constructor minimizes a
-multidimensional function <code class="docutils literal"><span class="pre">f(x)</span></code> by varying vector <code class="docutils literal"><span class="pre">x</span></code>. This routine
-does <em>not</em> use user-supplied information about the gradient of <code class="docutils literal"><span class="pre">f(x)</span></code>.</p>
-<p><code class="xref py py-class docutils literal"><span class="pre">multiminex</span></code> is a wrapper for the <code class="docutils literal"><span class="pre">multimin</span></code> GSL routine.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">multiminex</span></code> is a function-class whose constructor minimizes a
+multidimensional function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>. This routine
+does <em>not</em> use user-supplied information about the gradient of <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">multiminex</span></code> is a wrapper for the <code class="docutils literal notranslate"><span class="pre">multimin</span></code> GSL routine.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>x0</strong> (<em>array</em>): Starting point for minimization search.</li>
-<li><strong>f</strong> (<em>callable</em>): Function <code class="docutils literal"><span class="pre">f(x)</span></code> to be minimized by varying vector <code class="docutils literal"><span class="pre">x</span></code>.</li>
+<li><strong>f</strong> (<em>callable</em>): Function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> to be minimized by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</li>
 <li><dl class="first docutils">
-<dt><strong>tol</strong> (<em>float</em>): Minimization stops when <code class="docutils literal"><span class="pre">x</span></code> has converged to with</dt>
-<dd>tolerance <code class="docutils literal"><span class="pre">tol</span></code>; default is <code class="docutils literal"><span class="pre">1e-4</span></code>.</dd>
+<dt><strong>tol</strong> (<em>float</em>): Minimization stops when <code class="docutils literal notranslate"><span class="pre">x</span></code> has converged to with</dt>
+<dd>tolerance <code class="docutils literal notranslate"><span class="pre">tol</span></code>; default is <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
@@ -399,20 +390,20 @@ does <em>not</em> use user-supplied information about the gradient of <code clas
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>step</strong> (<em>float</em>): Initial step size to use in varying components of <code class="docutils literal"><span class="pre">x</span></code>;</dt>
+<dt><strong>step</strong> (<em>float</em>): Initial step size to use in varying components of <code class="docutils literal notranslate"><span class="pre">x</span></code>;</dt>
 <dd>default is 1.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
 <dt><strong>alg</strong> (<em>str</em>): GSL algorithm to use for minimization. Three options are</dt>
-<dd>currently available: <code class="docutils literal"><span class="pre">&quot;nmsimplex&quot;</span></code>, Nelder Mead Simplex
-algorithm; <code class="docutils literal"><span class="pre">&quot;nmsimplex2&quot;</span></code>, an improved version of
-<code class="docutils literal"><span class="pre">&quot;nmsimplex&quot;</span></code> (default); and <code class="docutils literal"><span class="pre">&quot;nmsimplex2rand&quot;</span></code>, a version
-of <code class="docutils literal"><span class="pre">&quot;nmsimplex2&quot;</span></code> with random shifts in the start position.</dd>
+<dd>currently available: <code class="docutils literal notranslate"><span class="pre">&quot;nmsimplex&quot;</span></code>, Nelder Mead Simplex
+algorithm; <code class="docutils literal notranslate"><span class="pre">&quot;nmsimplex2&quot;</span></code>, an improved version of
+<code class="docutils literal notranslate"><span class="pre">&quot;nmsimplex&quot;</span></code> (default); and <code class="docutils literal notranslate"><span class="pre">&quot;nmsimplex2rand&quot;</span></code>, a version
+of <code class="docutils literal notranslate"><span class="pre">&quot;nmsimplex2&quot;</span></code> with random shifts in the start position.</dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>analyzer</strong> (<em>callable</em>): Optional function of <code class="docutils literal"><span class="pre">x</span></code>, which is called after</dt>
+<dt><strong>analyzer</strong> (<em>callable</em>): Optional function of <code class="docutils literal notranslate"><span class="pre">x</span></code>, which is called after</dt>
 <dd>each iteration. This can be used to inspect intermediate steps in
 the minimization, if needed.</dd>
 </dl>
@@ -428,11 +419,11 @@ the minimization, if needed.</dd>
 <dt><strong>x</strong> (<em>array</em>):</dt>
 <dd>Location of the minimum.</dd>
 <dt><strong>f</strong> (<em>float</em>):</dt>
-<dd>Value of function <code class="docutils literal"><span class="pre">f(x)</span></code> at the minimum.</dd>
+<dd>Value of function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum.</dd>
 <dt><strong>nit</strong> (<em>int</em>):</dt>
 <dd>Number of iterations required to find the minimum.</dd>
 <dt><strong>error</strong> (<em>None or str</em>):</dt>
-<dd><code class="docutils literal"><span class="pre">None</span></code> if minimization successful; an error
+<dd><code class="docutils literal notranslate"><span class="pre">None</span></code> if minimization successful; an error
 message otherwise.</dd>
 </dl>
 </div></blockquote>
@@ -458,18 +449,27 @@ message otherwise.</dd>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="lsqfit.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></p>
+                        title="previous chapter"><code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="scipy.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">scipy</span></code> Routines</a></p>
+                        title="next chapter"><code class="docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/gsl.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -496,7 +496,7 @@ message otherwise.</dd>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2018, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

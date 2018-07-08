@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 9.4 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '9.4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -31,8 +23,7 @@
 <link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-  </head>
-  <body>
+  </head><body>
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -64,7 +55,7 @@
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The various analyses in the Tutorial assume implicitly that every
 probability distribution relevant to a fit is Gaussian. The input
-data and priors are assumed Gaussian. The <code class="docutils literal"><span class="pre">chi**2</span></code> function is
+data and priors are assumed Gaussian. The <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function is
 assumed to be well approximated by a Gaussian in the vicinity of
 its minimum, in order to estimate uncertainties for the best-fit
 parameters. Functions of those parameters are assumed to yield
@@ -87,7 +78,7 @@ The strategy is to:</p>
 original input data and prior that differ from each other
 by random amounts characteristic of the underlying randomness
 in the original data and prior (see
-the documentation for <code class="xref py py-meth docutils literal"><span class="pre">lsqfit.nonlinear_fit.bootstrap_iter()</span></code>
+the documentation for <code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.bootstrap_iter()</span></code>
 for more information);</li>
 <li>repeat the entire fit analysis for each bootstrap copy of
 the data and prior, extracting fit results from each;</li>
@@ -102,8 +93,8 @@ final parameters were relatively large.
 We will use a booststrap analysis to check the error
 estimates coming out of that fit.
 We do this by adding code right after the
-fit, in the <code class="docutils literal"><span class="pre">main()</span></code> function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+fit, in the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
@@ -153,15 +144,15 @@ fit, in the <code class="docutils literal"><span class="pre">main()</span></code
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">bootstrap_iter</span></code> produces fits <code class="docutils literal"><span class="pre">bsfit</span></code> for each of
-<code class="docutils literal"><span class="pre">Nbs=40</span></code> different bootstrap copies of the input data (<code class="docutils literal"><span class="pre">y</span></code> and the prior).
+<p>The <code class="docutils literal notranslate"><span class="pre">bootstrap_iter</span></code> produces fits <code class="docutils literal notranslate"><span class="pre">bsfit</span></code> for each of
+<code class="docutils literal notranslate"><span class="pre">Nbs=40</span></code> different bootstrap copies of the input data (<code class="docutils literal notranslate"><span class="pre">y</span></code> and the prior).
 We collect the mean values for the various parameters and functions of
 parameters from each fit, ignoring the uncertainties, and
 then calculate averages and covariance matrices from these results using
-<code class="xref py py-func docutils literal"><span class="pre">gvar.dataset.avg_data()</span></code>.</p>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.dataset.avg_data()</span></code>.</p>
 <p>Most of the bootstrap results agree with the results coming directly from
 the fit:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -189,15 +180,15 @@ the fit:</p>
 </pre></div>
 </div>
 <p>In particular, the bootstrap analysis confirms the previous error estimates
-(to within 10-30%, since <code class="docutils literal"><span class="pre">Nbs=40</span></code>) except for <code class="docutils literal"><span class="pre">p3/p2</span></code>, where the error
+(to within 10-30%, since <code class="docutils literal notranslate"><span class="pre">Nbs=40</span></code>) except for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code>, where the error
 is substantially larger in the bootstrap analysis.</p>
-<p>If <code class="docutils literal"><span class="pre">p3/p2</span></code> is important, one might want to look
+<p>If <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is important, one might want to look
 more closely at its distribution.
 We use the bootstrap to create histograms of the probability distributions
-of <code class="docutils literal"><span class="pre">p3/p2</span></code> and <code class="docutils literal"><span class="pre">p1/p01</span></code>
-by adding the following code to the end of the <code class="docutils literal"><span class="pre">main()</span></code>
+of <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> and <code class="docutils literal notranslate"><span class="pre">p1/p01</span></code>
+by adding the following code to the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code>
 function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Histogram Analysis:&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s1">&#39;Histogram Analysis:&#39;</span><span class="p">)</span>
 <span class="n">count</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
 <span class="n">hist</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;p1/p0&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
@@ -231,8 +222,8 @@ function:</p>
 <p>Here we do 1000 bootstrap copies (rather than 40)
 to improve the accuracy of the bootstrap
 results. The output from this code shows statistical analyses of the
-histogram data for <code class="docutils literal"><span class="pre">p1/p0</span></code> and <code class="docutils literal"><span class="pre">p3/p2</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
+histogram data for <code class="docutils literal notranslate"><span class="pre">p1/p0</span></code> and <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
 <span class="n">p1</span><span class="o">/</span><span class="n">p0</span><span class="p">:</span>
    <span class="n">mean</span> <span class="o">=</span> <span class="mf">19.970</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.722</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.127</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.01</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
    <span class="n">median</span> <span class="o">=</span> <span class="mf">19.939</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.737</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.654</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
@@ -247,16 +238,16 @@ in the Gaussian approximation):</p>
 <blockquote>
 <div><a class="reference internal image-reference" href="_images/eg3d.png"><img alt="_images/eg3d.png" src="_images/eg3d.png" style="width: 100%;" /></a>
 </div></blockquote>
-<p>While the distribution for <code class="docutils literal"><span class="pre">p1/p0</span></code> is consistent with the fit
+<p>While the distribution for <code class="docutils literal notranslate"><span class="pre">p1/p0</span></code> is consistent with the fit
 results (dashed line) and Gaussian,
-the distribution for <code class="docutils literal"><span class="pre">p3/p2</span></code> is significantly skewed, with
-a much longer tail to the right. The final result for <code class="docutils literal"><span class="pre">p3/p2</span></code> might
+the distribution for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is significantly skewed, with
+a much longer tail to the right. The final result for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> might
 more accurately be summarized as 0.48 with errors of +0.31 and&nbsp;-0.15,
 although the Gaussian estimate of 0.48±0.22 would suffice for many
 applications.
-The skewed distribution for <code class="docutils literal"><span class="pre">p3/p2</span></code> is not particularly
+The skewed distribution for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is not particularly
 surprising given the ±50% uncertainty in the
-denominator&nbsp;<code class="docutils literal"><span class="pre">p2</span></code>.</p>
+denominator&nbsp;<code class="docutils literal notranslate"><span class="pre">p2</span></code>.</p>
 </div>
 <div class="section" id="bayesian-integrals">
 <h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this headline">¶</a></h2>
@@ -264,31 +255,31 @@ denominator&nbsp;<code class="docutils literal"><span class="pre">p2</span></cod
 These expectation values are integrals over the fit parameters that are
 weighted by the probability density function (PDF for the parameters)
 proportional
-to <code class="docutils literal"><span class="pre">exp(-chi**2/2)</span></code>, where <code class="docutils literal"><span class="pre">chi**2</span></code> includes contributions from both
+to <code class="docutils literal notranslate"><span class="pre">exp(-chi**2/2)</span></code>, where <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> includes contributions from both
 the data and the priors. They can be used to
 calculate mean values of the parameters, their covariances, and the means
 and covariances of any function of the parameters.
 These will agree with the
-best-fit results of our least-squares fits provided <code class="docutils literal"><span class="pre">chi**2</span></code> is well
+best-fit results of our least-squares fits provided <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> is well
 approximated by its quadratic expansion in the parameters — that is,
 insofar as
-<code class="docutils literal"><span class="pre">exp(-chi**2/2)</span></code> is well approximated
+<code class="docutils literal notranslate"><span class="pre">exp(-chi**2/2)</span></code> is well approximated
 by the Gaussian distribution in the parameters
-specified by their best-fit means and covariance matrix (from <code class="docutils literal"><span class="pre">fit.p</span></code>).</p>
+specified by their best-fit means and covariance matrix (from <code class="docutils literal notranslate"><span class="pre">fit.p</span></code>).</p>
 <p>Here we use
-<a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a> to evaluate Bayesian expectation values.
-<a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a> uses the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> module for adaptive
+<a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.BayesIntegrator</span></code></a> to evaluate Bayesian expectation values.
+<a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.BayesIntegrator</span></code></a> uses the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module for adaptive
 multi-dimensional integration to evaluate expectation values. It integrates
 arbitrary functions of the parameters, multiplied by the probability
-density function, over the entire parameter space. (Module <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code>
-must be installed for <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>.)</p>
-<p>To illustrate <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.BayesIntegrator</span></code></a>,
+density function, over the entire parameter space. (Module <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>
+must be installed for <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.BayesIntegrator</span></code></a>.)</p>
+<p>To illustrate <a class="reference internal" href="lsqfit.html#lsqfit.BayesIntegrator" title="lsqfit.BayesIntegrator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.BayesIntegrator</span></code></a>,
 we again revisit the analysis in the section
-on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal"><span class="pre">main()</span></code> function
+on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function
 of our original code
 to evaluate the means and covariances of the parameters, and also
 their probability histograms, using a Bayesian integral:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
@@ -378,27 +369,27 @@ their probability histograms, using a Bayesian integral:</p>
     <span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Here <code class="docutils literal"><span class="pre">expval</span></code> is an integrator that is used to evaluate expectation
+<p>Here <code class="docutils literal notranslate"><span class="pre">expval</span></code> is an integrator that is used to evaluate expectation
 values of arbitrary functions of the fit parameters.
-<code class="xref py py-class docutils literal"><span class="pre">BayesIntegrator</span></code> uses output (<code class="docutils literal"><span class="pre">fit</span></code>) from a least-squares fit to
-design a <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> integrator
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BayesIntegrator</span></code> uses output (<code class="docutils literal notranslate"><span class="pre">fit</span></code>) from a least-squares fit to
+design a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator
 optimized for calculating expectation values.
 The integrator uses an
 iterative Monte Carlo algorithm that adapts to the
 probability density function after each iteration.
-See the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> documentation for much more information.</p>
+See the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> documentation for much more information.</p>
 <p>We first call the integrator without a function. This allows it
 to adapt to the probability density function from the fit without the extra
 overhead of evaluating a function of the parameters. The integrator
-uses <code class="docutils literal"><span class="pre">nitn=10</span></code> iterations of the <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> algorithm, with at most
-<code class="docutils literal"><span class="pre">neval=1000</span></code> evaluations of the probability density function for each
+uses <code class="docutils literal notranslate"><span class="pre">nitn=10</span></code> iterations of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> algorithm, with at most
+<code class="docutils literal notranslate"><span class="pre">neval=1000</span></code> evaluations of the probability density function for each
 iteration.</p>
 <p>We then use the optimized integrator to evaluate the expectation value
-of function <code class="docutils literal"><span class="pre">g(p)</span></code> (turning adaptation off with <code class="docutils literal"><span class="pre">adapt=False</span></code>).
-The expectation value of <code class="docutils literal"><span class="pre">g(p)</span></code> is returned
-in dictionary <code class="docutils literal"><span class="pre">results</span></code>.</p>
+of function <code class="docutils literal notranslate"><span class="pre">g(p)</span></code> (turning adaptation off with <code class="docutils literal notranslate"><span class="pre">adapt=False</span></code>).
+The expectation value of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code> is returned
+in dictionary <code class="docutils literal notranslate"><span class="pre">results</span></code>.</p>
 <p>The results from this script are:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -456,7 +447,7 @@ in dictionary <code class="docutils literal"><span class="pre">results</span></c
    <span class="n">median</span> <span class="o">=</span> <span class="mf">0.6730</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.2013</span><span class="p">(</span><span class="mi">67</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.1537</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The iterations table shows results from each of the <code class="docutils literal"><span class="pre">nitn=10</span></code>
+<p>The iterations table shows results from each of the <code class="docutils literal notranslate"><span class="pre">nitn=10</span></code>
 vegas iterations used to
 evaluate the expectation values. Estimates for the integral of the probability
 density function are listed for each iteration. (Results from the integrator
@@ -467,7 +458,7 @@ of the parameters are accurate to roughly 1% or better, which is
 sufficiently accurate here given the size of the standard deviations.
 Estimates for
 the covariance matrix elements are less accurate, which is typical.
-This information is converted into <code class="xref py py-class docutils literal"><span class="pre">gvar.GVar</span></code>s for the parameters and
+This information is converted into <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s for the parameters and
 tabulated under “Bayesian Parameters,” for comparison with the
 original fit results — the agreement is pretty good.
 This is further confirmed by the
@@ -478,13 +469,13 @@ for each parameter:</p>
 is modest skewing, but the differences are not great.</p>
 <p>As a second example of Bayesian integration, we return briefly to
 the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span class="std std-ref">Positive Parameters; Non-Gaussian Priors</span></a>: we want the
-average <code class="docutils literal"><span class="pre">a</span></code> of noisy data subject the constraint that the average
+average <code class="docutils literal notranslate"><span class="pre">a</span></code> of noisy data subject the constraint that the average
 must be positive. The constraint is likely to
 introduce strong distortions in the probability density function (PDF)
 given that the fit analysis suggests a value of 0.011±0.013.
 We plot the actual PDF using the following code, beginning with
 a fit that uses a flat prior (between 0 and&nbsp;0.04):</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="c1"># data, prior, and fit function</span>
@@ -527,7 +518,7 @@ a fit that uses a flat prior (between 0 and&nbsp;0.04):</p>
 </pre></div>
 </div>
 <p>The output from this script is</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.2385</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
@@ -545,23 +536,23 @@ a fit that uses a flat prior (between 0 and&nbsp;0.04):</p>
    <span class="n">median</span> <span class="o">=</span> <span class="mf">0.011875</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.014482</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.008776</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>and the probability distribution for <code class="docutils literal"><span class="pre">a</span></code> looks like</p>
+<p>and the probability distribution for <code class="docutils literal notranslate"><span class="pre">a</span></code> looks like</p>
 <a class="reference internal image-reference" href="_images/eg6.png"><img alt="_images/eg6.png" src="_images/eg6.png" style="width: 70%;" /></a>
-<p>This distribution is distorted between <code class="docutils literal"><span class="pre">a=0</span></code> and the mean
+<p>This distribution is distorted between <code class="docutils literal notranslate"><span class="pre">a=0</span></code> and the mean
 value, but otherwise is fairly similar to the Gaussian result
 0.11±0.13 (dashed line). A more accurate summary of the result
-for <code class="docutils literal"><span class="pre">a</span></code> would be 0.12 with an error of +0.14 and -0.09, though
+for <code class="docutils literal notranslate"><span class="pre">a</span></code> would be 0.12 with an error of +0.14 and -0.09, though
 again the Gaussian result is not terribly misleading even in this
 case.</p>
 <p>The Bayesian integrals are relatively simple in these example. More
 complicated problems can require much more computer time to evaluate
 the integrals, with hundreds of thousands or millions of integrand
-evaluations per iteration (<code class="docutils literal"><span class="pre">neval</span></code>). This is particularly true
-as the number of parameters increases. <code class="xref py py-class docutils literal"><span class="pre">BayesIntegrator</span></code> uses
+evaluations per iteration (<code class="docutils literal notranslate"><span class="pre">neval</span></code>). This is particularly true
+as the number of parameters increases. <code class="xref py py-class docutils literal notranslate"><span class="pre">BayesIntegrator</span></code> uses
 information from the least-squares fit to simplify the integration
-for <code class="xref py py-mod docutils literal"><span class="pre">vegas</span></code> by optimizing the integration variables used, but
+for <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> by optimizing the integration variables used, but
 integrals over tens of variables are intrinsically challenging.
-<code class="xref py py-class docutils literal"><span class="pre">BayesIntegrator</span></code> can be used with MPI to run such integrals
+<code class="xref py py-class docutils literal notranslate"><span class="pre">BayesIntegrator</span></code> can be used with MPI to run such integrals
 on multiple processors, for a considerable speed-up.</p>
 <p>We used Bayesian integrals here to deal with non-Gaussian behavior in
 fit outputs. The case study <a class="reference internal" href="case-outliers.html#outliers"><span class="std std-ref">Case Study: Outliers and Bayesian Integrals</span></a> shows how to use them
@@ -572,17 +563,17 @@ when the input data is not quite Gaussian.</p>
 <p>Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method
-<code class="xref py py-meth docutils literal"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter`()</span></code> returns an iterator that
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter`()</span></code> returns an iterator that
 creates any number of such simulations of the original fit.</p>
 <p>A key assumption underlying least-squares fitting is that the fit
-data <code class="docutils literal"><span class="pre">y[i]</span></code> are random samples from a distribution whose mean
-is the fit function <code class="docutils literal"><span class="pre">fcn(x,</span> <span class="pre">fitp)</span></code> evaluated with the best-fit
-values <code class="docutils literal"><span class="pre">fitp</span></code> for the parameters. <code class="docutils literal"><span class="pre">simulated_fit_iter</span></code> iterators
+data <code class="docutils literal notranslate"><span class="pre">y[i]</span></code> are random samples from a distribution whose mean
+is the fit function <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">fitp)</span></code> evaluated with the best-fit
+values <code class="docutils literal notranslate"><span class="pre">fitp</span></code> for the parameters. <code class="docutils literal notranslate"><span class="pre">simulated_fit_iter</span></code> iterators
 generate simulated data by drawing other random samples from the
 same distribution, assigning them the same covariance matrix as the
 original data. The simulated data are fit
 using the same priors and fitter settings
-as in the original fit, and the results (an <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+as in the original fit, and the results (an <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
 object) are returned by the iterator. Fit results from simulated
 data should agree, within errors, with the original fit results since the
 simulated data are from the same distribution as the original data. There
@@ -590,8 +581,8 @@ is a problem with the fitting protocol if this is not the case most of the
 time.</p>
 <p>To illustrate we again examine the fits
 in the section on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>:
-we add three fit simulations at the end of the <code class="docutils literal"><span class="pre">main()</span></code> function:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+we add three fit simulations at the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
@@ -640,7 +631,7 @@ we add three fit simulations at the end of the <code class="docutils literal"><s
 </div>
 <p>This code produces the following output, showing how the input data
 fluctuate from simulation to simulation:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
 <span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
 
@@ -766,11 +757,11 @@ fluctuate from simulation to simulation:</p>
 
 </pre></div>
 </div>
-<p>The parameters <code class="docutils literal"><span class="pre">sfit.p</span></code> produced by the simulated fits agree well
-with the original fit parameters <code class="docutils literal"><span class="pre">pexact=fit.pmean</span></code>, with good
-fits in each case. We calculate the <code class="docutils literal"><span class="pre">chi**2</span></code> for the difference
-<code class="docutils literal"><span class="pre">sfit.p</span> <span class="pre">-</span> <span class="pre">pexact</span></code> in
-each case; good <code class="docutils literal"><span class="pre">chi**2</span></code> values validate the parameter values, standard
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">sfit.p</span></code> produced by the simulated fits agree well
+with the original fit parameters <code class="docutils literal notranslate"><span class="pre">pexact=fit.pmean</span></code>, with good
+fits in each case. We calculate the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for the difference
+<code class="docutils literal notranslate"><span class="pre">sfit.p</span> <span class="pre">-</span> <span class="pre">pexact</span></code> in
+each case; good <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> values validate the parameter values, standard
 deviations, and correlations.</p>
 </div>
 </div>
@@ -798,14 +789,23 @@ deviations, and correlations.</p>
   <h4>Next topic</h4>
   <p class="topless"><a href="case-extrapolation.html"
                         title="next chapter">Case Study: Simple Extrapolation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/testing.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -832,7 +832,7 @@ deviations, and correlations.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2018, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>

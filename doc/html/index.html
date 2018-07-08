@@ -4,20 +4,12 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>lsqfit Documentation &#8212; lsqfit 9.4 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '9.4',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -30,8 +22,7 @@
 <link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
 
-  </head>
-  <body>
+  </head><body>
 
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -64,11 +55,11 @@
 <li class="toctree-l2"><a class="reference internal" href="overview.html#gaussian-random-variables-and-error-propagation">Gaussian Random Variables and Error Propagation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#basic-fits">Basic Fits</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#chained-fits-large-data-sets">Chained Fits; Large Data Sets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#x-has-errors"><code class="docutils literal"><span class="pre">x</span></code> has Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#x-has-errors"><code class="docutils literal notranslate"><span class="pre">x</span></code> has Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#correlated-parameters-gaussian-bayes-factor">Correlated Parameters; Gaussian Bayes Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-no-error-marginalization"><code class="docutils literal"><span class="pre">y</span></code> has No Error; Marginalization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-no-error-marginalization"><code class="docutils literal notranslate"><span class="pre">y</span></code> has No Error; Marginalization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#svd-cuts-and-roundoff-error">SVD Cuts and Roundoff Error</a></li>
-<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-unknown-errors"><code class="docutils literal"><span class="pre">y</span></code> has Unknown Errors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html#y-has-unknown-errors"><code class="docutils literal notranslate"><span class="pre">y</span></code> has Unknown Errors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#tuning-priors-with-the-empirical-bayes-criterion">Tuning Priors with the Empirical Bayes Criterion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#positive-parameters-non-gaussian-priors">Positive Parameters; Non-Gaussian Priors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html#faster-fitters">Faster Fitters</a></li>
@@ -102,12 +93,12 @@
 <li class="toctree-l2"><a class="reference internal" href="case-outliers.html#a-variation">A Variation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="lsqfit.html"><code class="docutils literal"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="lsqfit.html"><code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#introduction">Introduction</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#functions">Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#classes-for-bayesian-integrals">Classes for Bayesian Integrals</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lsqfit.html#lsqfit-multifitter-classes"><code class="docutils literal"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lsqfit.html#lsqfit-multifitter-classes"><code class="docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lsqfit.html#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -116,7 +107,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gsl.html#minimizer">Minimizer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="scipy.html"><code class="docutils literal"><span class="pre">scipy</span></code> Routines</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="scipy.html"><code class="docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="scipy.html#fitter">Fitter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="scipy.html#minimizer">Minimizer</a></li>
 </ul>
@@ -148,14 +139,23 @@
   <h4>Next topic</h4>
   <p class="topless"><a href="overview.html"
                         title="next chapter">Overview and Tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
+    </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
@@ -179,7 +179,7 @@
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2018, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
     </div>
   </body>
 </html>
