@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.4 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 9.5 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.5 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -519,11 +519,12 @@ errors in the final error  estimates:</p>
 <p>The output tabulates the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> per degree of freedom of the fit
 (<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the <code class="docutils literal notranslate"><span class="pre">Q</span></code>  value of
 the fit (ie, p-value), and the logarithm of the Gaussian Bayes Factor
-for the fit (<code class="docutils literal notranslate"><span class="pre">logGBF</span></code>). At the end it lists information about the
-svd cut (value and number of modes affected), the tolerences used to
-stop the fit (an asterisk indicates which was actually used), and the
-number of fit-algorithm iterations needed by the fit, as well as the
-time (sec) taken.</p>
+for the fit (<code class="docutils literal notranslate"><span class="pre">logGBF</span></code>). At the end it lists the SVD cut, the number
+of eigenmodes modified by the SVD cut, the tolerances used in the fit,
+and the time in seconds needed to do the fit. The tolerance used to
+terminate the fit is marked with an asterisk. It also lists
+information about the fitter used if it is other than the standard
+choice.</p>
 <p>Optionally, <code class="docutils literal notranslate"><span class="pre">format</span></code> will also list the best-fit values
 for the fit parameters together with the prior for each (in <code class="docutils literal notranslate"><span class="pre">[]</span></code> on
 each line). Lines for parameters that deviate from their prior by more
@@ -533,10 +534,7 @@ to five). Lines for parameters designated as linear (see <code class="docutils l
 keyword) are marked with a minus sign after their prior.</p>
 <p><code class="docutils literal notranslate"><span class="pre">format</span></code> can also list all of the data and the corresponding values
 from the fit, again with asterisks on lines  where there is a
-significant discrepancy. At the end it lists the SVD cut, the number
-of eigenmodes modified by the SVD cut, the tolerances used in the fit,
-and the time in seconds needed to do the fit. The tolerance used to
-terminate the fit is marked with an asterisk.</p>
+significant discrepancy.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2011,7 +2009,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 9.5 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
