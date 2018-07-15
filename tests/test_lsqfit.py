@@ -132,6 +132,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             return dict(y=p['p'] ** 2)
         y = dict(y=y)
         fit = nonlinear_fit(data=(None,y), prior=pr, fcn=fcn, p0=p0file, debug=True)
+        with open(p0file, 'rb') as f:
+            p0 = pickle.load(f)
+            self.assert_arraysclose(p0['p'], fit.pmean['p'])
         print_fit(fit,dict(y=wavg(fit.p['p']**2)))
         self.assertEqual(fit.dof, 2)
         self.assertAlmostEqual(fit.Q, 1.0)
@@ -1236,21 +1239,21 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             lsqfit._reformat(p,[[10,20,30,40]])
 
 
-    def test_dump(self):
-        y = {0 : gv.gvar(1,2), 1 : gv.gvar(3,4)}
-        prior = {0 : gv.gvar(1.5, 1)}
-        def f(p):
-            return {0:p[0],1:p[0]}
+    # def test_dump(self):
+    #     y = {0 : gv.gvar(1,2), 1 : gv.gvar(3,4)}
+    #     prior = {0 : gv.gvar(1.5, 1)}
+    #     def f(p):
+    #         return {0:p[0],1:p[0]}
 
-        fit = nonlinear_fit(data=y,prior=prior,fcn=f)
-        fit.dump_p("test-lsqfit.p")
-        p = nonlinear_fit.load_parameters("test-lsqfit.p")
-        self.assert_gvclose(p[0],fit.p[0])
-        self.assert_gvclose(p[0],wavg([y[0],y[1],prior[0]]))
-        fit.dump_pmean("test-lsqfit.p")
-        pmean = fit.load_parameters("test-lsqfit.p")
-        self.assertAlmostEqual(pmean[0],fit.pmean[0])
-        os.remove("test-lsqfit.p")
+    #     fit = nonlinear_fit(data=y,prior=prior,fcn=f)
+    #     fit.dump_p("test-lsqfit.p")
+    #     p = nonlinear_fit.load_parameters("test-lsqfit.p")
+    #     self.assert_gvclose(p[0],fit.p[0])
+    #     self.assert_gvclose(p[0],wavg([y[0],y[1],prior[0]]))
+    #     fit.dump_pmean("test-lsqfit.p")
+    #     pmean = fit.load_parameters("test-lsqfit.p")
+    #     self.assertAlmostEqual(pmean[0],fit.pmean[0])
+    #     os.remove("test-lsqfit.p")
 
     def test_partialerr1(self):
         """ fit.p.der """
@@ -1419,6 +1422,48 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertTrue('a' in fit.p)
         self.assertTrue(gv.equivalent(fit.p['sqrt(a)'] ** 2, fit.p['a']))
         self.assertEqual(fit.p['a'].fmt(), "0.010(13)")
+
+    def test_linear_dict(self):
+        def fcn(p, t=np.arange(0.,1.,0.2)):
+            c = p['c']
+            E = np.cumsum(p['dE'])
+            i = (c != 0)
+            return np.sum(
+                c[None, i] * gv.exp(-E[None, i] * t[:, None]), axis=1
+                )
+        prior = gv.gvar(dict(c=2 * ['1.00(1)'], dE= 2 * ['0.500(1)']))
+        data = gv.gvar([
+            '2.0008(10)', '1.72452(86)', '1.49030(75)',
+            '1.29009(65)', '1.12017(57)'
+            ])
+        fita = nonlinear_fit(prior=prior, data=data, fcn=fcn)
+        fitb = nonlinear_fit(prior=prior, data=data, fcn=fcn, linear=['c'])
+        self.assertAlmostEqual(fita.chi2, fitb.chi2)
+        self.assertTrue(gv.equivalent(fita.p, fitb.p, rtol=1e-1))
+        np.testing.assert_allclose(
+            gv.mean(fita.p.flat), gv.mean(fitb.p.flat), rtol=1e-5
+            )
+
+    def test_linear_array(self):
+        def fcn(p, t=np.arange(0.,1.,0.2)):
+            c = p[:2]
+            E = np.cumsum(p[2:])
+            i = (c != 0)
+            return np.sum(
+                c[None, i] * gv.exp(-E[None, i] * t[:, None]), axis=1
+                )
+        prior = gv.gvar(2 * ['1.00(1)'] + 2 * ['0.500(1)'])
+        data = gv.gvar([
+            '2.0008(10)', '1.72452(86)', '1.49030(75)',
+            '1.29009(65)', '1.12017(57)'
+            ])
+        fita = nonlinear_fit(prior=prior, data=data, fcn=fcn)
+        fitb = nonlinear_fit(prior=prior, data=data, fcn=fcn, linear=[0,1])
+        self.assertAlmostEqual(fita.chi2, fitb.chi2)
+        self.assertTrue(gv.equivalent(fita.p, fitb.p, rtol=1e-1))
+        np.testing.assert_allclose(
+            gv.mean(fita.p.flat), gv.mean(fitb.p.flat), rtol=1e-5
+            )
 
     def test_multifit_exceptions(self):
         """ multifit exceptions """

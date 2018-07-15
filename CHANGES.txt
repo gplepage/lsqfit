@@ -1,3 +1,15 @@
+Version 9.5?
+==============
+- lsqfit.nonlinear_fit has a new keyword: linear. This can be used
+  to specify a list of fit variables that appear linearly in the  fit
+  function. These are removed from the fit using variable projection, thereby
+  reducing the number of fit parameters; they are  reintroduced after the fit.
+  This parameter is optional and currently experimental.
+
+- nonlinear_fit methods load_parameters and dump_p are deprecated; use
+  gvar.load and gvar.dump instead. Similarly dump_pmean is
+  deprecated.
+
 Version 9.4 2018-07-08
 ======================
 - p0=True generates a random p0 from the prior in nonlinear_fit. This

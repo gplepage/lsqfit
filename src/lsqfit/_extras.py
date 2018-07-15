@@ -817,6 +817,37 @@ class MultiFitter(object):
                     pdata[m.datatag][ii] *= ratio
         return pdata
 
+    # @staticmethod
+    # def _update_prior(prior, update):
+    #     """ update prior[k] with dictionary update[k]
+
+    #     prior[k] is updated by update[k] provided update[k] is the
+    #     same shape and size, or provided update[k] has larger size.
+    #     """
+    #     for k in update:
+    #         if k not in prior:
+    #             prior[k] = update[k]
+    #         else:
+    #             pshape = numpy.shape(prior[k])
+    #             ushape = numpy.shape(update[k])
+    #             if (
+    #                 (pshape == ushape) or
+    #                 (numpy.size(prior[k]) >= numpy.size(update[k]))
+    #                 ):
+    #                 continue
+    #             if len(pshape) == len(ushape):
+    #                 if (
+    #                     pshape == ushape or
+    #                     numpy.size(prior[k]) < numpy.size(update[k])
+    #                     ):
+    #                     prior[k] = update[k]
+    #             else:
+    #                 raise ValueError(
+    #                     'mismatched prior shapes for {}: {} and {}'.format(
+    #                         str(k), pshape, ushape
+    #                         )
+    #                     )
+
     def buildprior(self, prior, mf=None):
         """ Create prior to fit models in list ``models``.
 
@@ -837,6 +868,7 @@ class MultiFitter(object):
             self.mprior[m.datatag] = m.buildprior(
                 prior, mopt=mf['mopt'], extend=mf['extend']
                 )
+            # self._update_prior(nprior, self.mprior[m.datatag])
             nprior.update(self.mprior[m.datatag])
         if not mf['fast']:
             for k in prior:

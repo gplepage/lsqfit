@@ -143,19 +143,13 @@ nonlinear_fit Objects
    about the fit, testing fits with simulated data,
    doing bootstrap analyses of the fit errors,
    dumping (for later use) and loading parameter values, and checking for roundoff
-   errors in the final error estimates:
+   errors in the final error  estimates:
 
    .. automethod:: format(maxline=0, pstyle='v')
 
    .. automethod:: simulated_fit_iter(n=None, pexact=None, **kargs)
 
    .. automethod:: bootstrapped_fit_iter(n=None, datalist=None)
-
-   .. automethod:: dump_p(filename)
-
-   .. automethod:: dump_pmean(filename)
-
-   .. automethod:: nonlinear_fit.load_parameters(filename)
 
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 

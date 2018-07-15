@@ -221,6 +221,21 @@ are extracted from <code class="docutils literal notranslate"><span class="pre">
 is replaced by a starting point drawn at random from the
 <code class="docutils literal notranslate"><span class="pre">prior</span></code> distribution. The default value is <code class="docutils literal notranslate"><span class="pre">None</span></code>;
 <code class="docutils literal notranslate"><span class="pre">p0</span></code> must be explicitly specified if <code class="docutils literal notranslate"><span class="pre">prior</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
+<li><strong>linear</strong> (<em>list</em><em> or </em><em>None</em>) – Optional list of fit parameters that appear
+linearly in the fit function. The fit function can be reexpressed
+(using <em>variable projection</em>) as a function that is independent of
+its linear parameters. The resulting fit has fewer fit parameters
+and typically will converge in fewer iterations, but each
+iteration will take longer. Whether or not the fit is faster or
+more robust in any particular application is a matter for
+experiment, but answers should be the same either way. The linear
+parameters are reconstructed from the nonlinear parameters (and
+the data) after the fit. Parameter <code class="docutils literal notranslate"><span class="pre">linear</span></code> is either: a list of
+dictionary keys corresponding to linear parameters when the
+parameters are stored in a dictionary (see <code class="docutils literal notranslate"><span class="pre">prior</span></code>); or, a list
+of indices corresponding to these parameters when they are stored
+in an array. Note that this feature is experimental; the
+interface may change in the future.</li>
 <li><strong>svdcut</strong> (<em>float</em><em> or </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is nonzero
 (but not <code class="docutils literal notranslate"><span class="pre">None</span></code>), SVD cuts are applied to every block-diagonal
 sub-matrix of the covariance matrix for the data <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code>
@@ -496,43 +511,49 @@ fitter (via dictionary <code class="docutils literal notranslate"><span class="p
 about the fit, testing fits with simulated data,
 doing bootstrap analyses of the fit errors,
 dumping (for later use) and loading parameter values, and checking for roundoff
-errors in the final error estimates:</p>
+errors in the final error  estimates:</p>
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.format">
 <code class="descname">format</code><span class="sig-paren">(</span><em>maxline=0</em>, <em>pstyle='v'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
 <p>The output tabulates the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> per degree of freedom of the fit
-(<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the logarithm of the
-Gaussian Bayes Factor for the fit (<code class="docutils literal notranslate"><span class="pre">logGBF</span></code>), and the number of fit-
-algorithm iterations needed by the fit. Optionally, it will also list
-the best-fit values for the fit parameters together with the prior for
-each (in <code class="docutils literal notranslate"><span class="pre">[]</span></code> on each line). Lines for parameters that deviate from
-their prior by more than one (prior) standard deviation are marked
-with asterisks, with the number of asterisks equal to the number of
-standard deviations (up to five). <code class="docutils literal notranslate"><span class="pre">format</span></code> can also list all of the
-data and the corresponding values from the fit, again with asterisks
-on lines  where there is a significant discrepancy. At the end it
-lists the SVD cut, the number of eigenmodes modified by the SVD cut,
-the tolerances used in the fit, and the time in seconds needed to do
-the fit. The tolerance used to terminate the fit is marked with an
-asterisk.</p>
+(<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the <code class="docutils literal notranslate"><span class="pre">Q</span></code>  value of
+the fit (ie, p-value), and the logarithm of the Gaussian Bayes Factor
+for the fit (<code class="docutils literal notranslate"><span class="pre">logGBF</span></code>). At the end it lists information about the
+svd cut (value and number of modes affected), the tolerences used to
+stop the fit (an asterisk indicates which was actually used), and the
+number of fit-algorithm iterations needed by the fit, as well as the
+time (sec) taken.</p>
+<p>Optionally, <code class="docutils literal notranslate"><span class="pre">format</span></code> will also list the best-fit values
+for the fit parameters together with the prior for each (in <code class="docutils literal notranslate"><span class="pre">[]</span></code> on
+each line). Lines for parameters that deviate from their prior by more
+than one (prior) standard deviation are marked with asterisks, with
+the number of asterisks equal to the number of standard deviations (up
+to five). Lines for parameters designated as linear (see <code class="docutils literal notranslate"><span class="pre">linear</span></code>
+keyword) are marked with a minus sign after their prior.</p>
+<p><code class="docutils literal notranslate"><span class="pre">format</span></code> can also list all of the data and the corresponding values
+from the fit, again with asterisks on lines  where there is a
+significant discrepancy. At the end it lists the SVD cut, the number
+of eigenmodes modified by the SVD cut, the tolerances used in the fit,
+and the time in seconds needed to do the fit. The tolerance used to
+terminate the fit is marked with an asterisk.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>maxline</strong> (<em>integer</em><em> or </em><em>bool</em>) – Maximum number of data points for which fit
-results and input data are tabulated. <code class="docutils literal notranslate"><span class="pre">maxline&lt;0</span></code> implies
-that only <code class="docutils literal notranslate"><span class="pre">chi2</span></code>, <code class="docutils literal notranslate"><span class="pre">Q</span></code>, <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>, and <code class="docutils literal notranslate"><span class="pre">itns</span></code> are
-tabulated; no parameter values are included. Setting
+<li><strong>maxline</strong> (<em>int</em><em> or </em><em>bool</em>) – Maximum number of data points for which
+fit results and input data are tabulated. <code class="docutils literal notranslate"><span class="pre">maxline&lt;0</span></code>
+implies that only <code class="docutils literal notranslate"><span class="pre">chi2</span></code>, <code class="docutils literal notranslate"><span class="pre">Q</span></code>, <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>, and <code class="docutils literal notranslate"><span class="pre">itns</span></code>
+are tabulated; no parameter values are included. Setting
 <code class="docutils literal notranslate"><span class="pre">maxline=True</span></code> prints all data points; setting it
 equal <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> is the same as setting
 it equal to <code class="docutils literal notranslate"><span class="pre">-1</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">maxline=0</span></code>.</li>
-<li><strong>pstyle</strong> (‘vv’, ‘v’, ‘m’, or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Style used for parameter list. Supported values are
-‘vv’ for very verbose, ‘v’ for verbose, and ‘m’ for minimal.
-When ‘m’ is set, only parameters whose values differ from their
-prior values are listed. Setting <code class="docutils literal notranslate"><span class="pre">pstyle=None</span></code> implies
-no parameters are listed.</li>
+<li><strong>pstyle</strong> (<em>str</em><em> or </em><em>None</em>) – Style used for parameter list. Supported
+values are ‘vv’ for very verbose, ‘v’ for verbose, and ‘m’ for
+minimal. When ‘m’ is set, only parameters whose values differ
+from their prior values are listed. Setting <code class="docutils literal notranslate"><span class="pre">pstyle=None</span></code>
+implies no parameters are listed.</li>
 </ul>
 </td>
 </tr>
@@ -693,42 +714,6 @@ containing results from the fit to the next data set in
 </tr>
 </tbody>
 </table>
-</dd></dl>
-
-<dl class="method">
-<dt id="lsqfit.nonlinear_fit.dump_p">
-<code class="descname">dump_p</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.dump_p" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dump parameter values (<code class="docutils literal notranslate"><span class="pre">fit.p</span></code>) into file <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">fit.dump_p(filename)</span></code> saves the best-fit parameter values
-(<code class="docutils literal notranslate"><span class="pre">fit.p</span></code>) from a <code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code> called <code class="docutils literal notranslate"><span class="pre">fit</span></code>. These values
-are recovered using
-<code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">nonlinear_fit.load_parameters(filename)</span></code>
-where <code class="docutils literal notranslate"><span class="pre">p</span></code>’s layout is the same as that of <code class="docutils literal notranslate"><span class="pre">fit.p</span></code>.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="lsqfit.nonlinear_fit.dump_pmean">
-<code class="descname">dump_pmean</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.dump_pmean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dump parameter means (<code class="docutils literal notranslate"><span class="pre">fit.pmean</span></code>) into file <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">fit.dump_pmean(filename)</span></code> saves the means of the best-fit
-parameter values (<code class="docutils literal notranslate"><span class="pre">fit.pmean</span></code>) from a <code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code> called
-<code class="docutils literal notranslate"><span class="pre">fit</span></code>. These values are recovered using
-<code class="docutils literal notranslate"><span class="pre">p0</span> <span class="pre">=</span> <span class="pre">nonlinear_fit.load_parameters(filename)</span></code>
-where <code class="docutils literal notranslate"><span class="pre">p0</span></code>’s layout is the same as <code class="docutils literal notranslate"><span class="pre">fit.pmean</span></code>. The saved
-values can be used to initialize a later fit (<code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code>
-parameter <code class="docutils literal notranslate"><span class="pre">p0</span></code>).</p>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="lsqfit.nonlinear_fit.load_parameters">
-<em class="property">static </em><code class="descname">load_parameters</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.load_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load parameters stored in file <code class="docutils literal notranslate"><span class="pre">filename</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">nonlinear_fit.load_p(filename)</span></code> is used to recover the
-values of fit parameters dumped using <code class="docutils literal notranslate"><span class="pre">fit.dump_p(filename)</span></code> (or
-<code class="docutils literal notranslate"><span class="pre">fit.dump_pmean(filename)</span></code>) where <code class="docutils literal notranslate"><span class="pre">fit</span></code> is of type
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. The layout of the returned
-parameters <code class="docutils literal notranslate"><span class="pre">p</span></code> is the same as that of <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> (or
-<code class="docutils literal notranslate"><span class="pre">fit.pmean</span></code>).</p>
 </dd></dl>
 
 <dl class="method">

@@ -243,6 +243,22 @@ class nonlinear_fit(object):
             ``prior`` distribution. The default value is ``None``;
             ``p0`` must be explicitly specified if ``prior`` is ``None``.
 
+        linear (list or None): Optional list of fit parameters that appear
+            linearly in the fit function. The fit function can be reexpressed
+            (using *variable projection*) as a function that is independent of
+            its linear parameters. The resulting fit has fewer fit parameters
+            and typically will converge in fewer iterations, but each
+            iteration will take longer. Whether or not the fit is faster or
+            more robust in any particular application is a matter for
+            experiment, but answers should be the same either way. The linear
+            parameters are reconstructed from the nonlinear parameters (and
+            the data) after the fit. Parameter ``linear`` is either: a list of
+            dictionary keys corresponding to linear parameters when the
+            parameters are stored in a dictionary (see ``prior``); or, a list
+            of indices corresponding to these parameters when they are stored
+            in an array. Note that this feature is experimental; the
+            interface may change in the future.
+
         svdcut (float or None): If ``svdcut`` is nonzero
             (but not ``None``), SVD cuts are applied to every block-diagonal
             sub-matrix of the covariance matrix for the data ``y`` and ``prior``
@@ -447,7 +463,7 @@ class nonlinear_fit(object):
     def __init__(
         self, data=None, fcn=None, prior=None, p0=None, extend=None,
         svdcut=False, debug=None, tol=None, maxit=None, udata=None,
-        fitter=None, **fitterargs
+        linear=[], fitter=None, **fitterargs
         ):
 
         # check arguments
@@ -539,8 +555,36 @@ class nonlinear_fit(object):
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
 
+        # check for linear variables
+        if linear is not None:
+            if self.p0.shape is None:
+                self.linear = []
+                bufsize = len(self.p0.buf)
+                for k in linear:
+                    if k not in self.p0:
+                        raise ValueError('key {} not in prior'.format(k))
+                    sl = self.p0.slice(k)
+                    if isinstance(sl, slice):
+                        self.linear += range(
+                            sl.start, sl.stop,
+                            sl.step if sl.step is not None else 1
+                            )
+                    else:
+                        self.linear += [sl]
+            elif len(linear) > 0:
+                ptmp = numpy.zeros(self.p0.shape, dtype=bool)
+                ptmp[linear] = True
+                ptmp = ptmp.flatten()
+                self.linear = numpy.arange(len(ptmp))[ptmp]
+            else:
+                self.linear = []
+        else:
+            self.linear = []
+
         # trial run if debugging
         if self.debug:
+            if self.dof < 0:
+                raise RuntimeError('fewer data values than parameters')
             if self.prior is None:
                 p0gvar = numpy.array([p0i*_gvar.gvar(1, 1)
                                 for p0i in p0.flat])
@@ -594,9 +638,12 @@ class nonlinear_fit(object):
             self.fitterargs['bounds'] = (larray, uarray)
 
         # do the fit and save results
-        fit = nonlinear_fit.FITTERS[self.fitter](
-            p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
-            )
+        if linear is not None and len(linear) > 0:
+            fit = self._varpro_fit(p0=p0, nf=nf, tol=tol, maxit=maxit)
+        else:
+            fit = nonlinear_fit.FITTERS[self.fitter](
+                p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
+                )
         self.error = fit.error
         self.cov = fit.cov
         self.chi2 = numpy.sum(fit.f**2)
@@ -639,11 +686,64 @@ class nonlinear_fit(object):
 
         # archive final parameter values if requested
         if self.p0file is not None:
-            self.dump_pmean(self.p0file)
+            with open(self.p0file, "wb") as f:
+                if self.p0.shape is not None:
+                    pickle.dump(numpy.array(self.pmean), f)
+                else:
+                    # dump as a dict
+                    pickle.dump(collections.OrderedDict(self.pmean), f)
 
         self.time = clock()-cpu_time
         if self.debug:
             self.check_roundoff()
+
+    def _varpro_fit(self, p0, nf, tol, maxit):
+        def lstsq(M, y):
+            try:
+                MTM = M.T.dot(M)
+                MTy = M.T.dot(y)
+                return _gvar.linalg.solve(MTM, MTy)
+            except:
+                return _gvar.linalg.lstsq(M, y)
+        def M_y(p):
+            " chiv = y - M @ p defines y and M "
+            p[self.linear] *= 0.0
+            y = self._chiv(p)
+            M = []
+            for i in self.linear:
+                p[i] -= 1.0
+                M.append(self._chiv(p) - y)
+                p[i] += 1.0
+            return numpy.transpose(M), y
+        def fitfcn(p):
+            M, y = M_y(p)
+            p[self.linear] = lstsq(M, y)
+            return self._chiv(p)
+        localgvar = _gvar.gvar_factory()
+        if len(self.linear) < len(p0):
+            fit = nonlinear_fit.FITTERS[self.fitter](
+                p0, nf, fitfcn, tol=tol, maxit=maxit, **self.fitterargs
+                )
+            p = localgvar(fit.x, fit.cov)
+        else:
+            class dummy:
+                def __init__(self):
+                    pass
+            fit = dummy()
+            fit.nit = 0
+            fit.tol = (1e-8, 1e-10, 1e-10)
+            fit.error = None
+            fit.results = None
+            fit.stopping_criterion = 0
+            fit.description = 'no fit - all parameters linear'
+            p = localgvar(p0, p0)
+        M, y = M_y(p)
+        y += localgvar(len(y) * ['0(1)'])
+        p[self.linear] = lstsq(M, y)
+        fit.x = _gvar.mean(p)
+        fit.cov = _gvar.evalcov(p)
+        fit.f = self._chiv(fit.x)
+        return fit
 
     @staticmethod
     def set(clear=False, **defaults):
@@ -740,36 +840,43 @@ class nonlinear_fit(object):
         """ Formats fit output details into a string for printing.
 
         The output tabulates the ``chi**2`` per degree of freedom of the fit
-        (``chi2/dof``), the number of degrees of freedom, the logarithm of the
-        Gaussian Bayes Factor for the fit (``logGBF``), and the number of fit-
-        algorithm iterations needed by the fit. Optionally, it will also list
-        the best-fit values for the fit parameters together with the prior for
-        each (in ``[]`` on each line). Lines for parameters that deviate from
-        their prior by more than one (prior) standard deviation are marked
-        with asterisks, with the number of asterisks equal to the number of
-        standard deviations (up to five). ``format`` can also list all of the
-        data and the corresponding values from the fit, again with asterisks
-        on lines  where there is a significant discrepancy. At the end it
-        lists the SVD cut, the number of eigenmodes modified by the SVD cut,
-        the tolerances used in the fit, and the time in seconds needed to do
-        the fit. The tolerance used to terminate the fit is marked with an
-        asterisk.
+        (``chi2/dof``), the number of degrees of freedom, the ``Q``  value of
+        the fit (ie, p-value), and the logarithm of the Gaussian Bayes Factor
+        for the fit (``logGBF``). At the end it lists the SVD cut, the number
+        of eigenmodes modified by the SVD cut, the tolerances used in the fit,
+        and the time in seconds needed to do the fit. The tolerance used to
+        terminate the fit is marked with an asterisk. It also lists
+        information about the fitter used if it is other than the standard
+        choice.
 
-        :param maxline: Maximum number of data points for which fit
-            results and input data are tabulated. ``maxline<0`` implies
-            that only ``chi2``, ``Q``, ``logGBF``, and ``itns`` are
-            tabulated; no parameter values are included. Setting
-            ``maxline=True`` prints all data points; setting it
-            equal ``None`` or ``False`` is the same as setting
-            it equal to ``-1``. Default is ``maxline=0``.
-        :type maxline: integer or bool
-        :param pstyle: Style used for parameter list. Supported values are
-            'vv' for very verbose, 'v' for verbose, and 'm' for minimal.
-            When 'm' is set, only parameters whose values differ from their
-            prior values are listed. Setting ``pstyle=None`` implies
-            no parameters are listed.
-        :type pstyle: 'vv', 'v', 'm', or ``None``
-        :returns: String containing detailed information about fit.
+        Optionally, ``format`` will also list the best-fit values
+        for the fit parameters together with the prior for each (in ``[]`` on
+        each line). Lines for parameters that deviate from their prior by more
+        than one (prior) standard deviation are marked with asterisks, with
+        the number of asterisks equal to the number of standard deviations (up
+        to five). Lines for parameters designated as linear (see ``linear``
+        keyword) are marked with a minus sign after their prior.
+
+        ``format`` can also list all of the data and the corresponding values
+        from the fit, again with asterisks on lines  where there is a
+        significant discrepancy.
+
+        Args:
+            maxline (int or bool): Maximum number of data points for which
+                fit results and input data are tabulated. ``maxline<0``
+                implies that only ``chi2``, ``Q``, ``logGBF``, and ``itns``
+                are tabulated; no parameter values are included. Setting
+                ``maxline=True`` prints all data points; setting it
+                equal ``None`` or ``False`` is the same as setting
+                it equal to ``-1``. Default is ``maxline=0``.
+            pstyle (str or None): Style used for parameter list. Supported
+                values are 'vv' for very verbose, 'v' for verbose, and 'm' for
+                minimal. When 'm' is set, only parameters whose values differ
+                from their prior values are listed. Setting ``pstyle=None``
+                implies no parameters are listed.
+
+        Returns:
+            String containing detailed information about fit.
         """
         # unpack arguments
         if nline is not None and maxline == 0:
@@ -939,7 +1046,11 @@ class nonlinear_fit(object):
                 max(w1, 15), 3 * ' ',
                 max(w2, 10), int(max(w2,10)/2) * ' ', max(w3,10)
                 )
-            for di, stars in zip(data, collect.stars):
+            if len(self.linear) > 0:
+                spacer = [' ', '-']
+            else:
+                spacer = ['', '']
+            for i, (di, stars) in enumerate(zip(data, collect.stars)):
                 if di is None:
                     # marker for boundary between true fit parameters and derived parameters
                     ndashes = (
@@ -948,7 +1059,11 @@ class nonlinear_fit(object):
                         )
                     table += ndashes * '-' + '\n'
                     continue
-                table += (fst % tuple(di)) + stars + '\n'
+                table += (
+                    (fst % tuple(di)) +
+                    spacer[i in self.linear] +
+                    stars + '\n'
+                    )
 
         # settings
         settings = "\nSettings:"
@@ -1031,6 +1146,10 @@ class nonlinear_fit(object):
         parameters ``p`` is the same as that of ``fit.p`` (or
         ``fit.pmean``).
         """
+        warnings.warn(
+            "nonlinear_fit.load_parameters deprecated; use pickle.load or gvar.load instead",
+            DeprecationWarning,
+            )
         with open(filename,"rb") as f:
             return pickle.load(f)
 
@@ -1043,6 +1162,10 @@ class nonlinear_fit(object):
         ``p = nonlinear_fit.load_parameters(filename)``
         where ``p``'s layout is the same as that of ``fit.p``.
         """
+        warnings.warn(
+            "nonlinear_fit.dump_p deprecated; use gvar.dump instead",
+            DeprecationWarning
+            )
         with open(filename, "wb") as f:
             pickle.dump(self.palt, f) # dump as a dict
 
@@ -1057,6 +1180,10 @@ class nonlinear_fit(object):
         values can be used to initialize a later fit (``nonlinear_fit``
         parameter ``p0``).
         """
+        warnings.warn(
+            "nonlinear_fit.dump_pmean deprecated; use pickle.dump instead",
+            DeprecationWarning,
+            )
         with open(filename, "wb") as f:
             if self.p0.shape is not None:
                 pickle.dump(numpy.array(self.pmean), f)
@@ -1463,9 +1590,8 @@ def _unpack_p0(p0, p0file, prior, extend):
     if p0file is not None:
         # p0 is a filename; read in values
         try:
-            p0 = nonlinear_fit.load_parameters(p0file)
-            # with open(p0file, "rb") as f:
-            #     p0 = pickle.load(f)
+            with open(p0file, "rb") as f:
+                p0 = pickle.load(f)
         except (IOError, EOFError):
             if prior is None:
                 raise IOError(
