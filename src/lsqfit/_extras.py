@@ -15,6 +15,7 @@
 
 import collections
 import functools
+import pickle
 import time
 import types
 
@@ -1080,7 +1081,9 @@ class MultiFitter(object):
         p0file = p0 if isinstance(p0, str) else None
         if p0file is not None:
             try:
-                p0 = lsqfit.nonlinear_fit.load_parameters(p0file)
+                # p0 = lsqfit.nonlinear_fit.load_parameters(p0file)
+                with open(p0file, 'rb') as ifile:
+                    p0 = pickle.load(ifile)
             except (IOError, EOFError):
                 p0 = None
 
@@ -1091,7 +1094,9 @@ class MultiFitter(object):
             )
         self.fit = prevfit
         if p0file is not None:
-            self.fit.dump_pmean(p0file)
+            # self.fit.dump_pmean(p0file)
+            with open(p0file, "wb") as ofile:
+                pickle.dump(self.fit.pmean, ofile)
         self.fit.formatall = types.MethodType(MultiFitter._formatall, self.fit)
         def _show_plots(save=False, view='ratio'):
             MultiFitter.show_plots(

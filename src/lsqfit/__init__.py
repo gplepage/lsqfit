@@ -686,12 +686,8 @@ class nonlinear_fit(object):
 
         # archive final parameter values if requested
         if self.p0file is not None:
-            with open(self.p0file, "wb") as f:
-                if self.p0.shape is not None:
-                    pickle.dump(numpy.array(self.pmean), f)
-                else:
-                    # dump as a dict
-                    pickle.dump(collections.OrderedDict(self.pmean), f)
+            with open(self.p0file, "wb") as ofile:
+                pickle.dump(self.pmean, ofile)
 
         self.time = clock()-cpu_time
         if self.debug:
