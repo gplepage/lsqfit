@@ -44,8 +44,8 @@ def main():
     results = expval(g, neval=neval, nitn=nitn, adapt=False)
 
     # analyze results
-    print('\nIterations:')
-    print(results.summary())
+    # print('\nIterations:')
+    # print(results.summary())
     print('Integration Results:')
     pmean = results['mean']
     pcov =  results['outer'] - np.outer(pmean, pmean)

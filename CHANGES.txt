@@ -1,3 +1,31 @@
+Version 10.0 2018-07-21
+=======================
+New implementation of lsqfit.MultiFitter that offers new features but also
+is (slightly) incompatible with previous versions. The most important
+new feature is the ability to change fitter keyword values in the middle
+of fit chain, by including a dictionary with the new values as
+an entry in the models list. This allows far more control over the
+individual fits in chain of fits.
+
+The incompatibilities mostly affect chained fits and are mostly internal. The
+list of chained fits (fit.chained_fit) now contains all fits, including the
+wavg fits done after a parallel fit. The output from fit.formatall() differs
+accordingly. Another change for all fits: bootstraps are initiated using the
+fit (not the fitter, as before) -- eg, fit.bootstrapped_fit_iter(10).
+
+Other changes:
+
+- maxit=0 normally results in one iteration of the nonlinear_fit fitter.
+  As per a request from Jason Chang, this is no longer the case when linear
+  terms are  specified (using the linear keyword). Then the prior is used for
+  the  nonlinear terms, and the linear terms are determined using the linear
+  least-squares formula (variable projection). This is an efficient way  to
+  determine linear parameters when you have good estimates (eg, from previous
+  fits in a chain) for the nonlinear parameters.
+
+- Use of a prior in lsqfit.wavg is deprecated. A prior never made much sense.
+
+
 Version 9.5 2018-07-15
 ======================
 - lsqfit.nonlinear_fit has a new keyword: linear. This can be used

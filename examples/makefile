@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2016 G. Peter Lepage.
+# Copyright (c) 2012-2018 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,10 +11,13 @@
 # GNU General Public License for more details.
 
 PYTHON = python
+PLOT = True
 
 run:
 	$(PYTHON) simple.py > simple.tmp
 	- diff -w -I svdcut -I fitter simple.out simple.tmp
+	$(PYTHON) multifitter.py $(PLOT) > multifitter.tmp
+	- diff -w -I svdcut -I fitter multifitter.out multifitter.tmp
 	$(PYTHON) y-vs-x.py > y-vs-x.tmp
 	- diff -w -I svdcut -I fitter y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
@@ -43,6 +46,7 @@ time:
 
 _time:
 	$(PYTHON) simple.py > /dev/null
+	$(PYTHON) multifitter.py False > /dev/null
 	$(PYTHON) y-vs-x.py > /dev/null
 	$(PYTHON) x-err.py > /dev/null
 	$(PYTHON) p-corr.py > /dev/null

@@ -1,0 +1,81 @@
+------------------------------ lsqfit
+========== (d1,d2,d3,d4)
+Least Square Fit:
+  chi2/dof [dof] = 0.56 [14]    Q = 0.9    logGBF = 13.294
+
+Parameters:
+              a    0.2009 (83)      [  0.0 (1.0) ]  
+             s1    0.9485 (54)      [  0.0 (1.0) ]  
+             s2    0.4928 (55)      [  0.0 (1.0) ]  
+             s3   -0.0846 (55)      [  0.0 (1.0) ]  
+             s4   -0.2000 (55)      [  0.0 (1.0) ]  
+
+Settings:
+  svdcut/n = 1e-10/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+
+------------------------------ chained_lsqfit
+Least Square Fit:
+  chi2/dof [dof] = 0.49 [14]    Q = 0.94    logGBF = 9.9028
+
+Parameters:
+              a    0.2009 (83)      [  0.0 (1.0) ]  
+             s1    0.9494 (59)      [  0.0 (1.0) ]  
+             s2    0.4937 (60)      [  0.0 (1.0) ]  
+             s3   -0.0837 (60)      [  0.0 (1.0) ]  
+             s4      0.0 (1.0)      [  0.0 (1.0) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08,1e-10,1e-10)    (itns/time = 13/0.0)
+  fitter = chained fit    
+
+========== (d1,d2)
+Least Square Fit:
+  chi2/dof [dof] = 0.59 [6]    Q = 0.74    logGBF = 2.0532
+
+Parameters:
+              a    0.207 (13)     [  0.0 (1.0) ]  
+             s1   0.9458 (69)     [  0.0 (1.0) ]  
+             s2   0.4900 (70)     [  0.0 (1.0) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+========== d3
+Least Square Fit:
+  chi2/dof [dof] = 0.4 [4]    Q = 0.81    logGBF = 1.9433
+
+Parameters:
+              a     0.186 (16)      [  0.0 (1.0) ]  
+             s3   -0.0779 (82)      [  0.0 (1.0) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+========== wavg((d1,d2),d3)
+Least Square Fit (no prior):
+  chi2/dof [dof] = 1.1 [1]    Q = 0.3    
+
+Parameters:
+              a    0.1988 (98)      [  0.207034 +- inf ]  
+             s1    0.9494 (59)      [   0.94583 +- inf ]  
+             s2    0.4937 (60)      [  0.489992 +- inf ]  
+             s3   -0.0837 (60)      [ -0.077931 +- inf ]  
+
+Settings:
+  svdcut/n = 1e-08/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+========== d4
+Least Square Fit:
+  chi2/dof [dof] = 0.41 [4]    Q = 0.8    logGBF = 5.9063
+
+Parameters:
+              a   0.2009 (83)     [ 0.1988 (98) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+******************** bootstrap
+{'a': '0.200(8)','s1': '0.948(6)','s2': '0.489(6)','s3': '-0.080(6)','s4': '0.000(1.000)'}
+******************** bootstrap
+{'a': '0.207(8)','s1': '0.949(6)','s2': '0.490(6)','s3': '-0.084(6)','s4': '0.000(1.000)'}

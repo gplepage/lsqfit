@@ -97,12 +97,6 @@ import numpy
 
 import gvar as _gvar
 
-# add extras and utilities to lsqfit
-from ._extras import empbayes_fit, wavg
-from ._extras import MultiFitterModel, MultiFitter
-from ._utilities import _build_chiv_chivw
-# from ._version import version as __version__
-
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
     extend=False,
@@ -716,7 +710,7 @@ class nonlinear_fit(object):
             p[self.linear] = lstsq(M, y)
             return self._chiv(p)
         localgvar = _gvar.gvar_factory()
-        if len(self.linear) < len(p0):
+        if len(self.linear) < len(p0) and maxit > 0:
             fit = nonlinear_fit.FITTERS[self.fitter](
                 p0, nf, fitfcn, tol=tol, maxit=maxit, **self.fitterargs
                 )
@@ -732,7 +726,12 @@ class nonlinear_fit(object):
             fit.results = None
             fit.stopping_criterion = 0
             fit.description = 'no fit - all parameters linear'
-            p = localgvar(p0, p0)
+            if self.prior is None:
+                p = localgvar(p0, p0)
+            else:
+                p = localgvar(
+                    _gvar.mean(self.prior.buf), _gvar.evalcov(self.prior.buf)
+                    )
         M, y = M_y(p)
         y += localgvar(len(y) * ['0(1)'])
         p[self.linear] = lstsq(M, y)
@@ -1010,19 +1009,19 @@ class nonlinear_fit(object):
         else:
             chi2_dof = self.chi2
         try:
-            Q = '%.2g' % self.Q
+            Q = 'Q = %.2g' % self.Q
         except:
-            Q = '?'
+            Q = ''
         try:
-            logGBF = '%.5g' % self.logGBF
+            logGBF = 'logGBF = %.5g' % self.logGBF
         except:
-            logGBF = str(self.logGBF)
+            logGBF = ''
         if self.prior is None:
-            descr = " (no prior)"
+            descr = ' (no prior)'
         else:
-            descr = ""
-        table = ('Least Square Fit%s:\n  chi2/dof [dof] = %.2g [%d]    Q = %s'
-                 '    logGBF = %s\n' % (descr, chi2_dof, dof, Q, logGBF))
+            descr = ''
+        table = ('Least Square Fit%s:\n  chi2/dof [dof] = %.2g [%d]    %s'
+                 '    %s\n' % (descr, chi2_dof, dof, Q, logGBF))
         if maxline < 0:
             return table
 
@@ -1066,14 +1065,18 @@ class nonlinear_fit(object):
         settings += "\n  svdcut/n = {svdcut}/{svdn}".format(
             svdcut=self.svdcut, svdn=self.svdn
             )
-        fmtstr = [
-            "    tol = ({:.2g},{:.2g},{:.2g})",
-            "    tol = ({:.2g}*,{:.2g},{:.2g})",
-            "    tol = ({:.2g},{:.2g}*,{:.2g})",
-            "    tol = ({:.2g},{:.2g},{:.2g}*)",
-            ][self.stopping_criterion]
-        settings += fmtstr.format(*self.tol)
-        if self.stopping_criterion == 0:
+        criterion = self.stopping_criterion
+        try:
+            fmtstr = [
+                "    tol = ({:.2g},{:.2g},{:.2g})",
+                "    tol = ({:.2g}*,{:.2g},{:.2g})",
+                "    tol = ({:.2g},{:.2g}*,{:.2g})",
+                "    tol = ({:.2g},{:.2g},{:.2g}*)",
+                ][criterion if criterion is not None else 0]
+            settings += fmtstr.format(*self.tol)
+        except:
+            pass
+        if criterion is not None and criterion == 0:
             settings +="    (itns/time = {itns}*/{time:.1f})".format(
                 itns=self.nit, time=self.time
                 )
@@ -1094,7 +1097,12 @@ class nonlinear_fit(object):
         # create table comparing fit results to data
         ny = self.y.size
         stride = 1 if maxline >= ny else (int(ny/maxline) + 1)
-        f = self.fcn(self.p) if self.x is False else self.fcn(self.x, self.p)
+        if hasattr(self, 'fcn_p'):
+            f = self.fcn_p
+        elif self.x is False:
+            f = self.fcn(self.p)
+        else:
+            f = self.fcn(self.x, self.p)
         if hasattr(f, 'keys'):
             f = _gvar.BufferDict(f)
         else:
@@ -2153,6 +2161,11 @@ try:
 
 except ImportError:
     pass
+
+# add extras and utilities to lsqfit
+from ._extras import empbayes_fit, wavg
+from ._extras import MultiFitterModel, MultiFitter
+from ._utilities import _build_chiv_chivw
 
 # legacy definitions (obsolete)
 class _legacy_constructor:

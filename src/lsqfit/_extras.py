@@ -18,6 +18,7 @@ import functools
 import pickle
 import time
 import types
+import warnings
 
 import numpy
 
@@ -354,10 +355,6 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
     more weight than those with larger standard deviations. The averages
     computed by ``wavg`` take account of correlations between the |GVar|\s.
 
-    If ``prior`` is not ``None``, it is added to the list of data
-    used in the average. Thus ``wavg([x2, x3], prior=x1)`` is the
-    same as ``wavg([x1, x2, x3])``.
-
     Typical usage is ::
 
         x1 = gvar.gvar(...)
@@ -400,8 +397,8 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
     average by incorporating the random samples one at a time into a
     running average::
 
-        result = prior
-        for dataseq_i in dataseq:
+        result = dataseq[0]
+        for dataseq_i in dataseq[1:]:
             result = wavg([result, dataseq_i], ...)
 
     This method is much faster when ``len(dataseq)`` is large, and gives the
@@ -414,9 +411,6 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
             a one-dimensional sequence of |GVar|\s, or of arrays of |GVar|\s,
             or of dictionaries containing |GVar|\s  and/or arrays of |GVar|\s.
             All ``dataseq[i]`` must have the same shape.
-        prior (dict, array or gvar.GVar): Prior values for the averages, to
-            be included in the weighted average. Default value is ``None``, in
-            which case ``prior`` is ignored.
         fast (bool): Setting ``fast=True`` causes ``wavg`` to compute an
             approximation to the weighted average that is much faster to
             calculate when averaging a large number of samples (100s or more).
@@ -446,6 +440,11 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
 
         **fit** - Fit output from average.
     """
+    if prior is not None:
+        warnings.warn(
+            'use of prior in lsqfit.wavg is deprecated',
+            DeprecationWarning
+            )
     if len(dataseq) <= 0:
         if prior is None:
             return None
@@ -558,7 +557,7 @@ class MultiFitterModel(object):
         When ``ncg>1``, fit data and functions are coarse-grained by
         breaking them up into bins of of ``ncg`` values and replacing
         each bin by its average. This can increase the fitting speed,
-        because their is less data, without much loss of precision
+        because there is less data, without much loss of precision
         if the data elements within a bin are highly correlated.
 
     Args:
@@ -686,12 +685,115 @@ class MultiFitterModel(object):
 
     prior_key = staticmethod(gvar.ExtendedDict.basekey)
 
+class chained_lsqfit(lsqfit.nonlinear_fit):
+    " Fit results from chained fit. "
+    def __init__(self, p, chained_fits, fitter, prior):
+        if len(chained_fits) <= 0:
+            raise ValueError('no chained fits')
+        self._p = p
+        self.palt = p
+        self.pmean = gvar.mean(p)
+        self.psdev = gvar.sdev(p)
+        self.chained_fits = chained_fits
+
+        # extract fcn, fcn values, and data from fits and fitter
+        # (for format(...))
+        self.fcn = fitter.buildfitfcn()
+        self.data = collections.OrderedDict()
+        self.prior = prior
+        self.fcn_p = collections.OrderedDict()
+        for k in self.chained_fits:
+            if k[:5] == 'wavg(' and k[-1] == ')':
+                continue
+            fit = self.chained_fits[k]
+            self.data.update(fit.data)
+            self.fcn_p.update(fit.fcn(fit.p))
+        self.data = gvar.BufferDict(self.data)
+        self.x = False
+        self.y = self.data
+
+        self.extend = next(iter(self.chained_fits.values())).extend
+        self.linear = []
+        self.svdcorrection = 0
+        self.svdn = 0
+        self.dof = 0
+        self.chi2 = 0
+        self.nit = 0
+        self.time = 0
+        self.svdcut = 0
+        self.tol = [0., 0., 0.]
+        self.error = []
+        self.logGBF = 0.
+        self.fitter = 'chained fit'
+        self.description = ''
+        for k in self.chained_fits:
+            if k[:5] == 'wavg(' and k[-1] == ')':
+                continue
+            self.svdcorrection += self.chained_fits[k].svdcorrection
+            self.svdn += self.chained_fits[k].svdn
+            self.dof += self.chained_fits[k].dof
+            self.chi2 += self.chained_fits[k].chi2
+            self.nit += self.chained_fits[k].nit
+            self.time += self.chained_fits[k].time
+            svdcut = self.chained_fits[k].svdcut
+            if svdcut is not None and  abs(svdcut) > abs(self.svdcut):
+                self.svdcut = svdcut
+            tol = self.chained_fits[k].tol
+            for i in range(3):
+                self.tol[i] = max(self.tol[i], tol[i])
+            error = self.chained_fits[k].error
+            if error is not None:
+                self.error.append(error)
+            logGBF = self.chained_fits[k].logGBF
+            if logGBF is not None:
+                self.logGBF += logGBF
+        if len(self.error) == 0:
+            self.error = None
+        self.tol = tuple(self.tol)
+        self.Q = lsqfit.gammaQ(self.dof/2., self.chi2/2.)
+        if self.logGBF == 0:
+            self.logGBF = None
+
+        # others
+        self.stopping_criterion = None
+        self.cov = None
+        self.fitter_results = None
+        self.p0 = None
+        self.nblocks = None
+
+    def show_plots(self, save=False, view='ratio'):
+        fitdata = collections.OrderedDict()
+        fitval = collections.OrderedDict()
+        for k in self.chained_fits:
+            if k[:5] == 'wavg(' and k[-1] == ')':
+                continue
+            fit = self.chained_fits[k]
+            # need OrderedDict conversion because otherwise
+            # converts to dict, which doesn't work (BufferDict issue)
+            fitdata.update(collections.OrderedDict(fit.data))
+            fitval.update(collections.OrderedDict(fit.fcn(self.p)))
+        MultiFitter.show_plots(
+            fitdata=fitdata, fitval=fitval, save=save, view=view,
+            )
+
+    def formatall(self, *args, **kargs):
+        " Add-on method for fits returned by chained_lsqfit. "
+        ans = ''
+        for x in self.chained_fits:
+            ans += 10 * '=' + ' ' + str(x) + '\n'
+            ans += self.chained_fits[x].format(*args, **kargs)
+            ans += '\n'
+        return ans[:-1]
 
 class MultiFitter(object):
     """ Nonlinear least-squares fitter for a collection of models.
 
+    Fits collections of data that are modeled by collections of models.
+    Fits can be simultaneous (:meth:`lsqfit.MultiFitter.lsqfit`) or chained
+    (:meth:`lsqfit.MultiFitterl.chained_lsqfit`).
+
     Args:
-        models: List of models, derived from :mod:`modelfitter.MultiFitterModel`,
+        models: List of models, derived from :mod:`lsqfit.MultiFitterModel`,
             to be fit to the data. Individual models in the list can
             be replaced by lists of models or tuples of models; see below.
         mopt (object): Marginalization options. If not ``None``,
@@ -707,9 +809,7 @@ class MultiFitter(object):
         fast (bool): Setting ``fast=True`` (default) strips any variable
             not required by the fit from the prior. This speeds
             fits but loses information about correlations between
-            variables in the fit and those that are not. The
-            information can be restored using ``lsqfit.wavg`` after
-            the fit.
+            variables in the fit and those that are not.
         extend (bool): If ``True`` supports log-normal and other
             non-Gaussian priors. See :mod:`lsqfit` documentation
             for details. Default is ``False``.
@@ -718,20 +818,20 @@ class MultiFitter(object):
             the corresponding models, for access and reporting. These names
             get unwieldy when lots of models are involved. When ``fitname``
             is not ``None`` (default), each default name ``dname`` is
-            replaced by ``fitname(dname)``.
-        wavg_svdcut (float): SVD cut used for the weighted averages that
-            combine results from parallel sub-fits in a chained fit (see
-            :meth:`MultiFitter.chained_lsqfit`). Default value is ``None``
-            which sets the SVD cut equal to 10x the SVD cut used for other
-            fits (specified by keyword ``svdcut``). Weighted averages often
-            need larger SVD cuts than the other fits.
-        fitterargs: Additional arguments for the :class:`lsqfit.nonlinear_fit`
-            object used to do the fits. These can include
-            ``tol``, ``maxit``, ``svdcut``, ``fitter``, etc., as needed.
+            replaced by ``fitname(dname)`` which should return a string.
+        wavg_kargs (float): Keyword arguments for :meth:`lsqfit.wavg` when
+            used to combine results from parallel sub-fits in a chained fit.
+        fitterargs (dict): Additional arguments for the
+            :class:`lsqfit.nonlinear_fit` object used to do the fits.
+            These can be collected in a dictionary (e.g.,
+            ``fitterargs=dict(tol=1e-6, maxit=500))``) or listed as
+            separate arguments (e.g., ``tol=1e-6, maxit=500``).
     """
+
     def __init__(
         self, models, mopt=None, ratio=False, fast=True, extend=False,
-        fitname=None, wavg_svdcut=None, **fitterargs
+        wavg_kargs=dict(svdcut=1e-8), fitname=None, fitterargs={},
+        **more_fitterargs
         ):
         super(MultiFitter, self).__init__()
         models = [models] if isinstance(models, MultiFitterModel) else models
@@ -741,21 +841,63 @@ class MultiFitter(object):
         self.mopt = mopt
         self.fast = fast
         self.extend = extend
-        self.wavg_svdcut = wavg_svdcut
-        self.fitterargs = fitterargs
+        self.wavg_kargs = wavg_kargs
+        self.fitterargs = dict(fitterargs)
+        self.fitterargs.update(more_fitterargs)
+        self.tasklist = self._compile_models(models)
+        self.flatmodels = self._flatten_models(self.tasklist)
         self.fitname = (
             fitname if fitname is not None else
-            lambda x : x
+            lambda x : str(x)
             )
 
-    def buildfitfcn(self, mf=None):
+    def set(self, **kargs):
+        """ Reset default keyword parameters.
+
+        Assigns new default values from dictionary ``kargs`` to the fitter's
+        keyword parameters. Keywords for the underlying :mod:`lsqfit` fitters
+        can also be  included (or grouped together in dictionary
+        ``fitterargs``).
+
+        Returns tuple ``(kargs, oldkargs)`` where ``kargs`` is a dictionary
+        containing all :class:`lsqfit.MultiFitter` keywords after they have
+        been updated, and ``oldkargs`` contains the  original values for these
+        keywords. Use ``fitter.set(**oldkargs)`` to restore the original
+        values.
+        """
+        kwords = set(
+            ['mopt', 'fast', 'ratio', 'extend', 'wavg_kargs', 'fitterargs']
+            )
+        kargs = dict(kargs)
+        oldkargs = {}
+        fargs = {}
+        # changed
+        for k in list(kargs.keys()):  # list() needed since changing kargs
+            if k in kwords:
+                oldkargs[k] = getattr(self, k)
+                setattr(self, k, kargs[k])
+                kwords.remove(k)
+            else:
+                fargs[k] = kargs[k]
+                del kargs[k]
+        # unchanged
+        for k in kwords:
+            kargs[k] = getattr(self, k)
+        # manage fitterargs
+        if 'fitterargs' in kwords:
+            # means wasn't in kargs initially
+            oldkargs['fitterargs'] = self.fitterargs
+            self.fitterargs = dict(self.fitterargs)
+        if len(fargs) > 0:
+            self.fitterargs.update(fargs)
+        kargs['fitterargs'] = dict(self.fitterargs)
+        return kargs, oldkargs
+
+    def buildfitfcn(self):
         """ Create fit function to fit models in list ``models``. """
-        if mf is None:
-            mf = self._get_mf()
-            mf['flatmodels'] = self.flatten_models(mf['models'])
-        def _fitfcn(p, models=mf['flatmodels'], mopt=mf['mopt']):
+        def _fitfcn(p, flatmodels=self.flatmodels):
             ans = gvar.BufferDict()
-            for m in models:
+            for m in flatmodels:
                 ans[m.datatag] = (
                     m.fitfcn(p) if m.ncg <= 1 else
                     MultiFitter.coarse_grain(m.fitfcn(p), m.ncg)
@@ -763,142 +905,84 @@ class MultiFitter(object):
             return ans
         return _fitfcn
 
-    def _get_mf(self):
-        return {
-            k:getattr(self, k) for k in
-            ['models', 'mopt', 'fast', 'ratio', 'extend', 'wavg_svdcut']
-            }
-
-    def builddata(self, data=None, pdata=None, prior=None, mf=None):
+    def builddata(self, mopt=None, data=None, pdata=None, prior=None):
         """ Rebuild pdata to account for marginalization. """
-        if mf is None:
-            mf = self._get_mf()
-            mf['flatmodels'] = self.flatten_models(mf['models'])
         if pdata is None:
             if data is None:
                 raise ValueError('no data or pdata')
             pdata = gvar.BufferDict()
-            for m in mf['flatmodels']:
+            for m in self.flatmodels:
                 pdata[m.datatag] = (
                     m.builddata(data) if m.ncg <= 1 else
                     MultiFitter.coarse_grain(m.builddata(data), m.ncg)
                     )
         else:
             npdata = gvar.BufferDict()
-            for m in mf['flatmodels']:
+            for m in self.flatmodels:
                 npdata[m.datatag] = pdata[m.datatag]
             pdata = npdata
-        if mf['mopt'] is not None:
-            # fcn with entire prior
-            mf_save_mopt = mf['mopt']
-            mf['mopt'] = None
-            fitfcn = self.buildfitfcn(mf)
-            p_all = self.buildprior(prior, mf)
-            mf['mopt'] = mf_save_mopt
-            if mf['extend']:
+        if mopt is not None:
+            fitfcn = self.buildfitfcn()
+            p_all = self.buildprior(prior=prior, mopt=None)
+            if self.extend:
                 p_all = gvar.ExtendedDict(p_all)
             f_all = fitfcn(p_all)
 
             # fcn with part we want to keep
-            fitfcn = self.buildfitfcn(mf)
-            p_trunc = self.buildprior(prior, mf)
-            if mf['extend']:
+            p_trunc = self.buildprior(prior=prior, mopt=mopt)
+            if self.extend:
                 p_trunc = gvar.ExtendedDict(p_trunc)
             f_trunc = fitfcn(p_trunc)
 
             # correct pdata
             pdata = gvar.BufferDict(pdata)
-            if not mf['ratio']:
-                for m in mf['flatmodels']:
+            if not self.ratio:
+                for m in self.flatmodels:
                     pdata[m.datatag] += f_trunc[m.datatag] - f_all[m.datatag]
             else:
-                for m in mf['flatmodels']:
+                for m in self.flatmodels:
                     ii = (gvar.mean(f_all[m.datatag]) != 0)
                     ratio = f_trunc[m.datatag][ii] / f_all[m.datatag][ii]
                     pdata[m.datatag][ii] *= ratio
         return pdata
 
-    # @staticmethod
-    # def _update_prior(prior, update):
-    #     """ update prior[k] with dictionary update[k]
-
-    #     prior[k] is updated by update[k] provided update[k] is the
-    #     same shape and size, or provided update[k] has larger size.
-    #     """
-    #     for k in update:
-    #         if k not in prior:
-    #             prior[k] = update[k]
-    #         else:
-    #             pshape = numpy.shape(prior[k])
-    #             ushape = numpy.shape(update[k])
-    #             if (
-    #                 (pshape == ushape) or
-    #                 (numpy.size(prior[k]) >= numpy.size(update[k]))
-    #                 ):
-    #                 continue
-    #             if len(pshape) == len(ushape):
-    #                 if (
-    #                     pshape == ushape or
-    #                     numpy.size(prior[k]) < numpy.size(update[k])
-    #                     ):
-    #                     prior[k] = update[k]
-    #             else:
-    #                 raise ValueError(
-    #                     'mismatched prior shapes for {}: {} and {}'.format(
-    #                         str(k), pshape, ushape
-    #                         )
-    #                     )
-
-    def buildprior(self, prior, mf=None):
-        """ Create prior to fit models in list ``models``.
-
-        Setting parameter ``fast=True`` strips any variable
-        not required by the fit from the prior. This speeds
-        fits but loses information about correlations between
-        variables in the fit and those that are not. The
-        information can be restored using ``lsqfit.wavg`` after
-        the fit.
-        """
-        if mf is None:
-            mf = self._get_mf()
-            mf['flatmodels'] = self.flatten_models(mf['models'])
+    def buildprior(self, prior, mopt=None):
+        """ Create prior to fit models in list ``models``. """
         nprior = gvar.BufferDict()
-        # save mprior for chained_fit -- fast
-        self.mprior = collections.OrderedDict()
-        for m in mf['flatmodels']:
-            self.mprior[m.datatag] = m.buildprior(
-                prior, mopt=mf['mopt'], extend=mf['extend']
-                )
-            # self._update_prior(nprior, self.mprior[m.datatag])
-            nprior.update(self.mprior[m.datatag])
-        if not mf['fast']:
+        for m in self.flatmodels:
+            nprior.update(m.buildprior(
+                prior, mopt=mopt, extend=self.extend
+                ))
+        if not self.fast:
             for k in prior:
                 if k not in nprior:
                     nprior[k] = prior[k]
         return nprior
 
     @staticmethod
-    def _flatten_models(models):
-        " Create 1d-array containing all distinct models from ``models``. "
+    def _flatten_models(tasklist):
+        " Create 1d-array containing all disctinct models from ``tasklist``. "
         ans = gvar.BufferDict()
-        for m in models:
-            if isinstance(m, MultiFitterModel):
+        for task, mlist in tasklist:
+            if task != 'fit':
+                continue
+            for m in mlist:
                 id_m = id(m)
                 if id_m not in ans:
                     ans[id_m] = m
-            else:
-                ans.update(MultiFitter._flatten_models(m))
-        return ans
+        return ans.buf.tolist()
 
     @staticmethod
     def flatten_models(models):
         " Create 1d-array containing all disctinct models from ``models``. "
         if isinstance(models, MultiFitterModel):
-            return [models]
+            ans = [models]
         else:
-            return MultiFitter._flatten_models(models).buf
+            tasklist = MultiFitter._compile_models(models)
+            ans = MultiFitter._flatten_models(tasklist)
+        return ans
 
-    def lsqfit(self, data=None, prior=None, pdata=None, p0=None, **kargs):
+    def lsqfit(self, data=None, pdata=None, prior=None, p0=None, **kargs):
         """ Compute least-squares fit of models to data.
 
         :meth:`MultiFitter.lsqfit` fits all of the models together, in
@@ -909,7 +993,13 @@ class MultiFitter(object):
 
             fit.show_plots()
 
-        Plotting requires module :mod:`matplotlib`.
+        This method has optional keyword arguments ``save`` and ``view``;
+        see documentation for :class:`lsqfit.MultiFitter.show_plots`
+        for more information. Plotting requires module :mod:`matplotlib`.
+
+        To bootstrap a fit, use ``fit.bootstrapped_fit_iter(...)``;
+        see :meth:`lsqfit.nonlinear_fit.bootstrapped_fit_iter` for more
+        information.
 
         Args:
             data: Input data. One of ``data`` or ``pdata`` must be
@@ -921,7 +1011,7 @@ class MultiFitter(object):
                 models using :meth:`MultiFitter.process_data` or
                 :meth:`MultiFitter.process_dataset`. One of
                 ``data`` or ``pdata`` must be  specified but not both.
-            prior: Bayesian prior for fit parameters used by the models.
+            prior (dict): Bayesian prior for fit parameters used by the models.
             p0: Dictionary , indexed by parameter labels, containing
                 initial values for the parameters in the fit. Setting
                 ``p0=None`` implies that initial values are extracted from the
@@ -929,49 +1019,75 @@ class MultiFitter(object):
                 the file with name ``"filename"`` for initial values and to
                 write out best-fit parameter values after the fit (for the
                 next call to ``self.lsqfit()``).
-            wavg_svdcut (float):  SVD cut used in weighted averages for
-                parallel fits.
-            kargs: Arguments that override parameters specified when
-                the :class:`MultiFitter` was created. Can also include
-                additional arguments to be passed through to
-                the :mod:`lsqfit` fitter.
+            kargs: Arguments that (temporarily) override parameters specified
+                when the :class:`MultiFitter` was created. Can also include
+                additional arguments to be passed through to the :mod:`lsqfit`
+                fitter.
         """
         # gather parameters
-        fitterargs = dict(self.fitterargs)
-        mf = self._get_mf()
-        for k in kargs:
-            if k in mf:
-                mf[k] = kargs[k]
-            else:
-                fitterargs[k] = kargs[k]
-        mf['flatmodels'] = self.flatten_models(mf['models'])
         if prior is None:
             raise ValueError('no prior')
+        kargs, oldargs = self.set(**kargs)
 
         # save parameters for bootstrap (in case needed)
-        self.fitter_args_kargs = (
-            self.lsqfit,
-            dict(data=data, prior=prior, pdata=pdata),
-            kargs,
+        fitter_args_kargs = (
+            self.chained_lsqfit,
+            dict(data=data, prior=prior, pdata=pdata, models=self.models),
+            dict(kargs),
             )
 
         # build prior, data and function
-        fitprior = self.buildprior(prior=prior, mf=mf)
-        fitdata = self.builddata(data=data, pdata=pdata, prior=prior, mf=mf)
-        fitfcn = self.buildfitfcn(mf=mf)
+        fitprior = self.buildprior(prior=prior, mopt=self.mopt)
+        fitdata = self.builddata(
+            mopt=self.mopt, data=data, pdata=pdata, prior=prior
+            )
+        fitfcn = self.buildfitfcn()
 
         # fit
         self.fit = lsqfit.nonlinear_fit(
             data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
-            extend=mf['extend'], **fitterargs
+            extend=self.extend, **self.fitterargs
             )
-        self.fit.formatall = self.fit.format
+        if len(self.flatmodels) > 1:
+            fname = self.fitname(
+                '(' +
+                ','.join([self.fitname(k.datatag) for k in self.flatmodels])
+                + ')'
+                )
+        else:
+            fname = self.fitname(self.flatmodels[0].datatag)
+        self.fit.chained_fits = collections.OrderedDict([(fname, self.fit)])
+
+        # add methods for printing and plotting
+        def _formatall(*args, **kargs):
+            " Add-on method for fits returned by chained_lsqfit. "
+            ans = ''
+            for x in self.fit.chained_fits:
+                ans += 10 * '=' + ' ' + str(x) + '\n'
+                ans += self.fit.chained_fits[x].format(*args, **kargs)
+                ans += '\n'
+            return ans[:-1]
+        self.fit.formatall = _formatall
         def _show_plots(save=False, view='ratio'):
             MultiFitter.show_plots(
                 fitdata=fitdata, fitval=fitfcn(self.fit.p),
-                save=save, view=view
+                save=save, view=view,
                 )
         self.fit.show_plots = _show_plots
+
+        # restore default keywords
+        self.set(**oldargs)
+
+        # add bootstrap method
+        fitter_args_kargs[1]['p0'] = self.fit.pmean
+        def _bstrap_iter(
+            n=None, datalist=None, pdatalist=None, **kargs
+            ):
+            return MultiFitter._bootstrapped_fit_iter(
+                fitter_args_kargs,
+                n=n, datalist=datalist, pdatalist=pdatalist, **kargs
+                )
+        self.fit.bootstrapped_fit_iter = _bstrap_iter
         return self.fit
 
     def chained_lsqfit(
@@ -988,36 +1104,54 @@ class MultiFitter(object):
         The most general chain has the structure ``[s1, s2, s3 ...]``
         where each ``sn`` is one of:
 
-            1) a model (derived from :class:`multifitter.MultiFitterModel`);
+            1) A model (derived from :class:`multifitter.MultiFitterModel`).
 
-            2) a tuple ``(m1, m2, m3)`` of models, to be fit together in
-                a single fit (*i.e.*, simultaneously);
+            2) A tuple ``(m1, m2, m3)`` of models, to be fit together in
+                a single fit (i.e., simultaneously). Simultaneous fits
+                are useful for closely related models.
 
-            3) a list ``[p1, p2, p3 ...]`` where each ``pn`` is either
+            3) A list ``[p1, p2, p3 ...]`` where each ``pn`` is either
                 a model or a tuple of models (see #2). The ``pn`` are fit
-                separately, and independently of each other (*i.e.*, in
+                separately: the fit output from one fit is *not* fed into the
+                prior of the next (i.e., the fits are effectively in
                 parallel). Results from the separate fits are averaged at the
                 end to provide a single composite result for the collection of
-                fits.
+                fits. Parallel fits are effective (and fast) when the
+                different fits have few or no fit parameters in common.
 
-        The final result ``fit`` returned by :meth:`MultiFitter.chained_fit`
-        has an extra attribute ``fit.chained_fits`` which is an ordered
-        dictionary containing fit results from each link ``sn`` in the chain,
-        and keyed by the models' ``datatag``\s. If any of these involves
-        parallel fits (see #3 above), it will have an extra attribute
-        ``fit.chained_fits[fittag].sub_fits`` that contains results from the
-        separate parallel fits. To list results from all the chained and
-        parallel fits, use ::
+            4) A dictionary that (temporarily) resets default values for
+                fitter keywords. The new values, specified in the dictionary,
+                apply to subsequent fits in the chain. Any number of such
+                dictionaries can be included in the model chain.
+
+
+        Fit results are returned in a :class:`lsqfit.MultiFitter.chained_fit`
+        object ``fit``, which is very similar to a :class:`nonlinear_fit`
+        object (see documentation for more information). Object ``fit`` has an
+        extra attribute ``fit.chained_fits`` which is an ordered dictionary
+        containing fit results for each link in the chain of fits, indexed by
+        fit names built from the corresponding data tags.
+
+        To list results from all of the fits in the chain, use ::
 
             print(fit.formatall())
 
+        This method has optional keyword arguments ``maxline``,
+        ``pstyle``, and ``nline``; see the documentation for
+        :meth:`lsqfit.nonlinear_fit.format` for more
+        information.
 
-        To see plots of the fit data divided by the fit function
-        with the best-fit parameters use
+        To view plots of each fit use
 
             fit.show_plots()
 
-        Plotting requires module :mod:`matplotlib`.
+        This method has optional keyword arguments ``save`` and ``view``;
+        see documentation for :class:`lsqfit.MultiFitter.show_plots`
+        for more information. Plotting requires module :mod:`matplotlib`.
+
+        To bootstrap a fit, use ``fit.bootstrapped_fit_iter(...)``;
+        see :meth:`lsqfit.nonlinear_fit.bootstrapped_fit_iter` for more
+        information.
 
         Args:
             data: Input data. One of ``data`` or ``pdata`` must be
@@ -1042,72 +1176,153 @@ class MultiFitter(object):
                 additional arguments to be passed through to
                 the :mod:`lsqfit` fitter.
         """
-        # gather parameters
-        fitterargs = dict(self.fitterargs)
-        mf = self._get_mf()
-        for k in kargs:
-            if k in mf:
-                mf[k] = kargs[k]
-            else:
-                fitterargs[k] = kargs[k]
-        mf['flatmodels'] = self.flatten_models(mf['models'])
         if prior is None:
             raise ValueError('no prior')
+        kargs, oldargs = self.set(**kargs)
 
-        # save parameters for bootstrap (in case needed)
-        self.fitter_args_kargs = (
+        # parameters for bootstrap (see below)
+        fitter_args_kargs = (
             self.chained_lsqfit,
-            dict(data=data, prior=prior, pdata=pdata),
-            kargs,
+            dict(data=data, prior=prior, pdata=pdata, models=self.models),
+            dict(kargs),
             )
 
-        # build prior and data (marginalized and coarse-grained)
-        fitdata = self.builddata(data=data, pdata=pdata, prior=prior, mf=mf)
-        fitprior = self.buildprior(prior=prior, mf=mf)
+        # local copy
+        prior = gvar.BufferDict(prior)
 
-        # build fit functions (marginalized and coarse-grained)
-        self.mfitfcn = collections.OrderedDict()
-        def _mfcn(p, m):
-            return MultiFitter.coarse_grain(m.fitfcn(p), m.ncg)
-        for m in mf['flatmodels']:
-            if m.ncg <= 1:
-                self.mfitfcn[m.datatag] = m.fitfcn
-            else:
-                self.mfitfcn[m.datatag] = functools.partial(
-                    _mfcn, m=m
+        # execute tasks in self.tasklist
+        chained_fits = collections.OrderedDict()
+        all_fnames = []
+        for tasktype, taskdata in self.tasklist:
+            if tasktype == 'fit':
+                fitter = self.__class__(models=taskdata, **kargs)
+                fit = fitter.lsqfit(
+                    data=data, pdata=pdata, prior=prior, p0=p0
                     )
+                fname = list(fit.chained_fits.keys())[0]
+                if fname in chained_fits:
+                    raise ValueError('duplicate fits in chain: ' + str(fname))
+                elif fname[:5] == 'wavg(' and fname[-1] == ')':
+                    raise ValueError('bad fit name: ' + fname)
+                else:
+                    all_fnames.append(fname)
+                    chained_fits[fname] = fit
+            elif tasktype == 'update-prior':
+                lastfit = chained_fits[all_fnames[-1]]
+                if self.extend:
+                    lastfit_p = gvar.trim_redundant_keys(lastfit.p)
+                else:
+                    lastfit_p = lastfit.p
+                for k in lastfit_p:
+                    idx = tuple(
+                        slice(None, i) for i in numpy.shape(lastfit.p[k])
+                        )
+                    if idx != ():
+                        prior[k][idx] = lastfit.p[k]
+                    else:
+                        prior[k] = lastfit.p[k]
+            elif tasktype == 'wavg':
+                    nlist = all_fnames[-taskdata:]
+                    plist = [chained_fits[k].p for k in nlist]
+                    fit = lsqfit.wavg(
+                        plist, **self.wavg_kargs
+                        ).fit
+                    fname = self.fitname('wavg({})'.format(
+                        ','.join(nlist)
+                        ))
+                    all_fnames.append(fname)
+                    chained_fits[fname] = fit
+            elif tasktype == 'update-kargs':
+                if 'extend' in taskdata:
+                    raise RuntimeError(
+                        "can't reset parameter 'extend' inside models list"
+                        )
+                kargs.update(taskdata)
+            else:
+                raise RuntimeError('unknown task: ' + tasktype)
 
-        # set up p0file if there is to be one
-        p0file = p0 if isinstance(p0, str) else None
-        if p0file is not None:
-            try:
-                # p0 = lsqfit.nonlinear_fit.load_parameters(p0file)
-                with open(p0file, 'rb') as ifile:
-                    p0 = pickle.load(ifile)
-            except (IOError, EOFError):
-                p0 = None
-
-        # do the fit
-        prevfit = self._seq_lsqfit(
-            models=mf['models'], data=fitdata, prior=fitprior,
-            p0=p0, mf=mf, **fitterargs
+        if self.extend:
+            prior = gvar.ExtendedDict(prior)
+        # build output class
+        self.fit = chained_lsqfit(
+            p=prior, chained_fits=chained_fits,
+            fitter=self, prior=fitter_args_kargs[1]['prior'],
             )
-        self.fit = prevfit
-        if p0file is not None:
-            # self.fit.dump_pmean(p0file)
-            with open(p0file, "wb") as ofile:
-                pickle.dump(self.fit.pmean, ofile)
-        self.fit.formatall = types.MethodType(MultiFitter._formatall, self.fit)
-        def _show_plots(save=False, view='ratio'):
-            MultiFitter.show_plots(
-                fitdata=fitdata,
-                fitval=self.buildfitfcn(mf=mf)(self.fit.p),
-                save=save, view=view,
+
+        # add bootstrap method
+        fitter_args_kargs[1]['p0'] = self.fit.pmean
+        def _bstrap_iter(
+            n=None, datalist=None, pdatalist=None, **kargs
+            ):
+            return MultiFitter._bootstrapped_fit_iter(
+                fitter_args_kargs,
+                n=n, datalist=datalist, pdatalist=pdatalist, **kargs
                 )
-        self.fit.show_plots = _show_plots
+        self.fit.bootstrapped_fit_iter = _bstrap_iter
+
+        # restore default keywords
+        self.set(**oldargs)
         return self.fit
 
-    def bootstrapped_fit_iter(self, n=None, datalist=None, pdatalist=None, **kargs):
+    @staticmethod
+    def _compile_models(models):
+        """ Convert ``models`` into a list of tasks.
+
+        Each task is tuple ``(name, data)`` where ``name`` indicates the task
+        task and ``data`` is the relevant data for that task.
+
+        Supported tasks and data:
+
+            - ``'fit'`` and list of models
+            -  ``'update-kargs'`` and ``None``
+            - ``'update-prior'`` and ``None``
+            - ``'wavg'`` and number of (previous) fits to average
+
+        """
+        tasklist = []
+        for m in models:
+            if isinstance(m, MultiFitterModel):
+                tasklist += [('fit', [m])]
+                tasklist += [('update-prior', None)]
+            elif hasattr(m, 'keys'):
+                tasklist += [('update-kargs', m)]
+            elif isinstance(m, tuple):
+                tasklist += [('fit', list(m))]
+                tasklist += [('update-prior', None)]
+            elif isinstance(m, list):
+                for sm in m:
+                    if isinstance(sm, MultiFitterModel):
+                        tasklist += [('fit', [sm])]
+                    elif isinstance(sm, tuple):
+                        tasklist += [('fit', list(sm))]
+                    else:
+                        raise ValueError(
+                            'type {} not allowed in sublists '.format(
+                                str(type(sm))
+                                )
+                            )
+                tasklist += [('wavg', len(m))]
+                tasklist += [('update-prior', None)]
+            else:
+                raise RuntimeError('bad model list')
+        return tasklist
+
+    def bootstrapped_fit_iter(
+        self, n=None, datalist=None, pdatalist=None, **kargs
+        ):
+        # for legacy code; use fit.bootstrapped_fit_iter instead
+        warnings.warn(
+            'MultiFitter.bootstrapped_fit_iter is deprecated; use fit.bootstrapped_fit_iter instead',
+            DeprecationWarning
+            )
+        return self.fit.bootstrapped_fit_iter(
+            n=n, datalist=datalist, pdatalist=pdatalist, **kargs
+            )
+
+    @staticmethod
+    def _bootstrapped_fit_iter(
+        fitter_args_kargs, n=None, datalist=None, pdatalist=None, **kargs
+        ):
         """ Iterator that returns bootstrap copies of a fit.
 
         Bootstrap iterator for |MultiFitter| fits analogous to
@@ -1129,20 +1344,20 @@ class MultiFitter(object):
             ``datalist``.
 
         """
-        if not hasattr(self, 'fitter_args_kargs'):
-            raise RuntimeError('must do at least fit before using bootstrap')
-        fitter, args, okargs = self.fitter_args_kargs
+        fitter, args, okargs = fitter_args_kargs
         for k in okargs:
             if k not in kargs:
                 kargs[k] = okargs[k]
         if 'p0' not in kargs:
-            kargs['p0'] = self.fit.pmean
+            kargs['p0'] = args['p0']
         if datalist is not None:
-            pdatalist = (self.process_data(d, self.models) for d in datalist)
+            pdatalist = (
+                MultiFitter.process_data(d, args['models']) for d in datalist
+                )
         elif pdatalist is None:
             pdata = args['pdata']
             if pdata is None:
-                pdata = self.process_data(args['data'], self.models)
+                pdata = MultiFitter.process_data(args['data'], args['models'])
             pdatalist = gvar.bootstrap_iter(pdata, n)
         i = 0
         for pdata in pdatalist:
@@ -1153,200 +1368,6 @@ class MultiFitter(object):
             yield fit
 
     bootstrap_iter = bootstrapped_fit_iter   # legacy
-
-    @staticmethod
-    def _formatall(self, *args, **kargs):
-        " Add-on method for fits returned by chained_lsqfit. "
-        ans = ''
-        for x in self.chained_fits:
-            ans += 10 * '=' + ' ' + str(x) + '\n'
-            if self.chained_fits[x].sub_fits is not None:
-                for y in self.chained_fits[x].sub_fits:
-                    ans += 10 * '-' + ' ' + y + '\n'
-                    ans += self.chained_fits[x].sub_fits[y].format(*args, **kargs)
-                    ans += '\n'
-                ans += 10 * '-' + ' ' + x + '\n'
-            ans += self.chained_fits[x].format(*args, **kargs)
-            ans += '\n'
-        return ans[:-1]
-
-    def _seq_lsqfit(self, models, data, prior, p0, mf, **fitterargs):
-        " Fit models sequentially. "
-        # chained_prior has everything fit so far in it, but not everything in prior
-        chained_prior = (
-            gvar.BufferDict() if mf['fast'] else gvar.BufferDict(prior)
-            )
-        sum_svd = 0.0
-        chained_fits = collections.OrderedDict()
-        for im, m in enumerate(models):
-            if isinstance(m, MultiFitterModel):
-                if mf['fast']:
-                    m_prior = gvar.BufferDict(self.mprior[m.datatag])
-                    m_prior.update(chained_prior)
-                else:
-                    m_prior = chained_prior
-                prevfit = lsqfit.nonlinear_fit(
-                    data=data[m.datatag], prior=m_prior,
-                    fcn=self.mfitfcn[m.datatag],
-                    p0=p0, extend=mf['extend'], **fitterargs
-                    )
-                prevfit.sub_fits = None
-                sum_svd += prevfit.svdcorrection
-                prevfit.svdcorrection = sum_svd
-            elif isinstance(m, tuple):
-                if len(m) <= 0:
-                    continue
-                prevfit = self._simul_lsqfit(
-                    models=m, prior=prior, chained_prior=chained_prior,
-                    data=data, p0=p0, mf=mf, **fitterargs
-                    )
-                prevfit.sub_fits = None
-                sum_svd += prevfit.svdcorrection
-                prevfit.svdcorrection = sum_svd
-            elif len(m) > 0:
-                prevfit = self._parallel_lsqfit(
-                    models=m, prior=prior, chained_prior=chained_prior,
-                    data=data, p0=p0, mf=mf, **fitterargs
-                    )
-                sum_svd += prevfit.svdcorrection
-                prevfit.svdcorrection = sum_svd
-            else:
-                continue
-            if prevfit is not None:
-                if prevfit.sub_fits is not None:
-                    fitname = self.fitname(
-                        '[' + ','.join([k for k in prevfit.sub_fits]) +']'
-                        )
-                else:
-                    fitname = self.fitname(MultiFitter._parse_tag(m))
-                # chained_fits[fitname, im] = prevfit
-                chained_fits[fitname] = prevfit
-                chained_prior.update(prevfit.p)
-        if prevfit is None:
-            k,v = chained_fits.popitem()
-            prevfit = v
-            chained_fits[k] = v
-        prevfit.chained_fits = chained_fits
-        prevfit.svdcorrection = sum_svd
-        return prevfit
-
-    @staticmethod
-    def _parse_tag(models):
-        " Create tag for collection of models. "
-        if isinstance(models, MultiFitterModel):
-            return str(models.datatag)
-        if isinstance(models, list):
-            if len(models) < 1:
-                return '[]'
-            ans = '['
-            for m in models:
-                ans += str(MultiFitter._parse_tag(m)) + ','
-            return ans[:-1] + ']'
-        if isinstance(models, tuple):
-            if len(models) < 1:
-                return '()'
-            ans = '('
-            for m in MultiFitter.flatten_models(models):
-                ans += str(m.datatag) + ','
-            return ans[:-1] + ')'
-        raise ValueError("models can't be parsed")
-
-    def _simul_lsqfit(
-        self, models, data, prior, chained_prior, p0, mf, **fitterargs
-        ):
-        """ Fit models simultaneously. """
-        models = MultiFitter.flatten_models(models)
-        if len(models) == 0:
-            return None
-
-        # build prior for fit
-        if mf['fast']:
-            fitprior = gvar.BufferDict()
-            for m in models:
-                fitprior.update(m.buildprior(prior, extend=mf['extend']))
-        else:
-            fitprior = gvar.BufferDict(prior)
-        fitprior.update(chained_prior)
-
-        # build data and fit function
-        fitdata = {m.datatag:data[m.datatag] for m in models}
-        def fitfcn(p):
-            ans = gvar.BufferDict()
-            for m in models:
-                ans[m.datatag] = self.mfitfcn[m.datatag](p)
-            return ans
-
-        # do the simultaneous fit
-        fit = lsqfit.nonlinear_fit(
-            data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
-            extend=mf['extend'], **fitterargs
-            )
-        return fit
-
-    def _parallel_lsqfit(
-        self, models, data, prior, chained_prior, p0, mf, **fitterargs
-        ):
-        """ Fit models in parallel. """
-        # check for too few models
-        if len(models) == 0:
-            return None
-        if len(models) == 1:
-            fit = self._simul_lsqfit(
-                tuple(models), data, prior, chained_prior, p0, mf, **fitterargs
-                )
-            fit.sub_fits = None
-            return fit
-
-        # individual (parallel) fits
-        sum_svd = 0.0
-        sub_fits = collections.OrderedDict()
-        for m in models:
-            if isinstance(m, MultiFitterModel):
-                if mf['fast']:
-                    m_prior = m.buildprior(prior, extend=mf['extend'])
-                else:
-                    m_prior = gvar.BufferDict(prior)
-                m_prior.update(chained_prior)
-                m_fit = lsqfit.nonlinear_fit(
-                    data=data[m.datatag], prior=m_prior,
-                    fcn=self.mfitfcn[m.datatag],
-                    p0=p0, extend=mf['extend'], **fitterargs
-                    )
-                sub_fits[self.fitname(m.datatag)] = m_fit
-            else:
-                m_fit = self._simul_lsqfit(
-                    models=m, prior=prior, chained_prior=chained_prior,
-                    data=data, p0=p0, mf=mf, **fitterargs
-                    )
-                if m_fit is not None:
-                    sub_fits[self.fitname(MultiFitter._parse_tag(m))] = m_fit
-            sum_svd += m_fit.svdcorrection
-
-        # weighted average of parallel results
-        fitterargs = dict(fitterargs)
-        svdcut = mf['wavg_svdcut']
-        if svdcut is None:
-            svdcut = fitterargs.pop('svdcut', None)
-            if svdcut is not None:
-                svdcut *= 10
-        if svdcut is not None:
-            fitterargs['svdcut'] = svdcut
-        fit = lsqfit.wavg(
-            [sub_fits[k].p for k in sub_fits],
-            extend=mf['extend'], **fitterargs
-            ).fit
-        if fit is not None:
-            fit.sub_fits = sub_fits
-            sum_svd += fit.svdcorrection
-        elif len(sub_fits) > 0:
-            k,v = sub_fits.popitem()
-            sub_fits[k] = v
-            v.sub_fits = sub_fits
-            fit = v
-        else:
-            fit = None
-        fit.svdcorrection = sum_svd
-        return fit
 
     @staticmethod
     def coarse_grain(G, ncg):
@@ -1410,7 +1431,7 @@ class MultiFitter(object):
 
     @staticmethod
     def show_plots(fitdata, fitval, x=None, save=False, view='ratio'):
-        """ Show plots of ``fitdata[k]/fitval[k]`` for each key ``k`` in ``fitval``.
+        """ Show plots comparing ``fitdata[k],fitval[k]`` for each key ``k`` in ``fitval``.
 
         Assumes :mod:`matplotlib` is installed (to make the plots). Plots
         are shown for one correlator at a time. Press key ``n`` to see the
@@ -1502,7 +1523,6 @@ class MultiFitter(object):
                     plt.xscale('log', nonposx='clip')
                 plt.ylabel(str(k) + '   [%s]' % plotview)
                 if len(x) > 0:
-                    plt.errorbar(x, g, dg, fmt='o')
                     if len(x) > 1:
                         plt.plot(x, gth, 'r-')
                         plt.fill_between(
@@ -1513,53 +1533,54 @@ class MultiFitter(object):
                         extra_x = [x[0] * 0.5, x[0] * 1.5]
                         plt.plot(extra_x, 2 * [gth[0]], 'r-')
                         plt.fill_between(
-                            x[0], y2=2 * [gth[0] + dgth[0]],
+                            extra_x, y2=2 * [gth[0] + dgth[0]],
                             y1=2 * [gth[0] - dgth[0]],
                             color='r', alpha=0.075,
                             )
+                    plt.errorbar(x, g, dg, fmt='o')
             elif plotview == 'ratio':
                 plt.ylabel(str(k)+' / '+'fit'  + '   [%s]' % plotview)
                 ii = (gth != 0.0)       # check for exact zeros (eg, antiperiodic)
                 if len(x[ii]) > 0:
-                    plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
                     if len(x[ii]) > 1:
-                        plt.plot(x, numpy.ones(len(x), float), 'r-')
                         plt.fill_between(
                             x[ii], y2=1 + dgth[ii] / gth[ii],
                             y1=1 - dgth[ii] / gth[ii],
                             color='r', alpha=0.075,
                             )
+                        plt.plot(x, numpy.ones(len(x), float), 'r-')
                     else:
-                        extra_x = [x[ii] * 0.5, x[ii] * 1.5]
-                        plt.plot(extra_x, numpy.ones(2, float), 'r-')
+                        extra_x = [x[ii][0] * 0.5, x[ii][0] * 1.5]
                         plt.fill_between(
-                            x[ii], y2=2 * [1 + dgth[ii]/gth[ii]],
-                            y1=2 * [1 - dgth[ii]/gth[ii]],
+                            extra_x, y2=2 * [1 + dgth[ii][0]/gth[ii][0]],
+                            y1=2 * [1 - dgth[ii][0]/gth[ii][0]],
                             color='r', alpha=0.075,
                             )
+                        plt.plot(extra_x, numpy.ones(2, float), 'r-')
+                    plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
             elif plotview == 'diff':
                 plt.ylabel('({} - fit) / sigma'.format(str(k))  + '   [%s]' % plotview)
                 ii = (dg != 0.0)       # check for exact zeros
                 if len(x[ii]) > 0:
-                    plt.errorbar(
-                        x[ii], (g[ii] - gth[ii]) / dg[ii], dg[ii] / dg[ii],
-                        fmt='o'
-                        )
                     if len(x[ii]) > 1:
-                        plt.plot(x, numpy.zeros(len(x), float), 'r-')
                         plt.fill_between(
                             x[ii], y2=dgth[ii] / dg[ii],
                             y1=-dgth[ii] / dg[ii],
                             color='r', alpha=0.075
                             )
+                        plt.plot(x, numpy.zeros(len(x), float), 'r-')
                     else:
-                        extra_x = [x[ii] * 0.5, x[ii] * 1.5]
-                        plt.plot(extra_x, numpy.zeros(2, float), 'r-')
+                        extra_x = [x[ii][0] * 0.5, x[ii][0] * 1.5]
                         plt.fill_between(
-                            x[ii], y2=2 * [dgth[ii] / dg[ii]],
-                            y1=2 * [-dgth[ii] / dg[ii]],
+                            extra_x, y2=2 * [dgth[ii][0] / dg[ii][0]],
+                            y1=2 * [-dgth[ii][0] / dg[ii][0]],
                             color='r', alpha=0.075
                             )
+                        plt.plot(extra_x, numpy.zeros(2, float), 'r-')
+                    plt.errorbar(
+                        x[ii], (g[ii] - gth[ii]) / dg[ii], dg[ii] / dg[ii],
+                        fmt='o'
+                        )
             if save:
                 plt.savefig(save.format(k), bbox_inches='tight')
             else:
@@ -1572,7 +1593,6 @@ class MultiFitter(object):
         fig.canvas.mpl_connect('key_press_event', onpress)
         onpress(None)
         plt.show()
-
 
 
 

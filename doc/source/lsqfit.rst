@@ -340,8 +340,8 @@ gives the following output::
 
    Parameters:
                  a    0.206 (11)     [  0.213 (16) ]
-                s2   0.4904 (64)     [   0.0 (1.0) ]
                 s1   0.9462 (64)     [ 0.9432 (82) ]
+                s2   0.4904 (64)     [   0.0 (1.0) ]
 
    Settings:
      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
@@ -352,9 +352,9 @@ gives the following output::
 
    Parameters:
                  a    0.1995 (90)      [  0.206 (11) ]
-                s3   -0.0840 (57)      [   0.0 (1.0) ]
                 s1    0.9493 (57)      [ 0.9462 (64) ]
                 s2    0.4934 (57)      [ 0.4904 (64) ]
+                s3   -0.0840 (57)      [   0.0 (1.0) ]
 
    Settings:
      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
@@ -365,10 +365,10 @@ gives the following output::
 
    Parameters:
                  a    0.2012 (78)      [  0.1995 (90) ]
-                s4   -0.2001 (53)      [    0.0 (1.0) ]
                 s1    0.9485 (53)      [  0.9493 (57) ]
                 s2    0.4927 (53)      [  0.4934 (57) ]
                 s3   -0.0847 (53)      [ -0.0840 (57) ]
+                s4   -0.2001 (53)      [    0.0 (1.0) ]
 
    Settings:
      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
@@ -393,7 +393,7 @@ organizing the chain of fits; these are discussed in the
 
    .. automethod:: MultiFitter.chained_lsqfit
 
-   .. automethod:: MultiFitter.bootstrapped_fit_iter
+   .. automethod:: MultiFitter.set
 
    .. automethod:: process_data
 
@@ -423,7 +423,7 @@ for ``builddataset`` which is optional).
 
    .. automethod:: MultiFitterModel.prior_key
 
-.. :class:`lsqfit.MultiFitter` was inspired by an unconventional
+
 
 Requirements
 ------------
