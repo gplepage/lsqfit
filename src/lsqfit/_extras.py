@@ -727,9 +727,9 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         self.fitter = 'chained fit'
         self.description = ''
         for k in self.chained_fits:
+            self.svdcorrection += self.chained_fits[k].svdcorrection
             if k[:5] == 'wavg(' and k[-1] == ')':
                 continue
-            self.svdcorrection += self.chained_fits[k].svdcorrection
             self.svdn += self.chained_fits[k].svdn
             self.dof += self.chained_fits[k].dof
             self.chi2 += self.chained_fits[k].chi2
@@ -865,9 +865,10 @@ class MultiFitter(object):
         keywords. Use ``fitter.set(**oldkargs)`` to restore the original
         values.
         """
-        kwords = set(
-            ['mopt', 'fast', 'ratio', 'extend', 'wavg_kargs', 'fitterargs']
-            )
+        kwords = set([
+            'mopt', 'fast', 'ratio', 'extend', 'wavg_kargs',
+            'fitterargs', 'fitname',
+            ])
         kargs = dict(kargs)
         oldkargs = {}
         fargs = {}

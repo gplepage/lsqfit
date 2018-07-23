@@ -1,6 +1,6 @@
 .. |GVar| replace:: :class:`gvar.GVar`
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
-.. |BufferDict| replace:: :class:`gvar.BufferDict`
+.. |BufferDict|  replace:: :class:`gvar.BufferDict`
 
 Case Study: Simple Extrapolation
 =====================================================

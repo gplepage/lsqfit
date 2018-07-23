@@ -1,3 +1,7 @@
+Version 10.0.1 2018-07-21
+=========================
+Two minor bug fixes in MultiFitter.
+
 Version 10.0 2018-07-21
 =======================
 New implementation of lsqfit.MultiFitter that offers new features but also

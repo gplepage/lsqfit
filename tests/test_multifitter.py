@@ -142,7 +142,7 @@ class test_multifitter(unittest.TestCase):
 
     def test_set(self):
         " fitter.set(...) "
-        keys = ['fast', 'mopt', 'extend', 'ratio', 'wavg_kargs', 'fitterargs']
+        keys = ['fast', 'mopt', 'extend', 'ratio', 'wavg_kargs', 'fitterargs', 'fitname']
         def collect_args(f):
             return {k : getattr(f, k) for k in keys}
         # 0
