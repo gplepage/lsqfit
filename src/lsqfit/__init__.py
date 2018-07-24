@@ -99,7 +99,6 @@ import gvar as _gvar
 
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
-    extend=False,
     tol=1e-8,
     svdcut=1e-12,
     debug=False,
