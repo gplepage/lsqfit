@@ -1,3 +1,7 @@
+Version 10.0.2 2018-07-21
+=========================
+Another minor bug fixed (in wavg) that can cause problems in MultiFitter.
+
 Version 10.0.1 2018-07-21
 =========================
 Two minor bug fixes in MultiFitter.

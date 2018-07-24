@@ -475,6 +475,16 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(ans['c'].mean, 4.09802, places=4)
         self.assertAlmostEqual(ans['c'].sdev, 0.995037, places=4)
 
+    def test_wavg_extend(self):
+        g1 = gv.gvar({'log(a)':'1(1)', 'b':'2(1)'})
+        g2 = gv.gvar({'log(a)':'2.00000(1)', 'b':'1(1)', 'c':'12(1)'})
+        g1 = gv.ExtendedDict(g1)
+        avg = wavg([g1, g2], extend=True)
+        self.assertAlmostEqual(np.exp(avg['log(a)'].mean), avg['a'].mean)
+        self.assertTrue(gv.equivalent(avg['c'], g2['c']))
+        g2 = gv.ExtendedDict(g2)
+        self.assertAlmostEqual(avg['a'].mean, g2['a'].mean)
+
     def test_wavg_edge_cases(self):
         " wavg for edge cases "
         x = wavg(gv.gvar(['0(1)', '1(1)']))

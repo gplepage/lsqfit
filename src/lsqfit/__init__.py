@@ -73,7 +73,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2017 G. Peter Lepage.
+# Copyright (c) 2008-2018 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1767,7 +1767,7 @@ class BayesPDF(_gvar.PDF):
             Setting ``svdcut=None`` or ``svdcut=0`` leaves the
             covariance matrix unchanged. Default is ``1e-15``.
     """
-    def __init__(self, fit, svdcut=1e-15, norm=1.0):
+    def __init__(self, fit, svdcut=1e-12, norm=1.0):
         super(BayesPDF, self).__init__(fit.p, svdcut=svdcut)
         self.chiv = fit._chiv
         self.chi2 = fit.chi2
@@ -1949,7 +1949,7 @@ try:
         """
         def __init__(
             self, fit, limit=1e15, scale=1.0, pdf=None,
-            adapt_to_pdf=True, svdcut=1e-15, **kargs
+            adapt_to_pdf=True, svdcut=1e-12, **kargs
             ):
             super(BayesIntegrator, self).__init__(
                 BayesPDF(fit, svdcut=svdcut),

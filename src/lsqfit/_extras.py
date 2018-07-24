@@ -461,6 +461,9 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
             return GVarWAvg(dataseq[0], None)
         else:
             return ArrayWAvg(numpy.asarray(dataseq[0]), None)
+    if hasattr(dataseq[0], 'keys') and fitterargs.get('extend', False):
+        dataseq = [gvar.trim_redundant_keys(di) for di in dataseq]
+        fitterargs['extend'] = True
     if fast:
         chi2 = 0
         dof = 0
@@ -529,7 +532,7 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
             return len(data) * [p]
     fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **fitterargs)
     if p0.shape is None:
-        return BufferDictWAvg(gvar.BufferDict(p0, buf=fit.p.flat), fit)
+        return BufferDictWAvg(fit.p, fit)
     elif p0.shape == ():
         return GVarWAvg(fit.p.flat[0], fit)
     else:
@@ -830,7 +833,7 @@ class MultiFitter(object):
 
     def __init__(
         self, models, mopt=None, ratio=False, fast=True, extend=False,
-        wavg_kargs=dict(svdcut=1e-8), fitname=None, fitterargs={},
+        wavg_kargs=dict(svdcut=1e-12), fitname=None, fitterargs={},
         **more_fitterargs
         ):
         super(MultiFitter, self).__init__()
@@ -1225,12 +1228,9 @@ class MultiFitter(object):
             elif tasktype == 'wavg':
                     nlist = all_fnames[-taskdata:]
                     plist = [chained_fits[k].p for k in nlist]
-                    fit = lsqfit.wavg(
-                        plist, **self.wavg_kargs
-                        ).fit
-                    fname = self.fitname('wavg({})'.format(
-                        ','.join(nlist)
-                        ))
+                    self.wavg_kargs['extend'] = self.extend
+                    fit = lsqfit.wavg(plist, **self.wavg_kargs).fit
+                    fname = self.fitname('wavg({})'.format(','.join(nlist)))
                     all_fnames.append(fname)
                     chained_fits[fname] = fit
             elif tasktype == 'update-kargs':
