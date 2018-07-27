@@ -206,16 +206,17 @@ There are several things worth noting from this example:
 
    * The priors for the fit parameters specify Gaussian distributions,
      characterized by the means and standard deviations given
-     ``gv.gvar(...)``. Some other distributions become available if argument
-     ``extend=True`` is included in the call to |nonlinear_fit|.  The
-     distribution for parameter ``a``, for example, can then be switched to a
+     ``gv.gvar(...)``. Some other distributions are available, and
+     new ones can be created.  The
+     distribution for parameter ``a``, for example, can be switched to a
      log-normal distribution by replacing ``prior['a']=gv.gvar(0.5, 0.5)``
      with::
 
         prior['log(a)'] = gv.log(gv.gvar(0.5,0.5))
 
      in the code. This change would
-     be desirable if we knew *a priori* that parameter ``a`` is positive
+     be desirable, for example, if we knew *a priori* that
+     parameter ``a`` is positive
      since this is guaranteed with a log-normal distribution. Only the
      prior need be changed. (In particular, the fit function ``fcn(x,p)``
      need *not* be changed.)
@@ -1798,17 +1799,23 @@ Ideally the decision to use such a distribution is made on a parameter-
 by-parameter basis, when creating the priors, and has no impact on the
 definition of the fit function itself.
 
-|nonlinear_fit| supports log-normal distributions when ``extend=True`` is set
-in its argument list. This argument only affects fits that use dictionaries
-for their parameters. The prior for a parameter ``'c'`` is switched from a
-Gaussian distribution to a log-normal distribution by replacing parameter
-``'c'`` in the fit prior with a prior for its logarithm, using the key
-``'log(c)'``. This causes |nonlinear_fit| to use the logarithm as the fit
-parameter (with its Gaussian prior). Parameter dictionaries produced by
-|nonlinear_fit| will have entries for both ``'c'`` and ``'log(c)'``, so only
-the prior need be changed to switch distributions. In particular the fit
-function can be expressed directly in terms of ``'c'`` so that it is
-independent of the distribution chosen for the ``'c'`` prior.
+|nonlinear_fit| supports log-normal distributions among others. This
+functionality is implemented through the :class:`gvar.BufferDict` dictionary
+class, which is the standard dictionary used by :mod:`lsqfit` internally and
+for results. See the :class:`gvar.BufferDict` documentation for more
+information.
+
+The prior for a parameter ``'a'``, for example, is switched from
+a Gaussian distribution to a log-normal distribution by replacing
+``prior['a']`` in the fit prior with a prior for its logarithm,
+``prior['log(a)']``. This causes |nonlinear_fit| to use the logarithm as the
+fit parameter (with its Gaussian prior). Fit parameters are stored in a
+|BufferDict| ``p``, which returns values for ``p['log(a)']``, as expected, but
+also for ``p['a']``, where the latter is automatically set equal to the
+exponential of the former. Consequently only the prior need be changed to
+switch distributions. In particular the fit function can be expressed directly
+in terms of fit parameter ``p['a']``, so that it is independent of the
+distribution chosen for the ``'a'`` prior.
 
 To illustrate consider a simple problem where an experimental quantity ``y`` is
 known to be positive, but experimental errors mean that measured values can
@@ -1852,15 +1859,14 @@ A better analysis uses a log-normal distribution for ``a``::
    def fcn(p, N=len(y)):
       return N * [p['a']]
 
-   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
+   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
    print('a =', fit.p['a'])                       # exp(log(a))
 
 The fit parameter is now ``log(a)`` rather than ``a`` itself, but the code
-is unchanged except for the definition of the prior and the addition
-of ``extend=True`` to the |nonlinear_fit| arguments. In particular the
+is unchanged except for the definition of the prior. In particular the
 fit function is identical to what we used in the first case since
-parameter dictionary ``p`` has entries for both ``'a'`` and ``'log(a)'``.
+parameter dictionary ``p`` returns values for both ``'a'`` and ``'log(a)'``.
 
 The result from this fit is
 
@@ -1871,9 +1877,10 @@ parameter table are the actual  parameters used in the fit; those listed below
 the dashed line are derived from those above the line. The "correct" value for
 ``a`` here is 0.015 (given the method used to generate the ``y``\s).
 
-Setting ``extend=True`` in |nonlinear_fit| also allows parameters to  be
+Other distributions are available:
+parameters can  also be
 replaced by their square roots as fit parameters, or by the inverse error
-function. The latter option is
+function of their values. The latter option is
 useful here because it allows us to define a prior distribution
 for parameter ``a`` that is uniform between 0 and 0.04::
 
@@ -1884,7 +1891,7 @@ for parameter ``a`` that is uniform between 0 and 0.04::
       a = (1 + p['50*a-1']) / 50
       return N * [a]
 
-   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
+   fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
    print('a =', (1+fit.p['50*a-1']) / 50)
 
@@ -1902,8 +1909,8 @@ This fit implies that ``a=0.011(13)``
 which is almost identical to the result obtained from the log-normal
 distribution.
 
-Other distributions can be defined
-using :meth:`lsqfit.add_parameter_distribution`.
+New distributions can be defined
+using :meth:`gvar.BufferDict.add_distribution`.
 For example, ::
 
     import lsqfit
@@ -1923,7 +1930,7 @@ For example, ::
     def fcn(p, N=len(y)):
         return N * [p['a']]
 
-    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
+    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
     print(fit)
     print('a =', fit.p['a'])
 
@@ -1994,7 +2001,7 @@ by calling::
       solver='cholesky',
       )
 
-Default values for parameters ``extend``, ``svdcut``,
+Default values for parameters ``svdcut``,
 ``debug``, ``maxit``, ``fitter``, and ``tol`` can be reset,
 as can any parameters that are
 sent to the underlying fitter

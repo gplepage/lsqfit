@@ -461,9 +461,6 @@ def wavg(dataseq, prior=None, fast=False, **fitterargs):
             return GVarWAvg(dataseq[0], None)
         else:
             return ArrayWAvg(numpy.asarray(dataseq[0]), None)
-    if hasattr(dataseq[0], 'keys') and fitterargs.get('extend', False):
-        dataseq = [gvar.trim_redundant_keys(di) for di in dataseq]
-        fitterargs['extend'] = True
     if fast:
         chi2 = 0
         dof = 0
@@ -628,14 +625,14 @@ class MultiFitterModel(object):
         """
         raise NotImplementedError("builddata not defined")
 
-    def buildprior(self, prior, mopt=None, extend=False):
+    def buildprior(self, prior, mopt=None):
         """ Extract fit prior from ``prior``.
 
         Returns a dictionary containing the  part of dictionary
         ``prior`` that is relevant to this model's fit. The code could
         be as simple as collecting the appropriate pieces: e.g., ::
 
-            def buildprior(self, prior, mopt=None, extend=False):
+            def buildprior(self, prior, mopt=None):
                 mprior = gv.BufferDict()
                 model_keys = [...]
                 for k in model_keys:
@@ -643,13 +640,13 @@ class MultiFitterModel(object):
                 return mprior
 
         where ``model_keys`` is a list of keys corresponding to
-        the model's parameters. Supporting the ``extend`` option
+        the model's parameters. Supporting non-Gaussian distributions
         requires a slight modification: e.g., ::
 
-            def buildprior(self, prior, mopt=None, extend=False):
+            def buildprior(self, prior, mopt=None):
                 mprior = gv.BufferDict()
                 model_keys = [...]
-                for k in self.get_prior_keys(prior, model_keys, extend):
+                for k in gv.get_dictkeys(prior, model_keys):
                     mprior[k] = prior[k]
                 return mprior
 
@@ -665,28 +662,9 @@ class MultiFitterModel(object):
                 Otherwise marginalize fit parameters as specified by ``mopt``.
                 ``mopt`` can be any type of Python object; it is used only
                 in ``buildprior`` and is passed through to it unchanged.
-            extend (bool): If ``True`` supports log-normal and other
-                non-Gaussian priors. See :mod:`lsqfit` documentation
-                for details.
         """
         raise NotImplementedError("buildprior not defined")
 
-    @staticmethod
-    def get_prior_keys(prior, keys, extend=False):
-        """ Return list of keys in dictionary ``prior`` for keys in list ``keys``.
-
-        List ``keys`` is returned if ``extend=False``. Otherwise the keys
-        returned may differ from those in ``keys``. For example, a
-        prior that has a key ``log(x)`` would return that key in
-        place of a key ``x`` in list ``keys``. This support non-Gaussian
-        priors as discussed in the :mod:`lsqfit` documentation.
-        """
-        if extend:
-            return [gvar.ExtendedDict.basekey(prior, k) for k in keys]
-        else:
-            return keys
-
-    prior_key = staticmethod(gvar.ExtendedDict.basekey)
 
 class chained_lsqfit(lsqfit.nonlinear_fit):
     " Fit results from chained fit. "
@@ -715,7 +693,6 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         self.x = False
         self.y = self.data
 
-        self.extend = next(iter(self.chained_fits.values())).extend
         self.linear = []
         self.svdcorrection = 0
         self.svdn = 0
@@ -813,9 +790,6 @@ class MultiFitter(object):
             not required by the fit from the prior. This speeds
             fits but loses information about correlations between
             variables in the fit and those that are not.
-        extend (bool): If ``True`` supports log-normal and other
-            non-Gaussian priors. See :mod:`lsqfit` documentation
-            for details. Default is ``False``.
         fitname (callable or ``None``): Individual fits in a chained fit are
             assigned default names, constructed from the datatags of
             the corresponding models, for access and reporting. These names
@@ -832,7 +806,7 @@ class MultiFitter(object):
     """
 
     def __init__(
-        self, models, mopt=None, ratio=False, fast=True, extend=False,
+        self, models, mopt=None, ratio=False, fast=True,
         wavg_kargs=dict(svdcut=1e-12), fitname=None, fitterargs={},
         **more_fitterargs
         ):
@@ -843,7 +817,6 @@ class MultiFitter(object):
         self.ratio = ratio
         self.mopt = mopt
         self.fast = fast
-        self.extend = extend
         self.wavg_kargs = wavg_kargs
         self.fitterargs = dict(fitterargs)
         self.fitterargs.update(more_fitterargs)
@@ -869,7 +842,7 @@ class MultiFitter(object):
         values.
         """
         kwords = set([
-            'mopt', 'fast', 'ratio', 'extend', 'wavg_kargs',
+            'mopt', 'fast', 'ratio', 'wavg_kargs',
             'fitterargs', 'fitname',
             ])
         kargs = dict(kargs)
@@ -928,14 +901,10 @@ class MultiFitter(object):
         if mopt is not None:
             fitfcn = self.buildfitfcn()
             p_all = self.buildprior(prior=prior, mopt=None)
-            if self.extend:
-                p_all = gvar.ExtendedDict(p_all)
             f_all = fitfcn(p_all)
 
             # fcn with part we want to keep
             p_trunc = self.buildprior(prior=prior, mopt=mopt)
-            if self.extend:
-                p_trunc = gvar.ExtendedDict(p_trunc)
             f_trunc = fitfcn(p_trunc)
 
             # correct pdata
@@ -955,7 +924,7 @@ class MultiFitter(object):
         nprior = gvar.BufferDict()
         for m in self.flatmodels:
             nprior.update(m.buildprior(
-                prior, mopt=mopt, extend=self.extend
+                prior, mopt=mopt,
                 ))
         if not self.fast:
             for k in prior:
@@ -1050,7 +1019,7 @@ class MultiFitter(object):
         # fit
         self.fit = lsqfit.nonlinear_fit(
             data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
-            extend=self.extend, **self.fitterargs
+            **self.fitterargs
             )
         if len(self.flatmodels) > 1:
             fname = self.fitname(
@@ -1191,8 +1160,11 @@ class MultiFitter(object):
             dict(kargs),
             )
 
-        # local copy
-        prior = gvar.BufferDict(prior)
+        # local copy of prior
+        if self.fast:
+            prior = self.buildprior(prior)
+        else:
+            prior = gvar.BufferDict(prior)
 
         # execute tasks in self.tasklist
         chained_fits = collections.OrderedDict()
@@ -1213,10 +1185,7 @@ class MultiFitter(object):
                     chained_fits[fname] = fit
             elif tasktype == 'update-prior':
                 lastfit = chained_fits[all_fnames[-1]]
-                if self.extend:
-                    lastfit_p = gvar.trim_redundant_keys(lastfit.p)
-                else:
-                    lastfit_p = lastfit.p
+                lastfit_p = lastfit.p
                 for k in lastfit_p:
                     idx = tuple(
                         slice(None, i) for i in numpy.shape(lastfit.p[k])
@@ -1228,22 +1197,15 @@ class MultiFitter(object):
             elif tasktype == 'wavg':
                     nlist = all_fnames[-taskdata:]
                     plist = [chained_fits[k].p for k in nlist]
-                    self.wavg_kargs['extend'] = self.extend
                     fit = lsqfit.wavg(plist, **self.wavg_kargs).fit
                     fname = self.fitname('wavg({})'.format(','.join(nlist)))
                     all_fnames.append(fname)
                     chained_fits[fname] = fit
             elif tasktype == 'update-kargs':
-                if 'extend' in taskdata:
-                    raise RuntimeError(
-                        "can't reset parameter 'extend' inside models list"
-                        )
                 kargs.update(taskdata)
             else:
                 raise RuntimeError('unknown task: ' + tasktype)
 
-        if self.extend:
-            prior = gvar.ExtendedDict(prior)
         # build output class
         self.fit = chained_lsqfit(
             p=prior, chained_fits=chained_fits,

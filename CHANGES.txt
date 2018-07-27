@@ -1,3 +1,12 @@
+Version 11.0 2018-07-27
+=======================
+The extend parameter was removed from nonlinear_fit; the associated
+functionality (non-Gaussian priors) is now available automatically.  The new
+implementation, which resides entirely in gvar.BufferDict,  is much simpler
+and more robust. This causes changes in a variety of pieces of code, but will
+have little or no effect on code that didn't explicitly use extend (and that
+code should just stop referencing the keyword).
+
 Version 10.0.2 2018-07-21
 =========================
 Another minor bug fixed (in wavg) that can cause problems in MultiFitter.

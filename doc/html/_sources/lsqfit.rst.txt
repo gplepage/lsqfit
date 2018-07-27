@@ -137,7 +137,7 @@
 nonlinear_fit Objects
 ---------------------
 
-.. autoclass:: lsqfit.nonlinear_fit(data, fcn, prior=None, p0=None, extend=False, svdcut=1e-12, debug=False, tol=1e-8, maxit=1000, fitter='gsl_multifit', **fitterargs)
+.. autoclass:: lsqfit.nonlinear_fit(data, fcn, prior=None, p0=None, svdcut=1e-12, debug=False, tol=1e-8, maxit=1000, fitter='gsl_multifit', **fitterargs)
 
    Additional methods are provided for printing out detailed information
    about the fit, testing fits with simulated data,
@@ -163,11 +163,6 @@ Functions
 
 .. autofunction:: lsqfit.gammaQ
 
-.. autofunction:: gvar.add_parameter_distribution
-
-.. autofunction:: gvar.del_parameter_distribution
-
-.. autofunction:: gvar.add_parameter_parentheses
 
 Classes for Bayesian Integrals
 -------------------------------
@@ -219,18 +214,18 @@ a linear fit function::
            self.slope = slope
 
        def fitfcn(self, p):
-           if self.slope in p:
+           try:
                return p[self.intercept] + p[self.slope] * self.x
-           else:
-               # slope parameter marginalized
+           except KeyError:
+               # slope parameter marginalized/omitted
                return len(self.x) * [p[self.intercept]]
 
-       def buildprior(self, prior, mopt=None, extend=False):
+       def buildprior(self, prior, mopt=None):
            " Extract the model's parameters from prior. "
            newprior = {}
            newprior[self.intercept] = prior[self.intercept]
            if mopt is None:
-               # slope parameter marginalized if mopt is not None
+               # slope parameter marginalized/omitted if mopt is not None
                newprior[self.slope] = prior[self.slope]
            return newprior
 
@@ -387,7 +382,7 @@ organizing the chain of fits; these are discussed in the
 :meth:`MultiFitter.chained_lsqfit` documentation.
 
 
-.. autoclass:: lsqfit.MultiFitter(models, mopt=None, ratio=False, fast=True, extend=False, **fitterargs)
+.. autoclass:: lsqfit.MultiFitter(models, mopt=None, ratio=False, fast=True, **fitterargs)
 
    .. automethod:: MultiFitter.lsqfit
 
@@ -418,10 +413,6 @@ for ``builddataset`` which is optional).
    .. automethod:: MultiFitterModel.fitfcn
 
    .. automethod:: MultiFitterModel.builddataset
-
-   .. automethod:: MultiFitterModel.get_prior_keys
-
-   .. automethod:: MultiFitterModel.prior_key
 
 
 

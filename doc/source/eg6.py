@@ -49,7 +49,7 @@ for p in [prior, log_prior, sqrt_prior]:
 	sys.stdout = tee.tee(sys_stdout, open("eg6-{}.out".format(key), "w"))
 	def fcn(p, N=len(y)):
 		return N*[p['a']]
-	f = nonlinear_fit(prior=p, fcn=fcn, data=(y), extend=True)
+	f = nonlinear_fit(prior=p, fcn=fcn, data=(y))
 	print (f)
 	print ("a =", f.p['a'])
 
@@ -61,7 +61,7 @@ def fcn(p, N=len(y)):
   a = 0.02 + 0.02 * p['50a-1']
   return N * [a]
 
-fit = nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
+fit = nonlinear_fit(prior=prior, data=y, fcn=fcn)
 print(fit)
 print('a =', (0.02 + 0.02 * fit.p['50a-1']))                 # exp(log(a))
 
@@ -106,7 +106,7 @@ sys.stdout = stdout
 # lsqfit.add_parameter_distribution('f', invf)
 # intv_prior = BufferDict()
 # intv_prior['f(a)'] = gvar(0,0.75)
-# fit = nonlinear_fit(prior=intv_prior, fcn=fcn, data=y, extend=True)
+# fit = nonlinear_fit(prior=intv_prior, fcn=fcn, data=y)
 # a = fit.p['a']
 # fa = fit.p['f(a)']
 # print (fit.format())

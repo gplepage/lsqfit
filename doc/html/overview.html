@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Overview and Tutorial &#8212; lsqfit 10.0.2 documentation</title>
+    <title>Overview and Tutorial &#8212; lsqfit 11.0 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 10.0.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -267,16 +267,17 @@ once code development is over.</p>
 </li>
 <li><p class="first">The priors for the fit parameters specify Gaussian distributions,
 characterized by the means and standard deviations given
-<code class="docutils literal notranslate"><span class="pre">gv.gvar(...)</span></code>. Some other distributions become available if argument
-<code class="docutils literal notranslate"><span class="pre">extend=True</span></code> is included in the call to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.  The
-distribution for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>, for example, can then be switched to a
+<code class="docutils literal notranslate"><span class="pre">gv.gvar(...)</span></code>. Some other distributions are available, and
+new ones can be created.  The
+distribution for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>, for example, can be switched to a
 log-normal distribution by replacing <code class="docutils literal notranslate"><span class="pre">prior['a']=gv.gvar(0.5,</span> <span class="pre">0.5)</span></code>
 with:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;log(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>in the code. This change would
-be desirable if we knew <em>a priori</em> that parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> is positive
+be desirable, for example, if we knew <em>a priori</em> that
+parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> is positive
 since this is guaranteed with a log-normal distribution. Only the
 prior need be changed. (In particular, the fit function <code class="docutils literal notranslate"><span class="pre">fcn(x,p)</span></code>
 need <em>not</em> be changed.)</p>
@@ -2319,17 +2320,22 @@ that  impose log-normal or exponential distributions on the parameter.
 Ideally the decision to use such a distribution is made on a parameter-
 by-parameter basis, when creating the priors, and has no impact on the
 definition of the fit function itself.</p>
-<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> supports log-normal distributions when <code class="docutils literal notranslate"><span class="pre">extend=True</span></code> is set
-in its argument list. This argument only affects fits that use dictionaries
-for their parameters. The prior for a parameter <code class="docutils literal notranslate"><span class="pre">'c'</span></code> is switched from a
-Gaussian distribution to a log-normal distribution by replacing parameter
-<code class="docutils literal notranslate"><span class="pre">'c'</span></code> in the fit prior with a prior for its logarithm, using the key
-<code class="docutils literal notranslate"><span class="pre">'log(c)'</span></code>. This causes <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to use the logarithm as the fit
-parameter (with its Gaussian prior). Parameter dictionaries produced by
-<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> will have entries for both <code class="docutils literal notranslate"><span class="pre">'c'</span></code> and <code class="docutils literal notranslate"><span class="pre">'log(c)'</span></code>, so only
-the prior need be changed to switch distributions. In particular the fit
-function can be expressed directly in terms of <code class="docutils literal notranslate"><span class="pre">'c'</span></code> so that it is
-independent of the distribution chosen for the <code class="docutils literal notranslate"><span class="pre">'c'</span></code> prior.</p>
+<p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> supports log-normal distributions among others. This
+functionality is implemented through the <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code> dictionary
+class, which is the standard dictionary used by <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> internally and
+for results. See the <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code> documentation for more
+information.</p>
+<p>The prior for a parameter <code class="docutils literal notranslate"><span class="pre">'a'</span></code>, for example, is switched from
+a Gaussian distribution to a log-normal distribution by replacing
+<code class="docutils literal notranslate"><span class="pre">prior['a']</span></code> in the fit prior with a prior for its logarithm,
+<code class="docutils literal notranslate"><span class="pre">prior['log(a)']</span></code>. This causes <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to use the logarithm as the
+fit parameter (with its Gaussian prior). Fit parameters are stored in a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code> <code class="docutils literal notranslate"><span class="pre">p</span></code>, which returns values for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</span></code>, as expected, but
+also for <code class="docutils literal notranslate"><span class="pre">p['a']</span></code>, where the latter is automatically set equal to the
+exponential of the former. Consequently only the prior need be changed to
+switch distributions. In particular the fit function can be expressed directly
+in terms of fit parameter <code class="docutils literal notranslate"><span class="pre">p['a']</span></code>, so that it is independent of the
+distribution chosen for the <code class="docutils literal notranslate"><span class="pre">'a'</span></code> prior.</p>
 <p>To illustrate consider a simple problem where an experimental quantity <code class="docutils literal notranslate"><span class="pre">y</span></code> is
 known to be positive, but experimental errors mean that measured values can
 often be negative:</p>
@@ -2379,16 +2385,15 @@ is negative, and yet we know that <code class="docutils literal notranslate"><sp
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>                       <span class="c1"># exp(log(a))</span>
 </pre></div>
 </div>
 <p>The fit parameter is now <code class="docutils literal notranslate"><span class="pre">log(a)</span></code> rather than <code class="docutils literal notranslate"><span class="pre">a</span></code> itself, but the code
-is unchanged except for the definition of the prior and the addition
-of <code class="docutils literal notranslate"><span class="pre">extend=True</span></code> to the <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> arguments. In particular the
+is unchanged except for the definition of the prior. In particular the
 fit function is identical to what we used in the first case since
-parameter dictionary <code class="docutils literal notranslate"><span class="pre">p</span></code> has entries for both <code class="docutils literal notranslate"><span class="pre">'a'</span></code> and <code class="docutils literal notranslate"><span class="pre">'log(a)'</span></code>.</p>
+parameter dictionary <code class="docutils literal notranslate"><span class="pre">p</span></code> returns values for both <code class="docutils literal notranslate"><span class="pre">'a'</span></code> and <code class="docutils literal notranslate"><span class="pre">'log(a)'</span></code>.</p>
 <p>The result from this fit is</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.252</span>
@@ -2408,9 +2413,10 @@ parameter dictionary <code class="docutils literal notranslate"><span class="pre
 parameter table are the actual  parameters used in the fit; those listed below
 the dashed line are derived from those above the line. The “correct” value for
 <code class="docutils literal notranslate"><span class="pre">a</span></code> here is 0.015 (given the method used to generate the <code class="docutils literal notranslate"><span class="pre">y</span></code>s).</p>
-<p>Setting <code class="docutils literal notranslate"><span class="pre">extend=True</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> also allows parameters to  be
+<p>Other distributions are available:
+parameters can  also be
 replaced by their square roots as fit parameters, or by the inverse error
-function. The latter option is
+function of their values. The latter option is
 useful here because it allows us to define a prior distribution
 for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> that is uniform between 0 and 0.04:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2420,7 +2426,7 @@ for parameter <code class="docutils literal notranslate"><span class="pre">a</sp
    <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
 
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span><span class="p">)</span>
 </pre></div>
@@ -2448,8 +2454,8 @@ a positive parameter.</p>
 <p>This fit implies that <code class="docutils literal notranslate"><span class="pre">a=0.011(13)</span></code>
 which is almost identical to the result obtained from the log-normal
 distribution.</p>
-<p>Other distributions can be defined
-using <code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.add_parameter_distribution()</span></code>.
+<p>New distributions can be defined
+using <code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.BufferDict.add_distribution()</span></code>.
 For example,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lsqfit</span>
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
@@ -2468,7 +2474,7 @@ For example,</p>
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
     <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 </pre></div>
@@ -2539,7 +2545,7 @@ by calling:</p>
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>Default values for parameters <code class="docutils literal notranslate"><span class="pre">extend</span></code>, <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
+<p>Default values for parameters <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
 <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">maxit</span></code>, <code class="docutils literal notranslate"><span class="pre">fitter</span></code>, and <code class="docutils literal notranslate"><span class="pre">tol</span></code> can be reset,
 as can any parameters that are
 sent to the underlying fitter
@@ -2699,7 +2705,7 @@ succinct way of writing this line is:</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 10.0.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

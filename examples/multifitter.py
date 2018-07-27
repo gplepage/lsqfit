@@ -4,7 +4,7 @@ from __future__ import print_function
 """
 Code for testing MultiFitter
 """
-# Copyright (c) 2019 G. Peter Lepage.
+# Copyright (c) 2018 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -49,8 +49,9 @@ def main():
        Linear('d3', x=[1,2,3,4], intercept='a', slope='s3'),
        Linear('d4', x=[1,2,3,4], intercept='a', slope='s4'),
        ]
+    # N.B., use log-normal prior for s1
     prior = gv.gvar(collections.OrderedDict([
-        ('a','0(1)'), ('s1','0(1)'), ('s2','0(1)'),
+        ('a','0(1)'), ('log(s1)','0(1)'), ('s2','0(1)'),
         ('s3','0(1)'), ('s4','0(1)'),
         ]))
 
@@ -88,19 +89,23 @@ class Linear(lsqfit.MultiFitterModel):
         self.ncg = ncg
 
     def fitfcn(self, p):
-        if self.slope in p:
+        try:
             return p[self.intercept] + p[self.slope] * self.x
-        else:
+        except KeyError:
             # slope parameter marginalized
             return len(self.x) * [p[self.intercept]]
 
     def buildprior(self, prior, mopt=None, extend=False):
         " Extract the model's parameters from prior. "
         newprior = {}
-        newprior[self.intercept] = prior[self.intercept]
+        # allow for log-normal, etc priors
+        intercept, slope = gv.get_dictkeys(
+            prior, [self.intercept, self.slope]
+            )
+        newprior[intercept] = prior[intercept]
         if mopt is None:
             # slope parameter marginalized if mopt is not None
-            newprior[self.slope] = prior[self.slope]
+            newprior[slope] = prior[slope]
         return newprior
 
     def builddata(self, data):

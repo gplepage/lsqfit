@@ -142,13 +142,13 @@ class test_multifitter(unittest.TestCase):
 
     def test_set(self):
         " fitter.set(...) "
-        keys = ['fast', 'mopt', 'extend', 'ratio', 'wavg_kargs', 'fitterargs', 'fitname']
+        keys = ['fast', 'mopt', 'ratio', 'wavg_kargs', 'fitterargs', 'fitname']
         def collect_args(f):
             return {k : getattr(f, k) for k in keys}
         # 0
         fitter = MultiFitter(
             models=self.make_models(ncg=1),
-            fast=True, mopt=True, alg='dogleg', ratio=True, extend=True
+            fast=True, mopt=True, alg='dogleg', ratio=True
             )
         args0 = collect_args(fitter)
         # 1
@@ -224,12 +224,12 @@ class test_multifitter(unittest.TestCase):
         self.assertTrue('b' not in fit4.p)
 
     def test_extend(self):
-        " MultiFitter.lsqfit(..., extend=True) "
+        " MultiFitter.lsqfit(...) "
         fitter = MultiFitter(models=self.make_models(ncg=1))
         prior = gv.BufferDict([
             ('log(a)', gv.log(self.prior['a'])), ('b', self.prior['b'])
             ])
-        fit5 = fitter.lsqfit(data=self.data, prior=prior, extend=True)
+        fit5 = fitter.lsqfit(data=self.data, prior=prior)
         self.assertEqual(str(fit5.p['a']), str(self.ref_fit.p['a']))
         self.assertEqual(gv.fmt_chi2(fit5), gv.fmt_chi2(self.ref_fit))
         self.assertTrue('log(a)' in fit5.p)
@@ -268,13 +268,11 @@ class test_multifitter(unittest.TestCase):
         prior['log(aa)'] = prior['log(a)'] + gv.gvar('0(1)') * 1e-6
         fitter = MultiFitter(models=self.make_models(ncg=2), fast=False)
         fit2 = fitter.chained_lsqfit(
-            data=self.data, prior=prior, mopt=True, extend=True
+            data=self.data, prior=prior, mopt=True
             )
         self.assertEqual(
             str(fit2.p),
-            "{'log(a)': -0.00073(48),'b': 0.50015(82),"
-            "'log(aa)': -0.00073(48),'a': 0.99927(48),"
-            "'aa': 0.99927(48)}",
+            "{'log(a)': -0.00073(48),'b': 0.50015(82),'log(aa)': -0.00073(48)}"
             )
 
     def test_chained_fit_simul(self):
@@ -294,9 +292,9 @@ class test_multifitter(unittest.TestCase):
             ])
         fitter = MultiFitter(models=self.make_models(ncg=2))
         fit4 = fitter.chained_lsqfit(
-            data=self.data, prior=prior, mopt=True, extend=True
+            data=self.data, prior=prior, mopt=True
             )
-        self.assertEqual(str(fit4.p), "{'log(a)': -0.00073(48),'b': 0.5000(10),'a': 0.99927(48)}")
+        self.assertEqual(str(fit4.p), "{'log(a)': -0.00073(48),'b': 0.5000(10)}")
 
     def test_chained_fit_kargs(self):
         " MultiFitter(models=[m1, dict(...), m2, ...]) "
@@ -319,7 +317,7 @@ class test_multifitter(unittest.TestCase):
         self.assertEqual(str(fit5.p), "{'a': 0.99932(48),'b': 0.49986(91)}")
         self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
 
-        # with coarse grain, marginalization and extend
+        # with coarse grain, marginalization
         models = self.make_models(ncg=2)
         models = [models[0], models[1:]]
         prior = gv.BufferDict([
@@ -327,9 +325,9 @@ class test_multifitter(unittest.TestCase):
             ])
         fitter = MultiFitter(models=self.make_models(ncg=2))
         fit6 = fitter.chained_lsqfit(
-            data=self.data, prior=prior, mopt=True, extend=True
+            data=self.data, prior=prior, mopt=True
             )
-        self.assertEqual(str(fit6.p), "{'log(a)': -0.00073(48),'b': 0.5000(10),'a': 0.99927(48)}")
+        self.assertEqual(str(fit6.p), "{'log(a)': -0.00073(48),'b': 0.5000(10)}")
 
     def test_bootstrap_lsqfit(self):
         fitter = MultiFitter(models=self.make_models(ncg=1))
@@ -417,6 +415,19 @@ class test_multifitter(unittest.TestCase):
             cgdata = np.sum([data[tag][:2], data[tag][2:]], axis=1) / 2.
             self.assertEqual(str(pdata[tag]), str(cgdata))
 
+    def test_get_prior_keys(self):
+        prior = gv.BufferDict({'log(a)':1., 'b':2.})
+        self.assertEqual(
+            gv.get_dictkeys(prior, ['a', 'b', 'log(a)']),
+            ['log(a)', 'b', 'log(a)']
+            )
+        self.assertEqual(
+            [ gv.dictkey(prior, k) for k in [
+                'a', 'b', 'log(a)'
+                ]],
+            ['log(a)', 'b', 'log(a)']
+            )
+
 class Linear(MultiFitterModel):
     def __init__(self, datatag, a, b, x, ncg):
         super(Linear, self).__init__(datatag=datatag, ncg=ncg)
@@ -425,19 +436,21 @@ class Linear(MultiFitterModel):
         self.x = x
 
     def fitfcn(self, p):
-        if self.b in p:
+        try:
             return p[self.a] + p[self.b] * self.x
-        else:
+        except KeyError:
+            # slope marginalized
             return len(self.x) * [p[self.a]]
 
     def buildprior(self, prior, mopt=None, extend=False):
         nprior = gv.BufferDict()
         if mopt is None:
-            for k in self.get_prior_keys(prior, [self.a, self.b], extend=extend):
+            for k in [self.a, self.b]:
+                k = gv.dictkey(prior, k)
                 nprior[k] = prior[k]
         else:
-            for k in self.get_prior_keys(prior, [self.a], extend=extend):
-                nprior[k] = prior[k]
+            k = gv.dictkey(prior, self.a)
+            nprior[k] = prior[k]
         self.mopt = mopt
         # use self.mopt to marginalize fitfcn
         return nprior
@@ -460,8 +473,8 @@ class Constant(MultiFitterModel):
 
     def buildprior(self, prior, mopt=None, extend=False):
         nprior = gv.BufferDict()
-        for k in self.get_prior_keys(prior, [self.a], extend=extend):
-            nprior[k] = prior[k]
+        k = gv.dictkey(prior, self.a)
+        nprior[k] = prior[k]
         return nprior
 
     def builddata(self, data):

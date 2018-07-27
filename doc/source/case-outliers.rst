@@ -130,7 +130,7 @@ as follows::
             '2.11(20)', '2.75(20)', '0.86(20)', '2.73(20)'
             ])
         prior = make_prior()
-        fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fitfcn, extend=True)
+        fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fitfcn)
         print(fit)
 
         # plot data

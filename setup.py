@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-LSQFIT_VERSION = '10.0.2'
+LSQFIT_VERSION = '11.0'
 
 from distutils.core import setup
 from distutils.extension import Extension

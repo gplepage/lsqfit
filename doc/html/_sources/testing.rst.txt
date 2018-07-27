@@ -387,7 +387,7 @@ a fit that uses a flat prior (between 0 and |~| 0.04)::
        return N * [a]
 
     # least-squares fit
-    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, extend=True)
+    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
     print(fit)
     a = (1 + fit.p['50*a-1']) / 50
     print('a =', a)
