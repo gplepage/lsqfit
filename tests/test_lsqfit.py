@@ -503,6 +503,38 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         x = wavg([])
         self.assertEqual(x, None)
 
+    def test_wavg_mismatched_data(self):
+        for fast in [True, False]:
+            a = gv.gvar('1(1)')
+            b = gv.gvar('2(1)')
+            c = gv.gvar('3(1)')
+            avg = wavg([a, b, c], fast=fast)
+            np.testing.assert_allclose([avg.mean, avg.sdev], [2., 1/3.**0.5])
+            a = gv.gvar(dict(a=[['1(1)', '2(1)']], b=['10(1)', '5(3)'], c='1(1)'))
+            b = gv.gvar(dict(a=[['2(1)', '1(1)']], b=['20(1)'], c='2(1)'))
+            c = gv.gvar(dict(a=[['3(1)', '3(1)']], b=['30(1)', '7(3)' ], c='3(1)'))
+            avg = wavg([a,b,c], fast=fast)
+            np.testing.assert_allclose(
+                [gv.mean(avg['a']), gv.sdev(avg['a'])],
+                [[2 * [2.0]], [2 * [1/3.**0.5]]]
+                )
+            np.testing.assert_allclose(
+                [gv.mean(avg['b']), gv.sdev(avg['b'])],
+                [[20., 6.0], [1 / 3**.5, 3 / 2**.5]]
+                )
+            np.testing.assert_allclose(
+                [gv.mean(avg['c']), gv.sdev(avg['c'])],
+                [2., 1/3.**0.5]
+                )
+            a = [a['b']]
+            b = [b['b']]
+            c = [c['b']]
+            avg = wavg([a,b,c], fast=fast)
+            np.testing.assert_allclose(
+                [gv.mean(avg), gv.sdev(avg)],
+                [[[20., 6.0]], [[1 / 3**.5, 3 / 2**.5]]]
+                )
+
     def test_noprior(self):
         """ fit without prior """
         def avg(x): # compute of avg of sequence

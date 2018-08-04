@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.0.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.1 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -801,7 +801,7 @@ probability.</p>
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">newy</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 
 <span class="n">fit</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">fitargs</span><span class="p">)</span>
-<span class="nb">print</span> <span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Here we want to fit data <code class="docutils literal notranslate"><span class="pre">y</span></code> with fit function <code class="docutils literal notranslate"><span class="pre">fcn</span></code> but we don’t know
@@ -866,107 +866,87 @@ optimal value for parameter <code class="docutils literal notranslate"><span cla
 
 <dl class="function">
 <dt id="lsqfit.wavg">
-<code class="descclassname">lsqfit.</code><code class="descname">wavg</code><span class="sig-paren">(</span><em>dataseq</em>, <em>prior=None</em>, <em>fast=False</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">lsqfit.</code><code class="descname">wavg</code><span class="sig-paren">(</span><em>datalist</em>, <em>fast=False</em>, <em>prior=None</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Weighted average of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays/dicts of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
-<p>The weighted average of several <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s is what one obtains from
-a  least-squares fit of the collection of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to the
-one-parameter fit function</p>
+<p>The weighted average of <code class="docutils literal notranslate"><span class="pre">N</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">...</span> <span class="n">gN</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>is what one obtains from a weighted least-squares fit of the
+collection of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to the one-parameter fit function</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the number of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s. The average is the best-fit
-value for <code class="docutils literal notranslate"><span class="pre">p[0]</span></code>.  <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s with smaller standard deviations carry
-more weight than those with larger standard deviations. The averages
-computed by <code class="docutils literal notranslate"><span class="pre">wavg</span></code> take account of correlations between the <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
-<p>Typical usage is</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">x2</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">x3</span> <span class="o">=</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>   <span class="c1"># weighted average of x1, x2 and x3</span>
-</pre></div>
-</div>
-<p>where the result <code class="docutils literal notranslate"><span class="pre">xavg</span></code> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> containing the weighted average.</p>
-<p>The individual <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s in the last example can be  replaced by
-multidimensional distributions, represented by arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s
-or dictionaries of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s (or arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s). For example,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
-<span class="n">x2</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
-<span class="n">x3</span> <span class="o">=</span> <span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
-<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>
-    <span class="c1"># xavg[i] is wgtd avg of x1[i], x2[i], x3[i]</span>
-</pre></div>
-</div>
-<p>where each array <code class="docutils literal notranslate"><span class="pre">x1</span></code>, <code class="docutils literal notranslate"><span class="pre">x2</span></code> … must have the same shape.
-The result <code class="docutils literal notranslate"><span class="pre">xavg</span></code> in this case is an array of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s, where
-the shape of the array is the same as that of <code class="docutils literal notranslate"><span class="pre">x1</span></code>, etc.</p>
-<p>Another example is</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">x1</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<span class="n">x2</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)],</span> <span class="n">b</span><span class="o">=</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">))</span>
-<span class="n">x3</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="p">[</span><span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">gvar</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="o">...</span><span class="p">)])</span>
-<span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">])</span>
-    <span class="c1"># xavg[&#39;a&#39;][i] is wgtd avg of x1[&#39;a&#39;][i], x2[&#39;a&#39;][i], x3[&#39;a&#39;][i]</span>
-    <span class="c1"># xavg[&#39;b&#39;] is gtd avg of x1[&#39;b&#39;], x2[&#39;b&#39;]</span>
-</pre></div>
-</div>
-<p>where different dictionaries can have (some) different keys. Here the
-result <code class="docutils literal notranslate"><span class="pre">xavg</span></code> is a <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict`</span></code> having the same keys as
-<code class="docutils literal notranslate"><span class="pre">x1</span></code>, etc.</p>
-<p>Weighted averages can become costly when the number of random samples being
-averaged is large (100s or more). In such cases it might be useful to set
-parameter <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>. This causes <code class="docutils literal notranslate"><span class="pre">wavg</span></code> to estimate the weighted
-average by incorporating the random samples one at a time into a
+<p>The average is the best-fit value for fit parameter <code class="docutils literal notranslate"><span class="pre">p</span></code>.  <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s
+with smaller standard deviations carry more weight than those with
+larger standard deviations; and the averages take account of
+correlations between the <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
+<p><code class="docutils literal notranslate"><span class="pre">wavg</span></code> also works when each <code class="docutils literal notranslate"><span class="pre">gi</span></code> is an array of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or a
+dictionary whose values are <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
+Corresponding arrays in different <code class="docutils literal notranslate"><span class="pre">gi</span></code>s must have the same dimension,
+but can have different shapes (the overlapping components are
+averaged).  When the <code class="docutils literal notranslate"><span class="pre">gi</span></code> are dictionaries, they need not all have
+the same keys.</p>
+<p>Weighted averages can become costly when the number of random samples
+being averaged is large (100s or more). In such cases it might be useful
+to set parameter <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>. This causes <code class="docutils literal notranslate"><span class="pre">wavg</span></code> to estimate the
+weighted average by incorporating the random samples one at a time into a
 running average:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">dataseq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">dataseq_i</span> <span class="ow">in</span> <span class="n">dataseq</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">result</span><span class="p">,</span> <span class="n">dataseq_i</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">datalist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="n">datalist</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">result</span><span class="p">,</span> <span class="n">di</span><span class="p">],</span> <span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This method is much faster when <code class="docutils literal notranslate"><span class="pre">len(dataseq)</span></code> is large, and gives the
-exact result when there are no correlations between different elements
-of list <code class="docutils literal notranslate"><span class="pre">dataseq</span></code>. The results are approximately correct when
-<code class="docutils literal notranslate"><span class="pre">dataseq[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">dataseq[j]</span></code> are correlated for <code class="docutils literal notranslate"><span class="pre">i!=j</span></code>.</p>
+<p>This method can be much faster when <code class="docutils literal notranslate"><span class="pre">len(datalist)</span></code> is large, and gives
+the exact result when there are no correlations between different elements
+of list <code class="docutils literal notranslate"><span class="pre">datalist</span></code>. The results are approximately correct when
+<code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">datalist[j]</span></code> are correlated for <code class="docutils literal notranslate"><span class="pre">i!=j</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>dataseq</strong> (<em>list</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to be averaged. <code class="docutils literal notranslate"><span class="pre">dataseq</span></code> is
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>datalist</strong> (<em>list</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to be averaged. <code class="docutils literal notranslate"><span class="pre">datalist</span></code> is
 a one-dimensional sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s, or of arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s,
 or of dictionaries containing <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s  and/or arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
-All <code class="docutils literal notranslate"><span class="pre">dataseq[i]</span></code> must have the same shape.</li>
-<li><strong>fast</strong> (<em>bool</em>) – Setting <code class="docutils literal notranslate"><span class="pre">fast=True</span></code> causes <code class="docutils literal notranslate"><span class="pre">wavg</span></code> to compute an
-approximation to the weighted average that is much faster to
-calculate when averaging a large number of samples (100s or more).
-The default is <code class="docutils literal notranslate"><span class="pre">fast=False</span></code>.</li>
+Corresponding arrays in different <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code>s must have the
+same dimension.</li>
+<li><strong>fast</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, <code class="docutils literal notranslate"><span class="pre">wavg</span></code> averages the <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code>
+sequentially. This can be much faster when averaging a large
+number of sampes but is only approximate if the different
+elements of <code class="docutils literal notranslate"><span class="pre">datalist</span></code> are correlated. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
 <li><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>) for the
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fitter used to do the averaging.</li>
 </ul>
 </td>
 </tr>
-</tbody>
-</table>
-<p>Results returned by <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.wavg()</span></code> have the following extra
-attributes describing the average:</p>
-<blockquote>
-<div><p><strong>chi2</strong> - <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for weighted average.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>The weighted average is returned as a <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> or an array of
+<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or a dictionary of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s and arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
+Results have the following extra attributes:</p>
+<p><strong>chi2</strong> - <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for weighted average.</p>
 <p><strong>dof</strong> - Effective number of degrees of freedom.</p>
 <dl class="docutils">
-<dt><strong>Q</strong> - The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> could have been larger,</dt>
-<dd><p class="first">by chance, assuming that the data are all Gaussian and consistent
+<dt><strong>Q</strong> - Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit:</dt>
+<dd><p class="first last">the probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> could have been larger,
+by chance, assuming that the data are all Gaussian and consistent
 with each other. Values smaller than 0.1 or so suggest that the
 data are not Gaussian or are inconsistent with each other. Also
 called the <em>p-value</em>.</p>
-<p class="last">Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit.</p>
 </dd>
 </dl>
 <p><strong>time</strong> - Time required to do average.</p>
 <dl class="docutils">
 <dt><strong>svdcorrection</strong> - The <em>svd</em> corrections made to the data</dt>
-<dd>when <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</dd>
+<dd><p class="first last">when <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
 </dl>
-<p><strong>fit</strong> - Fit output from average.</p>
-</div></blockquote>
+<p><strong>fit</strong> - Fit returned by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -1227,15 +1207,27 @@ covariance matrix unchanged. Default is <code class="docutils literal notranslat
 </div>
 <div class="section" id="lsqfit-multifitter-classes">
 <h2><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> Classes<a class="headerlink" href="#lsqfit-multifitter-classes" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> provides a framework for fitting multiple pieces
-of data using a set of custom-designed models, derived  from
-<a class="reference internal" href="#lsqfit.MultiFitterModel" title="lsqfit.MultiFitterModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitterModel</span></code></a>, each of which  encapsulates a particular fit
-function. This framework was developed to support the <code class="xref py py-mod docutils literal notranslate"><span class="pre">corrfitter</span></code>
-module, but is more general. Instances of model classes  associate specific
-subsets of the fit data with  specific subsets of the fit parameters. This
-allows fit problems to be broken down down into more manageable pieces, which
-are then aggregated by <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> into a single fit.</p>
-<p>A trivial example of a model would be one that encapsulates
+<p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> provides a framework for building component
+systems to fit multiple pieces of data using a set of custom-designed models,
+derived  from <a class="reference internal" href="#lsqfit.MultiFitterModel" title="lsqfit.MultiFitterModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitterModel</span></code></a>. Each model  encapsulates:
+a) a particular fit function; b) a recipe for assembling the corresponding fit
+data from a dictionary that contains all of the data; and c) a recipe for
+assembling a fit prior drawn from a dictionary containing all the priors.
+This allows fit problems to be broken down down into more manageable pieces,
+which are then aggregated by <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> into a single fit.</p>
+<p>This framework was developed to support the <code class="xref py py-mod docutils literal notranslate"><span class="pre">corrfitter</span></code> module which is
+used to analyze 2-point and 3-point correlators generated in Monte Carlo
+simulations of quantum field theories (like QCD). The <code class="xref py py-mod docutils literal notranslate"><span class="pre">corrfitter</span></code>
+module provides two models to describe correlators: <code class="xref py py-class docutils literal notranslate"><span class="pre">corrfitter.Corr2</span></code>
+to describe one  2-point correlator, and <code class="xref py py-class docutils literal notranslate"><span class="pre">corrfitter.Corr3</span></code> to describe
+one 3-point  correlator. A typical analysis involves fitting data for a mixture of
+2-point and 3-point correlators, with sometimes hundreds of correlators in all.
+Each correlator is described by either  a <code class="docutils literal notranslate"><span class="pre">Corr2</span></code> model or a <code class="docutils literal notranslate"><span class="pre">Corr3</span></code>
+model. A list of models, one for each  correlator, is handed
+<code class="xref py py-class docutils literal notranslate"><span class="pre">corrfitter.CorrFitter</span></code> (derived from  <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a>) to
+fit the models to the correlator data. The models for different
+correlators typically share many fit parameters.</p>
+<p>A simpler example of a model is one that encapsulates
 a linear fit function:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
@@ -1349,7 +1341,7 @@ fit code by</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fitter</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">MultiFitter</span><span class="p">(</span><span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">)</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">chained_lsqfit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">formatall</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;slope =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;intercept =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>gives the following output:</p>
@@ -1369,22 +1361,19 @@ fit code by</p>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.58</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.67</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.3792</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">0.206</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.213</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s1</span>   <span class="mf">0.9462</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.9432</span> <span class="p">(</span><span class="mi">82</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s2</span>   <span class="mf">0.4904</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span>     <span class="p">[</span>   <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
+              <span class="n">a</span>    <span class="mf">0.206</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.213</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="p">]</span>
+             <span class="n">s2</span>   <span class="mf">0.4904</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
 <span class="o">==========</span> <span class="n">d3</span>
 <span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.66</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.62</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.3767</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">0.1995</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span>      <span class="p">[</span>  <span class="mf">0.206</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s1</span>    <span class="mf">0.9493</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.9462</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s2</span>    <span class="mf">0.4934</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.4904</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s3</span>   <span class="o">-</span><span class="mf">0.0840</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>      <span class="p">[</span>   <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
+              <span class="n">a</span>    <span class="mf">0.1995</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.206</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">]</span>
+             <span class="n">s3</span>   <span class="o">-</span><span class="mf">0.0840</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>      <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
 
 <span class="n">Settings</span><span class="p">:</span>
   <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
@@ -1394,11 +1383,8 @@ fit code by</p>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.41</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.81</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.9402</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">0.2012</span> <span class="p">(</span><span class="mi">78</span><span class="p">)</span>      <span class="p">[</span>  <span class="mf">0.1995</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s1</span>    <span class="mf">0.9485</span> <span class="p">(</span><span class="mi">53</span><span class="p">)</span>      <span class="p">[</span>  <span class="mf">0.9493</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s2</span>    <span class="mf">0.4927</span> <span class="p">(</span><span class="mi">53</span><span class="p">)</span>      <span class="p">[</span>  <span class="mf">0.4934</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s3</span>   <span class="o">-</span><span class="mf">0.0847</span> <span class="p">(</span><span class="mi">53</span><span class="p">)</span>      <span class="p">[</span> <span class="o">-</span><span class="mf">0.0840</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span> <span class="p">]</span>
-             <span class="n">s4</span>   <span class="o">-</span><span class="mf">0.2001</span> <span class="p">(</span><span class="mi">53</span><span class="p">)</span>      <span class="p">[</span>    <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
+              <span class="n">a</span>    <span class="mf">0.2012</span> <span class="p">(</span><span class="mi">78</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.1995</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span> <span class="p">]</span>
+             <span class="n">s4</span>   <span class="o">-</span><span class="mf">0.2001</span> <span class="p">(</span><span class="mi">53</span><span class="p">)</span>      <span class="p">[</span>   <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>
 
 <span class="n">Settings</span><span class="p">:</span>
   <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
@@ -1406,10 +1392,7 @@ fit code by</p>
 <span class="n">intercept</span> <span class="o">=</span> <span class="mf">0.2012</span><span class="p">(</span><span class="mi">78</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note how the value for <code class="docutils literal notranslate"><span class="pre">s1</span></code> improves with each fit despite the fact that
-it appears only in the first fit function. This happens because its value
-is correlated with that of the intercept <code class="docutils literal notranslate"><span class="pre">a</span></code>, which appears in every fit
-function.</p>
+<p>Note how the value for <code class="docutils literal notranslate"><span class="pre">a</span></code> improves with each fit.</p>
 <p>Chained fits are most useful
 with very large data sets when it is possible to break the data into
 smaller, more manageable chunks. There are a variety of options for
@@ -1443,7 +1426,14 @@ If <code class="docutils literal notranslate"><span class="pre">False</span></co
 <li><strong>fast</strong> (<em>bool</em>) – Setting <code class="docutils literal notranslate"><span class="pre">fast=True</span></code> (default) strips any variable
 not required by the fit from the prior. This speeds
 fits but loses information about correlations between
-variables in the fit and those that are not.</li>
+variables in the fit and those that are not. Setting
+<code class="docutils literal notranslate"><span class="pre">wavg_all=True</span></code> can restore some of the correlations, but
+is somewhat slower.</li>
+<li><strong>wavg_all</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, the final result of a
+chained fit is the weighted average of all the fits in the chain.
+This can restore correlations lost in the chain because
+<code class="docutils literal notranslate"><span class="pre">fast=True</span></code>. This step is omitted if <code class="docutils literal notranslate"><span class="pre">wavg_all=False</span></code> or
+<code class="docutils literal notranslate"><span class="pre">fast=False</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
 <li><strong>fitname</strong> (callable or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Individual fits in a chained fit are
 assigned default names, constructed from the datatags of
 the corresponding models, for access and reporting. These names
@@ -1920,7 +1910,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.0.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

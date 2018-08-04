@@ -189,16 +189,29 @@ with a fit is:
 
 :class:`lsqfit.MultiFitter` Classes
 -------------------------------------
-:class:`lsqfit.MultiFitter` provides a framework for fitting multiple pieces
-of data using a set of custom-designed models, derived  from
-:class:`lsqfit.MultiFitterModel`, each of which  encapsulates a particular fit
-function. This framework was developed to support the :mod:`corrfitter`
-module, but is more general. Instances of model classes  associate specific
-subsets of the fit data with  specific subsets of the fit parameters. This
-allows fit problems to be broken down down into more manageable pieces, which
-are then aggregated by :class:`lsqfit.MultiFitter` into a single fit.
+:class:`lsqfit.MultiFitter` provides a framework for building component
+systems to fit multiple pieces of data using a set of custom-designed models,
+derived  from :class:`lsqfit.MultiFitterModel`. Each model  encapsulates:
+a) a particular fit function; b) a recipe for assembling the corresponding fit
+data from a dictionary that contains all of the data; and c) a recipe for
+assembling a fit prior drawn from a dictionary containing all the priors.
+This allows fit problems to be broken down down into more manageable pieces,
+which are then aggregated by :class:`lsqfit.MultiFitter` into a single fit.
 
-A trivial example of a model would be one that encapsulates
+This framework was developed to support the :mod:`corrfitter` module which is
+used to analyze 2-point and 3-point correlators generated in Monte Carlo
+simulations of quantum field theories (like QCD). The :mod:`corrfitter`
+module provides two models to describe correlators: :class:`corrfitter.Corr2`
+to describe one  2-point correlator, and :class:`corrfitter.Corr3` to describe
+one 3-point  correlator. A typical analysis involves fitting data for a mixture of
+2-point and 3-point correlators, with sometimes hundreds of correlators in all.
+Each correlator is described by either  a ``Corr2`` model or a ``Corr3``
+model. A list of models, one for each  correlator, is handed
+:class:`corrfitter.CorrFitter` (derived from  :class:`lsqfit.MultiFitter`) to
+fit the models to the correlator data. The models for different
+correlators typically share many fit parameters.
+
+A simpler example of a model is one that encapsulates
 a linear fit function::
 
    import numpy as np
@@ -314,66 +327,57 @@ fit code by ::
    fitter = lsqfit.MultiFitter(models=models)
    fit = fitter.chained_lsqfit(data=data, prior=prior)
    print(fit.formatall())
-   print('slope =', fit.p['a'])
+   print('intercept =', fit.p['a'])
 
 gives the following output::
 
-   ========== d1
-   Least Square Fit:
-     chi2/dof [dof] = 0.32 [4]    Q = 0.86    logGBF = 2.0969
+    ========== d1
+    Least Square Fit:
+      chi2/dof [dof] = 0.32 [4]    Q = 0.86    logGBF = 2.0969
 
-   Parameters:
-                 a    0.213 (16)     [  0.0 (1.0) ]
-                s1   0.9432 (82)     [  0.0 (1.0) ]
+    Parameters:
+                  a    0.213 (16)     [  0.0 (1.0) ]
+                 s1   0.9432 (82)     [  0.0 (1.0) ]
 
-   Settings:
-     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+    Settings:
+      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
 
-   ========== d2
-   Least Square Fit:
-     chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 5.3792
+    ========== d2
+    Least Square Fit:
+      chi2/dof [dof] = 0.58 [4]    Q = 0.67    logGBF = 5.3792
 
-   Parameters:
-                 a    0.206 (11)     [  0.213 (16) ]
-                s1   0.9462 (64)     [ 0.9432 (82) ]
-                s2   0.4904 (64)     [   0.0 (1.0) ]
+    Parameters:
+                  a    0.206 (11)     [ 0.213 (16) ]
+                 s2   0.4904 (64)     [  0.0 (1.0) ]
 
-   Settings:
-     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+    Settings:
+      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
 
-   ========== d3
-   Least Square Fit:
-     chi2/dof [dof] = 0.66 [4]    Q = 0.62    logGBF = 5.3767
+    ========== d3
+    Least Square Fit:
+      chi2/dof [dof] = 0.66 [4]    Q = 0.62    logGBF = 5.3767
 
-   Parameters:
-                 a    0.1995 (90)      [  0.206 (11) ]
-                s1    0.9493 (57)      [ 0.9462 (64) ]
-                s2    0.4934 (57)      [ 0.4904 (64) ]
-                s3   -0.0840 (57)      [   0.0 (1.0) ]
+    Parameters:
+                  a    0.1995 (90)      [ 0.206 (11) ]
+                 s3   -0.0840 (57)      [  0.0 (1.0) ]
 
-   Settings:
-     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+    Settings:
+      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
 
-   ========== d4
-   Least Square Fit:
-     chi2/dof [dof] = 0.41 [4]    Q = 0.81    logGBF = 5.9402
+    ========== d4
+    Least Square Fit:
+      chi2/dof [dof] = 0.41 [4]    Q = 0.81    logGBF = 5.9402
 
-   Parameters:
-                 a    0.2012 (78)      [  0.1995 (90) ]
-                s1    0.9485 (53)      [  0.9493 (57) ]
-                s2    0.4927 (53)      [  0.4934 (57) ]
-                s3   -0.0847 (53)      [ -0.0840 (57) ]
-                s4   -0.2001 (53)      [    0.0 (1.0) ]
+    Parameters:
+                  a    0.2012 (78)      [ 0.1995 (90) ]
+                 s4   -0.2001 (53)      [   0.0 (1.0) ]
 
-   Settings:
-     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+    Settings:
+      svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
 
-   intercept = 0.2012(78)
+    intercept = 0.2012(78)
 
-Note how the value for ``s1`` improves with each fit despite the fact that
-it appears only in the first fit function. This happens because its value
-is correlated with that of the intercept ``a``, which appears in every fit
-function.
+Note how the value for ``a`` improves with each fit.
 
 Chained fits are most useful
 with very large data sets when it is possible to break the data into

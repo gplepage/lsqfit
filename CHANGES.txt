@@ -1,6 +1,18 @@
+Version 11.1 2018-08-04
+========================
+Improvements to lsqfit.MultiFitter.
+
+- New wavg that can average arrays of different shape (but same dimension).
+
+- New option (wavg_all) for chained fits to average results from all the
+  fits at the end, to restore (some) correlations, when fast=True.
+
+- New fit.format() for chained fits that includes summary information
+  about individual fits in the chain.
+
 Version 11.0 2018-07-27
 =======================
-The extend parameter was removed from nonlinear_fit; the associated
+The extend parameter removed from nonlinear_fit; the associated
 functionality (non-Gaussian priors) is now available automatically.  The new
 implementation, which resides entirely in gvar.BufferDict,  is much simpler
 and more robust. This causes changes in a variety of pieces of code, but will

@@ -70,7 +70,7 @@ def empbayes_fit(z0, fitargs, **minargs):
             return dict(data=(x, newy), fcn=fcn, prior=prior)
 
         fit, z = lsqfit.empbayes_fit(0.1, fitargs)
-        print fit.format(True)
+        print(fit.format(True))
 
     Here we want to fit data ``y`` with fit function ``fcn`` but we don't know
     the uncertainties in our ``y`` values. We assume that the relative errors
@@ -340,200 +340,164 @@ class BufferDictWAvg(gvar.BufferDict):
             self.svdcorrection = fit.svdcorrection
             self.fit = fit
 
-def wavg(dataseq, prior=None, fast=False, **fitterargs):
+def wavg(datalist, fast=False, prior=None, **fitterargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
 
-    The weighted average of several |GVar|\s is what one obtains from
-    a  least-squares fit of the collection of |GVar|\s to the
-    one-parameter fit function ::
+    The weighted average of ``N`` |GVar|\s ::
+
+        xavg = wavg([g1, g2 ... gN])
+
+    is what one obtains from a weighted least-squares fit of the
+    collection of |GVar|\s to the one-parameter fit function ::
 
         def f(p):
-            return N * [p[0]]
+            return N * [p]
 
-    where ``N`` is the number of |GVar|\s. The average is the best-fit
-    value for ``p[0]``.  |GVar|\s with smaller standard deviations carry
-    more weight than those with larger standard deviations. The averages
-    computed by ``wavg`` take account of correlations between the |GVar|\s.
+    The average is the best-fit value for fit parameter ``p``.  |GVar|\s
+    with smaller standard deviations carry more weight than those with
+    larger standard deviations; and the averages take account of
+    correlations between the |GVar|\s.
 
-    Typical usage is ::
+    ``wavg`` also works when each ``gi`` is an array of |GVar|\s or a
+    dictionary whose values are |GVar|\s or arrays of |GVar|\s.
+    Corresponding arrays in different ``gi``\s must have the same dimension,
+    but can have different shapes (the overlapping components are
+    averaged).  When the ``gi`` are dictionaries, they need not all have
+    the same keys.
 
-        x1 = gvar.gvar(...)
-        x2 = gvar.gvar(...)
-        x3 = gvar.gvar(...)
-        xavg = wavg([x1, x2, x3])   # weighted average of x1, x2 and x3
-
-    where the result ``xavg`` is a |GVar| containing the weighted average.
-
-    The individual |GVar|\s in the last example can be  replaced by
-    multidimensional distributions, represented by arrays of |GVar|\s
-    or dictionaries of |GVar|\s (or arrays of |GVar|\s). For example, ::
-
-        x1 = [gvar.gvar(...), gvar.gvar(...)]
-        x2 = [gvar.gvar(...), gvar.gvar(...)]
-        x3 = [gvar.gvar(...), gvar.gvar(...)]
-        xavg = wavg([x1, x2, x3])
-            # xavg[i] is wgtd avg of x1[i], x2[i], x3[i]
-
-    where each array ``x1``, ``x2`` ... must have the same shape.
-    The result ``xavg`` in this case is an array of |GVar|\s, where
-    the shape of the array is the same as that of ``x1``, etc.
-
-    Another example is ::
-
-        x1 = dict(a=[gvar.gvar(...), gvar.gvar(...)], b=gvar.gvar(...))
-        x2 = dict(a=[gvar.gvar(...), gvar.gvar(...)], b=gvar.gvar(...))
-        x3 = dict(a=[gvar.gvar(...), gvar.gvar(...)])
-        xavg = wavg([x1, x2, x3])
-            # xavg['a'][i] is wgtd avg of x1['a'][i], x2['a'][i], x3['a'][i]
-            # xavg['b'] is gtd avg of x1['b'], x2['b']
-
-    where different dictionaries can have (some) different keys. Here the
-    result ``xavg`` is a :class:`gvar.BufferDict`` having the same keys as
-    ``x1``, etc.
-
-    Weighted averages can become costly when the number of random samples being
-    averaged is large (100s or more). In such cases it might be useful to set
-    parameter ``fast=True``. This causes ``wavg`` to estimate the weighted
-    average by incorporating the random samples one at a time into a
+    Weighted averages can become costly when the number of random samples
+    being averaged is large (100s or more). In such cases it might be useful
+    to set parameter ``fast=True``. This causes ``wavg`` to estimate the
+    weighted average by incorporating the random samples one at a time into a
     running average::
 
-        result = dataseq[0]
-        for dataseq_i in dataseq[1:]:
-            result = wavg([result, dataseq_i], ...)
+        result = datalist[0]
+        for di in datalist[1:]:
+            result = wavg([result, di], ...)
 
-    This method is much faster when ``len(dataseq)`` is large, and gives the
-    exact result when there are no correlations between different elements
-    of list ``dataseq``. The results are approximately correct when
-    ``dataseq[i]`` and ``dataseq[j]`` are correlated for ``i!=j``.
+    This method can be much faster when ``len(datalist)`` is large, and gives
+    the exact result when there are no correlations between different elements
+    of list ``datalist``. The results are approximately correct when
+    ``datalist[i]`` and ``datalist[j]`` are correlated for ``i!=j``.
 
     Args:
-        dataseq (list): The |GVar|\s to be averaged. ``dataseq`` is
+        datalist (list): The |GVar|\s to be averaged. ``datalist`` is
             a one-dimensional sequence of |GVar|\s, or of arrays of |GVar|\s,
             or of dictionaries containing |GVar|\s  and/or arrays of |GVar|\s.
-            All ``dataseq[i]`` must have the same shape.
-        fast (bool): Setting ``fast=True`` causes ``wavg`` to compute an
-            approximation to the weighted average that is much faster to
-            calculate when averaging a large number of samples (100s or more).
-            The default is ``fast=False``.
+            Corresponding arrays in different ``datalist[i]``\s must have the
+            same dimension.
+        fast (bool): If ``fast=True``, ``wavg`` averages the ``datalist[i]``
+            sequentially. This can be much faster when averaging a large
+            number of sampes but is only approximate if the different
+            elements of ``datalist`` are correlated. Default is ``False``.
         fitterargs (dict): Additional arguments (e.g., ``svdcut``) for the
             :class:`lsqfit.nonlinear_fit` fitter used to do the averaging.
 
-    Results returned by :func:`gvar.wavg` have the following extra
-    attributes describing the average:
+    Returns:
+        The weighted average is returned as a |GVar| or an array of
+        |GVar|\s or a dictionary of |GVar|\s and arrays of |GVar|\s.
+        Results have the following extra attributes:
 
         **chi2** - ``chi**2`` for weighted average.
 
         **dof** - Effective number of degrees of freedom.
 
-        **Q** - The probability that the ``chi**2`` could have been larger,
+        **Q** - Quality factor `Q` (or *p-value*) for fit:
+            the probability that the ``chi**2`` could have been larger,
             by chance, assuming that the data are all Gaussian and consistent
             with each other. Values smaller than 0.1 or so suggest that the
             data are not Gaussian or are inconsistent with each other. Also
             called the *p-value*.
-
-            Quality factor `Q` (or *p-value*) for fit.
 
         **time** - Time required to do average.
 
         **svdcorrection** - The *svd* corrections made to the data
             when ``svdcut`` is not ``None``.
 
-        **fit** - Fit output from average.
+        **fit** - Fit returned by :class:`lsqfit.nonlinear_fit`.
     """
     if prior is not None:
+        datalist = list(datalist) + [prior]
         warnings.warn(
             'use of prior in lsqfit.wavg is deprecated',
             DeprecationWarning
             )
-    if len(dataseq) <= 0:
-        if prior is None:
-            return None
-        if hasattr(prior, 'keys'):
-            return BufferDictWAvg(prior, None)
-        if numpy.shape(prior) == ():
-            return GVarWAvg(prior, None)
+    if len(datalist) <= 0:
+        return None
+    elif len(datalist) == 1:
+        if hasattr(datalist[0], 'keys'):
+            return BufferDictWAvg(datalist[0], None)
+        if numpy.shape(datalist[0]) == ():
+            return GVarWAvg(datalist[0], None)
         else:
-            return ArrayWAvg(numpy.asarray(prior), None)
-    elif len(dataseq) == 1 and prior is None:
-        if hasattr(dataseq[0], 'keys'):
-            return BufferDictWAvg(dataseq[0], None)
-        if numpy.shape(dataseq[0]) == ():
-            return GVarWAvg(dataseq[0], None)
-        else:
-            return ArrayWAvg(numpy.asarray(dataseq[0]), None)
+            return ArrayWAvg(numpy.asarray(datalist[0]), None)
     if fast:
-        chi2 = 0
-        dof = 0
-        time = 0
-        ans = prior
-        svdcorrection = 0.0
-        for i, dataseq_i in enumerate(dataseq):
-            if ans is None:
-                ans = dataseq_i
-            else:
-                ans = wavg([ans, dataseq_i], fast=False, **fitterargs)
-                chi2 += ans.chi2
-                dof += ans.dof
-                time += ans.time
-                svdcorrection += ans.svdcorrection
-        fit = ans.fit
-        fit.dof = dof
-        fit.Q = _gammaQ(dof / 2., chi2 / 2.)
-        fit.chi2 = chi2
-        fit.time = time
-        fit.svdcorrection = svdcorrection
-        if hasattr(ans, 'keys'):
-            return BufferDictWAvg(ans, fit)
-        if numpy.shape(ans) == ():
-            return GVarWAvg(ans, fit)
+        chi2 = dof = time = svdcorrection = 0
+        ans = datalist[0]
+        for i, di in enumerate(datalist[1:]):
+            ans = wavg([ans, di], fast=False, **fitterargs)
+            chi2 += ans.chi2
+            dof += ans.dof
+            time += ans.time
+            svdcorrection += ans.svdcorrection
+        ans.fit.dof = dof
+        ans.fit.Q = _gammaQ(dof / 2., chi2 / 2.)
+        ans.fit.chi2 = chi2
+        ans.fit.time = time
+        ans.fit.svdcorrection = svdcorrection
+        return ans
+    if hasattr(datalist[0], 'keys'):
+        datashape = None
+    else:
+        datashape = numpy.shape(datalist[0])
+        datalist = [{None:di} for di in datalist]
+    # repack as a single dictionary
+    p0shape = {}
+    p0index = {}
+    data = gvar.BufferDict()
+    for i, di in enumerate(datalist):
+        for k in di:
+            data[k, i] = di[k]
+            shape = numpy.shape(di[k])
+            p0index[k, i] = tuple(slice(0, j) for j in shape)
+            if k not in p0shape:
+                p0shape[k] = shape
+            elif p0shape[k] != shape:
+                p0shape[k] = tuple(
+                    max(j1, j2) for j1, j2 in zip(shape, p0shape[k])
+                    )
+    # calculate p0
+    p0 = gvar.BufferDict()
+    p0count = {}
+    for k, i in data:
+        if k not in p0:
+            p0[k] = numpy.zeros(p0shape[k], float)
+            p0count[k] = numpy.zeros(p0shape[k], float)
+        if p0index[k, i] == ():
+            p0[k] += data[k, i].mean
+            p0count[k] += 1
         else:
-            return ArrayWAvg(numpy.asarray(ans), fit)
-    if hasattr(dataseq[0], 'keys'):
-        data = {}
-        keys = []
-        if prior is not None:
-            dataseq = [prior] + list(dataseq)
-        for dataseq_i in dataseq:
-            for k in dataseq_i:
-                if k in data:
-                    data[k].append(dataseq_i[k])
-                else:
-                    data[k] = [dataseq_i[k]]
-                    keys.append(k)
-        data = gvar.BufferDict(data, keys=keys)
-        p0 = gvar.BufferDict()
-        for k in data:
-            p0[k] = gvar.mean(data[k][0])
-            if numpy.any(p0[k] == 0):
-                if numpy.shape(p0[k]) == ():
-                    p0[k] = data[k][0].sdev / 10.
-                else:
-                    p0[k][p0[k] == 0] = gvar.sdev(data[k][0])[p0[k] == 0] / 10.
-        def fcn(p):
-            ans = gvar.BufferDict()
-            for k in data:
-                ans[k] = len(data[k]) * [p[k]]
-            return ans
-    else:
-        p = numpy.asarray(dataseq[0])
-        data = [] if prior is None else [prior]
-        data += [dataseqi for dataseqi in dataseq]
-        p0 = numpy.asarray(gvar.mean(data[0]))
-        if numpy.any(p0 == 0):
-            if numpy.shape(p0) == ():
-                p0 = numpy.asarray(data[0].sdev / 10.)
+            p0[k][p0index[k, i]] += gvar.mean(data[k, i])
+            p0count[k][p0index[k, i]] += 1.
+    for k in p0:
+        p0[k] /= p0count[k]
+    # set up fit
+    def fcn(p):
+        ans = gvar.BufferDict()
+        for k, i in data:
+            shape = data[k, i].shape
+            if shape == ():
+                ans[k, i] = p[k]
             else:
-                p0[p0 == 0] += gvar.sdev(data[0])[p0 == 0] / 10.
-        data = numpy.array(data)
-        def fcn(p):
-            return len(data) * [p]
+                ans[k, i] = p[k][p0index[k, i]]
+        return ans
     fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, p0=p0, **fitterargs)
-    if p0.shape is None:
+    if datashape is None:
         return BufferDictWAvg(fit.p, fit)
-    elif p0.shape == ():
-        return GVarWAvg(fit.p.flat[0], fit)
+    elif datashape == ():
+        return GVarWAvg(fit.p[None], fit)
     else:
-        return ArrayWAvg(fit.p.reshape(p0.shape), fit)
+        return ArrayWAvg(fit.p[None], fit)
 
 
 class MultiFitterModel(object):
@@ -756,6 +720,37 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
             fitdata=fitdata, fitval=fitval, save=save, view=view,
             )
 
+    def format(self, *args, **kargs):
+        def make_line(k, f):
+            try:
+                Q = '{:.2f}'.format(f.Q)
+            except:
+                Q = ''
+            try:
+                logGBF = '{:.5g}'.format(f.logGBF)
+            except:
+                logGBF = ''
+            k = str(k)
+            return '\n' + fmt.format(
+                '{:10.2g} [{}]'.format(f.chi2 / f.dof, f.dof),
+                Q, logGBF, f.svdn,
+                '{}/{:.1f}'.format(f.nit, f.time), k
+                )
+        ans = super(chained_lsqfit, self).format(*args, **kargs)
+        fmt = '{:>16}{:>8}{:>11}  {:>5}   {:>10}  {:<}'
+        header = fmt.format(
+            'chi2/dof [dof]', 'Q', 'logGBF', 'svd-n', 'itns/time','fit            '
+            )
+        ans += '\nChained Fits:\n' + header
+        ans += '\n' + len(header) * '-'
+        fmt = '{:>16}{:>8}{:>11}  {:5} {:>12}  {:<}'
+        for k in self.chained_fits:
+            ans += make_line(k, self.chained_fits[k])
+        ans += '\n' + len(header) * '-'
+        ans += make_line('all', self)
+        ans += '\n'
+        return ans
+
     def formatall(self, *args, **kargs):
         " Add-on method for fits returned by chained_lsqfit. "
         ans = ''
@@ -789,7 +784,14 @@ class MultiFitter(object):
         fast (bool): Setting ``fast=True`` (default) strips any variable
             not required by the fit from the prior. This speeds
             fits but loses information about correlations between
-            variables in the fit and those that are not.
+            variables in the fit and those that are not. Setting
+            ``wavg_all=True`` can restore some of the correlations, but
+            is somewhat slower.
+        wavg_all (bool): If ``True`` and ``fast=True``, the final result of a
+            chained fit is the weighted average of all the fits in the chain.
+            This can restore correlations lost in the chain because
+            ``fast=True``. This step is omitted if ``wavg_all=False`` or
+            ``fast=False``. Default is ``False``.
         fitname (callable or ``None``): Individual fits in a chained fit are
             assigned default names, constructed from the datatags of
             the corresponding models, for access and reporting. These names
@@ -806,7 +808,7 @@ class MultiFitter(object):
     """
 
     def __init__(
-        self, models, mopt=None, ratio=False, fast=True,
+        self, models, mopt=None, ratio=False, fast=True, wavg_all=False,
         wavg_kargs=dict(svdcut=1e-12), fitname=None, fitterargs={},
         **more_fitterargs
         ):
@@ -817,6 +819,7 @@ class MultiFitter(object):
         self.ratio = ratio
         self.mopt = mopt
         self.fast = fast
+        self.wavg_all = wavg_all
         self.wavg_kargs = wavg_kargs
         self.fitterargs = dict(fitterargs)
         self.fitterargs.update(more_fitterargs)
@@ -842,7 +845,7 @@ class MultiFitter(object):
         values.
         """
         kwords = set([
-            'mopt', 'fast', 'ratio', 'wavg_kargs',
+            'mopt', 'fast', 'ratio', 'wavg_kargs', 'wavg_all',
             'fitterargs', 'fitname',
             ])
         kargs = dict(kargs)
@@ -1169,6 +1172,7 @@ class MultiFitter(object):
         # execute tasks in self.tasklist
         chained_fits = collections.OrderedDict()
         all_fnames = []
+        all_fitp = []
         for tasktype, taskdata in self.tasklist:
             if tasktype == 'fit':
                 fitter = self.__class__(models=taskdata, **kargs)
@@ -1183,6 +1187,7 @@ class MultiFitter(object):
                 else:
                     all_fnames.append(fname)
                     chained_fits[fname] = fit
+                    all_fitp.append(fit.p)
             elif tasktype == 'update-prior':
                 lastfit = chained_fits[all_fnames[-1]]
                 lastfit_p = lastfit.p
@@ -1205,6 +1210,12 @@ class MultiFitter(object):
                 kargs.update(taskdata)
             else:
                 raise RuntimeError('unknown task: ' + tasktype)
+
+        if self.fast and self.wavg_all:
+            fit = lsqfit.wavg(all_fitp, **self.wavg_kargs).fit
+            fname = self.fitname('wavg(all)')
+            chained_fits[fname] = fit
+            prior = fit.p
 
         # build output class
         self.fit = chained_lsqfit(

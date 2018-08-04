@@ -142,7 +142,7 @@ class test_multifitter(unittest.TestCase):
 
     def test_set(self):
         " fitter.set(...) "
-        keys = ['fast', 'mopt', 'ratio', 'wavg_kargs', 'fitterargs', 'fitname']
+        keys = ['fast', 'mopt', 'ratio', 'wavg_kargs', 'wavg_all', 'fitterargs', 'fitname']
         def collect_args(f):
             return {k : getattr(f, k) for k in keys}
         # 0
@@ -301,7 +301,7 @@ class test_multifitter(unittest.TestCase):
         models = self.make_models(ncg=1)
         models = [models[2], dict(mopt=True), models[1], models[0]]
         fitter = MultiFitter(models=models, mopt=None)
-        fit = fitter.chained_lsqfit(data=self.data, prior=self.prior, fast=True)
+        fit = fitter.chained_lsqfit(data=self.data, prior=self.prior, fast=True, wavg_all=False)
         self.assertTrue(fit.p['b'] is self.prior['b'])
         self.assertEqual(fitter.mopt, None)
         fitter = MultiFitter(models=fitter.flatten_models(models), mopt=None)
