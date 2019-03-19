@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.1.1 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -235,20 +235,25 @@ parameters are stored in a dictionary (see <code class="docutils literal notrans
 of indices corresponding to these parameters when they are stored
 in an array. Note that this feature is experimental; the
 interface may change in the future.</li>
-<li><strong>svdcut</strong> (<em>float</em><em> or </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is nonzero
-(but not <code class="docutils literal notranslate"><span class="pre">None</span></code>), SVD cuts are applied to every block-diagonal
-sub-matrix of the covariance matrix for the data <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code>
-(if there is a prior). The blocks are first rescaled so that all
-diagonal elements equal 1 – that is, the blocks are replaced by
-the correlation matrices for the corresponding subsets of
-variables. Then, if <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, eigenvalues of the rescaled
-matrices that are smaller than <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum
-eigenvalue are replaced by <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum
-eigenvalue. This makes the covariance matrix less singular and
-less susceptible to roundoff error. When <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>,
-eigenvalues smaller than <code class="docutils literal notranslate"><span class="pre">|svdcut|</span></code> times the maximum eigenvalue
-are discarded and the corresponding components in <code class="docutils literal notranslate"><span class="pre">y</span></code> and
-<code class="docutils literal notranslate"><span class="pre">prior</span></code> are zeroed out. Default is 1e-12.</li>
+<li><strong>svdcut</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a nonzero number,
+SVD cuts are applied to every block-diagonal sub-matrix of the
+correlation matrix for the data <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code> (if there is a
+prior). If <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, eigenvalues of the rescaled matrices
+that are smaller than <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue are
+replaced by <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue. This makes
+the correlation matrix less singular and less susceptible to
+roundoff error. When <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>, eigenvalues smaller than
+<code class="docutils literal notranslate"><span class="pre">|svdcut|</span></code> times the maximum eigenvalue are discarded and the
+corresponding components in <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code> are zeroed out. No
+SVD cut is applied if <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code>. If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a
+dictionary, its arguments are passed as keyword arguments to
+<code class="docutils literal notranslate"><span class="pre">gvar.svd</span></code>, which is used to apply the  SVD cut: eg,
+<code class="docutils literal notranslate"><span class="pre">svdcut=dict(svdcut=1e-4,</span> <span class="pre">add_offsets=True)</span></code>. Default is 1e-12.</li>
+<li><strong>add_svdnoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>, noise is added to
+the data corresponding to the additional uncertainties
+introduced when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>. This is useful for testing the
+quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when large SVD cuts are
+employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
 <li><strong>udata</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – Same as <code class="docutils literal notranslate"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
 between different pieces of data.  This speeds up the  fit,
 particularly for large amounts of data, but ignores potentially
@@ -302,16 +307,17 @@ attributes:</p>
 <dt id="lsqfit.nonlinear_fit.chi2">
 <code class="descname">chi2</code><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>float</em> – The minimum <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for the fit.
-<code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> is usually of order one in good fits;
-values much less than one suggest that the actual standard
-deviations in the input data and/or priors are smaller than the
-standard deviations used in the fit.</p>
+<code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> is usually of order one in good fits.
+Values much less than one suggest that actual fluctuations in
+the input data and/or priors might be smaller than suggested
+by the standard deviations (or covariances) used in the fit.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.cov">
 <code class="descname">cov</code><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Covariance matrix of the best-fit parameters from the fit.</p>
+<dd><p><em>array</em> – Covariance matrix of the best-fit parameters from
+the fit.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -417,7 +423,11 @@ a  dictionary (<code class="xref py py-class docutils literal notranslate"><span
 <dd><p><em>float or None</em> – The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> from the fit
 could have been larger, by chance, assuming the best-fit model
 is correct. Good fits have <code class="docutils literal notranslate"><span class="pre">Q</span></code> values larger than 0.1 or so.
-Also called the <em>p-value</em> of the fit.</p>
+Also called the <em>p-value</em> of the fit. The probabilistic
+intrepretation becomes unreliable if the actual fluctuations
+in the input data and/or priors are much smaller than suggested
+by the standard deviations (or covariances) used in the fit
+(leading to an unusually small <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>).</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -489,8 +499,8 @@ size <code class="docutils literal notranslate"><span class="pre">s</span></code
 
 <p>The global defaults used by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be changed by
 changing entries in dictionary <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.DEFAULTS</span></code>
-for keys ‘svdcut’, ‘debug’, <cite>tol</cite>, ‘maxit’, and
-‘fitter’. Additional defaults can be added to that dictionary
+for keys <code class="docutils literal notranslate"><span class="pre">'svdcut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'debug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tol'</span></code>, <code class="docutils literal notranslate"><span class="pre">'maxit'</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">'fitter'</span></code>. Additional defaults can be added to that dictionary
 to be are passed through <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to the underlying
 fitter (via dictionary <code class="docutils literal notranslate"><span class="pre">fitterargs</span></code>).</p>
 <p>Additional methods are provided for printing out detailed information
@@ -557,9 +567,9 @@ for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</sp
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.simulated_fit_iter">
-<code class="descname">simulated_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>pexact=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
+<code class="descname">simulated_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>pexact=None</em>, <em>add_priornoise=False</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulation copies of a fit.</p>
-<p>Fit reliability can be tested using simulated data which
+<p>Fit reliability is tested using simulated data which
 replaces the mean values in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> with random numbers
 drawn from a distribution whose mean equals <code class="docutils literal notranslate"><span class="pre">self.fcn(pexact)</span></code>
 and whose covariance matrix is the same as <code class="docutils literal notranslate"><span class="pre">self.y</span></code>’s. Simulated
@@ -577,6 +587,7 @@ Typical usage is:</p>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="o">...</span>
 <span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="o">...</span> <span class="n">verify</span> <span class="n">that</span> <span class="n">sfit</span> <span class="n">has</span> <span class="n">a</span> <span class="n">good</span> <span class="n">chi</span><span class="o">**</span><span class="mi">2</span> <span class="o">...</span>
     <span class="o">...</span> <span class="n">verify</span> <span class="n">that</span> <span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="n">agrees</span> <span class="k">with</span> <span class="n">pexact</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">pmean</span> <span class="n">within</span> <span class="n">errors</span> <span class="o">...</span>
 </pre></div>
 </div>
@@ -584,53 +595,30 @@ Typical usage is:</p>
 reliability since we know the correct answer in each case. The
 simulated fit’s output results should agree with <code class="docutils literal notranslate"><span class="pre">pexact</span></code>
 (<code class="docutils literal notranslate"><span class="pre">=fit.pmean</span></code> here) within the simulated fit’s errors.</p>
+<p>Setting parameter <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code> varies the means of the
+priors as well as the means of the data. This option is useful
+for testing goodness of fit because with it <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code> should
+be <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">±</span> <span class="pre">sqrt(2/N)</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
+number of degrees of freedom. (<code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code> can be significantly
+smaller than one without added noise in prior means.)</p>
 <p>Simulated fits can also be used to estimate biases in the fit’s
 output parameters or functions of them, should non-Gaussian behavior
 arise. This is possible, again, because we know the correct value for
 every parameter before we do the fit. Again only a few iterations
 may be needed for reliable estimates.</p>
-<p>The (possibly non-Gaussian) probability distributions for parameters,
-or functions of them, can be explored in more detail by setting option
-<code class="docutils literal notranslate"><span class="pre">bootstrap=True</span></code> and collecting results from a large number of
-simulated fits. With <code class="docutils literal notranslate"><span class="pre">bootstrap=True</span></code>, the means of the priors are
-also varied from fit to fit, as in a bootstrap simulation; the new
-prior means are chosen at random from the prior distribution.
-Variations in the best-fit parameters (or functions of them)
-from fit to fit define the probability distributions for those
-quantities. For example, one would use the following code to
-analyze the distribution of function <code class="docutils literal notranslate"><span class="pre">g(p)</span></code> of the fit parameters:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-
-<span class="o">...</span>
-
-<span class="n">glist</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="n">glist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">(</span><span class="n">sfit</span><span class="o">.</span><span class="n">pmean</span><span class="p">))</span>
-
-<span class="o">...</span> <span class="n">analyze</span> <span class="n">samples</span> <span class="n">glist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="kn">from</span> <span class="nn">g</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="n">distribution</span> <span class="o">...</span>
-</pre></div>
-</div>
-<p>This code generates <code class="docutils literal notranslate"><span class="pre">n=100</span></code> samples <code class="docutils literal notranslate"><span class="pre">glist[i]</span></code> from the
-probability distribution of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code>. If everything is Gaussian,
-the mean and standard deviation of <code class="docutils literal notranslate"><span class="pre">glist[i]</span></code> should agree
-with <code class="docutils literal notranslate"><span class="pre">g(fit.p).mean</span></code> and <code class="docutils literal notranslate"><span class="pre">g(fit.p).sdev</span></code>.</p>
-<p>The only difference between simulated fits with <code class="docutils literal notranslate"><span class="pre">bootstrap=True</span></code>
-and <code class="docutils literal notranslate"><span class="pre">bootstrap=False</span></code> (the default) is that the prior means are
-varied. It is essential that they be varied in a bootstrap analysis
-since one wants to capture the impact of the priors on the final
-distributions, but it is not necessary and probably not desirable
-when simply testing a fit’s reliability.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong> (integer or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Maximum number of iterations (equals infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
-<li><strong>pexact</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or array or dictionary of numbers) – Fit-parameter values for the underlying distribution
-used to generate simulated data; replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if
-is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</li>
-<li><strong>bootstrap</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise vary only
-the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
+<li><strong>n</strong> (int or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Maximum number of iterations (equals
+infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
+<li><strong>pexact</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or array/dict of numbers) – Fit-parameter values
+for the underlying distribution used to generate simulated
+data; replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</li>
+<li><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>;
+otherwise vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
+<li><strong>kargs</strong> – Dictionary containing override values for fit parameters.</li>
 </ul>
 </td>
 </tr>
@@ -640,8 +628,92 @@ for different simulated data.</p>
 </tr>
 </tbody>
 </table>
-<p>Note that additional keywords can be added to overwrite keyword
-arguments in <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.simulated_data_iter">
+<code class="descname">simulated_data_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>pexact=None</em>, <em>add_priornoise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterator that returns simulated data based upon a fit’s data.</p>
+<p>Simulated data is generated from a fit’s data <code class="docutils literal notranslate"><span class="pre">fit.y</span></code> by
+replacing the mean values in that data with random numbers
+drawn from a distribution whose mean is <code class="docutils literal notranslate"><span class="pre">self.fcn(pexact)</span></code>
+and whose covariance matrix is the same as that of <code class="docutils literal notranslate"><span class="pre">self.y</span></code>.
+Each iteration of the iterator returns new simulated data,
+with different random numbers for the means and a covariance
+matrix equal to that of <code class="docutils literal notranslate"><span class="pre">self.y</span></code>. This iterator is used by
+<code class="docutils literal notranslate"><span class="pre">self.simulated_fit_iter</span></code>.</p>
+<p>Typical usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="k">for</span> <span class="n">ysim</span><span class="p">,</span> <span class="n">priorsim</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulate_data_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">fitsim</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ysim</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">priorsim</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fitsim</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;chi2 =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">chi2</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">fitsim</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This code tests the fitting protocol on simulated data, comparing the
+best fit parameters in each case with the correct values (<code class="docutils literal notranslate"><span class="pre">fit.p</span></code>).
+The loop in this code is functionally the same as (but probably not
+as fast as):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">fitsim</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fitsim</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;chi2 =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">chi2</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">fitsim</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of iterations (equals
+infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
+<li><strong>pexact</strong> (<em>None</em><em> or </em><em>dict/array of numbers</em>) – Fit-parameter values for
+the underlying distribution used to generate simulated data;
+replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</li>
+<li><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
+vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An iterator that returns a 2-tuple containing simulated
+versions of self.y and self.prior: <code class="docutils literal notranslate"><span class="pre">(ysim,</span> <span class="pre">priorsim)</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.simulated_Q">
+<code class="descname">simulated_Q</code><span class="sig-paren">(</span><em>n=10</em>, <em>add_priornoise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate robust estimate of <code class="docutils literal notranslate"><span class="pre">Q</span></code> using simulated fits.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Q</span></code> parameter (or <em>p value</em>) assigned to a fit is the
+probability that a worse fit (worse <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>) could result from
+random fluctuations in the input data. The standard estimate for <code class="docutils literal notranslate"><span class="pre">Q</span></code>
+given by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be an overestimated if
+there are large SVD cuts or underestimated if the priors are broad.</p>
+<p>This method generates a more robust estimate for <code class="docutils literal notranslate"><span class="pre">Q</span></code> by redoing
+the fit <code class="docutils literal notranslate"><span class="pre">n</span></code> times with different simulated data for each fit
+(see <a class="reference internal" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="lsqfit.nonlinear_fit.simulated_data_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_data_iter()</span></code></a>). The
+fraction of these fits that are worse than the original fit
+provides the estimate for <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of iterations (equals
+infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
+<li><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise vary only
+the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An estimate (with error bars) of the fit’s <code class="docutils literal notranslate"><span class="pre">Q</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -1004,7 +1076,7 @@ problems caused by roundoff errors when inverting the
 covariance matrix. It increases the uncertainty associated
 with the modified eigenvalues and so is conservative.
 Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-15</span></code>.</li>
+covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -1078,7 +1150,7 @@ obtained from a Bayesian integral (0.48(54)):</p>
               <span class="n">g</span>    <span class="mf">1.2</span> <span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">2.0</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">]</span>
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-15</span><span class="o">/</span><span class="mi">0</span>    <span class="n">reltol</span><span class="o">/</span><span class="n">abstol</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="o">/</span><span class="mi">0</span><span class="o">*</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">reltol</span><span class="o">/</span><span class="n">abstol</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="o">/</span><span class="mi">0</span><span class="o">*</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
 <span class="n">itn</span>   <span class="n">integral</span>        <span class="n">average</span>         <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span>        <span class="n">Q</span>
 <span class="o">-------------------------------------------------------</span>
@@ -1184,7 +1256,7 @@ problems caused by roundoff errors when inverting the
 covariance matrix. It increases the uncertainty associated
 with the modified eigenvalues and so is conservative.
 Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-15</span></code>.</li>
+covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -1910,7 +1982,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

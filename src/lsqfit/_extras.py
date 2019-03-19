@@ -14,10 +14,7 @@
 # GNU General Public License for more details.
 
 import collections
-import functools
-import pickle
 import time
-import types
 import warnings
 
 import numpy
@@ -632,7 +629,7 @@ class MultiFitterModel(object):
 
 class chained_lsqfit(lsqfit.nonlinear_fit):
     " Fit results from chained fit. "
-    def __init__(self, p, chained_fits, fitter, prior):
+    def __init__(self, p, chained_fits, multifitter, prior):
         if len(chained_fits) <= 0:
             raise ValueError('no chained fits')
         self._p = p
@@ -640,10 +637,11 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         self.pmean = gvar.mean(p)
         self.psdev = gvar.sdev(p)
         self.chained_fits = chained_fits
+        self.multifitter = multifitter
 
         # extract fcn, fcn values, and data from fits and fitter
         # (for format(...))
-        self.fcn = fitter.buildfitfcn()
+        self.fcn = multifitter.buildfitfcn()
         self.data = collections.OrderedDict()
         self.prior = prior
         self.fcn_p = collections.OrderedDict()
@@ -668,6 +666,7 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         self.tol = [0., 0., 0.]
         self.error = []
         self.logGBF = 0.
+        self.add_svdnoise = False
         self.fitter = 'chained fit'
         self.description = ''
         for k in self.chained_fits:
@@ -680,6 +679,8 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
             self.nit += self.chained_fits[k].nit
             self.time += self.chained_fits[k].time
             svdcut = self.chained_fits[k].svdcut
+            if self.chained_fits[k].add_svdnoise:
+                self.add_svdnoise = True
             if svdcut is not None and  abs(svdcut) > abs(self.svdcut):
                 self.svdcut = svdcut
             tol = self.chained_fits[k].tol
@@ -704,6 +705,9 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         self.fitter_results = None
         self.p0 = None
         self.nblocks = None
+
+    def simulated_fit_iter(self, **kargs):
+        raise NotImplementedError('use with individual fits in self.chained_fits')
 
     def show_plots(self, save=False, view='ratio'):
         fitdata = collections.OrderedDict()
@@ -1220,7 +1224,7 @@ class MultiFitter(object):
         # build output class
         self.fit = chained_lsqfit(
             p=prior, chained_fits=chained_fits,
-            fitter=self, prior=fitter_args_kargs[1]['prior'],
+            multifitter=self, prior=fitter_args_kargs[1]['prior'],
             )
 
         # add bootstrap method

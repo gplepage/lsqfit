@@ -440,12 +440,14 @@ We used Bayesian integrals here to deal with non-Gaussian behavior in
 fit outputs. The case study :ref:`outliers` shows how to use them
 when the input data is not quite Gaussian.
 
+.. _testing-fits:
+
 Testing Fits with Simulated Data
 --------------------------------
 Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method
-:meth:`lsqfit.nonlinear_fit.simulated_fit_iter`` returns an iterator that
+:meth:`lsqfit.nonlinear_fit.simulated_fit_iter` returns an iterator that
 creates any number of such simulations of the original fit.
 
 A key assumption underlying least-squares fitting is that the fit
@@ -524,3 +526,75 @@ fits in each case. We calculate the ``chi**2`` for the difference
 ``sfit.p - pexact`` in
 each case; good ``chi**2`` values validate the parameter values, standard
 deviations, and correlations.
+
+
+Goodness of Fit
+------------------
+Conventionally we expect ``chi**2/N``, where ``N`` is the
+number of degrees of freedom, is of order ``1 ± sqrt(2/N)``. This is based
+on the assumption that fluctuations in the mean values of the data are
+of order the uncertainties in the data. More precisely the means are
+assumed to be random samples drawn from a Gaussian distribution whose
+means are given by the best-fit function and whose covariance is that
+assigned to the data. This is not necessarily the case for Bayesian
+fits, where ``chi**2/N`` can be substantially smaller than |~| 1 for
+good fits.
+
+The interpretation of ``chi**2`` in Bayesian fits is complicated by
+two factors. The first complication, due to SVD cuts, is discussed in
+:ref:`svd-cuts-statistics`: an SVD cut increases the uncertainties
+in the data without increasing the random fluctuations in the
+data's means (unless ``add_svdnoise=True``). The second complication
+is from priors, whose means are often not random samples at all. In such
+cases, the contributions of the priors to ``chi**2`` will be significantly
+smaller than |~| 1, particularly if the priors are broad.
+
+These complications can conspire to make ``chi**2/N``
+signficantly less than |~| 1 when the fit is good. Of greater concern,
+they can mask evidence of a bad fit:  ``chi**2/N ≈ 1`` is *not*
+evidence of a good fit in such situations.
+
+The simplest way to deal with these complications is to test fits with
+:meth:`lsqfit.nonlinear_fit.simulated_fit_iter`, as discussed in the
+previous section. The simulated data used in these fits are generated
+after any SVD cuts are made and so take account of the cuts. Broad priors
+are handled by setting ``add_priornoise=True`` in
+:meth:`lsqfit.nonlinear_fit.simulated_fit_iter`, which replaces the means
+of the priors by random samples drawn from the prior distribution.
+
+To test the fit from :ref:`svd-cuts-statistics`, we modify its
+code to include simulation tests at the end (and an SVD cut)::
+
+    import numpy as np
+      import gvar as gv
+      import lsqfit
+
+      def main():
+          ysamples = [
+              [0.0092472625, 0.0069020664, 0.0051559329, 0.0038474351, 0.0028718766],
+              [0.0092730161, 0.0069210738, 0.0051657272, 0.0038557131, 0.0028791349],
+              [0.0092550445, 0.0069077582, 0.0051583732, 0.0038507522, 0.0028747456],
+              [0.0092484151, 0.0069010389, 0.0051501969, 0.0038442755, 0.0028703677],
+              [0.0092516114, 0.0069036709, 0.0051534052, 0.0038445233, 0.0028703909],
+              ]
+          y = gv.dataset.avg_data(ysamples)
+          x = np.array([15., 16., 17., 18., 19.])
+          def fcn(p):
+              return p['a'] * gv.exp(- p['b'] * x)
+          prior = dict(a='0.75(5)', b='0.30(3)')
+          fit = lsqfit.nonlinear_fit(data=y, prior=prior, fcn=fcn, svdcut=0.02)
+          print(fit.format(True))
+          for sfit in fit.simulated_fit_iter(n=5, add_priornoise=True):
+              print('\n' + 30 * '=' + ' simulated fit')
+              print(sfit)
+              print('compare p, pexact:', gv.fmt_chi2(gv.chi2(sfit.p, fit.pmean)))
+
+      if __name__ == '__main__':
+          main()
+
+Running this code gives the following output. The simulated fits typically
+have larger ``chi**2``, as expected, but give good fits that agree well with
+results from the original fit:
+
+.. literalinclude:: eg10e.out
+

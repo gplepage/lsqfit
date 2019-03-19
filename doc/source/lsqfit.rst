@@ -147,7 +147,11 @@ nonlinear_fit Objects
 
    .. automethod:: format(maxline=0, pstyle='v')
 
-   .. automethod:: simulated_fit_iter(n=None, pexact=None, **kargs)
+   .. automethod:: simulated_fit_iter(n=None, pexact=None, add_priornoise=False, **kargs)
+
+   .. automethod:: simulated_data_iter(n=None, pexact=None, add_priornoise=False)
+
+   .. automethod:: simulated_Q(n=10, add_priornoise=False)
 
    .. automethod:: bootstrapped_fit_iter(n=None, datalist=None)
 

@@ -796,6 +796,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                     np.log(np.linalg.det(gv.evalcov(y.flat))),
                     )
 
+        noiseargs = dict(add_svdnoise=False)
         # case 1 - (x,y) and prior
         yo = dict(y=[gv.gvar(1, 2), gv.gvar(10,4)])
         p = gv.gvar(2,4)
@@ -803,7 +804,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         xo = 20
         x, y, prior, fdata = lsqfit._unpack_data(
             data=(xo,yo), prior=po, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x, xo)
         self.assert_gvclose(y['y'], yo['y'])
@@ -821,7 +822,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
         x, y, prior, fdata = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'], yo['y'])
@@ -836,7 +837,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         # case 3 - no prior, x
         x, y, prior, fdata = lsqfit._unpack_data(
             data=yo, prior=None, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'], yo['y'])
@@ -855,7 +856,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         po['p'] *= one
         x, y, prior, fdata = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
@@ -875,7 +876,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
         x, y, prior, fdata = lsqfit._unpack_data(
             data=yo, prior=pvo, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
@@ -892,7 +893,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         pvo[0] *= one
         x, y, prior, fdata = lsqfit._unpack_data(
             data=yo, prior=pvo, svdcut=None,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
@@ -918,7 +919,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         svdcut = None
         x, y, prior, fdata = lsqfit._unpack_data(
             data=(xo,yo_mean,yo_cov), prior=po, svdcut=svdcut,
-            uncorrelated_data=False,
+            uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,xo)
         self.assert_gvclose(y,yo['y'])
@@ -943,7 +944,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         for svdcut in [0.0, sc]:
             x, y, prior, fdata = lsqfit._unpack_data(
                 data=yo, prior=po, svdcut=svdcut,
-                uncorrelated_data=False,
+                uncorrelated_data=False, **noiseargs
                 )
             self.assertEqual(x,False)
             self.assert_arraysequal(gv.mean(y),gv.mean(yo))
@@ -969,18 +970,38 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 )
             test_logdet(fdata, prior, y)
 
+        # case 9 - noise
+        a = gv.gvar(1, 1)
+        da = gv.gvar(0, 0.01)
+        yo = gv.gvar([(a+da), (a-da)])
+        a = gv.gvar(1,1)
+        da = gv.gvar(0,0.01)
+        po = gv.gvar([20*(a+da), 20*(a-da), '10(10)'])
+        sc = 0.01
+        da_svd = gv.gvar(0, sc**0.5)
+        x, y_ref, prior_ref, fdata_ref = lsqfit._unpack_data(
+            data=yo, prior=po, svdcut=sc,
+            uncorrelated_data=False, **noiseargs
+            )
+        # 9a - check that it runs (all need do here)
+        noiseargs['add_svdnoise'] = True
+        x, y, prior, fdata = lsqfit._unpack_data(
+            data=yo, prior=po, svdcut=sc,
+            uncorrelated_data=False, **noiseargs
+            )
+
         # others: svdcut= #
         # case ?? - wrong length data tuple
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(
                 data=(xo,yo,yo,yo), prior=po, svdcut=svdcut,
-                uncorrelated_data=False,
-                )
+                uncorrelated_data=False, **noiseargs
+                    )
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(
                 data=(xo,), prior=po, svdcut=svdcut,
-                uncorrelated_data=False,
-                )
+                uncorrelated_data=False, **noiseargs
+                    )
 
     def test_uncorrelated_data(self):
         " nonlinear_fit(udata=y ... ) "
@@ -1338,6 +1359,32 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
 
+    def test_simulated_Q(self):
+        " fit.simulated_Q() "
+
+        prior = gv.gvar(dict(a='1.0(1)', b='1.0(1)'))
+        p0 = gv.mean(prior)
+        def fcn(p):
+           x = np.arange(0, 1.1, 0.2)
+           return p['a'] * np.cos(-x * p['b'])
+        y = gv.make_fake_data(fcn(prior), fac=1.)
+
+        # with prior: expect Qmax >= Q >= Qmin
+        fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, p0=p0)
+        Q = fit.simulated_Q(n=50)
+        Qmax = lsqfit.gammaQ(fit.dof/2., fit.chi2/2.)
+        Qmin = lsqfit.gammaQ((fit.dof - p0.size)/2., fit.chi2/2.)
+        if Q > Qmax:
+            self.assertGreater(Q.sdev * 3, Q.mean - Qmax)
+        elif Q < Qmin:
+            self.assertGreater(Q.sdev * 3, Qmin - Q.mean)
+
+        # without prior: expect Q = fit.Q
+        prior = None
+        fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, p0=p0)
+        Q = fit.simulated_Q(n=50)
+        self.assertGreater(Q.sdev * 3, abs(Q.mean - fit.Q))
+
     def test_fit_iter(self):
         " fit.simulated_fit_iter "
         y = gv.gvar(['2.1(1.2)', '1.7(5.2)', '2.2(3)', '3.2(1.5)', '1.9(2)'])
@@ -1359,7 +1406,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 )
         N = 100
         prior_means = []
-        for sfit in fit.simulated_fit_iter(N, bootstrap=True):
+        for sfit in fit.simulated_fit_iter(N, add_priornoise=True):
             prior_means.append(sfit.prior[0].mean)
         prior_mean = np.average(prior_means)
         prior_sdev = np.std(prior_means)

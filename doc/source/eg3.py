@@ -164,7 +164,7 @@ def main():
 
         Q = []
         p = []
-        for sfit in fit.simulated_fit_iter(n=3, bootstrap=False):
+        for sfit in fit.simulated_fit_iter(n=3, add_priornoise=False):
             print(40 * '=' + ' simulation')
             print(sfit.format(True))
             diff = sfit.p - sfit.pexact

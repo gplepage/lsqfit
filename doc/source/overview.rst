@@ -1555,6 +1555,96 @@ fit. It generates a warning if roundoff looks to be a problem. This check
 is done automatically if ``debug=True`` is added to the argument list of
 :class:`lsqfit.nonlinear_fit`.
 
+.. _svd-cuts-statistics:
+
+SVD Cuts and Inadequate Statistics
+-----------------------------------
+Roundoff error is one reason to use SVD cuts. Another is inadequate
+statistics. Consider the following example, which seeks to fit
+data obtained by averaging ``N=5`` random samples (a very small
+number of samples)::
+
+  import numpy as np
+  import gvar as gv
+  import lsqfit
+
+  def main():
+      ysamples = [
+          [0.0092472625, 0.0069020664, 0.0051559329, 0.0038474351, 0.0028718766],
+          [0.0092730161, 0.0069210738, 0.0051657272, 0.0038557131, 0.0028791349],
+          [0.0092550445, 0.0069077582, 0.0051583732, 0.0038507522, 0.0028747456],
+          [0.0092484151, 0.0069010389, 0.0051501969, 0.0038442755, 0.0028703677],
+          [0.0092516114, 0.0069036709, 0.0051534052, 0.0038445233, 0.0028703909],
+          ]
+      y = gv.dataset.avg_data(ysamples)
+      x = np.array([15., 16., 17., 18., 19.])
+      def fcn(p):
+          return p['a'] * gv.exp(- p['b'] * x)
+      prior = dict(a='0.75(5)', b='0.30(3)')
+      fit = lsqfit.nonlinear_fit(data=y, prior=prior, fcn=fcn, svdcut=0.0)
+      print(fit.format(True))
+
+  if __name__ == '__main__':
+      main()
+
+This gives a terrible fit:
+
+.. literalinclude:: eg10a.out
+
+The problem is that the small eigenvalues of the fit data's correlation
+matrix are badly underestimated when we have only a small number of samples
+(compared with the number of data points being fit). Indeed the smallest
+eigenvalues vanish (exactly) when the number of samples is smaller
+than the number of data points.
+
+An SVD cut is needed. We use :func:`gvar.dataset.svd_analysis` to estimate
+the appropriate size of the cut (by means of a bootstrap simulation that
+identifies
+the eigenmodes of the correlation matrix  that are poorly estimated from
+our data sample). To use it we replace the line ::
+
+  y = gv.dataset.avg_data(ysamples)
+
+in the code by ::
+
+  s = gv.dataset.svd_diagnosis(ysamples)
+  y = s.avgdata
+
+and set ``svdcut=s.svdcut`` in the call to the fitter. The result is
+the following (excellent) fit:
+
+.. literalinclude:: eg10b.out
+
+The SVD cut is set to ``0.02`` here and modifies 3 of the 5 eigenmodes in the
+correlation matrix. Generally one needs an SVD cut unless there
+are many more samples than data points — 10 or 100 times as many.
+
+The ``chi**2`` for a fit where many modes are modified (by a large SVD cut)
+can be quite low. This is because the SVD cut increases uncertainties
+in the data associated with the modified modes, typically making them
+much larger than the corresponding
+fluctuations in the mean values of the data. As a result the contribution
+to ``chi**2`` from each of these modes is much smaller than |~| 1.
+Adding parameter ``add_svdnoise=True`` to the fitter call modifies the
+data means to include noise that is commensurate with the new
+uncertainties. The ``chi**2`` per degree of freedom should then be closer
+to |~| 1. Rerunning the previous
+fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
+
+.. literalinclude:: eg10c.out
+
+Adding SVD noise makes ``chi**2`` behave more conventionally.
+
+The data samples above are from a simulation,
+so we know the exact correlation matrix
+for the underlying distribution. Fitting with this correlation matrix, we
+obtain the following fit (without an SVD cut)
+
+.. literalinclude:: eg10d.out
+
+which looks quite similar to the fit above, using the approximate correlation
+matrix (with an SVD cut).
+
 
 ``y`` has Unknown Errors
 -------------------------
@@ -1662,7 +1752,7 @@ possible to minimize the *chi**2* function without knowing ``dy``, since
 ``dy`` factors out. The
 optimal ``dy`` is just the standard deviation of the fit residuals
 ``y[i] - fcn(x[i],p)`` with the best-fit parameters |~| ``p``. This
-assumption is implicit in most fit routines that fit
+assumption is implicit in many fit routines that fit
 data without errors (and without priors).
 
 

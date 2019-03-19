@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-LSQFIT_VERSION = '11.1'
+LSQFIT_VERSION = '11.2'
 
 from distutils.core import setup
 from distutils.extension import Extension
@@ -84,16 +84,16 @@ ext_modules = [
 
 # distutils
 requires = (
-    ["cython (>=0.17)","numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=9.0)"]
+    ["cython (>=0.17)","numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=9.1)"]
     if USE_CYTHON else
-    ["numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=9.0)"]
+    ["numpy (>=1.7)", "scipy (>=0.16)", "gvar (>=9.1)"]
     )
 
 # pip
 install_requires = (
-    ['cython>=0.17', 'numpy>=1.7', 'scipy>=0.16', 'gvar>=9.0']
+    ['cython>=0.17', 'numpy>=1.7', 'scipy>=0.16', 'gvar>=9.1']
     if USE_CYTHON else
-    ['numpy>=1.7', 'scipy>=0.16', 'gvar>=9.0']
+    ['numpy>=1.7', 'scipy>=0.16', 'gvar>=9.1']
     )
 
 # pypi

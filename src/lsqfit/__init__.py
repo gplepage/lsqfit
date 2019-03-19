@@ -85,9 +85,6 @@ module for fits and, especially, error budgets.
 # GNU General Public License for more details.
 
 import collections
-import functools
-import inspect
-import re
 import sys
 import warnings
 import math, pickle, time, copy
@@ -102,6 +99,7 @@ _FITTER_DEFAULTS = dict(
     svdcut=1e-12,
     debug=False,
     maxit=1000,
+    add_svdnoise=False,
     )
 
 # dictionary containing all fitters available to nonlinear_fit.
@@ -251,20 +249,26 @@ class nonlinear_fit(object):
             in an array. Note that this feature is experimental; the
             interface may change in the future.
 
-        svdcut (float or None): If ``svdcut`` is nonzero
-            (but not ``None``), SVD cuts are applied to every block-diagonal
-            sub-matrix of the covariance matrix for the data ``y`` and ``prior``
-            (if there is a prior). The blocks are first rescaled so that all
-            diagonal elements equal 1 -- that is, the blocks are replaced by
-            the correlation matrices for the corresponding subsets of
-            variables. Then, if ``svdcut > 0``, eigenvalues of the rescaled
-            matrices that are smaller than ``svdcut`` times the maximum
-            eigenvalue are replaced by ``svdcut`` times the maximum
-            eigenvalue. This makes the covariance matrix less singular and
-            less susceptible to roundoff error. When ``svdcut < 0``,
-            eigenvalues smaller than ``|svdcut|`` times the maximum eigenvalue
-            are discarded and the corresponding components in ``y`` and
-            ``prior`` are zeroed out. Default is 1e-12.
+        svdcut (float, dict, None): If ``svdcut`` is a nonzero number,
+            SVD cuts are applied to every block-diagonal sub-matrix of the
+            correlation matrix for the data ``y`` and ``prior`` (if there is a
+            prior). If ``svdcut > 0``, eigenvalues of the rescaled matrices
+            that are smaller than ``svdcut`` times the maximum eigenvalue are
+            replaced by ``svdcut`` times the maximum eigenvalue. This makes
+            the correlation matrix less singular and less susceptible to
+            roundoff error. When ``svdcut < 0``, eigenvalues smaller than
+            ``|svdcut|`` times the maximum eigenvalue are discarded and the
+            corresponding components in ``y`` and ``prior`` are zeroed out. No
+            SVD cut is applied if ``svdcut=None``. If ``svdcut`` is a
+            dictionary, its arguments are passed as keyword arguments to
+            ``gvar.svd``, which is used to apply the  SVD cut: eg,
+            ``svdcut=dict(svdcut=1e-4, add_offsets=True)``. Default is 1e-12.
+
+        add_svdnoise (bool): If ``add_svdnoise=True``, noise is added to
+            the data corresponding to the additional uncertainties
+            introduced when ``svdcut>0``. This is useful for testing the
+            quality of a fit (``chi2``) when large SVD cuts are
+            employed. Default is ``False``.
 
         udata (dict, array or tuple):
             Same as ``data`` but instructs the fitter to ignore  correlations
@@ -321,11 +325,13 @@ class nonlinear_fit(object):
     Attributes:
 
         chi2 (float): The minimum ``chi**2`` for the fit.
-            ``fit.chi2 / fit.dof`` is usually of order one in good fits;
-            values much less than one suggest that the actual standard
-            deviations in the input data and/or priors are smaller than the
-            standard deviations used in the fit.
-        cov (array): Covariance matrix of the best-fit parameters from the fit.
+            ``fit.chi2 / fit.dof`` is usually of order one in good fits.
+            Values much less than one suggest that actual fluctuations in
+            the input data and/or priors might be smaller than suggested
+            by the standard deviations (or covariances) used in the fit.
+
+        cov (array): Covariance matrix of the best-fit parameters from
+            the fit.
 
         dof (int): Number of degrees of freedom in the fit, which equals
             the number of pieces of data being fit when priors are specified
@@ -387,7 +393,11 @@ class nonlinear_fit(object):
         Q (float or None): The probability that the ``chi**2`` from the fit
             could have been larger, by chance, assuming the best-fit model
             is correct. Good fits have ``Q`` values larger than 0.1 or so.
-            Also called the *p-value* of the fit.
+            Also called the *p-value* of the fit. The probabilistic
+            intrepretation becomes unreliable if the actual fluctuations
+            in the input data and/or priors are much smaller than suggested
+            by the standard deviations (or covariances) used in the fit
+            (leading to an unusually small ``chi**2``).
 
         stopping_criterion (int): Criterion used to
             stop fit:
@@ -428,11 +438,19 @@ class nonlinear_fit(object):
 
     The global defaults used by |nonlinear_fit| can be changed by
     changing entries in dictionary ``lsqfit.nonlinear_fit.DEFAULTS``
-    for keys 'svdcut', 'debug', `tol`, 'maxit', and
-    'fitter'. Additional defaults can be added to that dictionary
+    for keys ``'svdcut'``, ``'debug'``, ``'tol'``, ``'maxit'``, and
+    ``'fitter'``. Additional defaults can be added to that dictionary
     to be are passed through |nonlinear_fit| to the underlying
     fitter (via dictionary ``fitterargs``).
     """
+    # N.B. If _fdata is specified (set from a previous fit's
+    # fit.fdata), then the data and prior correlation matrices are
+    # from _fdata and not from the data themselves. The means in
+    # _fdata are adjusted to be the same as in data and prior.
+    # This was introduced to make simulated_fit_iter a little faster,
+    # since now it doesn't have to rediagonalize the correlation matrix
+    # before each fit. This is not part of the public interface and
+    # could easily disappear in the future.
 
     DEFAULTS = {}
 
@@ -440,7 +458,8 @@ class nonlinear_fit(object):
 
     def __init__(
         self, data=None, fcn=None, prior=None, p0=None,
-        svdcut=False, debug=None, tol=None, maxit=None, udata=None,
+        svdcut=False, debug=None, tol=None, maxit=None, udata=None, _fdata=None,
+        add_svdnoise=None,
         linear=[], fitter=None, **fitterargs
         ):
 
@@ -469,19 +488,24 @@ class nonlinear_fit(object):
             maxit = nonlinear_fit.DEFAULTS.get(
                 'maxit', _FITTER_DEFAULTS['maxit'],
                 )
+        if add_svdnoise is None:
+            add_svdnoise = nonlinear_fit.DEFAULTS.get(
+                'add_svdnoise', _FITTER_DEFAULTS['add_svdnoise'],
+                )
         if fitter is None:
             fitter = nonlinear_fit.DEFAULTS.get(
                 'fitter',  _FITTER_DEFAULTS['fitter'],
                 )
-            for k in nonlinear_fit.DEFAULTS:
-                if k in ['svdcut', 'debug', 'maxit', 'fitter', 'tol']:
-                    continue
-                if k not in fitterargs:
-                    fitterargs[k] = nonlinear_fit.DEFAULTS[k]
+        for k in nonlinear_fit.DEFAULTS:
+            if k in ['svdcut', 'debug', 'maxit', 'fitter', 'tol', 'add_svdnoise']:
+                continue
+            if k not in fitterargs:
+                fitterargs[k] = nonlinear_fit.DEFAULTS[k]
 
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
         self.svdcut = svdcut
+        self.add_svdnoise = add_svdnoise
         if data is None:
             self.data = udata
             self.uncorrelated_data = True
@@ -502,13 +526,23 @@ class nonlinear_fit(object):
         cpu_time = clock()
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
-        x, y, prior, fdata = _unpack_data(
-            data=self.data, prior=prior, svdcut=self.svdcut,
-            uncorrelated_data=self.uncorrelated_data,
-            )
+        if _fdata is None:
+            x, y, prior, fdata = _unpack_data(
+                data=self.data, prior=prior, svdcut=self.svdcut,
+                uncorrelated_data=self.uncorrelated_data,
+                add_svdnoise=add_svdnoise,
+                )
+        else:
+            x = data[0]
+            y = data[1]
+            fdata = copy.deepcopy(_fdata)
+            fdata.mean[:y.size] = _gvar.mean(y.flat)
+            if prior is not None:
+                fdata.mean[y.size:] = _gvar.mean(prior.flat)
         self.x = x
         self.y = y
         self.prior = prior
+        self.fdata = fdata
         self.svdcorrection = fdata.svdcorrection
         self.nblocks = fdata.nblocks
         self.svdn = fdata.svdn
@@ -522,7 +556,7 @@ class nonlinear_fit(object):
 
         # create fit function chiv for multifit
         self._chiv, self._chivw = _build_chiv_chivw(
-            fdata=fdata, fcn=flatfcn, prior=self.prior
+            fdata=self.fdata, fcn=flatfcn, prior=self.prior
             )
         self.dof = self._chiv.nf - self.p0.size
         nf = self._chiv.nf
@@ -614,21 +648,37 @@ class nonlinear_fit(object):
             fit = nonlinear_fit.FITTERS[self.fitter](
                 p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
                 )
-        self.error = fit.error
-        self.cov = fit.cov
-        self.chi2 = numpy.sum(fit.f**2)
-        self.Q = gammaQ(self.dof/2., self.chi2/2.)
-        self.nit = fit.nit
-        self.tol = fit.tol
-        self.stopping_criterion = fit.stopping_criterion
-        self.description = getattr(fit, 'description', '')
-        self.fitter_results = fit.results
-        self._p = None          # lazy evaluation
-        self.palt = _reformat(
-            self.p0, _gvar.gvar(fit.x.flat, fit.cov),
-            )
-        self.psdev = _gvar.sdev(self.palt)
-        self.pmean = _gvar.mean(self.palt)
+        if maxit > 0:
+            self.error = fit.error
+            self.cov = fit.cov
+            self.chi2 = numpy.sum(fit.f**2)
+            self.Q = gammaQ(self.dof/2., self.chi2/2.)
+            self.nit = fit.nit
+            self.tol = fit.tol
+            self.maxit = maxit
+            self.stopping_criterion = fit.stopping_criterion
+            self.description = getattr(fit, 'description', '')
+            self.fitter_results = fit.results
+            self._p = None          # lazy evaluation
+            self.palt = _reformat(
+                self.p0, _gvar.gvar(fit.x.flat, fit.cov),
+                )
+            self.pmean = _gvar.mean(self.palt)
+            self.psdev = _gvar.sdev(self.palt)
+        else:
+            self.palt = self.prior
+            self.pmean = _gvar.mean(self.palt)
+            self.psdev = _gvar.sdev(self.palt)
+            self.error = None
+            self.cov = _gvar.evalcov(self.palt.flat)
+            self.chi2 = numpy.sum(self._chiv(self.pmean.flat)**2)
+            self.Q = gammaQ(self.dof/2., self.chi2/2.)
+            self.nit = 0
+            self.tol = tol
+            self.stopping_criterion = 0
+            self.description = ''
+            self.fitter_results = None
+            self._p = None          # lazy evaluation
 
         # compute logGBF
         if self.prior is None:
@@ -642,7 +692,7 @@ class nonlinear_fit(object):
                 # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
             logdet_cov = logdet(self.cov)
             self.logGBF = 0.5*(
-                logdet_cov - fdata.logdet - self.chi2 -
+                logdet_cov - self.fdata.logdet - self.chi2 -
                 self.dof * numpy.log(2. * numpy.pi)
                 )
 
@@ -1040,9 +1090,15 @@ class nonlinear_fit(object):
 
         # settings
         settings = "\nSettings:"
-        settings += "\n  svdcut/n = {svdcut}/{svdn}".format(
-            svdcut=self.svdcut, svdn=self.svdn
-            )
+        if not self.add_svdnoise or self.svdcut is None or self.svdcut < 0:
+            settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}".format(
+                svdcut=self.svdcut if self.svdcut is not None else 0.0,
+                svdn=self.svdn
+                )
+        else:
+            settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}*".format(
+                    svdcut=self.svdcut, svdn=self.svdn
+                    )
         criterion = self.stopping_criterion
         try:
             fmtstr = [
@@ -1172,10 +1228,12 @@ class nonlinear_fit(object):
             else:
                 pickle.dump(collections.OrderedDict(self.pmean), f) # dump as a dict
 
-    def simulated_fit_iter(self, n, pexact=None, bootstrap=False, **kargs):
+    def simulated_fit_iter(
+        self, n=None, pexact=None, add_priornoise=False, bootstrap=None, **kargs
+        ):
         """ Iterator that returns simulation copies of a fit.
 
-        Fit reliability can be tested using simulated data which
+        Fit reliability is tested using simulated data which
         replaces the mean values in ``self.y`` with random numbers
         drawn from a distribution whose mean equals ``self.fcn(pexact)``
         and whose covariance matrix is the same as ``self.y``'s. Simulated
@@ -1195,6 +1253,7 @@ class nonlinear_fit(object):
             fit = nonlinear_fit(...)
             ...
             for sfit in fit.simulated_fit_iter(n=3):
+                ... verify that sfit has a good chi**2 ...
                 ... verify that sfit.p agrees with pexact=fit.pmean within errors ...
 
         Only a few iterations are needed to get a sense of the fit's
@@ -1202,78 +1261,56 @@ class nonlinear_fit(object):
         simulated fit's output results should agree with ``pexact``
         (``=fit.pmean`` here) within the simulated fit's errors.
 
+        Setting parameter ``add_priornoise=True`` varies the means of the
+        priors as well as the means of the data. This option is useful
+        for testing goodness of fit because with it ``chi**2/N`` should
+        be ``1 ± sqrt(2/N)``, where ``N`` is the
+        number of degrees of freedom. (``chi**2/N`` can be significantly
+        smaller than one without added noise in prior means.)
+
         Simulated fits can also be used to estimate biases in the fit's
         output parameters or functions of them, should non-Gaussian behavior
         arise. This is possible, again, because we know the correct value for
         every parameter before we do the fit. Again only a few iterations
         may be needed for reliable estimates.
 
-        The (possibly non-Gaussian) probability distributions for parameters,
-        or functions of them, can be explored in more detail by setting option
-        ``bootstrap=True`` and collecting results from a large number of
-        simulated fits. With ``bootstrap=True``, the means of the priors are
-        also varied from fit to fit, as in a bootstrap simulation; the new
-        prior means are chosen at random from the prior distribution.
-        Variations in the best-fit parameters (or functions of them)
-        from fit to fit define the probability distributions for those
-        quantities. For example, one would use the following code to
-        analyze the distribution of function ``g(p)`` of the fit parameters::
+        Args:
+            n (int or ``None``): Maximum number of iterations (equals
+                infinity if ``None``).
+            pexact (``None`` or array/dict of numbers): Fit-parameter values
+                for the underlying distribution used to generate simulated
+                data; replaced by ``self.pmean`` if is ``None`` (default).
+            add_priornoise (bool): Vary prior means if ``True``;
+                otherwise vary only the means in ``self.y`` (default).
+            kargs: Dictionary containing override values for fit parameters.
 
-            fit = nonlinear_fit(...)
-
-            ...
-
-            glist = []
-            for sfit in fit.simulated_fit_iter(n=100, bootstrap=True):
-                glist.append(g(sfit.pmean))
-
-            ... analyze samples glist[i] from g(p) distribution ...
-
-        This code generates ``n=100`` samples ``glist[i]`` from the
-        probability distribution of ``g(p)``. If everything is Gaussian,
-        the mean and standard deviation of ``glist[i]`` should agree
-        with ``g(fit.p).mean`` and ``g(fit.p).sdev``.
-
-        The only difference between simulated fits with ``bootstrap=True``
-        and ``bootstrap=False`` (the default) is that the prior means are
-        varied. It is essential that they be varied in a bootstrap analysis
-        since one wants to capture the impact of the priors on the final
-        distributions, but it is not necessary and probably not desirable
-        when simply testing a fit's reliability.
-
-        :param n: Maximum number of iterations (equals infinity if ``None``).
-        :type n: integer or ``None``
-        :param pexact: Fit-parameter values for the underlying distribution
-            used to generate simulated data; replaced by ``self.pmean`` if
-            is ``None`` (default).
-        :type pexact: ``None`` or array or dictionary of numbers
-        :param bootstrap: Vary prior means if ``True``; otherwise vary only
-            the means in ``self.y`` (default).
-        :type bootstrap: bool
-        :returns: An iterator that returns :class:`lsqfit.nonlinear_fit`\s
+        Returns:
+            An iterator that returns :class:`lsqfit.nonlinear_fit`\s
             for different simulated data.
-
-        Note that additional keywords can be added to overwrite keyword
-        arguments in :class:`lsqfit.nonlinear_fit`.
         """
         pexact = self.pmean if pexact is None else pexact
+        # bootstrap is old name for add_priornoise; keep for legacy code
+        if bootstrap is not None:
+            add_priornoise = bootstrap
         # Note: don't need svdcut since these are built into the data_iter
         fargs = dict(
             fcn=self.fcn, svdcut=None, p0=pexact, fitter=self.fitter,
             )
         fargs.update(self.fitterargs)
         fargs.update(kargs)
-        for ysim, priorsim in self._simulated_data_iter(
-            n, pexact=pexact, bootstrap=bootstrap
+        for ysim, priorsim in self.simulated_data_iter(
+            n, pexact=pexact, add_priornoise=add_priornoise
             ):
             fit = nonlinear_fit(
-                data=(self.x, ysim), prior=priorsim,
+                data=(self.x, ysim), prior=priorsim, _fdata=self.fdata,
                 **fargs
                 )
             fit.pexact = pexact
             yield fit
 
-    def _simulated_data_iter(self, n, pexact=None, bootstrap=True):
+    def simulated_data_iter(
+        self, n=None, pexact=None, add_priornoise=False, bootstrap=None
+        ):
         """ Iterator that returns simulated data based upon a fit's data.
 
         Simulated data is generated from a fit's data ``fit.y`` by
@@ -1285,19 +1322,43 @@ class nonlinear_fit(object):
         matrix equal to that of ``self.y``. This iterator is used by
         ``self.simulated_fit_iter``.
 
-        :param n: Maximum number of iterations (equals infinity if ``None``).
-        :type n: integer or ``None``
-        :param pexact: Fit-parameter values for the underlying distribution
-            used to generate simulated data; replaced by ``self.pmean`` if
-            is ``None`` (default).
-        :type pexact: ``None`` or array or dictionary of numbers
-        :param bootstrap: Vary prior means if ``True``; otherwise vary only
-            the means in ``self.y`` (default).
-        :type bootstrap: bool
-        :returns: An iterator that returns a 2-tuple containing simulated
+        Typical usage::
+
+            fit = nonlinear_fit(data=(x,y), prior=prior, fcn=fcn)
+            ...
+            for ysim, priorsim in fit.simulate_data_iter(n=10):
+                fitsim = nonlinear_fit(data=(x, ysim), prior=priorsim, fcn=fcn)
+                print(fitsim)
+                print('chi2 =', gv.chi2(fit.p, fitsim.p))
+
+        This code tests the fitting protocol on simulated data, comparing the
+        best fit parameters in each case with the correct values (``fit.p``).
+        The loop in this code is functionally the same as (but probably not
+        as fast as)::
+
+            for fitsim in fit.simulated_fit_iter(n=10):
+                print(fitsim)
+                print('chi2 =', gv.chi2(fit.p, fitsim.p))
+
+        Args:
+            n (int or None): Maximum number of iterations (equals
+                infinity if ``None``).
+
+            pexact (None or dict/array of numbers): Fit-parameter values for
+                the underlying distribution used to generate simulated data;
+                replaced by ``self.pmean`` if is ``None`` (default).
+
+            add_priornoise (bool): Vary prior means if ``True``; otherwise
+                vary only the means in ``self.y`` (default).
+
+        Returns:
+            An iterator that returns a 2-tuple containing simulated
             versions of self.y and self.prior: ``(ysim, priorsim)``.
         """
         pexact = self.pmean if pexact is None else pexact
+        # bootstrap is old name for add_priornoise; keep for legacy code
+        if bootstrap is not None:
+            add_priornoise = bootstrap
         f = self.fcn(pexact) if self.x is False else self.fcn(self.x, pexact)
         y = copy.deepcopy(self.y)
         if isinstance(y, _gvar.BufferDict):
@@ -1308,7 +1369,7 @@ class nonlinear_fit(object):
             # y,f arrays; fresh copy of y
             y += numpy.asarray(f) - _gvar.mean(y)
         prior = copy.deepcopy(self.prior)
-        if prior is None or not bootstrap:
+        if prior is None or not add_priornoise:
             yiter = _gvar.bootstrap_iter(y, n)
             for ysim in _gvar.bootstrap_iter(y, n):
                 yield ysim, prior
@@ -1321,6 +1382,7 @@ class nonlinear_fit(object):
                 prior.flat = ypsim[y.size:]
                 yield y, prior
 
+    # legacy name
     simulate_iter = simulated_fit_iter
 
     def bootstrapped_fit_iter(self, n=None, datalist=None, **kargs):
@@ -1419,7 +1481,46 @@ class nonlinear_fit(object):
                     fit = nonlinear_fit(data=datab, prior=next(piter), **fargs)
                     yield fit
 
+    # legacy name
     bootstrap_iter = bootstrapped_fit_iter # legacy
+
+    def simulated_Q(self, n=10, add_priornoise=False):
+        """ Generate robust estimate of ``Q`` using simulated fits.
+
+        The ``Q`` parameter (or *p value*) assigned to a fit is the
+        probability that a worse fit (worse ``chi**2``) could result from
+        random fluctuations in the input data. The standard estimate for ``Q``
+        given by :class:`lsqfit.nonlinear_fit` can be an overestimated if
+        there are large SVD cuts or underestimated if the priors are broad.
+
+        This method generates a more robust estimate for ``Q`` by redoing
+        the fit ``n`` times with different simulated data for each fit
+        (see :meth:`lsqfit.nonlinear_fit.simulated_data_iter`). The
+        fraction of these fits that are worse than the original fit
+        provides the estimate for ``Q``.
+
+        Args:
+            n (int or None): Maximum number of iterations (equals
+                infinity if ``None``).
+
+            add_priornoise (bool): Vary prior means if ``True``; otherwise vary only
+                the means in ``self.y`` (default).
+
+        Returns:
+            An estimate (with error bars) of the fit's ``Q``.
+        """
+        over = count = 0.
+        for f in self.simulated_fit_iter(n=n, add_priornoise=add_priornoise):
+            if f.chi2 > self.chi2:
+                over += 1.
+            count += 1.
+        p = over / count
+        if p == 0:
+            return _gvar.gvar(0., 1. / count)
+        elif p == 1:
+            return _gvar.gvar(1., 1. / count)
+        else:
+            return _gvar.gvar(p, numpy.sqrt(p * (1. - p) / count))
 
 nonlinear_fit.set(**_FITTER_DEFAULTS)
 
@@ -1440,7 +1541,7 @@ def _reformat(p, buf):
         ans = numpy.array(buf).reshape(numpy.shape(p))
     return ans
 
-def _unpack_data(data, prior, svdcut, uncorrelated_data):
+def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
     """ Unpack data and prior into ``(x, y, prior, fdata)``.
 
     This routine unpacks ``data`` and ``prior`` into ``x, y, prior, fdata``
@@ -1486,15 +1587,19 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data):
         prior = _unpack_gvars(prior)
 
     def _apply_svd(data, svdcut=svdcut):
-        ans, inv_wgts = _gvar.svd(data, svdcut=svdcut, wgts=-1)
-        fdata = _FDATA(
-            mean=_gvar.mean(data.flat),
-            inv_wgts=inv_wgts,
-            svdcorrection=numpy.sum(_gvar.svd.correction),
-            logdet=_gvar.svd.logdet,
-            nblocks=_gvar.svd.nblocks,
-            svdn=_gvar.svd.nmod,
+        ans, inv_wgts = _gvar.svd(
+            data, wgts=-1, svdcut=svdcut, add_svdnoise=add_svdnoise,
             )
+        fdata = _FDATA(
+            mean=_gvar.mean(ans.flat),
+            inv_wgts=inv_wgts,
+            svdcorrection=numpy.sum(ans.svdcorrection),
+            logdet=ans.logdet,
+            nblocks=ans.nblocks,
+            svdn=ans.nmod,
+            )
+        del ans.nblocks
+        del ans.svdcorrection
         return ans, fdata
 
     if uncorrelated_data:
@@ -1718,7 +1823,7 @@ class BayesPDF(_gvar.PDF):
             covariance matrix. It increases the uncertainty associated
             with the modified eigenvalues and so is conservative.
             Setting ``svdcut=None`` or ``svdcut=0`` leaves the
-            covariance matrix unchanged. Default is ``1e-15``.
+            covariance matrix unchanged. Default is ``1e-12``.
     """
     def __init__(self, fit, svdcut=1e-12, norm=1.0):
         super(BayesPDF, self).__init__(fit.p, svdcut=svdcut)
@@ -1785,7 +1890,7 @@ try:
                 covariance matrix. It increases the uncertainty associated
                 with the modified eigenvalues and so is conservative.
                 Setting ``svdcut=None`` or ``svdcut=0`` leaves the
-                covariance matrix unchanged. Default is ``1e-15``.
+                covariance matrix unchanged. Default is ``1e-12``.
 
 
         ``BayesIntegrator(fit)`` is a :mod:`vegas` integrator that evaluates
@@ -1860,7 +1965,7 @@ try:
                           g    1.2 (1.1)     [  2.0 (2.0) ]
 
             Settings:
-              svdcut/n = 1e-15/0    reltol/abstol = 0.0001/0*    (itns/time = 10/0.0)
+              svdcut/n = 1e-12/0    reltol/abstol = 0.0001/0*    (itns/time = 10/0.0)
 
             itn   integral        average         chi2/dof        Q
             -------------------------------------------------------

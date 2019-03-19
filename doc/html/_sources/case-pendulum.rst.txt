@@ -2,7 +2,7 @@
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
 
-Case Study: Pendulum
+Case Study: Numerical Analysis inside a Fit
 =====================================================
 This case study shows how to fit a differential equation,
 using :mod:`gvar.ode`, and how to deal with uncertainty in

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 11.1 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 11.1.1 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -559,11 +559,11 @@ fit outputs. The case study <a class="reference internal" href="case-outliers.ht
 when the input data is not quite Gaussian.</p>
 </div>
 <div class="section" id="testing-fits-with-simulated-data">
-<h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this headline">¶</a></h2>
+<span id="testing-fits"></span><h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this headline">¶</a></h2>
 <p>Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter`()</span></code> returns an iterator that
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.simulated_fit_iter" title="lsqfit.nonlinear_fit.simulated_fit_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter()</span></code></a> returns an iterator that
 creates any number of such simulations of the original fit.</p>
 <p>A key assumption underlying least-squares fitting is that the fit
 data <code class="docutils literal notranslate"><span class="pre">y[i]</span></code> are random samples from a distribution whose mean
@@ -764,6 +764,147 @@ fits in each case. We calculate the <code class="docutils literal notranslate"><
 each case; good <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> values validate the parameter values, standard
 deviations, and correlations.</p>
 </div>
+<div class="section" id="goodness-of-fit">
+<h2>Goodness of Fit<a class="headerlink" href="#goodness-of-fit" title="Permalink to this headline">¶</a></h2>
+<p>Conventionally we expect <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
+number of degrees of freedom, is of order <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">±</span> <span class="pre">sqrt(2/N)</span></code>. This is based
+on the assumption that fluctuations in the mean values of the data are
+of order the uncertainties in the data. More precisely the means are
+assumed to be random samples drawn from a Gaussian distribution whose
+means are given by the best-fit function and whose covariance is that
+assigned to the data. This is not necessarily the case for Bayesian
+fits, where <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code> can be substantially smaller than&nbsp;1 for
+good fits.</p>
+<p>The interpretation of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> in Bayesian fits is complicated by
+two factors. The first complication, due to SVD cuts, is discussed in
+<a class="reference internal" href="overview.html#svd-cuts-statistics"><span class="std std-ref">SVD Cuts and Inadequate Statistics</span></a>: an SVD cut increases the uncertainties
+in the data without increasing the random fluctuations in the
+data’s means (unless <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>). The second complication
+is from priors, whose means are often not random samples at all. In such
+cases, the contributions of the priors to <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> will be significantly
+smaller than&nbsp;1, particularly if the priors are broad.</p>
+<p>These complications can conspire to make <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code>
+signficantly less than&nbsp;1 when the fit is good. Of greater concern,
+they can mask evidence of a bad fit:  <code class="docutils literal notranslate"><span class="pre">chi**2/N</span> <span class="pre">≈</span> <span class="pre">1</span></code> is <em>not</em>
+evidence of a good fit in such situations.</p>
+<p>The simplest way to deal with these complications is to test fits with
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.simulated_fit_iter" title="lsqfit.nonlinear_fit.simulated_fit_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter()</span></code></a>, as discussed in the
+previous section. The simulated data used in these fits are generated
+after any SVD cuts are made and so take account of the cuts. Broad priors
+are handled by setting <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code> in
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.simulated_fit_iter" title="lsqfit.nonlinear_fit.simulated_fit_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.simulated_fit_iter()</span></code></a>, which replaces the means
+of the priors by random samples drawn from the prior distribution.</p>
+<p>To test the fit from <a class="reference internal" href="overview.html#svd-cuts-statistics"><span class="std std-ref">SVD Cuts and Inadequate Statistics</span></a>, we modify its
+code to include simulation tests at the end (and an SVD cut):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+  <span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+  <span class="kn">import</span> <span class="nn">lsqfit</span>
+
+  <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+      <span class="n">ysamples</span> <span class="o">=</span> <span class="p">[</span>
+          <span class="p">[</span><span class="mf">0.0092472625</span><span class="p">,</span> <span class="mf">0.0069020664</span><span class="p">,</span> <span class="mf">0.0051559329</span><span class="p">,</span> <span class="mf">0.0038474351</span><span class="p">,</span> <span class="mf">0.0028718766</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">0.0092730161</span><span class="p">,</span> <span class="mf">0.0069210738</span><span class="p">,</span> <span class="mf">0.0051657272</span><span class="p">,</span> <span class="mf">0.0038557131</span><span class="p">,</span> <span class="mf">0.0028791349</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">0.0092550445</span><span class="p">,</span> <span class="mf">0.0069077582</span><span class="p">,</span> <span class="mf">0.0051583732</span><span class="p">,</span> <span class="mf">0.0038507522</span><span class="p">,</span> <span class="mf">0.0028747456</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">0.0092484151</span><span class="p">,</span> <span class="mf">0.0069010389</span><span class="p">,</span> <span class="mf">0.0051501969</span><span class="p">,</span> <span class="mf">0.0038442755</span><span class="p">,</span> <span class="mf">0.0028703677</span><span class="p">],</span>
+          <span class="p">[</span><span class="mf">0.0092516114</span><span class="p">,</span> <span class="mf">0.0069036709</span><span class="p">,</span> <span class="mf">0.0051534052</span><span class="p">,</span> <span class="mf">0.0038445233</span><span class="p">,</span> <span class="mf">0.0028703909</span><span class="p">],</span>
+          <span class="p">]</span>
+      <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">ysamples</span><span class="p">)</span>
+      <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">15.</span><span class="p">,</span> <span class="mf">16.</span><span class="p">,</span> <span class="mf">17.</span><span class="p">,</span> <span class="mf">18.</span><span class="p">,</span> <span class="mf">19.</span><span class="p">])</span>
+      <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
+      <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;0.75(5)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="s1">&#39;0.30(3)&#39;</span><span class="p">)</span>
+      <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">0.02</span><span class="p">)</span>
+      <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
+      <span class="k">for</span> <span class="n">sfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">simulated_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">add_priornoise</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+          <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="mi">30</span> <span class="o">*</span> <span class="s1">&#39;=&#39;</span> <span class="o">+</span> <span class="s1">&#39; simulated fit&#39;</span><span class="p">)</span>
+          <span class="k">print</span><span class="p">(</span><span class="n">sfit</span><span class="p">)</span>
+          <span class="k">print</span><span class="p">(</span><span class="s1">&#39;compare p, pexact:&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">fmt_chi2</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">chi2</span><span class="p">(</span><span class="n">sfit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span><span class="p">)))</span>
+
+  <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+      <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running this code gives the following output. The simulated fits typically
+have larger <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>, as expected, but give good fits that agree well with
+results from the original fit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.39</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.85</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">51.35</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74364</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.750</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">b</span>   <span class="mf">0.292427</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.300</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">0.02</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+
+<span class="o">==============================</span> <span class="n">simulated</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.69</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">50.797</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74354</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.744</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">b</span>   <span class="mf">0.292413</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.308</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">compare</span> <span class="n">p</span><span class="p">,</span> <span class="n">pexact</span><span class="p">:</span> <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.039</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.96</span>
+
+<span class="o">==============================</span> <span class="n">simulated</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.7</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.13</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">48.031</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74361</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.724</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">b</span>   <span class="mf">0.292425</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.329</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">compare</span> <span class="n">p</span><span class="p">,</span> <span class="n">pexact</span><span class="p">:</span> <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.00054</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="o">==============================</span> <span class="n">simulated</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.19</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.97</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">51.86</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74536</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.743</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">b</span>   <span class="mf">0.292560</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.279</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">compare</span> <span class="n">p</span><span class="p">,</span> <span class="n">pexact</span><span class="p">:</span> <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">2.9</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.056</span>
+
+<span class="o">==============================</span> <span class="n">simulated</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.33</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">49.474</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74252</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.688</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+              <span class="n">b</span>   <span class="mf">0.292326</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.284</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">compare</span> <span class="n">p</span><span class="p">,</span> <span class="n">pexact</span><span class="p">:</span> <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">1.4</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.24</span>
+
+<span class="o">==============================</span> <span class="n">simulated</span> <span class="n">fit</span>
+<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.86</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.51</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">50.196</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+              <span class="n">a</span>    <span class="mf">0.74340</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.698</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">b</span>   <span class="mf">0.292398</span> <span class="p">(</span><span class="mi">60</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.327</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">compare</span> <span class="n">p</span><span class="p">,</span> <span class="n">pexact</span><span class="p">:</span> <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.15</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.86</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -779,6 +920,7 @@ deviations, and correlations.</p>
 <li><a class="reference internal" href="#bootstrap-error-analysis-non-gaussian-output">Bootstrap Error Analysis; Non-Gaussian Output</a></li>
 <li><a class="reference internal" href="#bayesian-integrals">Bayesian Integrals</a></li>
 <li><a class="reference internal" href="#testing-fits-with-simulated-data">Testing Fits with Simulated Data</a></li>
+<li><a class="reference internal" href="#goodness-of-fit">Goodness of Fit</a></li>
 </ul>
 </li>
 </ul>
@@ -827,7 +969,7 @@ deviations, and correlations.</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.1.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -24,7 +24,7 @@ def main():
 
 def do_fit(svdcut=None, do_plot=False):
     if svdcut is None:
-        svdcut = lsqfit.nonlinear_fit.set_defaults()['svdcut']
+        svdcut = lsqfit.nonlinear_fit.set()['svdcut']
         sys.stdout = tee.tee(sys_stdout, open('eg5a.out', 'w'))
         default_svd = True
     else:
