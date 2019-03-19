@@ -1,0 +1,75 @@
+Least Square Fit:
+  chi2/dof [dof] = 0.39 [5]    Q = 0.85    logGBF = 51.35
+
+Parameters:
+              a    0.74364 (72)      [ 0.750 (50) ]  
+              b   0.292427 (60)      [ 0.300 (30) ]  
+
+Settings:
+  svdcut/n = 0.02/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+
+
+============================== simulated fit
+Least Square Fit:
+  chi2/dof [dof] = 0.61 [5]    Q = 0.69    logGBF = 50.797
+
+Parameters:
+              a    0.74354 (72)      [ 0.744 (50) ]  
+              b   0.292413 (60)      [ 0.308 (30) ]  
+
+Settings:
+  svdcut/n = 0/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+compare p, pexact: chi2/dof = 0.039 [2]    Q = 0.96
+
+============================== simulated fit
+Least Square Fit:
+  chi2/dof [dof] = 1.7 [5]    Q = 0.13    logGBF = 48.031
+
+Parameters:
+              a    0.74361 (72)      [ 0.724 (50) ]  
+              b   0.292425 (60)      [ 0.329 (30) ]  *
+
+Settings:
+  svdcut/n = 0/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+
+compare p, pexact: chi2/dof = 0.00054 [2]    Q = 1
+
+============================== simulated fit
+Least Square Fit:
+  chi2/dof [dof] = 0.19 [5]    Q = 0.97    logGBF = 51.86
+
+Parameters:
+              a    0.74536 (72)      [ 0.743 (50) ]  
+              b   0.292560 (60)      [ 0.279 (30) ]  
+
+Settings:
+  svdcut/n = 0/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+compare p, pexact: chi2/dof = 2.9 [2]    Q = 0.056
+
+============================== simulated fit
+Least Square Fit:
+  chi2/dof [dof] = 1.1 [5]    Q = 0.33    logGBF = 49.474
+
+Parameters:
+              a    0.74252 (72)      [ 0.688 (50) ]  *
+              b   0.292326 (60)      [ 0.284 (30) ]  
+
+Settings:
+  svdcut/n = 0/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+compare p, pexact: chi2/dof = 1.4 [2]    Q = 0.24
+
+============================== simulated fit
+Least Square Fit:
+  chi2/dof [dof] = 0.86 [5]    Q = 0.51    logGBF = 50.196
+
+Parameters:
+              a    0.74340 (72)      [ 0.698 (50) ]  
+              b   0.292398 (60)      [ 0.327 (30) ]  *
+
+Settings:
+  svdcut/n = 0/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
+
+compare p, pexact: chi2/dof = 0.15 [2]    Q = 0.86

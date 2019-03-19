@@ -1,0 +1,10 @@
+Least Square Fit:
+  chi2/dof [dof] = 0.39 [5]    Q = 0.86    logGBF = 51.343
+
+Parameters:
+              a    0.74364 (72)      [ 0.750 (50) ]  
+              b   0.292427 (60)      [ 0.300 (30) ]  
+
+Settings:
+  svdcut/n = 0.02/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
+

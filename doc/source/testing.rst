@@ -530,9 +530,10 @@ deviations, and correlations.
 
 Goodness of Fit
 ------------------
-Conventionally we expect ``chi**2/N``, where ``N`` is the
-number of degrees of freedom, is of order ``1 ± sqrt(2/N)``. This is based
-on the assumption that fluctuations in the mean values of the data are
+Conventionally we expect ``chi**2/N`` to be of order ``1 ± sqrt(2/N)``,
+where ``N`` is the
+number of degrees of freedom.  This follows from
+the assumption that fluctuations in the mean values of the data are
 of order the uncertainties in the data. More precisely the means are
 assumed to be random samples drawn from a Gaussian distribution whose
 means are given by the best-fit function and whose covariance is that

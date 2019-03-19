@@ -14,7 +14,7 @@
 
 .. Formal Background
 .. ----------------------
-.. The formal  structure structure of a least-squares problem involves
+.. The formal structure structure of a least-squares problem involves
 .. fitting input data :math:`y_i` with functions :math:`f_i(p)` by adjusting
 .. fit parameters :math:`p_a` to minimize
 

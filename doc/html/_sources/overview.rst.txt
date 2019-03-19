@@ -1645,6 +1645,10 @@ obtain the following fit (without an SVD cut)
 which looks quite similar to the fit above, using the approximate correlation
 matrix (with an SVD cut).
 
+:class:`lsqfit.nonlinear_fit` will apply an SVD cut if keyword parameter
+``svdcut`` is set. Another way to implement SVD cuts is using
+:meth:`gvar.svd` to modify the fit data before it is fit.
+
 
 ``y`` has Unknown Errors
 -------------------------
