@@ -627,7 +627,7 @@ class MultiFitterModel(object):
         raise NotImplementedError("buildprior not defined")
 
 
-class chained_lsqfit(lsqfit.nonlinear_fit):
+class chained_nonlinear_fit(lsqfit.nonlinear_fit):
     " Fit results from chained fit. "
     def __init__(self, p, chained_fits, multifitter, prior):
         if len(chained_fits) <= 0:
@@ -740,7 +740,7 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
                 Q, logGBF, f.svdn,
                 '{}/{:.1f}'.format(f.nit, f.time), k
                 )
-        ans = super(chained_lsqfit, self).format(*args, **kargs)
+        ans = super(chained_nonlinear_fit, self).format(*args, **kargs)
         fmt = '{:>16}{:>8}{:>11}  {:>5}   {:>10}  {:<}'
         header = fmt.format(
             'chi2/dof [dof]', 'Q', 'logGBF', 'svd-n', 'itns/time','fit            '
@@ -756,7 +756,7 @@ class chained_lsqfit(lsqfit.nonlinear_fit):
         return ans
 
     def formatall(self, *args, **kargs):
-        " Add-on method for fits returned by chained_lsqfit. "
+        " Add-on method for fits returned by chained_nonlinear_fit. "
         ans = ''
         for x in self.chained_fits:
             ans += 10 * '=' + ' ' + str(x) + '\n'
@@ -1071,7 +1071,8 @@ class MultiFitter(object):
         return self.fit
 
     def chained_lsqfit(
-        self, data=None, pdata=None, prior=None, p0=None, **kargs
+        self, data=None, pdata=None, prior=None, p0=None, add_priornoise=None,
+        **kargs
         ):
         """ Compute chained least-squares fit of models to data.
 
@@ -1158,6 +1159,9 @@ class MultiFitter(object):
         """
         if prior is None:
             raise ValueError('no prior')
+        if add_priornoise:
+            # intercept at top level so same treatment for all fits
+            prior = prior + (gvar.sample(prior) - gvar.mean(prior))
         kargs, oldargs = self.set(**kargs)
 
         # parameters for bootstrap (see below)
@@ -1222,7 +1226,7 @@ class MultiFitter(object):
             prior = fit.p
 
         # build output class
-        self.fit = chained_lsqfit(
+        self.fit = chained_nonlinear_fit(
             p=prior, chained_fits=chained_fits,
             multifitter=self, prior=fitter_args_kargs[1]['prior'],
             )

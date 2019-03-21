@@ -45,7 +45,7 @@ def main():
     x = np.array([15., 16., 17., 18., 19.])
     def f(p):
         return p['a'] * gv.exp(- p['b'] * x)
-    prior = dict(a='0.75(5)', b='0.30(3)')
+    prior = gv.gvar(dict(a='0.75(5)', b='0.30(3)'))
     sys_stdout = sys.stdout
 
     sys.stdout = tee.tee(sys_stdout, open('eg10a.out', 'w'))
@@ -68,10 +68,12 @@ def main():
     sys.stdout = tee.tee(sys_stdout, open('eg10e.out', 'w'))
     fit = lsqfit.nonlinear_fit(data=y, fcn=f, prior=prior, svdcut=0.02)
     print(fit)
-    for sfit in fit.simulated_fit_iter(n=5, add_priornoise=True):
-        print('\n' + 30 * '=' + ' simulated fit')
-        print(sfit)
-        print('compare p, pexact:', gv.fmt_chi2(gv.chi2(sfit.p, fit.pmean)))
+    print('\n================ Add noise to prior, SVD')
+    noisyfit = lsqfit.nonlinear_fit(
+        data=y, prior=prior, fcn=f, svdcut=0.02,
+        add_svdnoise=True, add_priornoise=True
+        )
+    print(noisyfit.format(True))
 
 def exact(nsample):
     y = gv.gvar(

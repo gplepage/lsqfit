@@ -250,9 +250,14 @@ dictionary, its arguments are passed as keyword arguments to
 <code class="docutils literal notranslate"><span class="pre">gvar.svd</span></code>, which is used to apply the  SVD cut: eg,
 <code class="docutils literal notranslate"><span class="pre">svdcut=dict(svdcut=1e-4,</span> <span class="pre">add_offsets=True)</span></code>. Default is 1e-12.</li>
 <li><strong>add_svdnoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>, noise is added to
-the data corresponding to the additional uncertainties
+the data means corresponding to the additional uncertainties
 introduced when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>. This is useful for testing the
 quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when large SVD cuts are
+employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
+<li><strong>add_priornoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code>, noise is added to
+the prior means corresponding to the uncertainties
+in the prior. This is useful for testing the
+quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when broad priors are
 employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
 <li><strong>udata</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – Same as <code class="docutils literal notranslate"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
 between different pieces of data.  This speeds up the  fit,
@@ -1575,7 +1580,7 @@ fitter.</li>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitter.chained_lsqfit">
-<code class="descname">chained_lsqfit</code><span class="sig-paren">(</span><em>data=None</em>, <em>pdata=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
+<code class="descname">chained_lsqfit</code><span class="sig-paren">(</span><em>data=None</em>, <em>pdata=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>add_priornoise=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chained least-squares fit of models to data.</p>
 <p>In a chained fit to models <code class="docutils literal notranslate"><span class="pre">[s1,</span> <span class="pre">s2,</span> <span class="pre">...]</span></code>, the models are fit one
 at a time, with the fit output from one being fed into the prior for

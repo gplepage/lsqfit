@@ -459,8 +459,9 @@ same distribution, assigning them the same covariance matrix as the
 original data. The simulated data are fit
 using the same priors and fitter settings
 as in the original fit, and the results (an :class:`lsqfit.nonlinear_fit`
-object) are returned by the iterator. Fit results from simulated
-data should agree, within errors, with the original fit results since the
+object) are returned by the iterator. The fits with simulated data should
+have good ``chi**2`` values, and the results from these fits
+should agree, within errors, with the original fit results since the
 simulated data are from the same distribution as the original data. There
 is a problem with the fitting protocol if this is not the case most of the
 time.
@@ -530,41 +531,51 @@ deviations, and correlations.
 
 Goodness of Fit
 ------------------
-Conventionally we expect ``chi**2/N`` to be of order ``1 ± sqrt(2/N)``,
-where ``N`` is the
-number of degrees of freedom.  This follows from
-the assumption that fluctuations in the mean values of the data are
-of order the uncertainties in the data. More precisely the means are
+The quality of a fit is often judged by the ``chi**2/N`` where ``N`` is the
+number of degrees of freedom.
+Conventionally we expect ``chi**2/N`` to be of order ``1 ± sqrt(2/N)``
+since fluctuations in the mean values of the data are of order the
+uncertainties in the data. More precisely the means are
 assumed to be random samples drawn from a Gaussian distribution whose
-means are given by the best-fit function and whose covariance is that
-assigned to the data. This is not necessarily the case for Bayesian
-fits, where ``chi**2/N`` can be substantially smaller than |~| 1 for
-good fits.
+means are given by the best-fit function and whose covariance comes from
+the data. There are two situations where this measure of goodness-of-fit
+becomes unreliable.
 
-The interpretation of ``chi**2`` in Bayesian fits is complicated by
-two factors. The first complication, due to SVD cuts, is discussed in
-:ref:`svd-cuts-statistics`: an SVD cut increases the uncertainties
+The first situation is when there is a large SVD cut on the data.
+As discussed in :ref:`svd-cuts-statistics`, an SVD cut increases
+the uncertainties
 in the data without increasing the random fluctuations in the
-data's means (unless ``add_svdnoise=True``). The second complication
-is from priors, whose means are often not random samples at all. In such
-cases, the contributions of the priors to ``chi**2`` will be significantly
-smaller than |~| 1, particularly if the priors are broad.
+data means (unless ``add_svdnoise=True``). As a result contributions
+from the parts of the ``chi**2`` function affected by the SVD cut
+tend to be much smaller than naively expected, artificially
+pulling ``chi**2/N`` down.
+
+The second situation that compromises ``chi**2`` is when some or all of
+the priors used in a fit are broad --- that is, when a fit result for
+a paramter has a much
+smaller uncertainty than the corresponding prior, but a mean that
+is very close close to the prior's mean. This often arises when the means
+used in the priors are not random samples (unlike the fit data), as is
+frequently the case. Again contributions to ``chi**2``
+associated with such priors tend to much smaller than naively expected,
+pulling ``chi**2`` down.
 
 These complications can conspire to make ``chi**2/N``
 signficantly less than |~| 1 when the fit is good. Of greater concern,
 they can mask evidence of a bad fit:  ``chi**2/N ≈ 1`` is *not*
-evidence of a good fit in such situations.
+necessarily evidence of a good fit in such situations.
 
-The simplest way to deal with these complications is to test fits with
-:meth:`lsqfit.nonlinear_fit.simulated_fit_iter`, as discussed in the
-previous section. The simulated data used in these fits are generated
-after any SVD cuts are made and so take account of the cuts. Broad priors
-are handled by setting ``add_priornoise=True`` in
-:meth:`lsqfit.nonlinear_fit.simulated_fit_iter`, which replaces the means
-of the priors by random samples drawn from the prior distribution.
+A simple way to address these situations is to redo the fit while
+setting keyword parameters ``add_svdnoise=True`` and
+``add_priornoise=True``. These cause :class:`lsqfit.nonlinear_fit` to
+add extra fluctuations to the means in the data and the prior
+that are characteristic of the probability distributions associated
+with the SVD cut and the priors. These fluctuations
+should leave fit results unchanged (within errors) but increase
+``chi**2/N`` so it is of order one.
 
-To test the fit from :ref:`svd-cuts-statistics`, we modify its
-code to include simulation tests at the end (and an SVD cut)::
+To add this test to the fit from :ref:`svd-cuts-statistics`, we modify the
+code to include a second fit at the end::
 
     import numpy as np
       import gvar as gv
@@ -582,20 +593,30 @@ code to include simulation tests at the end (and an SVD cut)::
           x = np.array([15., 16., 17., 18., 19.])
           def fcn(p):
               return p['a'] * gv.exp(- p['b'] * x)
-          prior = dict(a='0.75(5)', b='0.30(3)')
+          prior = gv.gvar(dict(a='0.75(5)', b='0.30(3)')0
           fit = lsqfit.nonlinear_fit(data=y, prior=prior, fcn=fcn, svdcut=0.02)
           print(fit.format(True))
-          for sfit in fit.simulated_fit_iter(n=5, add_priornoise=True):
-              print('\n' + 30 * '=' + ' simulated fit')
-              print(sfit)
-              print('compare p, pexact:', gv.fmt_chi2(gv.chi2(sfit.p, fit.pmean)))
+
+          print('\n================ Add noise to prior, SVD')
+          noisyfit = lsqfit.nonlinear_fit(
+            data=y, prior=prior, fcn=fcn, svdcut=0.02,
+            add_svdnoise=True, add_priornoise=True,
+            )
+          print(noisyfit.format(True))
 
       if __name__ == '__main__':
           main()
 
-Running this code gives the following output. The simulated fits typically
-have larger ``chi**2``, as expected, but give good fits that agree well with
-results from the original fit:
+Running this code gives the following output:
 
 .. literalinclude:: eg10e.out
+
+The fit with extra noise has a larger ``chi**2``, as expected,
+but is still a good fit. It also agrees within errors with the
+original fit. In general, there is probably something wrong with
+the original fit (e.g., ``svdcut``
+too small, or priors inconsistent with the fit data)
+if adding noise makes ``chi**2/N`` signficantly larger than one,
+or changes the best-fit values of the parameters significantly.
+
 

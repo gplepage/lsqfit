@@ -100,6 +100,7 @@ _FITTER_DEFAULTS = dict(
     debug=False,
     maxit=1000,
     add_svdnoise=False,
+    add_priornoise=False,
     )
 
 # dictionary containing all fitters available to nonlinear_fit.
@@ -265,9 +266,15 @@ class nonlinear_fit(object):
             ``svdcut=dict(svdcut=1e-4, add_offsets=True)``. Default is 1e-12.
 
         add_svdnoise (bool): If ``add_svdnoise=True``, noise is added to
-            the data corresponding to the additional uncertainties
+            the data means corresponding to the additional uncertainties
             introduced when ``svdcut>0``. This is useful for testing the
             quality of a fit (``chi2``) when large SVD cuts are
+            employed. Default is ``False``.
+
+        add_priornoise (bool): If ``add_priornoise=True``, noise is added to
+            the prior means corresponding to the uncertainties
+            in the prior. This is useful for testing the
+            quality of a fit (``chi2``) when broad priors are
             employed. Default is ``False``.
 
         udata (dict, array or tuple):
@@ -459,7 +466,7 @@ class nonlinear_fit(object):
     def __init__(
         self, data=None, fcn=None, prior=None, p0=None,
         svdcut=False, debug=None, tol=None, maxit=None, udata=None, _fdata=None,
-        add_svdnoise=None,
+        add_svdnoise=None, add_priornoise=None,
         linear=[], fitter=None, **fitterargs
         ):
 
@@ -492,12 +499,19 @@ class nonlinear_fit(object):
             add_svdnoise = nonlinear_fit.DEFAULTS.get(
                 'add_svdnoise', _FITTER_DEFAULTS['add_svdnoise'],
                 )
+        if add_priornoise is None:
+            add_priornoise = nonlinear_fit.DEFAULTS.get(
+                'add_priornoise', _FITTER_DEFAULTS['add_priornoise'],
+                )
         if fitter is None:
             fitter = nonlinear_fit.DEFAULTS.get(
                 'fitter',  _FITTER_DEFAULTS['fitter'],
                 )
         for k in nonlinear_fit.DEFAULTS:
-            if k in ['svdcut', 'debug', 'maxit', 'fitter', 'tol', 'add_svdnoise']:
+            if k in [
+                'svdcut', 'debug', 'maxit', 'fitter', 'tol',
+                'add_svdnoise', 'add_priornoise',
+                ]:
                 continue
             if k not in fitterargs:
                 fitterargs[k] = nonlinear_fit.DEFAULTS[k]
@@ -505,7 +519,7 @@ class nonlinear_fit(object):
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
         self.svdcut = svdcut
-        self.add_svdnoise = add_svdnoise
+        self.add_svdnoise = add_svdnoise   # not needed externally
         if data is None:
             self.data = udata
             self.uncorrelated_data = True
@@ -524,6 +538,9 @@ class nonlinear_fit(object):
 
         clock = time.process_timer if hasattr(time, 'process_timer') else time.time
         cpu_time = clock()
+
+        if add_priornoise:
+            prior = prior + (_gvar.sample(prior) - _gvar.mean(prior))
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
         if _fdata is None:
@@ -1484,45 +1501,10 @@ class nonlinear_fit(object):
     # legacy name
     bootstrap_iter = bootstrapped_fit_iter # legacy
 
-    def simulated_Q(self, n=10, add_priornoise=False):
-        """ Generate robust estimate of ``Q`` using simulated fits.
-
-        The ``Q`` parameter (or *p value*) assigned to a fit is the
-        probability that a worse fit (worse ``chi**2``) could result from
-        random fluctuations in the input data. The standard estimate for ``Q``
-        given by :class:`lsqfit.nonlinear_fit` can be an overestimated if
-        there are large SVD cuts or underestimated if the priors are broad.
-
-        This method generates a more robust estimate for ``Q`` by redoing
-        the fit ``n`` times with different simulated data for each fit
-        (see :meth:`lsqfit.nonlinear_fit.simulated_data_iter`). The
-        fraction of these fits that are worse than the original fit
-        provides the estimate for ``Q``.
-
-        Args:
-            n (int or None): Maximum number of iterations (equals
-                infinity if ``None``).
-
-            add_priornoise (bool): Vary prior means if ``True``; otherwise vary only
-                the means in ``self.y`` (default).
-
-        Returns:
-            An estimate (with error bars) of the fit's ``Q``.
-        """
-        over = count = 0.
-        for f in self.simulated_fit_iter(n=n, add_priornoise=add_priornoise):
-            if f.chi2 > self.chi2:
-                over += 1.
-            count += 1.
-        p = over / count
-        if p == 0:
-            return _gvar.gvar(0., 1. / count)
-        elif p == 1:
-            return _gvar.gvar(1., 1. / count)
-        else:
-            return _gvar.gvar(p, numpy.sqrt(p * (1. - p) / count))
-
 nonlinear_fit.set(**_FITTER_DEFAULTS)
+
+
+# background methods used by nonlinear_fit:
 
 def _reformat(p, buf):
     """ Apply format of ``p`` to data in 1-d array ``buf``. """
@@ -1593,13 +1575,13 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
         fdata = _FDATA(
             mean=_gvar.mean(ans.flat),
             inv_wgts=inv_wgts,
-            svdcorrection=numpy.sum(ans.svdcorrection),
+            svdcorrection=numpy.sum(ans.svdcorrection.flat),
             logdet=ans.logdet,
             nblocks=ans.nblocks,
             svdn=ans.nmod,
             )
         del ans.nblocks
-        del ans.svdcorrection
+        # del ans.svdcorrection
         return ans, fdata
 
     if uncorrelated_data:
@@ -1803,6 +1785,9 @@ def _y_fcn_match(y, f):
                 _y_fcn_match.msg = "key mismatch: " + str(k)
                 return False
     return True
+
+
+# Additional classes:
 
 class BayesPDF(_gvar.PDF):
     """ Bayesian probability density function corresponding to :class:`nonlinear_fit` ``fit``.

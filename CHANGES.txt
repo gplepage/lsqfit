@@ -2,20 +2,18 @@ Version 11.2 2019-03-18
 ==========================
 Minor update.
 
-- Improved (faster) code for nonlinear_fit.simulated_fit_iter.
-
-- New keyword argument in lsqfit.nonlinear_fit: add_svdnoise. This is
-  used as a diagnostic for SVD cuts. Also new method, simulated_Q; not
-  sure how useful it is.
+- New keyword arguments in lsqfit.nonlinear_fit: add_svdnoise, add_priornoise.
+  These are useful for evaluating fit quality. See new sections in
+  the documentation (Tutorial) on Goodness of Fit and SVD cuts.
 
 - Keyword add_priornoise replaces keyword bootstrap in
   simulated_data_iter and simulated_fit_iter. Old keyword still works,
   for legacy code. Additional discussion added to documentation
   (Tutorial) on how to evaluate goodness-of-fit using simulated_fit_iter.
 
-- Cleanup extraneous code.
+- Improved (faster) code for nonlinear_fit.simulated_fit_iter.
 
-- Additional documentation (in Tutorial) on SVD cuts.
+- Cleanup extraneous code.
 
 - Now compatible with gvar v9.1.
 

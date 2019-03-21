@@ -1359,32 +1359,6 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(err["not y","y"],0.0)
         self.assertAlmostEqual(err["not y","other prior"],0.0)
 
-    def test_simulated_Q(self):
-        " fit.simulated_Q() "
-
-        prior = gv.gvar(dict(a='1.0(1)', b='1.0(1)'))
-        p0 = gv.mean(prior)
-        def fcn(p):
-           x = np.arange(0, 1.1, 0.2)
-           return p['a'] * np.cos(-x * p['b'])
-        y = gv.make_fake_data(fcn(prior), fac=1.)
-
-        # with prior: expect Qmax >= Q >= Qmin
-        fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, p0=p0)
-        Q = fit.simulated_Q(n=50)
-        Qmax = lsqfit.gammaQ(fit.dof/2., fit.chi2/2.)
-        Qmin = lsqfit.gammaQ((fit.dof - p0.size)/2., fit.chi2/2.)
-        if Q > Qmax:
-            self.assertGreater(Q.sdev * 3, Q.mean - Qmax)
-        elif Q < Qmin:
-            self.assertGreater(Q.sdev * 3, Qmin - Q.mean)
-
-        # without prior: expect Q = fit.Q
-        prior = None
-        fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn, p0=p0)
-        Q = fit.simulated_Q(n=50)
-        self.assertGreater(Q.sdev * 3, abs(Q.mean - fit.Q))
-
     def test_fit_iter(self):
         " fit.simulated_fit_iter "
         y = gv.gvar(['2.1(1.2)', '1.7(5.2)', '2.2(3)', '3.2(1.5)', '1.9(2)'])
