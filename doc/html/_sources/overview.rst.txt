@@ -14,7 +14,7 @@ Overview and Tutorial
 Introduction
 --------------------
 
-The  :mod:`lsqfit` module is designed to facilitate least-squares fitting of
+The   :mod:`lsqfit` module is designed to facilitate least-squares fitting of
 noisy data by multi-dimensional, nonlinear functions of arbitrarily many
 parameters, each with a (Bayesian) prior.  :mod:`lsqfit` makes heavy use of
 another module, :mod:`gvar` (distributed separately), which provides tools
