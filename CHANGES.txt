@@ -4,12 +4,12 @@ Minor update.
 
 - New keyword arguments in lsqfit.nonlinear_fit: add_svdnoise, add_priornoise.
   These are useful for evaluating fit quality. See new sections in
-  the documentation (Tutorial) on Goodness of Fit and SVD cuts.
+  the documentation (Tutorial) on Goodness of Fit and SVD cuts (with
+  insufficient statistics).
 
 - Keyword add_priornoise replaces keyword bootstrap in
   simulated_data_iter and simulated_fit_iter. Old keyword still works,
-  for legacy code. Additional discussion added to documentation
-  (Tutorial) on how to evaluate goodness-of-fit using simulated_fit_iter.
+  for legacy code.
 
 - Improved (faster) code for nonlinear_fit.simulated_fit_iter.
 

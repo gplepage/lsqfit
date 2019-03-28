@@ -64,6 +64,7 @@ def main():
     yex = gv.gvar(gv.mean(y), gv.evalcov(exact(1.)))
     fit = lsqfit.nonlinear_fit(data=yex, fcn=f, prior=prior, svdcut=0)
     print(fit)
+    # fit.plot_residuals().show()
 
     sys.stdout = tee.tee(sys_stdout, open('eg10e.out', 'w'))
     fit = lsqfit.nonlinear_fit(data=y, fcn=f, prior=prior, svdcut=0.02)

@@ -6,7 +6,7 @@ multi-dimensional, nonlinear functions of arbitrarily many parameters.
 ``lsqfit`` supports Bayesian priors for the fit parameters, with arbitrarily
 complicated multidimensional Gaussian distributions. A tutorial on fitting is
 included in the documentation; documentation is in the ``doc/``
-subdirectory — see ``doc/html/index.html`` or <https://lsqfit.readthedocs.io>.
+subdirectory: see ``doc/html/index.html`` or <https://lsqfit.readthedocs.io>.
 
 The fitter uses automatic differentiation to compute gradients of the fit
 function. This greatly simplifies coding of the fit function since only the
@@ -35,4 +35,4 @@ the ``major`` version number, where version numbers have the form
 
 
 | Created by G. Peter Lepage (Cornell University) 2008
-| Copyright (c) 2008-2018 G. Peter Lepage
+| Copyright (c) 2008-2019 G. Peter Lepage

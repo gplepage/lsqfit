@@ -151,8 +151,6 @@ nonlinear_fit Objects
 
    .. automethod:: simulated_data_iter(n=None, pexact=None, add_priornoise=False)
 
-   .. automethod:: simulated_Q(n=10, add_priornoise=False)
-
    .. automethod:: bootstrapped_fit_iter(n=None, datalist=None)
 
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)

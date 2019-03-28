@@ -406,6 +406,10 @@ class nonlinear_fit(object):
             by the standard deviations (or covariances) used in the fit
             (leading to an unusually small ``chi**2``).
 
+        residuals: An array containing the fit residuals normalized by the
+            corresponding standard deviations. This includes contributions
+            from both the fit data and the prior: ``chi2 = sum(fit.resid**2)``.
+
         stopping_criterion (int): Criterion used to
             stop fit:
 
@@ -688,7 +692,7 @@ class nonlinear_fit(object):
             self.psdev = _gvar.sdev(self.palt)
             self.error = None
             self.cov = _gvar.evalcov(self.palt.flat)
-            self.chi2 = numpy.sum(self._chiv(self.pmean.flat)**2)
+            self.chi2 = numpy.sum(self._chiv(self.pmean.flat) ** 2)
             self.Q = gammaQ(self.dof/2., self.chi2/2.)
             self.nit = 0
             self.tol = tol
@@ -696,6 +700,8 @@ class nonlinear_fit(object):
             self.description = ''
             self.fitter_results = None
             self._p = None          # lazy evaluation
+        self.residuals = self._chiv(self.palt.flat[:])
+
 
         # compute logGBF
         if self.prior is None:
@@ -865,6 +871,34 @@ class nonlinear_fit(object):
     fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
+
+    def plot_residuals(self, plot=None):
+        """ Plot normalized fit residuals.
+
+        The sum of the squares of the residuals equals ``self.chi2``.
+        Individual residuals should be distributed about one, in
+        a Gaussian distribution.
+
+        Args:
+            plot: :mod:`matplotlib` plotter. If ``None``, uses
+                ``matplotlib.pyplot`.
+
+        Returns:
+            Plotter ``plot``.
+        """
+        if plot is None:
+            import matplotlib.pyplot as plot
+        x = numpy.arange(1, len(self.residuals) + 1)
+        y = _gvar.mean(self.residuals)
+        yerr = _gvar.sdev(self.residuals)
+        plot.errorbar(x=x, y=y, yerr=yerr, fmt='o', color='b')
+        plot.ylabel('normalized residuals')
+        xr = [x[0], x[-1]]
+        plot.plot([x[0], x[-1]], [0, 0], 'r-')
+        plot.fill_between(
+            x=xr, y1=[-1,-1], y2=[1,1], color='r', alpha=0.075
+            )
+        return plot
 
     def format(self, maxline=0, pstyle='v', nline=None, extend=True):
         """ Formats fit output details into a string for printing.

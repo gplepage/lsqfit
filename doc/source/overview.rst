@@ -1633,7 +1633,8 @@ fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
 
 .. literalinclude:: eg10c.out
 
-Adding SVD noise makes ``chi**2`` behave more conventionally.
+The fit is still good even with the additional noise,
+suggesting that the SVD cut is well chosen.
 
 The data samples above are from a simulation,
 so we know the exact correlation matrix

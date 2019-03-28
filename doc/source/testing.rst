@@ -531,13 +531,15 @@ deviations, and correlations.
 
 Goodness of Fit
 ------------------
-The quality of a fit is often judged by the ``chi**2/N`` where ``N`` is the
+The quality of a fit is often judged by the value of
+``chi**2/N``, where ``N`` is the
 number of degrees of freedom.
 Conventionally we expect ``chi**2/N`` to be of order ``1 ± sqrt(2/N)``
 since fluctuations in the mean values of the data are of order the
 uncertainties in the data. More precisely the means are
 assumed to be random samples drawn from a Gaussian distribution whose
-means are given by the best-fit function and whose covariance comes from
+means are given by the best-fit function and whose covariance matrix
+comes from
 the data. There are two situations where this measure of goodness-of-fit
 becomes unreliable.
 
@@ -554,10 +556,11 @@ The second situation that compromises ``chi**2`` is when some or all of
 the priors used in a fit are broad --- that is, when a fit result for
 a paramter has a much
 smaller uncertainty than the corresponding prior, but a mean that
-is very close close to the prior's mean. This often arises when the means
-used in the priors are not random samples (unlike the fit data), as is
+is artificially
+close close to the prior's mean. This often arises when the means
+used in the priors are not random samples (unlike the fit data), which is
 frequently the case. Again contributions to ``chi**2``
-associated with such priors tend to much smaller than naively expected,
+associated with such priors tend to be much smaller than naively expected,
 pulling ``chi**2`` down.
 
 These complications can conspire to make ``chi**2/N``
@@ -565,12 +568,17 @@ signficantly less than |~| 1 when the fit is good. Of greater concern,
 they can mask evidence of a bad fit:  ``chi**2/N ≈ 1`` is *not*
 necessarily evidence of a good fit in such situations.
 
-A simple way to address these situations is to redo the fit while
-setting keyword parameters ``add_svdnoise=True`` and
+A simple way to address these situations is to redo the fit with
+keyword parameters ``add_svdnoise=True`` and
 ``add_priornoise=True``. These cause :class:`lsqfit.nonlinear_fit` to
-add extra fluctuations to the means in the data and the prior
+add extra fluctuations to the means in the prior and the data
 that are characteristic of the probability distributions associated
-with the SVD cut and the priors. These fluctuations
+with the priors and the SVD cut, respectively::
+
+    prior =>  prior + (gv.sample(prior) - gv.mean(prior))
+        y =>  y + gv.sample(y.svdcorrection)
+
+These fluctuations
 should leave fit results unchanged (within errors) but increase
 ``chi**2/N`` so it is of order one.
 
@@ -612,7 +620,9 @@ Running this code gives the following output:
 .. literalinclude:: eg10e.out
 
 The fit with extra noise has a larger ``chi**2``, as expected,
-but is still a good fit. It also agrees within errors with the
+but is still a good fit. It also
+gives fit parameters that agree within errors
+with those from the
 original fit. In general, there is probably something wrong with
 the original fit (e.g., ``svdcut``
 too small, or priors inconsistent with the fit data)
