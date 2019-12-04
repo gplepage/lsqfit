@@ -4,7 +4,7 @@ from __future__ import print_function
 """
 Code for testing MultiFitter
 """
-# Copyright (c) 2018 G. Peter Lepage.
+# Copyright (c) 2018-19 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,7 +56,11 @@ def main():
         ]))
 
     # reconfigure models and make fitter
-    models = [[tuple(models[0:2]), models[2]], dict(mopt=True), models[3]]
+    models = [
+        [tuple(models[0:2]), dict(tol=1e-5), models[2]],
+        dict(tol=1e-8, mopt=True),
+        models[3]
+        ]
     fitter = lsqfit.MultiFitter(models=models)
     # simultaneous fit
     print(30 * '-', 'lsqfit')

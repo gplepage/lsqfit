@@ -669,6 +669,7 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.add_svdnoise = False
         self.fitter = 'chained fit'
         self.description = ''
+        self.stopping_criterion = None
         for k in self.chained_fits:
             self.svdcorrection += self.chained_fits[k].svdcorrection
             if k[:5] == 'wavg(' and k[-1] == ')':
@@ -692,6 +693,8 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
             logGBF = self.chained_fits[k].logGBF
             if logGBF is not None:
                 self.logGBF += logGBF
+            if self.chained_fits[k].stopping_criterion == 0:
+                self.stopping_criterion = 0
         if len(self.error) == 0:
             self.error = None
         self.tol = tuple(self.tol)
@@ -700,7 +703,6 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
             self.logGBF = None
 
         # others
-        self.stopping_criterion = None
         self.cov = None
         self.fitter_results = None
         self.p0 = None
@@ -802,7 +804,7 @@ class MultiFitter(object):
             get unwieldy when lots of models are involved. When ``fitname``
             is not ``None`` (default), each default name ``dname`` is
             replaced by ``fitname(dname)`` which should return a string.
-        wavg_kargs (float): Keyword arguments for :meth:`lsqfit.wavg` when
+        wavg_kargs (dict): Keyword arguments for :meth:`lsqfit.wavg` when
             used to combine results from parallel sub-fits in a chained fit.
         fitterargs (dict): Additional arguments for the
             :class:`lsqfit.nonlinear_fit` object used to do the fits.
@@ -1092,13 +1094,14 @@ class MultiFitter(object):
                 are useful for closely related models.
 
             3) A list ``[p1, p2, p3 ...]`` where each ``pn`` is either
-                a model or a tuple of models (see #2). The ``pn`` are fit
-                separately: the fit output from one fit is *not* fed into the
-                prior of the next (i.e., the fits are effectively in
-                parallel). Results from the separate fits are averaged at the
-                end to provide a single composite result for the collection of
-                fits. Parallel fits are effective (and fast) when the
-                different fits have few or no fit parameters in common.
+                a model, a tuple of models (see #2), or a dictionary (see #3).
+                The ``pn`` are fit separately: the fit output from one fit is
+                *not* fed into the prior of the next (i.e., the fits are
+                effectively in parallel). Results from the separate fits are
+                averaged at the end to provide a single composite result for
+                the collection of fits. Parallel fits are effective (and fast)
+                when the different fits have few or no fit parameters in
+                common.
 
             4) A dictionary that (temporarily) resets default values for
                 fitter keywords. The new values, specified in the dictionary,
@@ -1210,7 +1213,8 @@ class MultiFitter(object):
             elif tasktype == 'wavg':
                     nlist = all_fnames[-taskdata:]
                     plist = [chained_fits[k].p for k in nlist]
-                    fit = lsqfit.wavg(plist, **self.wavg_kargs).fit
+                    wavg_kargs = kargs.get('wavg_kargs', self.wavg_kargs)
+                    fit = lsqfit.wavg(plist, **wavg_kargs).fit
                     fname = self.fitname('wavg({})'.format(','.join(nlist)))
                     all_fnames.append(fname)
                     chained_fits[fname] = fit
@@ -1220,7 +1224,8 @@ class MultiFitter(object):
                 raise RuntimeError('unknown task: ' + tasktype)
 
         if self.fast and self.wavg_all:
-            fit = lsqfit.wavg(all_fitp, **self.wavg_kargs).fit
+            wavg_kargs = kargs.get('wavg_kargs', self.wavg_kargs)
+            fit = lsqfit.wavg(all_fitp, **wavg_kargs).fit
             fname = self.fitname('wavg(all)')
             chained_fits[fname] = fit
             prior = fit.p
@@ -1277,6 +1282,8 @@ class MultiFitter(object):
                         tasklist += [('fit', [sm])]
                     elif isinstance(sm, tuple):
                         tasklist += [('fit', list(sm))]
+                    elif hasattr(sm, 'keys'):
+                        tasklist += [('update-kargs', sm)]
                     else:
                         raise ValueError(
                             'type {} not allowed in sublists '.format(

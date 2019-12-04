@@ -3,10 +3,7 @@ build/
 __pycache__/
 examples/*.p
 examples/*.tmp
-examples/*.1.0
-examples/*.1.1
-examples/*.1.2
-examples/*.1.3
+examples/mpi-*/
 MANIFEST
 dist/
 doc/source/_build/

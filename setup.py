@@ -1,6 +1,6 @@
 """
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-18 G. Peter Lepage.
+Copyright (c) 2011-19 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-LSQFIT_VERSION = '11.2'
+LSQFIT_VERSION = '11.2.1'
 
 from distutils.core import setup
 from distutils.extension import Extension
@@ -135,6 +135,7 @@ setup_args = dict(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Cython',
         'Topic :: Scientific/Engineering'

@@ -1,4 +1,4 @@
-# Copyright (c) 2012-2018 G. Peter Lepage.
+# Copyright (c) 2012-2019 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@ run:
 	$(PYTHON) bayes.py > bayes.tmp
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 	# mpi tests
-	- mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py
-	- diff -w -I svdcut -I fitter mpi-bayes.1.0 mpi-bayes.1.1
-	- diff -w -I svdcut -I fitter mpi-bayes.1.0 bayes.out
+	- mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py > mpi-bayes.tmp
+	- diff -w -I svdcut -I fitter bayes.out mpi-bayes/1/rank.0/stdout
+	- diff -w -I svdcut -I fitter bayes.out mpi-bayes/1/rank.1/stdout
 
 time:
 	time $(MAKE) _time

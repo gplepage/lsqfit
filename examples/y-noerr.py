@@ -53,7 +53,7 @@ def main():
 def fcn(x,p):
     a = p['a']       # array of a[i]s
     E = p['E']       # array of E[i]s
-    return np.sum(ai * np.exp(-Ei*x) for ai, Ei in zip(a, E))
+    return sum(ai * np.exp(-Ei*x) for ai, Ei in zip(a, E))
 
 def make_prior(nexp):
     prior = gv.BufferDict()

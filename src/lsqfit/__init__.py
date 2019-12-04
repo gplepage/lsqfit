@@ -42,8 +42,8 @@ minimized.
 The best-fit values for the parameters are recovered after fitting
 using, for example, ``p=fit.p``. Then the ``p[k]`` are |GVar|\s or
 arrays of |GVar|\s that give best-fit estimates and fit uncertainties
-in those estimates. The ``print(fit)`` statement prints a summary of
-the fit results.
+in those estimates (as well as the correlations between them).
+The ``print(fit)`` statement prints a summary of the fit results.
 
 The dependent variable ``y`` above could be an array instead of a
 dictionary, which is less flexible in general but possibly more
@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2018 G. Peter Lepage.
+# Copyright (c) 2008-2019 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -470,7 +470,7 @@ class nonlinear_fit(object):
     def __init__(
         self, data=None, fcn=None, prior=None, p0=None,
         svdcut=False, debug=None, tol=None, maxit=None, udata=None, _fdata=None,
-        add_svdnoise=None, add_priornoise=None,
+        add_svdnoise=None, add_priornoise=None, add_noise=None,
         linear=[], fitter=None, **fitterargs
         ):
 
@@ -499,6 +499,13 @@ class nonlinear_fit(object):
             maxit = nonlinear_fit.DEFAULTS.get(
                 'maxit', _FITTER_DEFAULTS['maxit'],
                 )
+        if add_noise is True and add_svdnoise is None and add_priornoise is None:
+        # add_noise (bool): Setting ``add_noise=True`` causes
+        #     ``add_svdnoise=add_priornoise=True`` (whether or not they
+        #     have been separately specified). Otherwise ``add_noise`` is
+        #     ignored.
+            add_svdnoise = True
+            add_priornoise = True
         if add_svdnoise is None:
             add_svdnoise = nonlinear_fit.DEFAULTS.get(
                 'add_svdnoise', _FITTER_DEFAULTS['add_svdnoise'],
@@ -977,7 +984,10 @@ class nonlinear_fit(object):
             """
             def nstar(v1, v2):
                 sdev = max(v1.sdev, v2.sdev)
-                nstar = int(abs(v1.mean - v2.mean) / sdev)
+                if sdev == 0:
+                    nstar = 5
+                else:
+                    nstar = int(abs(v1.mean - v2.mean) / sdev)
                 if nstar > 5:
                     nstar = 5
                 elif nstar < 1:

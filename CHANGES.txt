@@ -1,3 +1,19 @@
+Version 11.3 2019-12-04
+======================
+This is another very minor update: a few tweaks, a bug fix, and a small feature update to 
+Multifitter.
+
+- Minor tweak to how the stopping condition is reported.
+
+- Minor tweak to *** labeling in nonlinear_fit.format().
+
+- Minor bug fix in Multifitter (fixes wavg_kargs). Also now allows dictionary
+  entries in lists describing parallel fits. 
+
+- Documentation tweaks.
+
+- Updates mpi examples for changes in mpirun.
+
 Version 11.2 2019-03-18
 ==========================
 Minor update.
