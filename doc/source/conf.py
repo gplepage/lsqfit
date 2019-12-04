@@ -29,7 +29,7 @@ import lsqfit
 extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.imgmath'] # ,'rst2pdf.pdfbuilder']
 imgmath_image_format = 'png'
 imgmath_use_preview = True
-imgmath_latex_preamble = "\usepackage{arev}"
+imgmath_latex_preamble = r"\usepackage{arev}"
 imgmath_dvipng_args = ['-gamma', '0.35', '-D', '110', '-bg', 'Transparent']
 
 napoleon_google_docstring = True
@@ -56,8 +56,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'lsqfit'
-copyright = u'2009-2019, G. P. Lepage'
+project = 'lsqfit'
+copyright = '2009-2019, G. P. Lepage'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -194,8 +194,8 @@ htmlhelp_basename = 'lsqfitdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'lsqfit.tex', u'lsqfit Documentation',
-   u'G. P. Lepage', 'manual'),
+  ('index', 'lsqfit.tex', 'lsqfit Documentation',
+   'G. P. Lepage', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

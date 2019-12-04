@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.2 documentation</title>
+    <meta charset="utf-8" />
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.3 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="GSL Routines" href="gsl.html" />
@@ -40,7 +39,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -57,24 +56,24 @@
 data. In general a fit has four inputs:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>The dependent data <code class="docutils literal notranslate"><span class="pre">y</span></code> that is to be fit — typically <code class="docutils literal notranslate"><span class="pre">y</span></code>
+<li><p>The dependent data <code class="docutils literal notranslate"><span class="pre">y</span></code> that is to be fit — typically <code class="docutils literal notranslate"><span class="pre">y</span></code>
 is a Python dictionary in an <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> analysis. Its values
 <code class="docutils literal notranslate"><span class="pre">y[k]</span></code> are either <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays (any shape or dimension) of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that specify the values of the dependent variables
-and their errors.</li>
-<li>A collection <code class="docutils literal notranslate"><span class="pre">x</span></code> of independent data — <code class="docutils literal notranslate"><span class="pre">x</span></code> can have any
-structure and contain any data, or it can be omitted.</li>
-<li>A fit function <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code> whose parameters <code class="docutils literal notranslate"><span class="pre">p</span></code> are adjusted by
+and their errors.</p></li>
+<li><p>A collection <code class="docutils literal notranslate"><span class="pre">x</span></code> of independent data — <code class="docutils literal notranslate"><span class="pre">x</span></code> can have any
+structure and contain any data, or it can be omitted.</p></li>
+<li><p>A fit function <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code> whose parameters <code class="docutils literal notranslate"><span class="pre">p</span></code> are adjusted by
 the fit until <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code> equals <code class="docutils literal notranslate"><span class="pre">y</span></code> to within <code class="docutils literal notranslate"><span class="pre">y</span></code>s errors
 — parameters <cite>p`</cite> are usually specified by a dictionary whose
 values <code class="docutils literal notranslate"><span class="pre">p[k]</span></code> are individual parameters or (<code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code>)
 arrays of parameters. The fit function is assumed independent
 of <code class="docutils literal notranslate"><span class="pre">x</span></code> (that is, <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>) if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">False</span></code> (or if <code class="docutils literal notranslate"><span class="pre">x</span></code> is
-omitted from the input data).</li>
-<li>Initial estimates or <em>priors</em> for each parameter in <code class="docutils literal notranslate"><span class="pre">p</span></code>
+omitted from the input data).</p></li>
+<li><p>Initial estimates or <em>priors</em> for each parameter in <code class="docutils literal notranslate"><span class="pre">p</span></code>
 — priors are usually specified using a dictionary <code class="docutils literal notranslate"><span class="pre">prior</span></code>
 whose values <code class="docutils literal notranslate"><span class="pre">prior[k]</span></code> are <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that
-give initial estimates (values and errors) for parameters <code class="docutils literal notranslate"><span class="pre">p[k]</span></code>.</li>
+give initial estimates (values and errors) for parameters <code class="docutils literal notranslate"><span class="pre">p[k]</span></code>.</p></li>
 </ol>
 </div></blockquote>
 <p>A typical code sequence has the structure:</p>
@@ -93,8 +92,8 @@ minimized.</p>
 <p>The best-fit values for the parameters are recovered after fitting
 using, for example, <code class="docutils literal notranslate"><span class="pre">p=fit.p</span></code>. Then the <code class="docutils literal notranslate"><span class="pre">p[k]</span></code> are <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or
 arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that give best-fit estimates and fit uncertainties
-in those estimates. The <code class="docutils literal notranslate"><span class="pre">print(fit)</span></code> statement prints a summary of
-the fit results.</p>
+in those estimates (as well as the correlations between them).
+The <code class="docutils literal notranslate"><span class="pre">print(fit)</span></code> statement prints a summary of the fit results.</p>
 <p>The dependent variable <code class="docutils literal notranslate"><span class="pre">y</span></code> above could be an array instead of a
 dictionary, which is less flexible in general but possibly more
 convenient in simpler fits. Then the approximate <code class="docutils literal notranslate"><span class="pre">y</span></code> returned by fit
@@ -122,7 +121,7 @@ module for fits and, especially, error budgets.</p>
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.nonlinear_fit">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">nonlinear_fit</code><span class="sig-paren">(</span><em>data</em>, <em>fcn</em>, <em>prior=None</em>, <em>p0=None</em>, <em>svdcut=1e-12</em>, <em>add_svdnoise=False</em>, <em>add_priornoise=False</em>, <em>debug=False</em>, <em>tol=1e-8</em>, <em>maxit=1000</em>, <em>fitter='gsl_multifit'</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">nonlinear_fit</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fcn</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">svdcut=1e-12</em>, <em class="sig-param">add_svdnoise=False</em>, <em class="sig-param">add_priornoise=False</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">tol=1e-8</em>, <em class="sig-param">maxit=1000</em>, <em class="sig-param">fitter='gsl_multifit'</em>, <em class="sig-param">**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fits a (nonlinear) function <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code>
 to data <code class="docutils literal notranslate"><span class="pre">y</span></code> by varying parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>, and stores the results: for
@@ -142,52 +141,50 @@ data and prior can be recovered using <code class="docutils literal notranslate"
 is no <code class="docutils literal notranslate"><span class="pre">x</span></code>), <code class="docutils literal notranslate"><span class="pre">fit.y</span></code>, and <code class="docutils literal notranslate"><span class="pre">fit.prior</span></code>; the data and prior are
 corrected for the SVD cut, if there is one (that is, their covariance
 matrices have been modified in accordance with the SVD cut).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – <p>Data to be fit by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – <p>Data to be fit by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
 can have any of the following forms:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">y</span></code></dt>
-<dd><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">y</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
 function with the fit parameters: <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>. <code class="docutils literal notranslate"><span class="pre">y</span></code> is a
 dictionary (or array) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that encode the means and
 covariance matrix for the data that is to be fit being fit.
 The fit function must return a result having the same
-layout as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">y</span></code></dt>
-<dd><code class="docutils literal notranslate"><span class="pre">y</span></code> is a dictionary (or array) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that encode
+layout as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">y</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">y</span></code> is a dictionary (or array) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s that encode
 the means and covariance matrix for the data being fit.
 There is no independent data so the fit function depends
 only upon the fit parameters: <code class="docutils literal notranslate"><span class="pre">fit(p)</span></code>. The fit function
-must return a result having the same layout as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ycov</span></code></dt>
-<dd><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
+must return a result having the same layout as <code class="docutils literal notranslate"><span class="pre">y</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ycov</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
 function with the fit parameters: <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>. <code class="docutils literal notranslate"><span class="pre">ymean</span></code>
 is an array containing the mean values of the fit data.
 <code class="docutils literal notranslate"><span class="pre">ycov</span></code> is an array containing the covariance matrix of
 the fit data; <code class="docutils literal notranslate"><span class="pre">ycov.shape</span></code> equals <code class="docutils literal notranslate"><span class="pre">2*ymean.shape</span></code>.
 The fit function must return an array having the same
-shape as <code class="docutils literal notranslate"><span class="pre">ymean</span></code>.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ysdev</span></code></dt>
-<dd><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
+shape as <code class="docutils literal notranslate"><span class="pre">ymean</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">=</span> <span class="pre">x,</span> <span class="pre">ymean,</span> <span class="pre">ysdev</span></code></dt><dd><p><code class="docutils literal notranslate"><span class="pre">x</span></code> is the independent data that is passed to the fit
 function with the fit parameters: <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>. <code class="docutils literal notranslate"><span class="pre">ymean</span></code>
 is an array containing the mean values of the fit data.
 <code class="docutils literal notranslate"><span class="pre">ysdev</span></code> is an array containing the standard deviations of
 the fit data; <code class="docutils literal notranslate"><span class="pre">ysdev.shape</span></code> equals <code class="docutils literal notranslate"><span class="pre">ymean.shape</span></code>. The
 data are assumed to be uncorrelated. The fit function must
-return an array having the same shape as <code class="docutils literal notranslate"><span class="pre">ymean</span></code>.</dd>
+return an array having the same shape as <code class="docutils literal notranslate"><span class="pre">ymean</span></code>.</p>
+</dd>
 </dl>
 </div></blockquote>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">x=False</span></code> in the first, third or fourth of these formats
 implies that the fit function depends only on the fit parameters:
 that is, <code class="docutils literal notranslate"><span class="pre">fcn(p)</span></code> instead of <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>. (This is not assumed
 if <code class="docutils literal notranslate"><span class="pre">x=None</span></code>.)</p>
-</li>
-<li><strong>fcn</strong> (<em>callable</em>) – The function to be fit to <code class="docutils literal notranslate"><span class="pre">data</span></code>. It is either a
+</p></li>
+<li><p><strong>fcn</strong> (<em>callable</em>) – The function to be fit to <code class="docutils literal notranslate"><span class="pre">data</span></code>. It is either a
 function of the independent data <code class="docutils literal notranslate"><span class="pre">x</span></code> and the fit parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>
 (<code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code>), or a function of just the fit parameters
 (<code class="docutils literal notranslate"><span class="pre">fcn(p)</span></code>) when there is no <code class="docutils literal notranslate"><span class="pre">x</span></code> data or <code class="docutils literal notranslate"><span class="pre">x=False</span></code>. The
@@ -199,14 +196,14 @@ a dictionary where each <code class="docutils literal notranslate"><span class="
 of parameters (any shape); or, 2) a single array of parameters. The
 layout of the parameters is the same as that of prior <code class="docutils literal notranslate"><span class="pre">prior</span></code> if
 it is specified; otherwise, it is inferred from of the starting
-value <code class="docutils literal notranslate"><span class="pre">p0</span></code> for the fit.</li>
-<li><strong>prior</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>str</em><em>, </em><em>gvar.GVar</em><em> or </em><em>None</em>) – A dictionary (or array)
+value <code class="docutils literal notranslate"><span class="pre">p0</span></code> for the fit.</p></li>
+<li><p><strong>prior</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>str</em><em>, </em><em>gvar.GVar</em><em> or </em><em>None</em>) – A dictionary (or array)
 containing <em>a priori</em> estimates for all parameters <code class="docutils literal notranslate"><span class="pre">p</span></code> used by
 fit function <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code> (or <code class="docutils literal notranslate"><span class="pre">fcn(p)</span></code>). Fit parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>
 are stored in a dictionary (or array) with the same keys and
 structure (or shape) as <code class="docutils literal notranslate"><span class="pre">prior</span></code>. The default value is <code class="docutils literal notranslate"><span class="pre">None</span></code>;
-<code class="docutils literal notranslate"><span class="pre">prior</span></code> must be defined if <code class="docutils literal notranslate"><span class="pre">p0</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>p0</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>float</em><em>, </em><em>None</em><em>, or </em><em>True</em>) – Starting values for fit
+<code class="docutils literal notranslate"><span class="pre">prior</span></code> must be defined if <code class="docutils literal notranslate"><span class="pre">p0</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>p0</strong> (<em>dict</em><em>, </em><em>array</em><em>, </em><em>float</em><em>, </em><em>None</em><em>, or </em><em>True</em>) – Starting values for fit
 parameters in fit. <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> adjusts <code class="docutils literal notranslate"><span class="pre">p0</span></code> to
 make it consistent in shape and structure with <code class="docutils literal notranslate"><span class="pre">prior</span></code> when the
 latter is specified: elements missing from <code class="docutils literal notranslate"><span class="pre">p0</span></code> are filled in
@@ -219,8 +216,8 @@ same file after the fit (for priming future fits). If <code class="docutils lite
 are extracted from <code class="docutils literal notranslate"><span class="pre">prior</span></code>. If <code class="docutils literal notranslate"><span class="pre">p0</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it
 is replaced by a starting point drawn at random from the
 <code class="docutils literal notranslate"><span class="pre">prior</span></code> distribution. The default value is <code class="docutils literal notranslate"><span class="pre">None</span></code>;
-<code class="docutils literal notranslate"><span class="pre">p0</span></code> must be explicitly specified if <code class="docutils literal notranslate"><span class="pre">prior</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</li>
-<li><strong>linear</strong> (<em>list</em><em> or </em><em>None</em>) – Optional list of fit parameters that appear
+<code class="docutils literal notranslate"><span class="pre">p0</span></code> must be explicitly specified if <code class="docutils literal notranslate"><span class="pre">prior</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>linear</strong> (<em>list</em><em> or </em><em>None</em>) – Optional list of fit parameters that appear
 linearly in the fit function. The fit function can be reexpressed
 (using <em>variable projection</em>) as a function that is independent of
 its linear parameters. The resulting fit has fewer fit parameters
@@ -234,8 +231,8 @@ dictionary keys corresponding to linear parameters when the
 parameters are stored in a dictionary (see <code class="docutils literal notranslate"><span class="pre">prior</span></code>); or, a list
 of indices corresponding to these parameters when they are stored
 in an array. Note that this feature is experimental; the
-interface may change in the future.</li>
-<li><strong>svdcut</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a nonzero number,
+interface may change in the future.</p></li>
+<li><p><strong>svdcut</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a nonzero number,
 SVD cuts are applied to every block-diagonal sub-matrix of the
 correlation matrix for the data <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code> (if there is a
 prior). If <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, eigenvalues of the rescaled matrices
@@ -248,24 +245,24 @@ corresponding components in <code class="docutils literal notranslate"><span cla
 SVD cut is applied if <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code>. If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a
 dictionary, its arguments are passed as keyword arguments to
 <code class="docutils literal notranslate"><span class="pre">gvar.svd</span></code>, which is used to apply the  SVD cut: eg,
-<code class="docutils literal notranslate"><span class="pre">svdcut=dict(svdcut=1e-4,</span> <span class="pre">add_offsets=True)</span></code>. Default is 1e-12.</li>
-<li><strong>add_svdnoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>, noise is added to
+<code class="docutils literal notranslate"><span class="pre">svdcut=dict(svdcut=1e-4,</span> <span class="pre">add_offsets=True)</span></code>. Default is 1e-12.</p></li>
+<li><p><strong>add_svdnoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>, noise is added to
 the data means corresponding to the additional uncertainties
 introduced when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>. This is useful for testing the
 quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when large SVD cuts are
-employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
-<li><strong>add_priornoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code>, noise is added to
+employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>add_priornoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code>, noise is added to
 the prior means corresponding to the uncertainties
 in the prior. This is useful for testing the
 quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when broad priors are
-employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
-<li><strong>udata</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – Same as <code class="docutils literal notranslate"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
+employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>udata</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – Same as <code class="docutils literal notranslate"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
 between different pieces of data.  This speeds up the  fit,
 particularly for large amounts of data, but ignores potentially
 valuable information if the data actually are correlated. Only
 one of <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">udata</span></code> should be specified. (Default is
-<code class="docutils literal notranslate"><span class="pre">None</span></code>.)</li>
-<li><strong>fitter</strong> (<em>str</em><em> or </em><em>None</em>) – Fitter code. Options if GSL is installed
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.)</p></li>
+<li><p><strong>fitter</strong> (<em>str</em><em> or </em><em>None</em>) – Fitter code. Options if GSL is installed
 include: <code class="docutils literal notranslate"><span class="pre">'gsl_multifit'</span></code> (default) and <code class="docutils literal notranslate"><span class="pre">'gsl_v1_multifit'</span></code>
 (original fitter). Options if <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> is installed include:
 <code class="docutils literal notranslate"><span class="pre">'scipy_least_squares'</span></code> (default if GSL not installed).
@@ -273,14 +270,14 @@ include: <code class="docutils literal notranslate"><span class="pre">'gsl_multi
 control. <code class="docutils literal notranslate"><span class="pre">scipy_least_squares</span></code> can be used for fits where the
 parameters are bounded. (Bounded parameters can also be
 implemented, for any of the fitters, using non-Gaussian priors —
-see the tutorial.)</li>
-<li><strong>tol</strong> (<em>float</em><em> or </em><em>tuple</em>) – <p>Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the
+see the tutorial.)</p></li>
+<li><p><strong>tol</strong> (<em>float</em><em> or </em><em>tuple</em>) – <p>Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the
 fit to stop searching for a minimum when any of</p>
 <blockquote>
-<div><ol class="arabic">
-<li><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
-<li><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function</li>
-<li><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</li>
+<div><ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p></li>
 </ol>
 </div></blockquote>
 <p>is satisfied. See the fitter documentation for detailed
@@ -292,66 +289,84 @@ desired in the result, while <code class="docutils literal notranslate"><span cl
 equivalent to setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
 <code class="docutils literal notranslate"><span class="pre">tol=1e-8</span></code>. (Note: the <code class="docutils literal notranslate"><span class="pre">ftol</span></code> option is disabled in some
 versions of the GSL library.)</p>
-</li>
-<li><strong>maxit</strong> (<em>int</em>) – Maximum number of algorithm iterations (or function
+</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of algorithm iterations (or function
 evaluations for some fitters) in search for minimum;
-default is 1000.</li>
-<li><strong>debug</strong> (<em>bool</em>) – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for extra debugging of the fit function
-and a check for roundoff errors. (Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.)</li>
-<li><strong>fitterargs</strong> (<em>dict</em>) – Dictionary of additional arguments passed through
+default is 1000.</p></li>
+<li><p><strong>debug</strong> (<em>bool</em>) – Set to <code class="docutils literal notranslate"><span class="pre">True</span></code> for extra debugging of the fit function
+and a check for roundoff errors. (Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.)</p></li>
+<li><p><strong>fitterargs</strong> (<em>dict</em>) – Dictionary of additional arguments passed through
 to the underlying fitter. Different fitters offer different
-parameters; see the documentation for each.</li>
+parameters; see the documentation for each.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Objects of type <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> have the following
 attributes:</p>
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.chi2">
-<code class="descname">chi2</code><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – The minimum <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for the fit.
+<code class="sig-name descname">chi2</code><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Permalink to this definition">¶</a></dt>
+<dd><p>The minimum <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for the fit.
 <code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> is usually of order one in good fits.
 Values much less than one suggest that actual fluctuations in
 the input data and/or priors might be smaller than suggested
 by the standard deviations (or covariances) used in the fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.cov">
-<code class="descname">cov</code><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Covariance matrix of the best-fit parameters from
+<code class="sig-name descname">cov</code><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Covariance matrix of the best-fit parameters from
 the fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.dof">
-<code class="descname">dof</code><a class="headerlink" href="#lsqfit.nonlinear_fit.dof" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of degrees of freedom in the fit, which equals
+<code class="sig-name descname">dof</code><a class="headerlink" href="#lsqfit.nonlinear_fit.dof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of degrees of freedom in the fit, which equals
 the number of pieces of data being fit when priors are specified
 for the fit parameters. Without priors, it is the number of pieces
 of data minus the number of fit parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.error">
-<code class="descname">error</code><a class="headerlink" href="#lsqfit.nonlinear_fit.error" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – Error message generated by the underlying fitter when
+<code class="sig-name descname">error</code><a class="headerlink" href="#lsqfit.nonlinear_fit.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error message generated by the underlying fitter when
 an error occurs. <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.fitter_results">
-<code class="descname">fitter_results</code><a class="headerlink" href="#lsqfit.nonlinear_fit.fitter_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fitter_results</code><a class="headerlink" href="#lsqfit.nonlinear_fit.fitter_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Results returned by the underlying fitter. Refer to
 the appropriate fitter’s documentation for details.</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.logGBF">
-<code class="descname">logGBF</code><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float or None</em> – The logarithm of the probability (density)
+<code class="sig-name descname">logGBF</code><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Permalink to this definition">¶</a></dt>
+<dd><p>The logarithm of the probability (density)
 of obtaining the fit data by randomly sampling the parameter model
 (priors plus fit function) used in the fit — that is, it is
 <code class="docutils literal notranslate"><span class="pre">P(data|model)</span></code>. This quantity is useful for comparing fits of
@@ -362,38 +377,58 @@ in <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span
 (Bayes factor) for those models. Differences in <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>
 smaller than 1 are not very significant. Gaussian statistics are
 assumed when computing <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float or None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.p">
-<code class="descname">p</code><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or gvar.GVar</em> – Best-fit parameters from fit. Depending
+<code class="sig-name descname">p</code><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Best-fit parameters from fit. Depending
 upon what was used for the prior (or <code class="docutils literal notranslate"><span class="pre">p0</span></code>), it is either: a
 dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s and/or arrays of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s; or an array (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
 <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> represents a multi-dimensional Gaussian distribution
 which, in Bayesian terminology, is the <em>posterior</em> probability
 distribution of the fit parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or gvar.GVar</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.pmean">
-<code class="descname">pmean</code><a class="headerlink" href="#lsqfit.nonlinear_fit.pmean" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or float</em> – Means of the best-fit parameters
+<code class="sig-name descname">pmean</code><a class="headerlink" href="#lsqfit.nonlinear_fit.pmean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Means of the best-fit parameters
 from fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.psdev">
-<code class="descname">psdev</code><a class="headerlink" href="#lsqfit.nonlinear_fit.psdev" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or float</em> – Standard deviations of the best-fit
+<code class="sig-name descname">psdev</code><a class="headerlink" href="#lsqfit.nonlinear_fit.psdev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard deviations of the best-fit
 parameters from fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.palt">
-<code class="descname">palt</code><a class="headerlink" href="#lsqfit.nonlinear_fit.palt" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or gvar.GVar</em> – Same as <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> except that the errors
+<code class="sig-name descname">palt</code><a class="headerlink" href="#lsqfit.nonlinear_fit.palt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Same as <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> except that the errors
 are computed directly from <code class="docutils literal notranslate"><span class="pre">fit.cov</span></code>. This is faster but means
 that no information about correlations with the input data is
 retained (unlike in <code class="docutils literal notranslate"><span class="pre">fit.p</span></code>); and, therefore, <code class="docutils literal notranslate"><span class="pre">fit.palt</span></code>
@@ -402,30 +437,45 @@ cannot be used to generate error budgets. <code class="docutils literal notransl
 for each parameter. They differ only when the input data’s
 covariance matrix is too singular to invert accurately (because of
 roundoff error), in which case an SVD cut is advisable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or gvar.GVar</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.p0">
-<code class="descname">p0</code><a class="headerlink" href="#lsqfit.nonlinear_fit.p0" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or float</em> – The parameter values used to start the fit.
+<code class="sig-name descname">p0</code><a class="headerlink" href="#lsqfit.nonlinear_fit.p0" title="Permalink to this definition">¶</a></dt>
+<dd><p>The parameter values used to start the fit.
 This will differ from the input <code class="docutils literal notranslate"><span class="pre">p0</span></code> if the latter was
 incomplete.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.prior">
-<code class="descname">prior</code><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array, gvar.GVar or None</em> – Prior used in the fit. This may
+<code class="sig-name descname">prior</code><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prior used in the fit. This may
 differ  from the input prior if an SVD cut is used. It is either
 a  dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) or an array
 (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>), depending upon the input. Equals
 <code class="docutils literal notranslate"><span class="pre">None</span></code> if no prior was specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array, gvar.GVar or None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.Q">
-<code class="descname">Q</code><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float or None</em> – The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> from the fit
+<code class="sig-name descname">Q</code><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Permalink to this definition">¶</a></dt>
+<dd><p>The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> from the fit
 could have been larger, by chance, assuming the best-fit model
 is correct. Good fits have <code class="docutils literal notranslate"><span class="pre">Q</span></code> values larger than 0.1 or so.
 Also called the <em>p-value</em> of the fit. The probabilistic
@@ -433,11 +483,16 @@ intrepretation becomes unreliable if the actual fluctuations
 in the input data and/or priors are much smaller than suggested
 by the standard deviations (or covariances) used in the fit
 (leading to an unusually small <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float or None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.residuals">
-<code class="descname">residuals</code><a class="headerlink" href="#lsqfit.nonlinear_fit.residuals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">residuals</code><a class="headerlink" href="#lsqfit.nonlinear_fit.residuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>An array containing the fit residuals normalized by the
 corresponding standard deviations. This includes contributions
 from both the fit data and the prior: <code class="docutils literal notranslate"><span class="pre">chi2</span> <span class="pre">=</span> <span class="pre">sum(fit.resid**2)</span></code>.</p>
@@ -445,8 +500,8 @@ from both the fit data and the prior: <code class="docutils literal notranslate"
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.stopping_criterion">
-<code class="descname">stopping_criterion</code><a class="headerlink" href="#lsqfit.nonlinear_fit.stopping_criterion" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Criterion used to
+<code class="sig-name descname">stopping_criterion</code><a class="headerlink" href="#lsqfit.nonlinear_fit.stopping_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Criterion used to
 stop fit:</p>
 <blockquote>
 <div><p>0: didn’t converge</p>
@@ -454,60 +509,100 @@ stop fit:</p>
 <p>2: <code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
 <p>3: <code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p>
 </div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdcorrection">
-<code class="descname">svdcorrection</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>gvar.GVar</em> – Sum of all SVD corrections, if any, added
+<code class="sig-name descname">svdcorrection</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum of all SVD corrections, if any, added
 to the fit data <code class="docutils literal notranslate"><span class="pre">y</span></code> or the prior <code class="docutils literal notranslate"><span class="pre">prior</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>gvar.GVar</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdn">
-<code class="descname">svdn</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of eigenmodes modified (and/or deleted) by the
+<code class="sig-name descname">svdn</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of eigenmodes modified (and/or deleted) by the
 SVD cut.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.time">
-<code class="descname">time</code><a class="headerlink" href="#lsqfit.nonlinear_fit.time" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – <em>CPU</em> time (in secs) taken by fit.</p>
+<code class="sig-name descname">time</code><a class="headerlink" href="#lsqfit.nonlinear_fit.time" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>CPU</em> time (in secs) taken by fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.tol">
-<code class="descname">tol</code><a class="headerlink" href="#lsqfit.nonlinear_fit.tol" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>tuple</em> – Tolerance used in fit. This differs from the input
+<code class="sig-name descname">tol</code><a class="headerlink" href="#lsqfit.nonlinear_fit.tol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tolerance used in fit. This differs from the input
 tolerance if the latter was incompletely specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.x">
-<code class="descname">x</code><a class="headerlink" href="#lsqfit.nonlinear_fit.x" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>obj</em> – The first field in the input <code class="docutils literal notranslate"><span class="pre">data</span></code>. This is sometimes the
+<code class="sig-name descname">x</code><a class="headerlink" href="#lsqfit.nonlinear_fit.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>The first field in the input <code class="docutils literal notranslate"><span class="pre">data</span></code>. This is sometimes the
 independent variable (as in ‘y vs x’ plot), but may be anything.
 It is set equal to <code class="docutils literal notranslate"><span class="pre">False</span></code> if the <code class="docutils literal notranslate"><span class="pre">x</span></code> field is omitted from
 the input <code class="docutils literal notranslate"><span class="pre">data</span></code>. (This also means that the fit function has no
 <code class="docutils literal notranslate"><span class="pre">x</span></code> argument: so <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> rather than <code class="docutils literal notranslate"><span class="pre">f(x,p)</span></code>.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>obj</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.y">
-<code class="descname">y</code><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict, array or gvar.GVar</em> – Fit data used in the fit. This may differ
+<code class="sig-name descname">y</code><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit data used in the fit. This may differ
 from the input data if an SVD cut is used. It is either a
 dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) or an array
 (<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>), depending upon the input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, array or gvar.GVar</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.nblocks">
-<code class="descname">nblocks</code><a class="headerlink" href="#lsqfit.nonlinear_fit.nblocks" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – <code class="docutils literal notranslate"><span class="pre">nblocks[s]</span></code> equals the number of block-diagonal
+<code class="sig-name descname">nblocks</code><a class="headerlink" href="#lsqfit.nonlinear_fit.nblocks" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">nblocks[s]</span></code> equals the number of block-diagonal
 sub-matrices of the <code class="docutils literal notranslate"><span class="pre">y</span></code>–<code class="docutils literal notranslate"><span class="pre">prior</span></code> covariance matrix that are
 size <code class="docutils literal notranslate"><span class="pre">s</span></code>-by-<code class="docutils literal notranslate"><span class="pre">s</span></code>. This is sometimes useful for debugging.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <p>The global defaults used by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be changed by
@@ -523,7 +618,7 @@ dumping (for later use) and loading parameter values, and checking for roundoff
 errors in the final error  estimates:</p>
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.format">
-<code class="descname">format</code><span class="sig-paren">(</span><em>maxline=0</em>, <em>pstyle='v'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">format</code><span class="sig-paren">(</span><em class="sig-param">maxline=0</em>, <em class="sig-param">pstyle='v'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
 <p>The output tabulates the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> per degree of freedom of the fit
 (<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the <code class="docutils literal notranslate"><span class="pre">Q</span></code>  value of
@@ -544,43 +639,39 @@ keyword) are marked with a minus sign after their prior.</p>
 <p><code class="docutils literal notranslate"><span class="pre">format</span></code> can also list all of the data and the corresponding values
 from the fit, again with asterisks on lines  where there is a
 significant discrepancy.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>maxline</strong> (<em>int</em><em> or </em><em>bool</em>) – Maximum number of data points for which
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>maxline</strong> (<em>int</em><em> or </em><em>bool</em>) – Maximum number of data points for which
 fit results and input data are tabulated. <code class="docutils literal notranslate"><span class="pre">maxline&lt;0</span></code>
 implies that only <code class="docutils literal notranslate"><span class="pre">chi2</span></code>, <code class="docutils literal notranslate"><span class="pre">Q</span></code>, <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>, and <code class="docutils literal notranslate"><span class="pre">itns</span></code>
 are tabulated; no parameter values are included. Setting
 <code class="docutils literal notranslate"><span class="pre">maxline=True</span></code> prints all data points; setting it
 equal <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> is the same as setting
-it equal to <code class="docutils literal notranslate"><span class="pre">-1</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">maxline=0</span></code>.</li>
-<li><strong>pstyle</strong> (<em>str</em><em> or </em><em>None</em>) – Style used for parameter list. Supported
+it equal to <code class="docutils literal notranslate"><span class="pre">-1</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">maxline=0</span></code>.</p></li>
+<li><p><strong>pstyle</strong> (<em>str</em><em> or </em><em>None</em>) – Style used for parameter list. Supported
 values are ‘vv’ for very verbose, ‘v’ for verbose, and ‘m’ for
 minimal. When ‘m’ is set, only parameters whose values differ
 from their prior values are listed. Setting <code class="docutils literal notranslate"><span class="pre">pstyle=None</span></code>
-implies no parameters are listed.</li>
-<li><strong>extend</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, extend the parameter list to
+implies no parameters are listed.</p></li>
+<li><p><strong>extend</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, extend the parameter list to
 include values derived from log-normal or other
 non-Gaussian parameters. So values for fit parameter
 <code class="docutils literal notranslate"><span class="pre">p['log(a)']</span></code>, for example, are listed together with
 values <code class="docutils literal notranslate"><span class="pre">p['a']</span></code> for the exponential of the fit parameter.
 Setting <code class="docutils literal notranslate"><span class="pre">extend=False</span></code> means that only the value
-for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</span></code> is listed. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</li>
+for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</span></code> is listed. Default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">String containing detailed information about fit.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>String containing detailed information about fit.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.simulated_fit_iter">
-<code class="descname">simulated_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>pexact=None</em>, <em>add_priornoise=False</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">simulated_fit_iter</code><span class="sig-paren">(</span><em class="sig-param">n=None</em>, <em class="sig-param">pexact=None</em>, <em class="sig-param">add_priornoise=False</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulation copies of a fit.</p>
 <p>Fit reliability is tested using simulated data which
 replaces the mean values in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> with random numbers
@@ -619,33 +710,29 @@ output parameters or functions of them, should non-Gaussian behavior
 arise. This is possible, again, because we know the correct value for
 every parameter before we do the fit. Again only a few iterations
 may be needed for reliable estimates.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong> (int or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Maximum number of iterations (equals
-infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
-<li><strong>pexact</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or array/dict of numbers) – Fit-parameter values
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (int or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Maximum number of iterations (equals
+infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+<li><p><strong>pexact</strong> (<code class="docutils literal notranslate"><span class="pre">None</span></code> or array/dict of numbers) – Fit-parameter values
 for the underlying distribution used to generate simulated
-data; replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</li>
-<li><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>;
-otherwise vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
-<li><strong>kargs</strong> – Dictionary containing override values for fit parameters.</li>
+data; replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</p></li>
+<li><p><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>;
+otherwise vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</p></li>
+<li><p><strong>kargs</strong> – Dictionary containing override values for fit parameters.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An iterator that returns <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>s
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An iterator that returns <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>s
 for different simulated data.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.simulated_data_iter">
-<code class="descname">simulated_data_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>pexact=None</em>, <em>add_priornoise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">simulated_data_iter</code><span class="sig-paren">(</span><em class="sig-param">n=None</em>, <em class="sig-param">pexact=None</em>, <em class="sig-param">add_priornoise=False</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulated data based upon a fit’s data.</p>
 <p>Simulated data is generated from a fit’s data <code class="docutils literal notranslate"><span class="pre">fit.y</span></code> by
 replacing the mean values in that data with random numbers
@@ -673,32 +760,28 @@ as fast as):</p>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;chi2 =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">chi2</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">fitsim</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
 </pre></div>
 </div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of iterations (equals
-infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</li>
-<li><strong>pexact</strong> (<em>None</em><em> or </em><em>dict/array of numbers</em>) – Fit-parameter values for
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of iterations (equals
+infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+<li><p><strong>pexact</strong> (<em>None</em><em> or </em><em>dict/array of numbers</em>) – Fit-parameter values for
 the underlying distribution used to generate simulated data;
-replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</li>
-<li><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
-vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</li>
+replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</p></li>
+<li><p><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
+vary only the means in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> (default).</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">An iterator that returns a 2-tuple containing simulated
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An iterator that returns a 2-tuple containing simulated
 versions of self.y and self.prior: <code class="docutils literal notranslate"><span class="pre">(ysim,</span> <span class="pre">priorsim)</span></code>.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.bootstrapped_fit_iter">
-<code class="descname">bootstrapped_fit_iter</code><span class="sig-paren">(</span><em>n=None</em>, <em>datalist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bootstrapped_fit_iter</code><span class="sig-paren">(</span><em class="sig-param">n=None</em>, <em class="sig-param">datalist=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns bootstrap copies of a fit.</p>
 <p>A bootstrap analysis involves three steps: 1) make a large number
 of “bootstrap copies” of the original input data and prior that differ
@@ -738,30 +821,26 @@ of the fit parameters:</p>
 probability distribution of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code>. If everything is Gaussian,
 the mean and standard deviation of <code class="docutils literal notranslate"><span class="pre">glist[i]</span></code> should agree
 with <code class="docutils literal notranslate"><span class="pre">g(fit.p).mean</span></code> and <code class="docutils literal notranslate"><span class="pre">g(fit.p).sdev</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>n</strong> (<em>int</em>) – Maximum number of iterations if <code class="docutils literal notranslate"><span class="pre">n</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>;
-otherwise there is no maximum.</li>
-<li><strong>datalist</strong> (<em>iter</em>) – Collection of bootstrap <code class="docutils literal notranslate"><span class="pre">data</span></code> sets for fitter.</li>
-<li><strong>kargs</strong> (<em>dict</em>) – Overrides arguments in original fit.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Maximum number of iterations if <code class="docutils literal notranslate"><span class="pre">n</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>;
+otherwise there is no maximum.</p></li>
+<li><p><strong>datalist</strong> (<em>iter</em>) – Collection of bootstrap <code class="docutils literal notranslate"><span class="pre">data</span></code> sets for fitter.</p></li>
+<li><p><strong>kargs</strong> (<em>dict</em>) – Overrides arguments in original fit.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Iterator that returns an <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Iterator that returns an <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object
 containing results from the fit to the next data set in
 <code class="docutils literal notranslate"><span class="pre">datalist</span></code>.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.nonlinear_fit.check_roundoff">
-<code class="descname">check_roundoff</code><span class="sig-paren">(</span><em>rtol=0.25</em>, <em>atol=1e-6</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.check_roundoff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_roundoff</code><span class="sig-paren">(</span><em class="sig-param">rtol=0.25</em>, <em class="sig-param">atol=1e-6</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.check_roundoff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check for roundoff errors in fit.p.</p>
 <p>Compares standard deviations from fit.p and fit.palt to see if they
 agree to within relative tolerance <code class="docutils literal notranslate"><span class="pre">rtol</span></code> and absolute tolerance
@@ -769,9 +848,9 @@ agree to within relative tolerance <code class="docutils literal notranslate"><s
 case an SVD cut might be advisable).</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="lsqfit.nonlinear_fit.set">
-<em class="property">static </em><code class="descname">set</code><span class="sig-paren">(</span><em>clear=False</em>, <em>**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">clear=False</em>, <em class="sig-param">**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <p>Use to set default values for parameters: <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
 <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code>, <code class="docutils literal notranslate"><span class="pre">maxit</span></code>, and <code class="docutils literal notranslate"><span class="pre">fitter</span></code>. Can also set
@@ -788,28 +867,24 @@ argument.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.set()</span></code> without arguments returns a
 dictionary containing the current defaults.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>clear</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> remove earlier settings,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>clear</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> remove earlier settings,
 restoring the original defaults, before adding new
 defaults. The default value is <code class="docutils literal notranslate"><span class="pre">clear=False</span></code>.
 <code class="docutils literal notranslate"><span class="pre">nonlinear_fit.set(clear=True)</span></code> restores the
-original defaults.</li>
-<li><strong>defaults</strong> (<em>dict</em>) – Dictionary containing new defaults.</li>
+original defaults.</p></li>
+<li><p><strong>defaults</strong> (<em>dict</em>) – Dictionary containing new defaults.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A dictionary containing the old defaults,
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary containing the old defaults,
 before they were updated. These can be restored using
 <code class="docutils literal notranslate"><span class="pre">nonlinear_fit.set(old_defaults)</span></code> where <code class="docutils literal notranslate"><span class="pre">old_defaults</span></code>
 is the dictionary containint the old defaults.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -819,7 +894,7 @@ is the dictionary containint the old defaults.</p>
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="lsqfit.empbayes_fit">
-<code class="descclassname">lsqfit.</code><code class="descname">empbayes_fit</code><span class="sig-paren">(</span><em>z0</em>, <em>fitargs</em>, <em>**minargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">empbayes_fit</code><span class="sig-paren">(</span><em class="sig-param">z0</em>, <em class="sig-param">fitargs</em>, <em class="sig-param">**minargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return fit and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
 <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <p>This function maximizes the logarithm of the Bayes Factor from
@@ -883,13 +958,11 @@ gives the following output:</p>
 <p>We have, in effect, used the variation in the data relative to the best
 fit curve to estimate that the uncertainty in each data point is
 of order 1.6%.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>z0</strong> (<em>number</em><em>, </em><em>array</em><em> or </em><em>dict</em>) – Starting point for search.</li>
-<li><strong>fitargs</strong> (<em>callable</em>) – Function of <code class="docutils literal notranslate"><span class="pre">z</span></code> that returns a
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>number</em><em>, </em><em>array</em><em> or </em><em>dict</em>) – Starting point for search.</p></li>
+<li><p><strong>fitargs</strong> (<em>callable</em>) – Function of <code class="docutils literal notranslate"><span class="pre">z</span></code> that returns a
 dictionary <code class="docutils literal notranslate"><span class="pre">args</span></code> containing the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
 arguments corresponding to <code class="docutils literal notranslate"><span class="pre">z</span></code>. <code class="docutils literal notranslate"><span class="pre">z</span></code> should have
 the same layout (number, array or dictionary) as <code class="docutils literal notranslate"><span class="pre">z0</span></code>.
@@ -900,25 +973,23 @@ of the <em>a priori</em> probabilitiy that <code class="docutils literal notrans
 <code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is provided, <a class="reference internal" href="#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsqfit.empbayes_fit()</span></code></a>
 maximizes the sum <code class="docutils literal notranslate"><span class="pre">logGBF</span> <span class="pre">+</span> <span class="pre">plausibility</span></code>. Specifying
 <code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is a way of steering selections away from
-completely implausible values for <code class="docutils literal notranslate"><span class="pre">z</span></code>.</li>
-<li><strong>minargs</strong> (<em>dict</em>) – Optional argument dictionary, passed on to
+completely implausible values for <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p></li>
+<li><p><strong>minargs</strong> (<em>dict</em>) – Optional argument dictionary, passed on to
 <a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
-<a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</li>
+<a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A tuple containing the best fit (object of type
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple containing the best fit (object of type
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>) and the
 optimal value for parameter <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="lsqfit.wavg">
-<code class="descclassname">lsqfit.</code><code class="descname">wavg</code><span class="sig-paren">(</span><em>datalist</em>, <em>fast=False</em>, <em>prior=None</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">wavg</code><span class="sig-paren">(</span><em class="sig-param">datalist</em>, <em class="sig-param">fast=False</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Weighted average of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays/dicts of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
 <p>The weighted average of <code class="docutils literal notranslate"><span class="pre">N</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">...</span> <span class="n">gN</span><span class="p">])</span>
@@ -954,33 +1025,30 @@ running average:</p>
 the exact result when there are no correlations between different elements
 of list <code class="docutils literal notranslate"><span class="pre">datalist</span></code>. The results are approximately correct when
 <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">datalist[j]</span></code> are correlated for <code class="docutils literal notranslate"><span class="pre">i!=j</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>datalist</strong> (<em>list</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to be averaged. <code class="docutils literal notranslate"><span class="pre">datalist</span></code> is
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datalist</strong> (<em>list</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s to be averaged. <code class="docutils literal notranslate"><span class="pre">datalist</span></code> is
 a one-dimensional sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s, or of arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s,
 or of dictionaries containing <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s  and/or arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
 Corresponding arrays in different <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code>s must have the
-same dimension.</li>
-<li><strong>fast</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, <code class="docutils literal notranslate"><span class="pre">wavg</span></code> averages the <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code>
+same dimension.</p></li>
+<li><p><strong>fast</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, <code class="docutils literal notranslate"><span class="pre">wavg</span></code> averages the <code class="docutils literal notranslate"><span class="pre">datalist[i]</span></code>
 sequentially. This can be much faster when averaging a large
 number of sampes but is only approximate if the different
-elements of <code class="docutils literal notranslate"><span class="pre">datalist</span></code> are correlated. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
-<li><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>) for the
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fitter used to do the averaging.</li>
+elements of <code class="docutils literal notranslate"><span class="pre">datalist</span></code> are correlated. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>) for the
+<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fitter used to do the averaging.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>The weighted average is returned as a <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> or an array of
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>The weighted average is returned as a <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> or an array of
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or a dictionary of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s and arrays of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.
 Results have the following extra attributes:</p>
 <p><strong>chi2</strong> - <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for weighted average.</p>
 <p><strong>dof</strong> - Effective number of degrees of freedom.</p>
-<dl class="docutils">
-<dt><strong>Q</strong> - Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit:</dt>
-<dd><p class="first last">the probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> could have been larger,
+<dl class="simple">
+<dt><strong>Q</strong> - Quality factor <cite>Q</cite> (or <em>p-value</em>) for fit:</dt><dd><p>the probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> could have been larger,
 by chance, assuming that the data are all Gaussian and consistent
 with each other. Values smaller than 0.1 or so suggest that the
 data are not Gaussian or are inconsistent with each other. Also
@@ -988,22 +1056,19 @@ called the <em>p-value</em>.</p>
 </dd>
 </dl>
 <p><strong>time</strong> - Time required to do average.</p>
-<dl class="docutils">
-<dt><strong>svdcorrection</strong> - The <em>svd</em> corrections made to the data</dt>
-<dd><p class="first last">when <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="simple">
+<dt><strong>svdcorrection</strong> - The <em>svd</em> corrections made to the data</dt><dd><p>when <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
 <p><strong>fit</strong> - Fit returned by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 </p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="lsqfit.gammaQ">
-<code class="descclassname">lsqfit.</code><code class="descname">gammaQ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.gammaQ" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">gammaQ</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.gammaQ" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the normalized incomplete gamma function <code class="docutils literal notranslate"><span class="pre">Q(a,x)</span> <span class="pre">=</span> <span class="pre">1-P(a,x)</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Q(a,</span> <span class="pre">x)</span> <span class="pre">=</span> <span class="pre">1/Gamma(a)</span> <span class="pre">*</span> <span class="pre">\int_x^\infty</span> <span class="pre">dt</span> <span class="pre">exp(-t)</span> <span class="pre">t</span> <span class="pre">**</span> <span class="pre">(a-1)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">P(a,</span> <span class="pre">x)</span></code></p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">gammaQ(ndof/2.,</span> <span class="pre">chi2/2.)</span></code> is the probabilty that one could
@@ -1021,33 +1086,31 @@ used to do the integrals, using an adaptive Monte Carlo algorithm.</p>
 <p>The integrator class is:</p>
 <dl class="class">
 <dt id="lsqfit.BayesIntegrator">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesIntegrator</code><span class="sig-paren">(</span><em>fit</em>, <em>limit=1e15</em>, <em>scale=1</em>, <em>pdf=None</em>, <em>adapt_to_pdf=True</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">BayesIntegrator</code><span class="sig-paren">(</span><em class="sig-param">fit</em>, <em class="sig-param">limit=1e15</em>, <em class="sig-param">scale=1</em>, <em class="sig-param">pdf=None</em>, <em class="sig-param">adapt_to_pdf=True</em>, <em class="sig-param">svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator for Bayesian fit integrals.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</li>
-<li><strong>limit</strong> (<em>positive float</em>) – Limits the integrations to a finite
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</p></li>
+<li><p><strong>limit</strong> (<em>positive float</em>) – Limits the integrations to a finite
 region of size <code class="docutils literal notranslate"><span class="pre">limit</span></code> times the standard deviation on
 either side of the mean. This can be useful if the
 functions being integrated misbehave for large parameter
 values (e.g., <code class="docutils literal notranslate"><span class="pre">numpy.exp</span></code> overflows for a large range of
-arguments). Default is <code class="docutils literal notranslate"><span class="pre">1e15</span></code>.</li>
-<li><strong>scale</strong> (<em>positive float</em>) – The integration variables are
+arguments). Default is <code class="docutils literal notranslate"><span class="pre">1e15</span></code>.</p></li>
+<li><p><strong>scale</strong> (<em>positive float</em>) – The integration variables are
 rescaled to emphasize parameter values of order
 <code class="docutils literal notranslate"><span class="pre">scale</span></code> times the corresponding standard deviations.
 The rescaling does not change the value of the integral but it
 can reduce uncertainties in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> estimates.
-Default is <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</li>
-<li><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
+Default is <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
+<li><p><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
 fit parameters to use in place of the normal PDF associated
-with the least-squares fit used to create the integrator.</li>
-<li><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
+with the least-squares fit used to create the integrator.</p></li>
+<li><p><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
 <code class="docutils literal notranslate"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>
-times the PDF.</li>
-<li><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
+times the PDF.</p></li>
+<li><p><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
 covariance matrix of <code class="docutils literal notranslate"><span class="pre">g</span></code> with a new matrix whose
 small eigenvalues are modified: eigenvalues smaller than
 <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal notranslate"><span class="pre">eig_max</span></code> are
@@ -1056,12 +1119,10 @@ problems caused by roundoff errors when inverting the
 covariance matrix. It increases the uncertainty associated
 with the modified eigenvalues and so is conservative.
 Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</li>
+covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p><code class="docutils literal notranslate"><span class="pre">BayesIntegrator(fit)</span></code> is a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator that evaluates
 expectation values for the multi-dimensional Bayesian distribution
 associated with <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>: the probability
@@ -1167,18 +1228,16 @@ final results. This gives more reliable error estimates  when
 integrals.</p>
 <dl class="method">
 <dt id="lsqfit.BayesIntegrator.__call__">
-<code class="descname">__call__</code><span class="sig-paren">(</span><em>f=None</em>, <em>pdf=None</em>, <em>adapt_to_pdf=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">f=None</em>, <em class="sig-param">pdf=None</em>, <em class="sig-param">adapt_to_pdf=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimate expectation value of function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>.</p>
 <p>Uses multi-dimensional integration modules <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>  to
 estimate the expectation value of <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> with  respect to
 the probability density function  associated with
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>f</strong> (<em>callable</em>) – Function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> to integrate. Integral is
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<em>callable</em>) – Function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> to integrate. Integral is
 the expectation value of the function with respect
 to the distribution. The function can return a number,
 an array of numbers, or a dictionary whose values are
@@ -1186,20 +1245,18 @@ numbers or arrays of numbers. Its argument <code class="docutils literal notrans
 has the same format as <code class="docutils literal notranslate"><span class="pre">self.fit.pmean</span></code> (that is,
 either a number, an array, or a dictionary).
 Omitting <code class="docutils literal notranslate"><span class="pre">f</span></code> (or setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code>) implies that
-only the PDF is integrated.</li>
-<li><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
+only the PDF is integrated.</p></li>
+<li><p><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
 fit parameters to use in place of the normal PDF associated
 with the least-squares fit used to create the integrator.
 The PDF need not be normalized; vegas will normalize it.
-Ignored if <code class="docutils literal notranslate"><span class="pre">pdf=None</span></code> (the default).</li>
-<li><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
+Ignored if <code class="docutils literal notranslate"><span class="pre">pdf=None</span></code> (the default).</p></li>
+<li><p><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
 <code class="docutils literal notranslate"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>
-times the PDF.</li>
+times the PDF.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>All other keyword arguments are passed on to a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>
 integrator; see the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> documentation for further
 information.</p>
@@ -1216,18 +1273,16 @@ as a check on the integration in those cases).</p>
 with a fit is:</p>
 <dl class="class">
 <dt id="lsqfit.BayesPDF">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">BayesPDF</code><span class="sig-paren">(</span><em>fit</em>, <em>svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">BayesPDF</code><span class="sig-paren">(</span><em class="sig-param">fit</em>, <em class="sig-param">svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bayesian probability density function corresponding to <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
 <p>The probability density function is the exponential of
 <code class="docutils literal notranslate"><span class="pre">-1/2</span></code> times the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function (data and priors) used
 in <code class="docutils literal notranslate"><span class="pre">fit</span></code> divided by <code class="docutils literal notranslate"><span class="pre">norm</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</li>
-<li><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</p></li>
+<li><p><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
 covariance matrix of <code class="docutils literal notranslate"><span class="pre">g</span></code> with a new matrix whose
 small eigenvalues are modified: eigenvalues smaller than
 <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal notranslate"><span class="pre">eig_max</span></code> are
@@ -1236,21 +1291,19 @@ problems caused by roundoff errors when inverting the
 covariance matrix. It increases the uncertainty associated
 with the modified eigenvalues and so is conservative.
 Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</li>
+covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="lsqfit.BayesPDF.__call__">
-<code class="descname">__call__</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Probability density function evaluated at <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.BayesPDF.logpdf">
-<code class="descname">logpdf</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.logpdf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Logarithm of the probability density function evaluated at <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 </dd></dl>
 
@@ -1285,7 +1338,7 @@ a linear fit function:</p>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">lsqfit</span><span class="o">.</span><span class="n">MultiFitterModel</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatag</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatag</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">slope</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Linear</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datatag</span><span class="p">)</span>
         <span class="c1"># the independent variable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -1452,110 +1505,103 @@ organizing the chain of fits; these are discussed in the
 <a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit" title="lsqfit.MultiFitter.chained_lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a> documentation.</p>
 <dl class="class">
 <dt id="lsqfit.MultiFitter">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">MultiFitter</code><span class="sig-paren">(</span><em>models</em>, <em>mopt=None</em>, <em>ratio=False</em>, <em>fast=True</em>, <em>**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">MultiFitter</code><span class="sig-paren">(</span><em class="sig-param">models</em>, <em class="sig-param">mopt=None</em>, <em class="sig-param">ratio=False</em>, <em class="sig-param">fast=True</em>, <em class="sig-param">**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fitter for a collection of models.</p>
 <p>Fits collections of data that are modeled by collections of models.
 Fits can be simultaneous (<a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.MultiFitter.lsqfit()</span></code></a>) or chained
 (<code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.MultiFitterl.chained_lsqfit()</span></code>).</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>models</strong> – List of models, derived from <a class="reference internal" href="#lsqfit.MultiFitterModel" title="lsqfit.MultiFitterModel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit.MultiFitterModel</span></code></a>,
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>models</strong> – List of models, derived from <a class="reference internal" href="#lsqfit.MultiFitterModel" title="lsqfit.MultiFitterModel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit.MultiFitterModel</span></code></a>,
 to be fit to the data. Individual models in the list can
-be replaced by lists of models or tuples of models; see below.</li>
-<li><strong>mopt</strong> (<em>object</em>) – Marginalization options. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+be replaced by lists of models or tuples of models; see below.</p></li>
+<li><p><strong>mopt</strong> (<em>object</em>) – Marginalization options. If not <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 marginalization is used to reduce the number of fit parameters.
 Object <code class="docutils literal notranslate"><span class="pre">mopt</span></code> is passed to the models when constructing the
 prior for a fit; it typically indicates the degree of
 marginalization (in a model-dependent fashion). Setting
-<code class="docutils literal notranslate"><span class="pre">mopt=None</span></code> implies no marginalization.</li>
-<li><strong>ratio</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, implement marginalization using
+<code class="docutils literal notranslate"><span class="pre">mopt=None</span></code> implies no marginalization.</p></li>
+<li><p><strong>ratio</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, implement marginalization using
 ratios: <code class="docutils literal notranslate"><span class="pre">data_marg</span> <span class="pre">=</span> <span class="pre">data</span> <span class="pre">*</span> <span class="pre">fitfcn(prior_marg)</span> <span class="pre">/</span> <span class="pre">fitfcn(prior)</span></code>.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code> (default), implement using differences:
-<code class="docutils literal notranslate"><span class="pre">data_marg</span> <span class="pre">=</span> <span class="pre">data</span> <span class="pre">+</span> <span class="pre">(fitfcn(prior_marg)</span> <span class="pre">-</span> <span class="pre">fitfcn(prior))</span></code>.</li>
-<li><strong>fast</strong> (<em>bool</em>) – Setting <code class="docutils literal notranslate"><span class="pre">fast=True</span></code> (default) strips any variable
+<code class="docutils literal notranslate"><span class="pre">data_marg</span> <span class="pre">=</span> <span class="pre">data</span> <span class="pre">+</span> <span class="pre">(fitfcn(prior_marg)</span> <span class="pre">-</span> <span class="pre">fitfcn(prior))</span></code>.</p></li>
+<li><p><strong>fast</strong> (<em>bool</em>) – Setting <code class="docutils literal notranslate"><span class="pre">fast=True</span></code> (default) strips any variable
 not required by the fit from the prior. This speeds
 fits but loses information about correlations between
 variables in the fit and those that are not. Setting
 <code class="docutils literal notranslate"><span class="pre">wavg_all=True</span></code> can restore some of the correlations, but
-is somewhat slower.</li>
-<li><strong>wavg_all</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, the final result of a
+is somewhat slower.</p></li>
+<li><p><strong>wavg_all</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code> and <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>, the final result of a
 chained fit is the weighted average of all the fits in the chain.
 This can restore correlations lost in the chain because
 <code class="docutils literal notranslate"><span class="pre">fast=True</span></code>. This step is omitted if <code class="docutils literal notranslate"><span class="pre">wavg_all=False</span></code> or
-<code class="docutils literal notranslate"><span class="pre">fast=False</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</li>
-<li><strong>fitname</strong> (callable or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Individual fits in a chained fit are
+<code class="docutils literal notranslate"><span class="pre">fast=False</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>fitname</strong> (callable or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Individual fits in a chained fit are
 assigned default names, constructed from the datatags of
 the corresponding models, for access and reporting. These names
 get unwieldy when lots of models are involved. When <code class="docutils literal notranslate"><span class="pre">fitname</span></code>
 is not <code class="docutils literal notranslate"><span class="pre">None</span></code> (default), each default name <code class="docutils literal notranslate"><span class="pre">dname</span></code> is
-replaced by <code class="docutils literal notranslate"><span class="pre">fitname(dname)</span></code> which should return a string.</li>
-<li><strong>wavg_kargs</strong> (<em>float</em>) – Keyword arguments for <a class="reference internal" href="#lsqfit.wavg" title="lsqfit.wavg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.wavg()</span></code></a> when
-used to combine results from parallel sub-fits in a chained fit.</li>
-<li><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments for the
+replaced by <code class="docutils literal notranslate"><span class="pre">fitname(dname)</span></code> which should return a string.</p></li>
+<li><p><strong>wavg_kargs</strong> (<em>dict</em>) – Keyword arguments for <a class="reference internal" href="#lsqfit.wavg" title="lsqfit.wavg"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.wavg()</span></code></a> when
+used to combine results from parallel sub-fits in a chained fit.</p></li>
+<li><p><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments for the
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object used to do the fits.
 These can be collected in a dictionary (e.g.,
 <code class="docutils literal notranslate"><span class="pre">fitterargs=dict(tol=1e-6,</span> <span class="pre">maxit=500))</span></code>) or listed as
-separate arguments (e.g., <code class="docutils literal notranslate"><span class="pre">tol=1e-6,</span> <span class="pre">maxit=500</span></code>).</li>
+separate arguments (e.g., <code class="docutils literal notranslate"><span class="pre">tol=1e-6,</span> <span class="pre">maxit=500</span></code>).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="lsqfit.MultiFitter.lsqfit">
-<code class="descname">lsqfit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lsqfit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute least-squares fit of models to data.</p>
 <p><a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a> fits all of the models together, in
 a single fit. It returns the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object from the fit.</p>
 <p>To see plots of the fit data divided by the fit function
 with the best-fit parameters use</p>
 <blockquote>
-<div>fit.show_plots()</div></blockquote>
+<div><p>fit.show_plots()</p>
+</div></blockquote>
 <p>This method has optional keyword arguments <code class="docutils literal notranslate"><span class="pre">save</span></code> and <code class="docutils literal notranslate"><span class="pre">view</span></code>;
 see documentation for <a class="reference internal" href="#lsqfit.MultiFitter.show_plots" title="lsqfit.MultiFitter.show_plots"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter.show_plots</span></code></a>
 for more information. Plotting requires module <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
 <p>To bootstrap a fit, use <code class="docutils literal notranslate"><span class="pre">fit.bootstrapped_fit_iter(...)</span></code>;
 see <a class="reference internal" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="lsqfit.nonlinear_fit.bootstrapped_fit_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.bootstrapped_fit_iter()</span></code></a> for more
 information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> – Input data. One of <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Input data. One of <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be
 specified but not both. <code class="docutils literal notranslate"><span class="pre">pdata</span></code> is obtained from <code class="docutils literal notranslate"><span class="pre">data</span></code>
 by collecting the output from <code class="docutils literal notranslate"><span class="pre">m.builddata(data)</span></code>
 for each model <code class="docutils literal notranslate"><span class="pre">m</span></code> and storing it in a dictionary
-with key <code class="docutils literal notranslate"><span class="pre">m.datatag</span></code>.</li>
-<li><strong>pdata</strong> – Input data that has been processed by the
+with key <code class="docutils literal notranslate"><span class="pre">m.datatag</span></code>.</p></li>
+<li><p><strong>pdata</strong> – Input data that has been processed by the
 models using <a class="reference internal" href="#lsqfit.MultiFitter.process_data" title="lsqfit.MultiFitter.process_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.process_data()</span></code></a> or
 <a class="reference internal" href="#lsqfit.MultiFitter.process_dataset" title="lsqfit.MultiFitter.process_dataset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.process_dataset()</span></code></a>. One of
-<code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be  specified but not both.</li>
-<li><strong>prior</strong> (<em>dict</em>) – Bayesian prior for fit parameters used by the models.</li>
-<li><strong>p0</strong> – Dictionary , indexed by parameter labels, containing
+<code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be  specified but not both.</p></li>
+<li><p><strong>prior</strong> (<em>dict</em>) – Bayesian prior for fit parameters used by the models.</p></li>
+<li><p><strong>p0</strong> – Dictionary , indexed by parameter labels, containing
 initial values for the parameters in the fit. Setting
 <code class="docutils literal notranslate"><span class="pre">p0=None</span></code> implies that initial values are extracted from the
 prior. Setting <code class="docutils literal notranslate"><span class="pre">p0=&quot;filename&quot;</span></code> causes the fitter to look in
 the file with name <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> for initial values and to
 write out best-fit parameter values after the fit (for the
-next call to <code class="docutils literal notranslate"><span class="pre">self.lsqfit()</span></code>).</li>
-<li><strong>kargs</strong> – Arguments that (temporarily) override parameters specified
+next call to <code class="docutils literal notranslate"><span class="pre">self.lsqfit()</span></code>).</p></li>
+<li><p><strong>kargs</strong> – Arguments that (temporarily) override parameters specified
 when the <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiFitter</span></code></a> was created. Can also include
 additional arguments to be passed through to the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a>
-fitter.</li>
+fitter.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitter.chained_lsqfit">
-<code class="descname">chained_lsqfit</code><span class="sig-paren">(</span><em>data=None</em>, <em>pdata=None</em>, <em>prior=None</em>, <em>p0=None</em>, <em>add_priornoise=None</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">chained_lsqfit</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">pdata=None</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">add_priornoise=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chained least-squares fit of models to data.</p>
 <p>In a chained fit to models <code class="docutils literal notranslate"><span class="pre">[s1,</span> <span class="pre">s2,</span> <span class="pre">...]</span></code>, the models are fit one
 at a time, with the fit output from one being fed into the prior for
@@ -1566,29 +1612,30 @@ and includes parameters from all of the models.</p>
 where each <code class="docutils literal notranslate"><span class="pre">sn</span></code> is one of:</p>
 <blockquote>
 <div><ol class="arabic simple">
-<li>A model (derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">multifitter.MultiFitterModel</span></code>).</li>
-<li><dl class="first docutils">
-<dt>A tuple <code class="docutils literal notranslate"><span class="pre">(m1,</span> <span class="pre">m2,</span> <span class="pre">m3)</span></code> of models, to be fit together in</dt>
-<dd>a single fit (i.e., simultaneously). Simultaneous fits
-are useful for closely related models.</dd>
+<li><p>A model (derived from <code class="xref py py-class docutils literal notranslate"><span class="pre">multifitter.MultiFitterModel</span></code>).</p></li>
+<li><dl class="simple">
+<dt>A tuple <code class="docutils literal notranslate"><span class="pre">(m1,</span> <span class="pre">m2,</span> <span class="pre">m3)</span></code> of models, to be fit together in</dt><dd><p>a single fit (i.e., simultaneously). Simultaneous fits
+are useful for closely related models.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>A list <code class="docutils literal notranslate"><span class="pre">[p1,</span> <span class="pre">p2,</span> <span class="pre">p3</span> <span class="pre">...]</span></code> where each <code class="docutils literal notranslate"><span class="pre">pn</span></code> is either</dt>
-<dd>a model or a tuple of models (see #2). The <code class="docutils literal notranslate"><span class="pre">pn</span></code> are fit
-separately: the fit output from one fit is <em>not</em> fed into the
-prior of the next (i.e., the fits are effectively in
-parallel). Results from the separate fits are averaged at the
-end to provide a single composite result for the collection of
-fits. Parallel fits are effective (and fast) when the
-different fits have few or no fit parameters in common.</dd>
+<li><dl class="simple">
+<dt>A list <code class="docutils literal notranslate"><span class="pre">[p1,</span> <span class="pre">p2,</span> <span class="pre">p3</span> <span class="pre">...]</span></code> where each <code class="docutils literal notranslate"><span class="pre">pn</span></code> is either</dt><dd><p>a model, a tuple of models (see #2), or a dictionary (see #3).
+The <code class="docutils literal notranslate"><span class="pre">pn</span></code> are fit separately: the fit output from one fit is
+<em>not</em> fed into the prior of the next (i.e., the fits are
+effectively in parallel). Results from the separate fits are
+averaged at the end to provide a single composite result for
+the collection of fits. Parallel fits are effective (and fast)
+when the different fits have few or no fit parameters in
+common.</p>
+</dd>
 </dl>
 </li>
-<li><dl class="first docutils">
-<dt>A dictionary that (temporarily) resets default values for</dt>
-<dd>fitter keywords. The new values, specified in the dictionary,
+<li><dl class="simple">
+<dt>A dictionary that (temporarily) resets default values for</dt><dd><p>fitter keywords. The new values, specified in the dictionary,
 apply to subsequent fits in the chain. Any number of such
-dictionaries can be included in the model chain.</dd>
+dictionaries can be included in the model chain.</p>
+</dd>
 </dl>
 </li>
 </ol>
@@ -1609,49 +1656,46 @@ fit names built from the corresponding data tags.</p>
 information.</p>
 <p>To view plots of each fit use</p>
 <blockquote>
-<div>fit.show_plots()</div></blockquote>
+<div><p>fit.show_plots()</p>
+</div></blockquote>
 <p>This method has optional keyword arguments <code class="docutils literal notranslate"><span class="pre">save</span></code> and <code class="docutils literal notranslate"><span class="pre">view</span></code>;
 see documentation for <a class="reference internal" href="#lsqfit.MultiFitter.show_plots" title="lsqfit.MultiFitter.show_plots"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter.show_plots</span></code></a>
 for more information. Plotting requires module <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
 <p>To bootstrap a fit, use <code class="docutils literal notranslate"><span class="pre">fit.bootstrapped_fit_iter(...)</span></code>;
 see <a class="reference internal" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="lsqfit.nonlinear_fit.bootstrapped_fit_iter"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.bootstrapped_fit_iter()</span></code></a> for more
 information.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>data</strong> – Input data. One of <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Input data. One of <code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be
 specified but not both. <code class="docutils literal notranslate"><span class="pre">pdata</span></code> is obtained from <code class="docutils literal notranslate"><span class="pre">data</span></code>
 by collecting the output from <code class="docutils literal notranslate"><span class="pre">m.builddata(data)</span></code>
 for each model <code class="docutils literal notranslate"><span class="pre">m</span></code> and storing it in a dictionary
-with key <code class="docutils literal notranslate"><span class="pre">m.datatag</span></code>.</li>
-<li><strong>pdata</strong> – Input data that has been processed by the
+with key <code class="docutils literal notranslate"><span class="pre">m.datatag</span></code>.</p></li>
+<li><p><strong>pdata</strong> – Input data that has been processed by the
 models using <a class="reference internal" href="#lsqfit.MultiFitter.process_data" title="lsqfit.MultiFitter.process_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.process_data()</span></code></a> or
 <a class="reference internal" href="#lsqfit.MultiFitter.process_dataset" title="lsqfit.MultiFitter.process_dataset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.process_dataset()</span></code></a>. One of
-<code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be  specified but not both.</li>
-<li><strong>prior</strong> – Bayesian prior for fit parameters used by the models.</li>
-<li><strong>p0</strong> – Dictionary , indexed by parameter labels, containing
+<code class="docutils literal notranslate"><span class="pre">data</span></code> or <code class="docutils literal notranslate"><span class="pre">pdata</span></code> must be  specified but not both.</p></li>
+<li><p><strong>prior</strong> – Bayesian prior for fit parameters used by the models.</p></li>
+<li><p><strong>p0</strong> – Dictionary , indexed by parameter labels, containing
 initial values for the parameters in the fit. Setting
 <code class="docutils literal notranslate"><span class="pre">p0=None</span></code> implies that initial values are extracted from the
 prior. Setting <code class="docutils literal notranslate"><span class="pre">p0=&quot;filename&quot;</span></code> causes the fitter to look in
 the file with name <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> for initial values and to
 write out best-fit parameter values after the fit (for the
-next call to <code class="docutils literal notranslate"><span class="pre">self.lsqfit()</span></code>).</li>
-<li><strong>kargs</strong> – Arguments that override parameters specified when
+next call to <code class="docutils literal notranslate"><span class="pre">self.lsqfit()</span></code>).</p></li>
+<li><p><strong>kargs</strong> – Arguments that override parameters specified when
 the <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiFitter</span></code></a> was created. Can also include
 additional arguments to be passed through to
-the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> fitter.</li>
+the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> fitter.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitter.set">
-<code class="descname">set</code><span class="sig-paren">(</span><em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.set" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset default keyword parameters.</p>
 <p>Assigns new default values from dictionary <code class="docutils literal notranslate"><span class="pre">kargs</span></code> to the fitter’s
 keyword parameters. Keywords for the underlying <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> fitters
@@ -1664,9 +1708,9 @@ keywords. Use <code class="docutils literal notranslate"><span class="pre">fitte
 values.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="lsqfit.MultiFitter.process_data">
-<em class="property">static </em><code class="descname">process_data</code><span class="sig-paren">(</span><em>data</em>, <em>models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_data" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">process_data</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <code class="docutils literal notranslate"><span class="pre">data</span></code> to processed data using <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 <p>Data from dictionary <code class="docutils literal notranslate"><span class="pre">data</span></code> is processed by each model
 in list <code class="docutils literal notranslate"><span class="pre">models</span></code>, and the results collected into a new
@@ -1674,9 +1718,9 @@ dictionary <code class="docutils literal notranslate"><span class="pre">pdata</s
 and <code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.chained_lsqft()</span></code>.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="lsqfit.MultiFitter.process_dataset">
-<em class="property">static </em><code class="descname">process_dataset</code><span class="sig-paren">(</span><em>dataset</em>, <em>models</em>, <em>**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">process_dataset</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">models</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert <code class="docutils literal notranslate"><span class="pre">dataset</span></code> to processed data using <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> (or similar dictionary) object
 <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is processed by each model in list <code class="docutils literal notranslate"><span class="pre">models</span></code>,
@@ -1688,9 +1732,9 @@ Assumes that the models have defined method
 averaging the data.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="lsqfit.MultiFitter.show_plots">
-<em class="property">static </em><code class="descname">show_plots</code><span class="sig-paren">(</span><em>fitdata</em>, <em>fitval</em>, <em>x=None</em>, <em>save=False</em>, <em>view='ratio'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">show_plots</code><span class="sig-paren">(</span><em class="sig-param">fitdata</em>, <em class="sig-param">fitval</em>, <em class="sig-param">x=None</em>, <em class="sig-param">save=False</em>, <em class="sig-param">view='ratio'</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Show plots comparing <code class="docutils literal notranslate"><span class="pre">fitdata[k],fitval[k]</span></code> for each key <code class="docutils literal notranslate"><span class="pre">k</span></code> in <code class="docutils literal notranslate"><span class="pre">fitval</span></code>.</p>
 <p>Assumes <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> is installed (to make the plots). Plots
 are shown for one correlator at a time. Press key <code class="docutils literal notranslate"><span class="pre">n</span></code> to see the
@@ -1718,9 +1762,9 @@ filename end with a suffix indicating the type of plot file
 desired: e.g., <code class="docutils literal notranslate"><span class="pre">fmt='plot-{}.pdf'</span></code>.</p>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="lsqfit.MultiFitter.flatten_models">
-<em class="property">static </em><code class="descname">flatten_models</code><span class="sig-paren">(</span><em>models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.flatten_models" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">flatten_models</code><span class="sig-paren">(</span><em class="sig-param">models</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.flatten_models" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create 1d-array containing all disctinct models from <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 </dd></dl>
 
@@ -1733,14 +1777,14 @@ class. They need to be overwritten by the derived class (except
 for <code class="docutils literal notranslate"><span class="pre">builddataset</span></code> which is optional).</p>
 <dl class="class">
 <dt id="lsqfit.MultiFitterModel">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">MultiFitterModel</code><span class="sig-paren">(</span><em>datatag</em>, <em>ncg=1</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">MultiFitterModel</code><span class="sig-paren">(</span><em class="sig-param">datatag</em>, <em class="sig-param">ncg=1</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for MultiFitter models.</p>
 <p>Derived classes must define methods <code class="docutils literal notranslate"><span class="pre">fitfcn</span></code>, <code class="docutils literal notranslate"><span class="pre">buildprior</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">builddata</span></code>, all of which are described below. In addition they
 have attributes:</p>
 <dl class="attribute">
 <dt id="lsqfit.MultiFitterModel.datatag">
-<code class="descname">datatag</code><a class="headerlink" href="#lsqfit.MultiFitterModel.datatag" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">datatag</code><a class="headerlink" href="#lsqfit.MultiFitterModel.datatag" title="Permalink to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> builds fit data for the correlator by
 extracting the data labelled by <code class="docutils literal notranslate"><span class="pre">datatag</span></code> (eg, a string) from an
 input data set (eg, a dictionary). This label is stored in the
@@ -1751,7 +1795,7 @@ numbers.</p>
 
 <dl class="attribute">
 <dt id="lsqfit.MultiFitterModel.ncg">
-<code class="descname">ncg</code><a class="headerlink" href="#lsqfit.MultiFitterModel.ncg" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ncg</code><a class="headerlink" href="#lsqfit.MultiFitterModel.ncg" title="Permalink to this definition">¶</a></dt>
 <dd><p>When <code class="docutils literal notranslate"><span class="pre">ncg&gt;1</span></code>, fit data and functions are coarse-grained by
 breaking them up into bins of of <code class="docutils literal notranslate"><span class="pre">ncg</span></code> values and replacing
 each bin by its average. This can increase the fitting speed,
@@ -1759,21 +1803,17 @@ because there is less data, without much loss of precision
 if the data elements within a bin are highly correlated.</p>
 </dd></dl>
 
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>datatag</strong> – Label used to identify model’s data.</li>
-<li><strong>ncg</strong> (<em>int</em>) – Size of bins for coarse graining (default is <code class="docutils literal notranslate"><span class="pre">ncg=1</span></code>).</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatag</strong> – Label used to identify model’s data.</p></li>
+<li><p><strong>ncg</strong> (<em>int</em>) – Size of bins for coarse graining (default is <code class="docutils literal notranslate"><span class="pre">ncg=1</span></code>).</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <dl class="method">
 <dt id="lsqfit.MultiFitterModel.buildprior">
-<code class="descname">buildprior</code><span class="sig-paren">(</span><em>prior</em>, <em>mopt=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.buildprior" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">buildprior</code><span class="sig-paren">(</span><em class="sig-param">prior</em>, <em class="sig-param">mopt=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.buildprior" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract fit prior from <code class="docutils literal notranslate"><span class="pre">prior</span></code>.</p>
 <p>Returns a dictionary containing the  part of dictionary
 <code class="docutils literal notranslate"><span class="pre">prior</span></code> that is relevant to this model’s fit. The code could
@@ -1801,64 +1841,54 @@ requires a slight modification: e.g.,</p>
 model’s prior. <code class="docutils literal notranslate"><span class="pre">mopt=None</span></code> implies no marginalization. Otherwise
 <code class="docutils literal notranslate"><span class="pre">mopt</span></code> will typically contain information about what and how much
 to marginalize.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>prior</strong> – Dictionary containing <em>a priori</em> estimates of all
-fit parameters.</li>
-<li><strong>mopt</strong> (<em>object</em>) – Marginalization options. Ignore if <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prior</strong> – Dictionary containing <em>a priori</em> estimates of all
+fit parameters.</p></li>
+<li><p><strong>mopt</strong> (<em>object</em>) – Marginalization options. Ignore if <code class="docutils literal notranslate"><span class="pre">None</span></code>.
 Otherwise marginalize fit parameters as specified by <code class="docutils literal notranslate"><span class="pre">mopt</span></code>.
 <code class="docutils literal notranslate"><span class="pre">mopt</span></code> can be any type of Python object; it is used only
-in <code class="docutils literal notranslate"><span class="pre">buildprior</span></code> and is passed through to it unchanged.</li>
+in <code class="docutils literal notranslate"><span class="pre">buildprior</span></code> and is passed through to it unchanged.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitterModel.builddata">
-<code class="descname">builddata</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddata" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">builddata</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract fit data corresponding to this model from data set <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 <p>The fit data is returned in a 1-dimensional array;
 the fitfcn must return arrays of the same length.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – Data set containing the fit data for all models. This
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – Data set containing the fit data for all models. This
 is typically a dictionary, whose keys are the <code class="docutils literal notranslate"><span class="pre">datatag</span></code>s
-of the models.</td>
-</tr>
-</tbody>
-</table>
+of the models.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitterModel.fitfcn">
-<code class="descname">fitfcn</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.fitfcn" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fitfcn</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.fitfcn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute fit function fit for parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <p>Results are returned in a 1-dimensional array the
 same length as (and corresponding to) the fit data
 returned by <code class="docutils literal notranslate"><span class="pre">self.builddata(data)</span></code>.</p>
 <p>If marginalization is supported, <code class="docutils literal notranslate"><span class="pre">fitfcn</span></code> must work
 with or without the marginalized parameters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> – Dictionary of parameter values.</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> – Dictionary of parameter values.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitterModel.builddataset">
-<code class="descname">builddataset</code><span class="sig-paren">(</span><em>dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">builddataset</code><span class="sig-paren">(</span><em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract fit dataset from <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> <code class="docutils literal notranslate"><span class="pre">dataset</span></code>.</p>
 <p>The code</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
@@ -1875,17 +1905,14 @@ equivalent to</p>
 </div>
 <p>This method is optional. It is used only by
 <a class="reference internal" href="#lsqfit.MultiFitter.process_dataset" title="lsqfit.MultiFitter.process_dataset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.process_dataset()</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dataset</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> (or similar dictionary)
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dataset</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> (or similar dictionary)
 dataset containing the fit data for all models. This is
 typically a dictionary, whose keys are the <code class="docutils literal notranslate"><span class="pre">datatag</span></code>s of
-the models.</td>
-</tr>
-</tbody>
-</table>
+the models.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1905,14 +1932,14 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
 <li><a class="reference internal" href="#classes-for-bayesian-integrals">Classes for Bayesian Integrals</a></li>
-<li><a class="reference internal" href="#lsqfit-multifitter-classes"><code class="docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
+<li><a class="reference internal" href="#lsqfit-multifitter-classes"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
 </li>
@@ -1932,13 +1959,11 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -1962,12 +1987,12 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
     </div>
   </body>
 </html>

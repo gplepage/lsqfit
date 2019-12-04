@@ -1,18 +1,17 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>scipy Routines &#8212; lsqfit 11.2 documentation</title>
+    <meta charset="utf-8" />
+    <title>scipy Routines &#8212; lsqfit 11.3 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="GSL Routines" href="gsl.html" />
@@ -36,7 +35,7 @@
         <li class="right" >
           <a href="gsl.html" title="GSL Routines"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -55,26 +54,25 @@ if the latter are not installed. There is one fitter available for use by
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <dl class="class">
 <dt id="lsqfit.scipy_least_squares">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">scipy_least_squares</code><span class="sig-paren">(</span><em>x0</em>, <em>n</em>, <em>f</em>, <em>tol=(1e-08</em>, <em>1e-08</em>, <em>1e-08)</em>, <em>maxit=1000</em>, <em>**extra_args</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_least_squares" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">scipy_least_squares</code><span class="sig-paren">(</span><em class="sig-param">x0</em>, <em class="sig-param">n</em>, <em class="sig-param">f</em>, <em class="sig-param">tol=(1e-08</em>, <em class="sig-param">1e-08</em>, <em class="sig-param">1e-08)</em>, <em class="sig-param">maxit=1000</em>, <em class="sig-param">**extra_args</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_least_squares" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> fitter for nonlinear least-squares multidimensional fits.</p>
 <p><a class="reference internal" href="#lsqfit.scipy_least_squares" title="lsqfit.scipy_least_squares"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_least_squares</span></code></a> is a function-class whose constructor does a
 least-squares fit by minimizing <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
 vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
 <p><a class="reference internal" href="#lsqfit.scipy_least_squares" title="lsqfit.scipy_least_squares"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_least_squares</span></code></a> is a wrapper for the <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization.</li>
-<li><strong>n</strong> (<em>positive int</em>) – Length of vector returned by the fit function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</li>
-<li><strong>f</strong> (<em>array-valued function</em>) – <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization.</p></li>
+<li><p><strong>n</strong> (<em>positive int</em>) – Length of vector returned by the fit function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</p></li>
+<li><p><strong>f</strong> (<em>array-valued function</em>) – <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized
 by varying parameters <code class="docutils literal notranslate"><span class="pre">x</span></code>. The parameters are a 1-d
-<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</li>
-<li><strong>tol</strong> (<em>float</em><em> or </em><em>tuple</em>) – <p>Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">numpy</span></code> array of either numbers or <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p></li>
+<li><p><strong>tol</strong> (<em>float</em><em> or </em><em>tuple</em>) – <p>Assigning <code class="docutils literal notranslate"><span class="pre">tol=(xtol,</span> <span class="pre">gtol,</span> <span class="pre">ftol)</span></code> causes the
 fit to stop searching for a minimum when any of</p>
 <blockquote>
-<div><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations<p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
+<div><p><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
+<p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
 <p><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p>
 </div></blockquote>
 <p>is statisfied. See the <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code>
@@ -85,31 +83,29 @@ digits of precision desired in the result, while <code class="docutils literal n
 equivalent to setting <code class="docutils literal notranslate"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting
 <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2)</span></code> is equivlent to setting
 <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is <code class="docutils literal notranslate"><span class="pre">tol=1e-5</span></code>.</p>
-</li>
-<li><strong>method</strong> (<em>str</em><em> or </em><em>None</em>) – <p>Minimization algorithm. Options
+</p></li>
+<li><p><strong>method</strong> (<em>str</em><em> or </em><em>None</em>) – <p>Minimization algorithm. Options
 include:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt><code class="docutils literal notranslate"><span class="pre">'trf'</span></code></dt>
-<dd>Trusted Region Reflective algorithm (default). Best
-choice with bounded parameters.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">'dogbox'</span></code></dt>
-<dd>dogleg algorithm adapted for bounded parameters.</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">'lm'</span></code></dt>
-<dd>Levenberg-Marquardt algorithm as implemented in MINPACK.
+<div><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">'trf'</span></code></dt><dd><p>Trusted Region Reflective algorithm (default). Best
+choice with bounded parameters.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">'dogbox'</span></code></dt><dd><p>dogleg algorithm adapted for bounded parameters.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">'lm'</span></code></dt><dd><p>Levenberg-Marquardt algorithm as implemented in MINPACK.
 Best for smaller problems. Does not work with bounded
-parameters (bounds are ignored).</dd>
+parameters (bounds are ignored).</p>
+</dd>
 </dl>
 </div></blockquote>
 <p>Setting <code class="docutils literal notranslate"><span class="pre">method=None</span></code> implies the default <code class="docutils literal notranslate"><span class="pre">'trf'</span></code>.</p>
-</li>
-<li><strong>maxit</strong> (<em>int</em>) – Maximum number of function evaluations in search
-for minimum; default is 1000.</li>
+</p></li>
+<li><p><strong>maxit</strong> (<em>int</em>) – Maximum number of function evaluations in search
+for minimum; default is 1000.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p>Other arguments include: <code class="docutils literal notranslate"><span class="pre">x_jac</span></code>, <code class="docutils literal notranslate"><span class="pre">loss</span></code>, <code class="docutils literal notranslate"><span class="pre">tr_solver</span></code>,
 <code class="docutils literal notranslate"><span class="pre">f_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">tr_options</span></code>, <code class="docutils literal notranslate"><span class="pre">bounds</span></code>. See the documentation for
 <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code> for information about these and other
@@ -118,68 +114,113 @@ options.</p>
 attributes.</p>
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.x">
-<code class="descname">x</code><a class="headerlink" href="#lsqfit.scipy_least_squares.x" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Location of the most recently computed (best) fit point.</p>
+<code class="sig-name descname">x</code><a class="headerlink" href="#lsqfit.scipy_least_squares.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the most recently computed (best) fit point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.cov">
-<code class="descname">cov</code><a class="headerlink" href="#lsqfit.scipy_least_squares.cov" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Covariance matrix at the minimum point.</p>
+<code class="sig-name descname">cov</code><a class="headerlink" href="#lsqfit.scipy_least_squares.cov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Covariance matrix at the minimum point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.description">
-<code class="descname">description</code><a class="headerlink" href="#lsqfit.scipy_least_squares.description" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str</em> – Short description of internal fitter settings.</p>
+<code class="sig-name descname">description</code><a class="headerlink" href="#lsqfit.scipy_least_squares.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short description of internal fitter settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.f">
-<code class="descname">f</code><a class="headerlink" href="#lsqfit.scipy_least_squares.f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Fit function value <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum in
+<code class="sig-name descname">f</code><a class="headerlink" href="#lsqfit.scipy_least_squares.f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit function value <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum in
 the most recent fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.J">
-<code class="descname">J</code><a class="headerlink" href="#lsqfit.scipy_least_squares.J" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Gradient <code class="docutils literal notranslate"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</p>
+<code class="sig-name descname">J</code><a class="headerlink" href="#lsqfit.scipy_least_squares.J" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gradient <code class="docutils literal notranslate"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.nit">
-<code class="descname">nit</code><a class="headerlink" href="#lsqfit.scipy_least_squares.nit" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of function evaluations used in last fit to find
+<code class="sig-name descname">nit</code><a class="headerlink" href="#lsqfit.scipy_least_squares.nit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of function evaluations used in last fit to find
 the minimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.stopping_criterion">
-<code class="descname">stopping_criterion</code><a class="headerlink" href="#lsqfit.scipy_least_squares.stopping_criterion" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Criterion used to
+<code class="sig-name descname">stopping_criterion</code><a class="headerlink" href="#lsqfit.scipy_least_squares.stopping_criterion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Criterion used to
 stop fit:</p>
 <blockquote>
 <div><ol class="arabic simple" start="0">
-<li>didn’t converge</li>
-<li><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</li>
-<li><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</li>
+<li><p>didn’t converge</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p></li>
 </ol>
 </div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.error">
-<code class="descname">error</code><a class="headerlink" href="#lsqfit.scipy_least_squares.error" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>str or None</em> – <code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
+<code class="sig-name descname">error</code><a class="headerlink" href="#lsqfit.scipy_least_squares.error" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_least_squares.results">
-<code class="descname">results</code><a class="headerlink" href="#lsqfit.scipy_least_squares.results" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>dict</em> – Results returned by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code>.</p>
+<code class="sig-name descname">results</code><a class="headerlink" href="#lsqfit.scipy_least_squares.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Results returned by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -191,7 +232,7 @@ message otherwise.</p>
 module to minimize <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <dl class="class">
 <dt id="lsqfit.scipy_multiminex">
-<em class="property">class </em><code class="descclassname">lsqfit.</code><code class="descname">scipy_multiminex</code><span class="sig-paren">(</span><em>x0</em>, <em>f</em>, <em>tol=1e-4</em>, <em>maxit=1000</em>, <em>step=1</em>, <em>alg='nmsimplex2'</em>, <em>analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_multiminex" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">scipy_multiminex</code><span class="sig-paren">(</span><em class="sig-param">x0</em>, <em class="sig-param">f</em>, <em class="sig-param">tol=1e-4</em>, <em class="sig-param">maxit=1000</em>, <em class="sig-param">step=1</em>, <em class="sig-param">alg='nmsimplex2'</em>, <em class="sig-param">analyzer=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_multiminex" title="Permalink to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> minimizer for multidimensional functions.</p>
 <p><a class="reference internal" href="#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_multiminex</span></code></a> is a function-class whose constructor minimizes a
 multidimensional function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>. This routine
@@ -199,49 +240,65 @@ does <em>not</em> use user-supplied information about the gradient of <code clas
 <p><a class="reference internal" href="#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_multiminex</span></code></a> is a wrapper for the <code class="docutils literal notranslate"><span class="pre">minimize</span></code>
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> function. It gives access to only part of that
 function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization search.</li>
-<li><strong>f</strong> – Function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> to be minimized by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</li>
-<li><strong>tol</strong> (<em>float</em>) – Minimization stops when <code class="docutils literal notranslate"><span class="pre">x</span></code> has converged to with
-tolerance <code class="docutils literal notranslate"><span class="pre">tol</span></code>; default is <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</li>
-<li><strong>maxit</strong> (<em>positive int</em>) – Maximum number of iterations in search for minimum;
-default is 1000.</li>
-<li><strong>analyzer</strong> (<em>function</em>) – Optional function of the current <code class="docutils literal notranslate"><span class="pre">x</span></code>.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization search.</p></li>
+<li><p><strong>f</strong> – Function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> to be minimized by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Minimization stops when <code class="docutils literal notranslate"><span class="pre">x</span></code> has converged to with
+tolerance <code class="docutils literal notranslate"><span class="pre">tol</span></code>; default is <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
+<li><p><strong>maxit</strong> (<em>positive int</em>) – Maximum number of iterations in search for minimum;
+default is 1000.</p></li>
+<li><p><strong>analyzer</strong> (<em>function</em>) – Optional function of the current <code class="docutils literal notranslate"><span class="pre">x</span></code>.
 This can be used to inspect intermediate steps in the
-minimization, if needed.</li>
+minimization, if needed.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p><a class="reference internal" href="#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a> objects have the following attributes.</p>
 <dl class="attribute">
 <dt id="lsqfit.scipy_multiminex.x">
-<code class="descname">x</code><a class="headerlink" href="#lsqfit.scipy_multiminex.x" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>array</em> – Location of the minimum.</p>
+<code class="sig-name descname">x</code><a class="headerlink" href="#lsqfit.scipy_multiminex.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Location of the minimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_multiminex.f">
-<code class="descname">f</code><a class="headerlink" href="#lsqfit.scipy_multiminex.f" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>float</em> – Value of function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum.</p>
+<code class="sig-name descname">f</code><a class="headerlink" href="#lsqfit.scipy_multiminex.f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Value of function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_multiminex.nit">
-<code class="descname">nit</code><a class="headerlink" href="#lsqfit.scipy_multiminex.nit" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>int</em> – Number of iterations required to find the minimum.</p>
+<code class="sig-name descname">nit</code><a class="headerlink" href="#lsqfit.scipy_multiminex.nit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of iterations required to find the minimum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="lsqfit.scipy_multiminex.error">
-<code class="descname">error</code><a class="headerlink" href="#lsqfit.scipy_multiminex.error" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>Noe or str</em> – <code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
+<code class="sig-name descname">error</code><a class="headerlink" href="#lsqfit.scipy_multiminex.error" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Noe or str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -255,9 +312,9 @@ message otherwise.</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a><ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a><ul>
 <li><a class="reference internal" href="#fitter">Fitter</a></li>
 <li><a class="reference internal" href="#minimizer">Minimizer</a></li>
 </ul>
@@ -275,13 +332,11 @@ message otherwise.</p>
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -302,12 +357,12 @@ message otherwise.</p>
         <li class="right" >
           <a href="gsl.html" title="GSL Routines"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.2 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.4.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
     </div>
   </body>
 </html>
