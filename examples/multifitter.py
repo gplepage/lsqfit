@@ -1,10 +1,7 @@
-from __future__ import print_function
-#!/usr/bin/env python
-# encoding: utf-8
 """
 Code for testing MultiFitter
 """
-# Copyright (c) 2018-19 G. Peter Lepage.
+# Copyright (c) 2018-20 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,6 +12,7 @@ Code for testing MultiFitter
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
+from __future__ import print_function
 
 import collections
 import numpy as np
@@ -25,15 +23,15 @@ import sys
 gv.ranseed(12)   # remove randomness
 
 if sys.argv[1:]:
-    SHOW_GRID = eval(sys.argv[1])   # display picture of grid ?
+    SHOW_PLOTS = eval(sys.argv[1])   # display picture of grid ?
 else:
-    SHOW_GRID = True
+    SHOW_PLOTS = True
 
-if SHOW_GRID:
+if SHOW_PLOTS:
     try:
         import matplotlib
     except ImportError:
-        SHOW_GRID = False
+        SHOW_PLOTS = False
 
 def main():
     # initial data
@@ -66,7 +64,7 @@ def main():
     print(30 * '-', 'lsqfit')
     fit = fitter.lsqfit(data=data, prior=prior, svdcut=1e-10)
     print(fit.formatall())
-    if SHOW_GRID:
+    if SHOW_PLOTS:
         fit.show_plots(view='diff')
 
     # chained fit
@@ -74,8 +72,10 @@ def main():
     fit = fitter.chained_lsqfit(data=data, prior=prior)
     print(fit.format())
     print(fit.formatall())
-    # if SHOW_GRID:
+    # if SHOW_PLOTS:
     #     fit.show_plots()
+    if SHOW_PLOTS:
+        fit.qqplot_residuals().show()
 
     # bootstrap last fit
     for bfit in fit.bootstrapped_fit_iter(n=2):

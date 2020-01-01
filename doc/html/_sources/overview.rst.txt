@@ -1570,11 +1570,11 @@ number of samples)::
 
   def main():
       ysamples = [
-          [0.0092472625, 0.0069020664, 0.0051559329, 0.0038474351, 0.0028718766],
-          [0.0092730161, 0.0069210738, 0.0051657272, 0.0038557131, 0.0028791349],
-          [0.0092550445, 0.0069077582, 0.0051583732, 0.0038507522, 0.0028747456],
-          [0.0092484151, 0.0069010389, 0.0051501969, 0.0038442755, 0.0028703677],
-          [0.0092516114, 0.0069036709, 0.0051534052, 0.0038445233, 0.0028703909],
+          [0.0092441016, 0.0068974057, 0.0051480509, 0.0038431422, 0.0028690492], 
+          [0.0092477405, 0.0069030565, 0.0051531383, 0.0038455855, 0.0028700587], 
+          [0.0092558569, 0.0069102437, 0.0051596569, 0.0038514537, 0.0028749153], 
+          [0.0092294581, 0.0068865156, 0.0051395262, 0.003835656, 0.0028630454], 
+          [0.009240534, 0.0068961523, 0.0051480046, 0.0038424661, 0.0028675632],
           ]
       y = gv.dataset.avg_data(ysamples)
       x = np.array([15., 16., 17., 18., 19.])
@@ -1615,36 +1615,39 @@ the following (excellent) fit:
 
 .. literalinclude:: eg10b.out
 
-The SVD cut is set to ``0.02`` here and modifies 3 of the 5 eigenmodes in the
+The SVD cut is set to ``0.0028`` here and modifies 3 of the 5 eigenmodes in the
 correlation matrix. Generally one needs an SVD cut unless there
-are many more samples than data points — 10 or 100 times as many.
+are many more samples than data points — 10 or 100 times as many. 
 
-The ``chi**2`` for a fit where many modes are modified (by a large SVD cut)
-can be quite low. This is because the SVD cut increases uncertainties
-in the data associated with the modified modes, typically making them
-much larger than the corresponding
-fluctuations in the mean values of the data. As a result the contribution
-to ``chi**2`` from each of these modes is much smaller than |~| 1.
-Adding parameter ``add_svdnoise=True`` to the fitter call modifies the
-data means to include noise that is commensurate with the new
-uncertainties. The ``chi**2`` per degree of freedom should then be closer
-to |~| 1. Rerunning the previous
-fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
+See the discussions in :ref:`goodness-of-fit` and :ref:`fit-residuals` for further 
+analysis of this example.
 
-.. literalinclude:: eg10c.out
+.. The ``chi**2`` for a fit where many modes are modified (by a large SVD cut)
+.. can be quite low. This is because the SVD cut increases uncertainties
+.. in the data associated with the modified modes, typically making them
+.. much larger than the corresponding
+.. fluctuations in the mean values of the data. As a result the contribution
+.. to ``chi**2`` from each of these modes is much smaller than |~| 1.
+.. Adding parameter ``add_svdnoise=True`` to the fitter call modifies the
+.. data means to include noise that is commensurate with the new
+.. uncertainties. The ``chi**2`` per degree of freedom should then be closer
+.. to |~| 1. Rerunning the previous
+.. fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
 
-The fit is still good even with the additional noise,
-suggesting that the SVD cut is well chosen.
+.. .. literalinclude:: eg10c.out
 
-The data samples above are from a simulation,
-so we know the exact correlation matrix
-for the underlying distribution. Fitting with this correlation matrix, we
-obtain the following fit (without an SVD cut)
+.. The fit is still good even with the additional noise,
+.. suggesting that the SVD cut is well chosen.
 
-.. literalinclude:: eg10d.out
+.. The data samples above are from a simulation,
+.. so we know the exact correlation matrix
+.. for the underlying distribution. Fitting with this correlation matrix, we
+.. obtain the following fit (without an SVD cut)
 
-which looks quite similar to the fit above, using the approximate correlation
-matrix (with an SVD cut).
+.. .. literalinclude:: eg10d.out
+
+.. which looks quite similar to the fit above, using the approximate correlation
+.. matrix (with an SVD cut).
 
 :class:`lsqfit.nonlinear_fit` will apply an SVD cut if keyword parameter
 ``svdcut`` is set. Another way to implement SVD cuts is using
@@ -1687,7 +1690,7 @@ which varies parameter ``z``, starting at ``z0``, to maximize
     fit = lsqfit.nonlinear_fit(**fitargs(z)).
 
 Function ``fitargs(z)`` returns a dictionary containing the arguments for
-:func:`nonlinear_fit`. These arguments are
+:class:`lsqfit.nonlinear_fit`. These arguments are
 varied as functions of ``z``. The optimal fit (that is, the one for which
 ``fit.logGBF`` is maximum) and ``z`` are returned.
 
@@ -2036,6 +2039,8 @@ is chosen to make the prior probability
 distribution for parameter ``a`` almost flat
 across most (80%) of the interval 0.02±0.02.
 
+.. _faster-fitters:
+
 Faster Fitters
 -------------------
 |nonlinear_fit| uses fitters from the Gnu Scientific Library (GSL) and/or
@@ -2051,7 +2056,7 @@ in |nonlinear_fit|. There are currently three fitters available:
     is wrapped in Python class :class:`lsqfit.gsl_multifit`. This is the
     default fitter provided GSL is installed. It offers a wide range
     of options, including several different algorithms that are selected
-    by setting |nonlinear_fit| parameter ``alg`` equal to ``'lm'``,
+    by setting |nonlinear_fit| parameter ``alg`` equal to ``'lm'``, ``'lmaccel'``,
     ``'subspace2D'``, ``'dogleg'``, and so on. See the documentation.
 
   ``fitter='gsl_v1_multifit'``
@@ -2116,7 +2121,6 @@ more specialized applications.
 
 Debugging and Troubleshooting
 -----------------------------
-
 It is a very good idea to set parameter ``debug=True`` in |nonlinear_fit|, at
 least in the early stages of a project. This causes the code to look for
 common mistakes and report on them with  more intelligible error messages. The
@@ -2184,10 +2188,22 @@ fluctuate together, the prior should be redefined::
 
    >>> prior = gv.BufferDict(a=gv.gvar(1, 1), b=gv.gvar(1, 1))
 
-where now each parameter has its own :class:`gvar.GVar`. A slightly more
-succinct way of writing this line is::
+where now each parameter has its own :class:`gvar.GVar`. 
+This line can be rewritten ::
 
-   >>> prior = gv.gvar(gv.BufferDict(a='1(1)', b='1(1)'))
+   >>> prior = gv.gvar(dict(a='1(1)', b='1(1)'))
 
+which is slighlty more succinct.
 
+Your code is fully debugged and it still gives a poor fit.
+Before discarding your model and/or data, it 
+is worth trying different fitters, as discussed 
+in :ref:`faster-fitters` above. Also some fits are quite
+sensitive to the starting point |~| (``p0``) used by the fitting 
+algorithm in its search for the best fit. In such 
+cases it is worth trying different starting points. 
+When using a prior, set ``p0=True`` in |nonlinear_fit| 
+to generate random starting points from 
+the prior; run the fit multiple times to sample 
+a variety of starting points.
 

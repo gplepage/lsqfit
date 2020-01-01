@@ -670,10 +670,12 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.fitter = 'chained fit'
         self.description = ''
         self.stopping_criterion = None
+        self.residuals = []
         for k in self.chained_fits:
             self.svdcorrection += self.chained_fits[k].svdcorrection
             if k[:5] == 'wavg(' and k[-1] == ')':
                 continue
+            self.residuals.extend(self.chained_fits[k].residuals)
             self.svdn += self.chained_fits[k].svdn
             self.dof += self.chained_fits[k].dof
             self.chi2 += self.chained_fits[k].chi2
@@ -695,6 +697,7 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
                 self.logGBF += logGBF
             if self.chained_fits[k].stopping_criterion == 0:
                 self.stopping_criterion = 0
+        self.residuals = numpy.array(self.residuals)
         if len(self.error) == 0:
             self.error = None
         self.tol = tuple(self.tol)

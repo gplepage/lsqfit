@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 err-budget.py - Code for "Tuning Priors and the Empirical Bayes Criterion"
 """
-# Copyright (c) 2017 G. Peter Lepage.
+# Copyright (c) 2017-20 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

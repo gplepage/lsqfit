@@ -1,4 +1,5 @@
 *.pyc
+.vscode
 build/
 __pycache__/
 examples/*.p

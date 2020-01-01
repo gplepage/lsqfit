@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 svd and inadequate statistics
 
@@ -26,13 +24,21 @@ from collections import OrderedDict
 import tee
 import sys
 
-SEED = 12345678
+SEED = (1573116538, 1842119200, 1626997435)
 NSAMPLE = 5
 
 def main():
     gv.ranseed(SEED)
     y = exact(NSAMPLE)
     ysamples = [yi for yi in gv.raniter(y, n=NSAMPLE)]
+    # above code (don't comment it out) generates the following
+    ysamples = [
+        [0.0092441016, 0.0068974057, 0.0051480509, 0.0038431422, 0.0028690492], 
+        [0.0092477405, 0.0069030565, 0.0051531383, 0.0038455855, 0.0028700587], 
+        [0.0092558569, 0.0069102437, 0.0051596569, 0.0038514537, 0.0028749153], 
+        [0.0092294581, 0.0068865156, 0.0051395262, 0.003835656, 0.0028630454], 
+        [0.009240534, 0.0068961523, 0.0051480046, 0.0038424661, 0.0028675632],
+        ]
     dstr = '['
     for yi in ysamples:
         dstr += ('[' + len(yi) * '{:10.8g},' + '],').format(*yi)
@@ -67,14 +73,18 @@ def main():
     # fit.plot_residuals().show()
 
     sys.stdout = tee.tee(sys_stdout, open('eg10e.out', 'w'))
-    fit = lsqfit.nonlinear_fit(data=y, fcn=f, prior=prior, svdcut=0.02)
+    fit = lsqfit.nonlinear_fit(data=y, fcn=f, prior=prior, svdcut=s.svdcut)
     print(fit)
     print('\n================ Add noise to prior, SVD')
     noisyfit = lsqfit.nonlinear_fit(
-        data=y, prior=prior, fcn=f, svdcut=0.02,
+        data=y, prior=prior, fcn=f, svdcut=s.svdcut,
         add_svdnoise=True, add_priornoise=True
         )
     print(noisyfit.format(True))
+    # save figures
+    fit.qqplot_residuals(plot=plt).savefig('eg10e1.png', bbox_inches='tight')
+    plt.cla()
+    noisyfit.qqplot_residuals(plot=plt).savefig('eg10e2.png', bbox_inches='tight')
 
 def exact(nsample):
     y = gv.gvar(

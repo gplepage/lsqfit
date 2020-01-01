@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 nist.py - These are all 27 fits used by NIST to test nonlinear fitters.
 See http://www.itl.nist.gov/div898/strd/nls/nls_main.shtml.
@@ -12,14 +10,14 @@ wider than the result, with mean 0; these priors are too wide to affect the
 fits.
 
 * The fits have starting points provided by NIST. (I use the 2nd starting
-point by have tested the other one as well --- see nist directory.)
+point but have tested the other one as well --- see nist directory.)
 
 * The results from the fit are compared (see assert statements) with NIST's
 "certified values". All work with the gsl_multifit and scipy_least_squares
 fitters, at least on my Mac.
 
 """
-# Copyright (c) 2016-18 G. Peter Lepage.
+# Copyright (c) 2016-20 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +36,8 @@ import gvar as gv
 import numpy as np
 import lsqfit
 
-# lsqfit.nonlinear_fit.set(fitter='scipy_least_squares') # 'gsl_multifit', alg='subspace2D')
+# lsqfit.nonlinear_fit.set(fitter='scipy_least_squares')
+# lsqfit.nonlinear_fit.set(fitter='gsl_multifit', alg='subspace2D')
 
 log = np.log
 exp = np.exp
@@ -652,7 +651,6 @@ def hahn1():
         )
     print(fit)
     assert_equal(fit.p, '[1.08(17) -0.123(12) 0.00409(23) -1.43(28)e-06 -0.00576(25) 0.000241(10) -1.23(13)e-07]')
-
 
 def nelson():
     print(20 * '=', 'nelson')

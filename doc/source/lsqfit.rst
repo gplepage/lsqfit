@@ -155,6 +155,10 @@ nonlinear_fit Objects
 
    .. automethod:: check_roundoff(rtol=0.25,atol=1e-6)
 
+   .. automethod:: qqplot_residuals(plot=None)
+
+   .. automethod:: plot_residuals(plot=None)
+
    .. automethod:: set(clear=False, **defaults)
 
 Functions

@@ -39,7 +39,10 @@ The strategy is to:
         original input data and prior that differ from each other
         by random amounts characteristic of the underlying randomness
         in the original data and prior (see
-        the documentation for :meth:`lsqfit.nonlinear_fit.bootstrap_iter`
+        the documentation for 
+        
+            :meth:`lsqfit.nonlinear_fit.bootstrapped_fit_iter`
+
         for more information);
 
     2.  repeat the entire fit analysis for each bootstrap copy of
@@ -73,7 +76,7 @@ fit, in the ``main()`` function::
         print('\nBootstrap Analysis:')
         Nbs = 40                # number of bootstrap copies
         output = {'p':[], 'p1/p0':[], 'p3/p2':[]}
-        for bsfit in fit.bootstrap_iter(Nbs):
+        for bsfit in fit.bootstrapped_fit_iter(Nbs):
             p = bsfit.pmean
             output['p'].append(p)
             output['p1/p0'].append(p[1] / p[0])
@@ -106,7 +109,7 @@ fit, in the ``main()`` function::
     if __name__ == '__main__':
         main()
 
-The ``bootstrap_iter`` produces fits ``bsfit`` for each of
+The ``bootstrapped_fit_iter`` produces fits ``bsfit`` for each of
 ``Nbs=40`` different bootstrap copies of the input data (``y`` and the prior).
 We collect the mean values for the various parameters and functions of
 parameters from each fit, ignoring the uncertainties, and
@@ -137,7 +140,7 @@ function::
             }
 
         # collect bootstrap data
-        for bsfit in fit.bootstrap_iter(n=1000):
+        for bsfit in fit.bootstrapped_fit_iter(n=1000):
             p = bsfit.pmean
             count['p1/p0'].append(hist['p1/p0'].count(p[1] / p[0]))
             count['p3/p2'].append(hist['p3/p2'].count(p[3] / p[2]))
@@ -447,7 +450,10 @@ Testing Fits with Simulated Data
 Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method
-:meth:`lsqfit.nonlinear_fit.simulated_fit_iter` returns an iterator that
+
+    :meth:`lsqfit.nonlinear_fit.simulated_fit_iter` 
+
+returns an iterator that
 creates any number of such simulations of the original fit.
 
 A key assumption underlying least-squares fitting is that the fit
@@ -528,6 +534,7 @@ fits in each case. We calculate the ``chi**2`` for the difference
 each case; good ``chi**2`` values validate the parameter values, standard
 deviations, and correlations.
 
+.. _goodness-of-fit:
 
 Goodness of Fit
 ------------------
@@ -586,34 +593,34 @@ To add this test to the fit from :ref:`svd-cuts-statistics`, we modify the
 code to include a second fit at the end::
 
     import numpy as np
-      import gvar as gv
-      import lsqfit
+    import gvar as gv
+    import lsqfit
 
-      def main():
-          ysamples = [
-              [0.0092472625, 0.0069020664, 0.0051559329, 0.0038474351, 0.0028718766],
-              [0.0092730161, 0.0069210738, 0.0051657272, 0.0038557131, 0.0028791349],
-              [0.0092550445, 0.0069077582, 0.0051583732, 0.0038507522, 0.0028747456],
-              [0.0092484151, 0.0069010389, 0.0051501969, 0.0038442755, 0.0028703677],
-              [0.0092516114, 0.0069036709, 0.0051534052, 0.0038445233, 0.0028703909],
-              ]
-          y = gv.dataset.avg_data(ysamples)
-          x = np.array([15., 16., 17., 18., 19.])
-          def fcn(p):
-              return p['a'] * gv.exp(- p['b'] * x)
-          prior = gv.gvar(dict(a='0.75(5)', b='0.30(3)')0
-          fit = lsqfit.nonlinear_fit(data=y, prior=prior, fcn=fcn, svdcut=0.02)
-          print(fit.format(True))
+    def main():
+        ysamples = [
+            [0.0092441016, 0.0068974057, 0.0051480509, 0.0038431422, 0.0028690492], 
+            [0.0092477405, 0.0069030565, 0.0051531383, 0.0038455855, 0.0028700587], 
+            [0.0092558569, 0.0069102437, 0.0051596569, 0.0038514537, 0.0028749153], 
+            [0.0092294581, 0.0068865156, 0.0051395262, 0.003835656, 0.0028630454], 
+            [0.009240534, 0.0068961523, 0.0051480046, 0.0038424661, 0.0028675632],
+            ]
+        y = gv.dataset.avg_data(ysamples)
+        x = np.array([15., 16., 17., 18., 19.])
+        def fcn(p):
+            return p['a'] * gv.exp(- p['b'] * x)
+        prior = gv.gvar(dict(a='0.75(5)', b='0.30(3)'))
+        fit = lsqfit.nonlinear_fit(data=y, prior=prior, fcn=fcn, svdcut=0.0028)
+        print(fit.format(True))
 
-          print('\n================ Add noise to prior, SVD')
-          noisyfit = lsqfit.nonlinear_fit(
-            data=y, prior=prior, fcn=fcn, svdcut=0.02,
+        print('\n================ Add noise to prior, SVD')
+        noisyfit = lsqfit.nonlinear_fit(
+            data=y, prior=prior, fcn=fcn, svdcut=0.0028,
             add_svdnoise=True, add_priornoise=True,
             )
-          print(noisyfit.format(True))
+        print(noisyfit.format(True))
 
-      if __name__ == '__main__':
-          main()
+    if __name__ == '__main__':
+        main()
 
 Running this code gives the following output:
 
@@ -628,5 +635,83 @@ the original fit (e.g., ``svdcut``
 too small, or priors inconsistent with the fit data)
 if adding noise makes ``chi**2/N`` signficantly larger than one,
 or changes the best-fit values of the parameters significantly.
+
+.. _fit-residuals:
+
+Fit Residuals and Q-Q Plots
+---------------------------
+It can be useful to examine the normalized residuals from a fit (in array
+``fit.residuals``). These are the differences between
+the data and the corresponding values from the fit function using the best-fit
+values for the fit parameters. The differences are projected onto the 
+eigenvectors of the correlation matrix and normalized by dividing by the 
+square root of the corresponding eigenvalues. 
+The statistical assumptions underlying |nonlinear_fit| imply that the 
+normalized fit residuals should be uncorrelated and distributed 
+randomly about zero in 
+a Gaussian distribution. 
+
+One way to test whether residuals from a fit have a Gaussian distribution
+is to make a *Q-Q plot.* Plots for the two fits from the previous section
+(one without extra noise on the left, and the other with noise) are:
+
+.. image:: eg10e1.png
+    :width: 49%
+
+.. image:: eg10e2.png
+    :width: 49%
+
+These plots were made using 
+
+    :meth:`lsqfit.nonlinear_fit.qqplot_residuals`, 
+
+by adding the following lines at the end 
+of the ``main()`` method::
+
+    fit.qqplot_residuals().show()
+    noisyfit.qqplot_residuals().show()
+
+In each case the residuals are first ordered, from smallest to largest. 
+They are then plotted against the value
+expected for a residual at that position in the list if 
+the list elements were drawn at 
+random from a Gaussian distribution of unit width and zero mean. (For 
+example, given 100 samples from the Gaussian distribution, the sample 
+in position 16 of the ordered list should have a value around -1 since 
+16% of the values should be more than one standard deviation below the 
+mean.) The residuals are consistent with a Gaussian distribution if they
+fall on or near a straight line in such a plot.
+
+The plots show fits of the residuals to straight lines (red solid lines).
+The residuals in the left plot (without additional noise) are reasonably
+consistent with a straight line (and, therefore, a Gaussian distribution), 
+but the slope |~| (0.55) is much less than 
+one. This is because ``chi2/dof = 0.38`` for this fit 
+is much smaller than one. Typically
+we expect the slope to be roughly the square root of |~| ``chi2/dof``
+(since ``chi2`` equals the sum of the residuals squared).
+
+The residuals in the right plot are also quite linear in the Q-Q plot. 
+In this case the fit residuals include extra noise associated with 
+the priors and with the SVD cut, as discussed in the previous section.
+As a result ``chi2/dof = 0.81`` is much closer to one, as is the 
+resulting slope |~| (0.90) in the Q-Q plot. The fit line through 
+the residuals is much closer here to the dashed line in the plot,
+which is what would result if the residuals had unit standard 
+deviation and zero mean.
+
+The fits pictured above have relatively few residuals. 
+Q-Q plots become increasingly 
+compelling as the number of residuals increases. 
+The following plots, from fits without (left) 
+and with (right) prior/SVD noise,
+come from a lattice QCD analysis with 383 |~| residuals:
+
+.. image:: bmixing1.png 
+    :width: 49%
+
+.. image:: bmixing2.png 
+    :width: 49%
+
 
 

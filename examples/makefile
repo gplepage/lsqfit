@@ -18,11 +18,11 @@ run:
 	- diff -w -I svdcut -I fitter simple.out simple.tmp
 	$(PYTHON) multifitter.py $(PLOT) > multifitter.tmp
 	- diff -w -I svdcut -I fitter multifitter.out multifitter.tmp
-	$(PYTHON) y-vs-x.py > y-vs-x.tmp
+	$(PYTHON) y-vs-x.py $(PLOT) > y-vs-x.tmp
 	- diff -w -I svdcut -I fitter y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
 	- diff -w -I svdcut -I fitter x-err.out x-err.tmp
-	$(PYTHON) p-corr.py > p-corr.tmp
+	$(PYTHON) p-corr.py $(PLOT) > p-corr.tmp
 	- diff -w -I svdcut -I fitter p-corr.out p-corr.tmp
 	$(PYTHON) y-noerr.py > y-noerr.tmp
 	- diff -w -I svdcut -I fitter y-noerr.out y-noerr.tmp
@@ -47,9 +47,9 @@ time:
 _time:
 	$(PYTHON) simple.py > /dev/null
 	$(PYTHON) multifitter.py False > /dev/null
-	$(PYTHON) y-vs-x.py > /dev/null
+	$(PYTHON) y-vs-x.py False > /dev/null
 	$(PYTHON) x-err.py > /dev/null
-	$(PYTHON) p-corr.py > /dev/null
+	$(PYTHON) p-corr.py False > /dev/null
 	$(PYTHON) y-noerr.py > /dev/null
 	$(PYTHON) empbayes.py > /dev/null
 	$(PYTHON) pendulum.py > /dev/null

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.3 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.4 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -494,8 +494,12 @@ by the standard deviations (or covariances) used in the fit
 <dt id="lsqfit.nonlinear_fit.residuals">
 <code class="sig-name descname">residuals</code><a class="headerlink" href="#lsqfit.nonlinear_fit.residuals" title="Permalink to this definition">¶</a></dt>
 <dd><p>An array containing the fit residuals normalized by the
-corresponding standard deviations. This includes contributions
-from both the fit data and the prior: <code class="docutils literal notranslate"><span class="pre">chi2</span> <span class="pre">=</span> <span class="pre">sum(fit.resid**2)</span></code>.</p>
+corresponding standard deviations. The residuals are projected
+onto the eigenvectors of the correlation matrix and so should
+be uncorrelated from each other. The residuals include contributions
+from both the fit data and the prior. They are related to the
+the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> of the fit by:
+<code class="docutils literal notranslate"><span class="pre">chi2</span> <span class="pre">=</span> <span class="pre">sum(fit.residuals**2)</span></code>.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -846,6 +850,60 @@ containing results from the fit to the next data set in
 agree to within relative tolerance <code class="docutils literal notranslate"><span class="pre">rtol</span></code> and absolute tolerance
 <code class="docutils literal notranslate"><span class="pre">atol</span></code>. Generates a warning if they do not (in which
 case an SVD cut might be advisable).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.qqplot_residuals">
+<code class="sig-name descname">qqplot_residuals</code><span class="sig-paren">(</span><em class="sig-param">plot=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.qqplot_residuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>QQ plot normalized fit residuals.</p>
+<p>The sum of the squares of the residuals equals <code class="docutils literal notranslate"><span class="pre">self.chi2</span></code>.
+Individual residuals should be distributed in a Gaussian
+distribution centered about zero. A Q-Q plot orders the
+residuals and plots them against the value they would have if
+they were distributed according to a Gaussian distribution.
+The resulting plot will approximate a straight line along
+the diagonal of the plot (dashed black line) if
+the residuals have a Gaussian distribution with zero mean
+and unit standard deviation.</p>
+<p>The residuals are fit to a straight line and the fit
+is displayed in the plot (solid red line). Residuals that
+fall on a straight line have a distribution that is that is
+Gaussian. A nonzero intercept indicates a bias away from zero.
+A slope smaller than 1.0 indicates the actual standard deviation
+is smaller than suggested by the fit errors, as might be expected if
+the <code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code> is significantly below 1.</p>
+<p>One way to display the plot is with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="o">.</span><span class="n">qqplot_residuals</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plot</strong> – a <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> plotter. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+uses <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plotter <code class="docutils literal notranslate"><span class="pre">plot</span></code>.</p>
+</dd>
+</dl>
+<p>This method requires the <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> modules.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.plot_residuals">
+<code class="sig-name descname">plot_residuals</code><span class="sig-paren">(</span><em class="sig-param">plot=None</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.plot_residuals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot normalized fit residuals.</p>
+<p>The sum of the squares of the residuals equals <code class="docutils literal notranslate"><span class="pre">self.chi2</span></code>.
+Individual residuals should be distributed about one, in
+a Gaussian distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plot</strong> – <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> plotter. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+uses <code class="docutils literal notranslate"><span class="pre">matplotlib.pyplot</span></code>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Plotter <code class="docutils literal notranslate"><span class="pre">plot</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -1987,7 +2045,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

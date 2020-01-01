@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """
 p-corr.py - Code for "Correlated Parameters"
 """
-# Copyright (c) 2017 G. Peter Lepage.
+# Copyright (c) 2017-20 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,9 +15,21 @@ p-corr.py - Code for "Correlated Parameters"
 
 from __future__ import print_function   # makes this work for python2 and 3
 
+import sys
 import numpy as np
 import gvar as gv
 import lsqfit
+
+if sys.argv[1:]:
+    SHOW_PLOT = eval(sys.argv[1])   # display picture of grid ?
+else:
+    SHOW_PLOT = True
+
+if SHOW_PLOT:
+    try:
+        import matplotlib
+    except ImportError:
+        SHOW_PLOT = False
 
 def main():
     x, y = make_data()
@@ -28,6 +38,8 @@ def main():
     print(fit)
     print('p1/p0 =', fit.p[1] / fit.p[0], 'p3/p2 =', fit.p[3] / fit.p[2])
     print('corr(p0,p1) = {:.4f}'.format(gv.evalcorr(fit.p[:2])[1,0]))
+    if SHOW_PLOT:
+        fit.qqplot_residuals().show()
 
 def make_data():
     x = np.array([

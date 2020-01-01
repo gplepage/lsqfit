@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2019 G. Peter Lepage.
+# Copyright (c) 2008-2020 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -407,8 +407,12 @@ class nonlinear_fit(object):
             (leading to an unusually small ``chi**2``).
 
         residuals: An array containing the fit residuals normalized by the
-            corresponding standard deviations. This includes contributions
-            from both the fit data and the prior: ``chi2 = sum(fit.resid**2)``.
+            corresponding standard deviations. The residuals are projected
+            onto the eigenvectors of the correlation matrix and so should 
+            be uncorrelated from each other. The residuals include contributions
+            from both the fit data and the prior. They are related to the 
+            the ``chi**2`` of the fit by:
+            ``chi2 = sum(fit.residuals**2)``.
 
         stopping_criterion (int): Criterion used to
             stop fit:
@@ -680,6 +684,7 @@ class nonlinear_fit(object):
             self.error = fit.error
             self.cov = fit.cov
             self.chi2 = numpy.sum(fit.f**2)
+            self.residuals = numpy.array(fit.f)
             self.Q = gammaQ(self.dof/2., self.chi2/2.)
             self.nit = fit.nit
             self.tol = fit.tol
@@ -699,7 +704,8 @@ class nonlinear_fit(object):
             self.psdev = _gvar.sdev(self.palt)
             self.error = None
             self.cov = _gvar.evalcov(self.palt.flat)
-            self.chi2 = numpy.sum(self._chiv(self.pmean.flat) ** 2)
+            self.residuals = self._chiv(self.pmean.flat)
+            self.chi2 = numpy.sum(self.residuals ** 2)
             self.Q = gammaQ(self.dof/2., self.chi2/2.)
             self.nit = 0
             self.tol = tol
@@ -707,8 +713,6 @@ class nonlinear_fit(object):
             self.description = ''
             self.fitter_results = None
             self._p = None          # lazy evaluation
-        self.residuals = self._chiv(self.palt.flat[:])
-
 
         # compute logGBF
         if self.prior is None:
@@ -879,6 +883,57 @@ class nonlinear_fit(object):
     fmt_errorbudget = _gvar.fmt_errorbudget
     fmt_values = _gvar.fmt_values
 
+    def qqplot_residuals(self, plot=None):
+        """ QQ plot normalized fit residuals.
+
+        The sum of the squares of the residuals equals ``self.chi2``.
+        Individual residuals should be distributed in a Gaussian
+        distribution centered about zero. A Q-Q plot orders the 
+        residuals and plots them against the value they would have if 
+        they were distributed according to a Gaussian distribution.
+        The resulting plot will approximate a straight line along
+        the diagonal of the plot (dashed black line) if 
+        the residuals have a Gaussian distribution with zero mean
+        and unit standard deviation.
+
+        The residuals are fit to a straight line and the fit
+        is displayed in the plot (solid red line). Residuals that
+        fall on a straight line have a distribution that is that is 
+        Gaussian. A nonzero intercept indicates a bias away from zero. 
+        A slope smaller than 1.0 indicates the actual standard deviation 
+        is smaller than suggested by the fit errors, as might be expected if 
+        the ``chi2/dof`` is significantly below 1.
+
+        One way to display the plot is with::
+
+            fit.qqplot_residuals().show()
+
+        Args:
+            plot: a :mod:`matplotlib` plotter. If ``None``, 
+                uses ``matplotlib.pyplot``.
+
+        Returns:
+            Plotter ``plot``.
+
+        This method requires the :mod:`scipy` and :mod:`matplotlib` modules.
+        """
+        if _no_scipy:
+            warnings.warn('scipy module not installed; needed for qqplot_residuals()')
+            return
+        if plot is None:
+            import matplotlib.pyplot as plot
+        from scipy import stats 
+        (x, y), (s,y0,r) = stats.probplot(self.residuals, plot=plot, fit=True)
+        minx = min(x)
+        maxx = max(x)
+        plot.plot([minx, maxx], [minx, maxx], 'k:')
+        text = (r'residual = {:.2f} + {:.2f} $\times$ theory' '\nr = {:.2f}').format(y0, s, r)
+        plot.title('Q-Q Plot')
+        plot.ylabel('Ordered fit residuals')
+        ylim = plot.ylim()
+        plot.text(minx, ylim[0] + (ylim[1] - ylim[0]) * 0.9,text, color='r')
+        return plot 
+
     def plot_residuals(self, plot=None):
         """ Plot normalized fit residuals.
 
@@ -887,8 +942,8 @@ class nonlinear_fit(object):
         a Gaussian distribution.
 
         Args:
-            plot: :mod:`matplotlib` plotter. If ``None``, uses
-                ``matplotlib.pyplot`.
+            plot: :mod:`matplotlib` plotter. If ``None``, 
+                uses ``matplotlib.pyplot``.
 
         Returns:
             Plotter ``plot``.
@@ -896,9 +951,8 @@ class nonlinear_fit(object):
         if plot is None:
             import matplotlib.pyplot as plot
         x = numpy.arange(1, len(self.residuals) + 1)
-        y = _gvar.mean(self.residuals)
-        yerr = _gvar.sdev(self.residuals)
-        plot.errorbar(x=x, y=y, yerr=yerr, fmt='o', color='b')
+        y = self.residuals
+        plot.plot(x, y, 'bo')
         plot.ylabel('normalized residuals')
         xr = [x[0], x[-1]]
         plot.plot([x[0], x[-1]], [0, 0], 'r-')

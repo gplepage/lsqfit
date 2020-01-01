@@ -1,3 +1,18 @@
+Version 11.4 ?????
+====================
+A minor bug fix and a new diagnostic tool.
+
+- nonlinear_fit.residuals is now an array of floats (not GVars), as it should be.
+
+- Adds method nonlinear_fit.plot_residuals for plotting (normalized) residuals.
+
+- Adds residuals to MultiFitter chained fits.
+
+- Adds new method for making Q-Q plots of fit residuals: nonlinear_fit.qqplot_residuals().
+
+- New documentation about inspecting fit residuals.
+
+
 Version 11.3 2019-12-04
 ======================
 This is another very minor update: a few tweaks, a bug fix, and a small feature update to 
