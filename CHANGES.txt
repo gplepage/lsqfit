@@ -1,5 +1,5 @@
-Version 11.4 ?????
-====================
+Version 11.4 2020-01-01
+=======================
 A minor bug fix and a new diagnostic tool.
 
 - nonlinear_fit.residuals is now an array of floats (not GVars), as it should be.

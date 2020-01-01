@@ -898,11 +898,12 @@ class nonlinear_fit(object):
 
         The residuals are fit to a straight line and the fit
         is displayed in the plot (solid red line). Residuals that
-        fall on a straight line have a distribution that is that is 
-        Gaussian. A nonzero intercept indicates a bias away from zero. 
+        fall on a straight line have a distribution that is 
+        Gaussian. A nonzero intercept indicates a bias in the mean, away from zero. 
         A slope smaller than 1.0 indicates the actual standard deviation 
-        is smaller than suggested by the fit errors, as might be expected if 
-        the ``chi2/dof`` is significantly below 1.
+        is smaller than suggested by the fit errors, as would be expected if 
+        the ``chi2/dof`` is significantly below 1.0 (since ``chi2`` equals
+        the sum of the squared residuals).
 
         One way to display the plot is with::
 
