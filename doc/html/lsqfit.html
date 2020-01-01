@@ -867,11 +867,12 @@ the residuals have a Gaussian distribution with zero mean
 and unit standard deviation.</p>
 <p>The residuals are fit to a straight line and the fit
 is displayed in the plot (solid red line). Residuals that
-fall on a straight line have a distribution that is that is
-Gaussian. A nonzero intercept indicates a bias away from zero.
+fall on a straight line have a distribution that is
+Gaussian. A nonzero intercept indicates a bias in the mean, away from zero.
 A slope smaller than 1.0 indicates the actual standard deviation
-is smaller than suggested by the fit errors, as might be expected if
-the <code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code> is significantly below 1.</p>
+is smaller than suggested by the fit errors, as would be expected if
+the <code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code> is significantly below 1.0 (since <code class="docutils literal notranslate"><span class="pre">chi2</span></code> equals
+the sum of the squared residuals).</p>
 <p>One way to display the plot is with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fit</span><span class="o">.</span><span class="n">qqplot_residuals</span><span class="p">()</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
