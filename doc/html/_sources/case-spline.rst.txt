@@ -159,7 +159,7 @@ We use four knots in all; three knots give marginal
 fits (``chi2/dof=2``). Using five knots improves ``chi2`` 
 somewhat (``chi2/dof=0.35``), but also 
 decreases the Bayes Factor
-significantly (``logGBF=5.6``); the fit results are 
+significantly (``logGBF=5.6``); and the fit results are 
 almost unchanged from the fit with four knots.
 More knots would 
 be needed if the data were more accurate.
