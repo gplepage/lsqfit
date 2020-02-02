@@ -6,6 +6,9 @@
 lsqfit Documentation
 ========================================
 
+.. image:: https://zenodo.org/badge/4593457.svg
+    :target: https://zenodo.org/badge/latestdoi/4593457
+
 Contents:
 
 .. toctree::
@@ -15,6 +18,7 @@ Contents:
    testing.rst
    case-extrapolation.rst
    case-pendulum.rst
+   case-spline.rst
    case-outliers.rst
    lsqfit.rst
    gsl.rst

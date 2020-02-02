@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Case Study: Fitting a Spline &#8212; lsqfit 11.4.1 documentation</title>
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
+    <link rel="prev" title="Case Study: Numerical Analysis inside a Fit" href="case-pendulum.html" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
+  </head><body>
+
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="case-study-fitting-a-spline">
+<h1>Case Study: Fitting a Spline<a class="headerlink" href="#case-study-fitting-a-spline" title="Permalink to this headline">¶</a></h1>
+<p>This study shows how to fit noisy data when
+the underlying functional form is unknown. The
+function is modeled with a spline.</p>
+<div class="section" id="the-problem">
+<h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
+<p>Our goal is to determine a function <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> from data for a
+different function <code class="docutils literal notranslate"><span class="pre">F(m,a)</span></code> where</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum_n</span> <span class="n">c_n</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and the sum is over positive integers (<code class="docutils literal notranslate"><span class="pre">n=1,2,3...</span></code>).
+So <code class="docutils literal notranslate"><span class="pre">f(m)</span> <span class="pre">=</span> <span class="pre">F(m,a=0)</span></code> is the desired output. We have
+three sets of data, each with a different value of <code class="docutils literal notranslate"><span class="pre">a</span></code>
+and a variety of <code class="docutils literal notranslate"><span class="pre">m</span></code> values:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span>  <span class="mi">1</span><span class="o">/</span><span class="n">a</span>  <span class="n">a</span><span class="o">*</span><span class="n">m</span>    <span class="n">F</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+<span class="o">-----------------------</span>
+  <span class="n">A</span> <span class="mf">10.0</span>  <span class="mf">0.1</span>  <span class="mf">0.41</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.3</span>  <span class="mf">0.89</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.5</span>  <span class="mf">1.04</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.7</span>  <span class="mf">1.21</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.9</span>  <span class="mf">1.63</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">-----------------------</span>
+  <span class="n">B</span>  <span class="mf">5.0</span>  <span class="mf">0.3</span>  <span class="mf">0.68</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.5</span>  <span class="mf">0.94</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.7</span>  <span class="mf">1.17</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.9</span>  <span class="mf">1.57</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">-----------------------</span>
+  <span class="n">C</span>  <span class="mf">2.5</span>  <span class="mf">0.5</span>  <span class="mf">0.70</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.7</span>  <span class="mf">1.00</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+          <span class="mf">0.9</span>  <span class="mf">1.47</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="o">-----------------------</span>
+</pre></div>
+</div>
+<p>There are statistical correlations between the data values,
+so we have dumped the data (using <code class="docutils literal notranslate"><span class="pre">gvar.dump(data,</span> <span class="pre">'spline.json')</span></code>)
+into a file called <code class="docutils literal notranslate"><span class="pre">'spline.json'</span></code> that can be read by
+the fit code; the file contains a single, very
+long line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s2">&quot;keys&quot;</span><span class="p">:</span> <span class="s2">&quot;[&#39;A&#39;, &#39;B&#39;, &#39;C&#39;]&quot;</span><span class="p">,</span> <span class="s2">&quot;layouts&quot;</span><span class="p">:</span> <span class="p">[[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">null</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">null</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">null</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">]]],</span> <span class="s2">&quot;means&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">0.4067500603351018</span><span class="p">,</span> <span class="mf">0.8796326276518024</span><span class="p">,</span> <span class="mf">0.9970909980552837</span><span class="p">,</span> <span class="mf">1.1260165882523494</span><span class="p">,</span> <span class="mf">1.7194658752831276</span><span class="p">,</span> <span class="mf">0.6710996730441164</span><span class="p">,</span> <span class="mf">0.8987178738697016</span><span class="p">,</span> <span class="mf">1.0805971780952526</span><span class="p">,</span> <span class="mf">1.6594201837134612</span><span class="p">,</span> <span class="mf">0.6633847970382681</span><span class="p">,</span> <span class="mf">0.916637552133363</span><span class="p">,</span> <span class="mf">1.5611034613234376</span><span class="p">],</span> <span class="s2">&quot;bcovs&quot;</span><span class="p">:</span> <span class="p">[[[],</span> <span class="p">[]],</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.0103000100010001</span><span class="p">,</span> <span class="mf">0.010044534525517412</span><span class="p">,</span> <span class="mf">0.010024250626566417</span><span class="p">,</span> <span class="mf">0.01001681894343508</span><span class="p">,</span> <span class="mf">0.010013162293590429</span><span class="p">,</span> <span class="mf">0.010111201192184078</span><span class="p">,</span> <span class="mf">0.010056250626566418</span><span class="p">,</span> <span class="mf">0.010037227106700386</span><span class="p">,</span> <span class="mf">0.010027977108405244</span><span class="p">,</span> <span class="mf">0.010144250626566417</span><span class="p">,</span> <span class="mf">0.01009028833119018</span><span class="p">,</span> <span class="mf">0.01006501414544228</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010044534525517412</span><span class="p">,</span> <span class="mf">0.010113162293590428</span><span class="p">,</span> <span class="mf">0.010009412901392444</span><span class="p">,</span> <span class="mf">0.010009602115421614</span><span class="p">,</span> <span class="mf">0.01001170410734001</span><span class="p">,</span> <span class="mf">0.010027977108405244</span><span class="p">,</span> <span class="mf">0.010017412901392443</span><span class="p">,</span> <span class="mf">0.010015044292292363</span><span class="p">,</span> <span class="mf">0.010015819333677458</span><span class="p">,</span> <span class="mf">0.010036079568059108</span><span class="p">,</span> <span class="mf">0.010027289190251545</span><span class="p">,</span> <span class="mf">0.010024872831619845</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010024250626566417</span><span class="p">,</span> <span class="mf">0.010009412901392444</span><span class="p">,</span> <span class="mf">0.010110826666666663</span><span class="p">,</span> <span class="mf">0.010016898889459697</span><span class="p">,</span> <span class="mf">0.01002766345152401</span><span class="p">,</span> <span class="mf">0.010017412901392443</span><span class="p">,</span> <span class="mf">0.010015306666666661</span><span class="p">,</span> <span class="mf">0.010020000930276024</span><span class="p">,</span> <span class="mf">0.010030033821894378</span><span class="p">,</span> <span class="mf">0.010025226666666663</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01001681894343508</span><span class="p">,</span> <span class="mf">0.010009602115421614</span><span class="p">,</span> <span class="mf">0.010016898889459697</span><span class="p">,</span> <span class="mf">0.010133678708188732</span><span class="p">,</span> <span class="mf">0.010067416094466243</span><span class="p">,</span> <span class="mf">0.010015044292292363</span><span class="p">,</span> <span class="mf">0.010020000930276024</span><span class="p">,</span> <span class="mf">0.010035844472453622</span><span class="p">,</span> <span class="mf">0.010069078981843418</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.01004042589686012</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010013162293590429</span><span class="p">,</span> <span class="mf">0.01001170410734001</span><span class="p">,</span> <span class="mf">0.01002766345152401</span><span class="p">,</span> <span class="mf">0.010067416094466243</span><span class="p">,</span> <span class="mf">0.01028921208418283</span><span class="p">,</span> <span class="mf">0.010015819333677458</span><span class="p">,</span> <span class="mf">0.010030033821894378</span><span class="p">,</span> <span class="mf">0.010069078981843418</span><span class="p">,</span> <span class="mf">0.010190492376821148</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">,</span> <span class="mf">0.010193144411571948</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010111201192184078</span><span class="p">,</span> <span class="mf">0.010027977108405244</span><span class="p">,</span> <span class="mf">0.010017412901392443</span><span class="p">,</span> <span class="mf">0.010015044292292363</span><span class="p">,</span> <span class="mf">0.010015819333677458</span><span class="p">,</span> <span class="mf">0.01016501414544228</span><span class="p">,</span> <span class="mf">0.010036079568059108</span><span class="p">,</span> <span class="mf">0.010027289190251545</span><span class="p">,</span> <span class="mf">0.010024872831619845</span><span class="p">,</span> <span class="mf">0.01008407956805911</span><span class="p">,</span> <span class="mf">0.010057221163040662</span><span class="p">,</span> <span class="mf">0.010046272008574577</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010056250626566418</span><span class="p">,</span> <span class="mf">0.010017412901392443</span><span class="p">,</span> <span class="mf">0.010015306666666661</span><span class="p">,</span> <span class="mf">0.010020000930276024</span><span class="p">,</span> <span class="mf">0.010030033821894378</span><span class="p">,</span> <span class="mf">0.010036079568059108</span><span class="p">,</span> <span class="mf">0.010125226666666662</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">,</span> <span class="mf">0.010048906666666663</span><span class="p">,</span> <span class="mf">0.010042041746602554</span><span class="p">,</span> <span class="mf">0.010046330118190675</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010037227106700386</span><span class="p">,</span> <span class="mf">0.010015044292292363</span><span class="p">,</span> <span class="mf">0.010020000930276024</span><span class="p">,</span> <span class="mf">0.010035844472453622</span><span class="p">,</span> <span class="mf">0.010069078981843418</span><span class="p">,</span> <span class="mf">0.010027289190251545</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.010140425896860119</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">,</span> <span class="mf">0.010042041746602554</span><span class="p">,</span> <span class="mf">0.010050588329179986</span><span class="p">,</span> <span class="mf">0.010080114507164655</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010027977108405244</span><span class="p">,</span> <span class="mf">0.010015819333677458</span><span class="p">,</span> <span class="mf">0.010030033821894378</span><span class="p">,</span> <span class="mf">0.010069078981843418</span><span class="p">,</span> <span class="mf">0.010190492376821148</span><span class="p">,</span> <span class="mf">0.010024872831619845</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">,</span> <span class="mf">0.010293144411571947</span><span class="p">,</span> <span class="mf">0.010046330118190675</span><span class="p">,</span> <span class="mf">0.010080114507164655</span><span class="p">,</span> <span class="mf">0.01019881427897021</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.010144250626566417</span><span class="p">,</span> <span class="mf">0.010036079568059108</span><span class="p">,</span> <span class="mf">0.010025226666666663</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">,</span> <span class="mf">0.01008407956805911</span><span class="p">,</span> <span class="mf">0.010048906666666663</span><span class="p">,</span> <span class="mf">0.010042041746602554</span><span class="p">,</span> <span class="mf">0.010046330118190675</span><span class="p">,</span> <span class="mf">0.01021162666666666</span><span class="p">,</span> <span class="mf">0.010080572358847453</span><span class="p">,</span> <span class="mf">0.010073589377449935</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01009028833119018</span><span class="p">,</span> <span class="mf">0.010027289190251545</span><span class="p">,</span> <span class="mf">0.010026694807827044</span><span class="p">,</span> <span class="mf">0.01004042589686012</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">,</span> <span class="mf">0.010057221163040662</span><span class="p">,</span> <span class="mf">0.010042041746602554</span><span class="p">,</span> <span class="mf">0.010050588329179986</span><span class="p">,</span> <span class="mf">0.010080114507164655</span><span class="p">,</span> <span class="mf">0.010080572358847453</span><span class="p">,</span> <span class="mf">0.010174911527847207</span><span class="p">,</span> <span class="mf">0.010097650410414846</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01006501414544228</span><span class="p">,</span> <span class="mf">0.010024872831619845</span><span class="p">,</span> <span class="mf">0.010035070858931416</span><span class="p">,</span> <span class="mf">0.010072555928177506</span><span class="p">,</span> <span class="mf">0.010193144411571948</span><span class="p">,</span> <span class="mf">0.010046272008574577</span><span class="p">,</span> <span class="mf">0.010046330118190675</span><span class="p">,</span> <span class="mf">0.010080114507164655</span><span class="p">,</span> <span class="mf">0.01019881427897021</span><span class="p">,</span> <span class="mf">0.010073589377449935</span><span class="p">,</span> <span class="mf">0.010097650410414846</span><span class="p">,</span> <span class="mf">0.010311617205353382</span><span class="p">]]]]}</span>
+</pre></div>
+</div>
+<p>We do not know the functional form of <code class="docutils literal notranslate"><span class="pre">f(m)</span></code>, so we
+parameterize it using a cubic spline, where the function
+is described by specifying its values at specific points
+called knots. The spline approximates the function between
+each adjacent pair of knots with a cubic polynomial tailored
+to that interval. The polynomials are stitched together
+at the knots to keep
+the function smooth from one interval to the next.</p>
+<p>This kind of problem arises in analyses of
+numerical simulations of QCD, where parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>
+is the grid spacing.</p>
+</div>
+<div class="section" id="spline-fit">
+<h2>Spline Fit<a class="headerlink" href="#spline-fit" title="Permalink to this headline">¶</a></h2>
+<p>The following code reads the fit data from file <code class="docutils literal notranslate"><span class="pre">'spline.json'</span></code>,
+and fits it using a cubic spline (<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.cspline.CSpline()</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># do the fit</span>
+    <span class="n">param</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">collect_data</span><span class="p">(</span><span class="s1">&#39;spline.json&#39;</span><span class="p">)</span>
+    <span class="n">F</span><span class="p">,</span> <span class="n">prior</span> <span class="o">=</span> <span class="n">make_fcn_prior</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">F</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+
+    <span class="c1"># create f(m)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">cspline</span><span class="o">.</span><span class="n">CSpline</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;mknot&#39;</span><span class="p">],</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;fknot&#39;</span><span class="p">])</span>
+
+    <span class="c1"># create error budget</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;f(1)&#39;</span><span class="p">:</span><span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;f(5)&#39;</span><span class="p">:</span><span class="n">f</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span> <span class="s1">&#39;f(9)&#39;</span><span class="p">:</span><span class="n">f</span><span class="p">(</span><span class="mi">9</span><span class="p">)}</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span><span class="n">data</span><span class="p">}</span>
+    <span class="n">inputs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">make_fcn_prior</span><span class="p">(</span><span class="n">param</span><span class="p">):</span>
+    <span class="s2">&quot; return fit function, fit prior &quot;</span>
+    <span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">cspline</span><span class="o">.</span><span class="n">CSpline</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;mknot&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;fknot&#39;</span><span class="p">])</span>
+        <span class="n">ans</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">param</span><span class="p">:</span>
+            <span class="n">ainv</span><span class="p">,</span> <span class="n">am</span> <span class="o">=</span> <span class="n">param</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+            <span class="n">m</span>  <span class="o">=</span> <span class="n">am</span> <span class="o">*</span> <span class="n">ainv</span>
+            <span class="n">ans</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">ci</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]):</span>
+                <span class="n">ans</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ci</span> <span class="o">*</span> <span class="n">am</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ans</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">mknot</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1.00(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.5(5)&#39;</span><span class="p">,</span> <span class="s1">&#39;3(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;9.00(1)&#39;</span><span class="p">],</span>
+        <span class="n">fknot</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1(1)&#39;</span><span class="p">],</span>
+        <span class="n">c</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0(1)&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="p">))</span>
+    <span class="k">return</span> <span class="n">F</span><span class="p">,</span> <span class="n">prior</span>
+
+<span class="k">def</span> <span class="nf">collect_data</span><span class="p">(</span><span class="n">datafile</span><span class="p">):</span>
+    <span class="s2">&quot; return parameters, data for data sets A, B, and C &quot;</span>
+    <span class="c1"># param[k] = (1/a, a*m) for k in [&#39;A&#39;, &#39;B&#39;, &#39;C&#39;]</span>
+    <span class="n">param</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">A</span><span class="o">=</span><span class="p">(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])),</span>
+        <span class="n">B</span><span class="o">=</span><span class="p">(</span><span class="mf">5.</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])),</span>
+        <span class="n">C</span><span class="o">=</span><span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])),</span>
+        <span class="p">)</span>
+    <span class="c1"># data[k] = array of values for F(m,a)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">datafile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">param</span><span class="p">,</span> <span class="n">data</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Data parameters are stored in dictionary <code class="docutils literal notranslate"><span class="pre">param</span></code> and
+the fit function is <code class="docutils literal notranslate"><span class="pre">F(p)</span></code>. The fit function models <code class="docutils literal notranslate"><span class="pre">f(m)</span></code>
+using a cubic spline and then adds <code class="docutils literal notranslate"><span class="pre">a*m</span></code> terms
+appropriate for each data set.</p>
+<p>The fit parameters are the locations <code class="docutils literal notranslate"><span class="pre">mknot</span></code> and function
+values <code class="docutils literal notranslate"><span class="pre">fknot</span></code> at the spline knots,
+in addition to the coefficients <code class="docutils literal notranslate"><span class="pre">c</span></code> in the <code class="docutils literal notranslate"><span class="pre">a*m</span></code> series.
+The number of knots and <code class="docutils literal notranslate"><span class="pre">c</span></code> terms is determined
+by experimentation: we start with a couple of
+terms and add more of each until the fit
+stops improving — that is, until
+<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code> stops going down and <code class="docutils literal notranslate"><span class="pre">logGBF</span></code> stops going up.</p>
+<p>Running this script gives the following output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.46</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.94</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">9.2202</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+        <span class="n">mknot</span> <span class="mi">0</span>   <span class="mf">1.000</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">1.000</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">1.34</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">1.50</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">3.29</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">3.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">3</span>   <span class="mf">9.000</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">9.000</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="p">]</span>  
+        <span class="n">fknot</span> <span class="mi">0</span>    <span class="mf">0.40</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>    <span class="mf">0.60</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">1.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">0.85</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">1.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">3</span>    <span class="mf">0.92</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">1.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+            <span class="n">c</span> <span class="mi">0</span>    <span class="mf">0.49</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">1</span>   <span class="o">-</span><span class="mf">0.39</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">2</span>    <span class="mf">0.14</span> <span class="p">(</span><span class="mi">81</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">3</span>    <span class="mf">0.64</span> <span class="p">(</span><span class="mi">79</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="mi">4</span>    <span class="mf">0.86</span> <span class="p">(</span><span class="mi">71</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">9</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">Values</span><span class="p">:</span>
+               <span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span> <span class="mf">0.40</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>            
+               <span class="n">f</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span> <span class="mf">0.89</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>            
+               <span class="n">f</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span> <span class="mf">0.92</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>            
+
+<span class="n">Partial</span> <span class="o">%</span> <span class="n">Errors</span><span class="p">:</span>
+                <span class="n">f</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>      <span class="n">f</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>      <span class="n">f</span><span class="p">(</span><span class="mi">9</span><span class="p">)</span>
+<span class="o">----------------------------------------</span>
+     <span class="n">data</span><span class="p">:</span>     <span class="mf">24.14</span>     <span class="mf">11.00</span>     <span class="mf">10.63</span>
+    <span class="n">mknot</span><span class="p">:</span>      <span class="mf">0.10</span>      <span class="mf">0.40</span>      <span class="mf">0.52</span>
+    <span class="n">fknot</span><span class="p">:</span>      <span class="mf">4.82</span>      <span class="mf">2.20</span>      <span class="mf">2.12</span>
+        <span class="n">c</span><span class="p">:</span>      <span class="mf">0.25</span>      <span class="mf">0.97</span>      <span class="mf">0.97</span>
+<span class="o">----------------------------------------</span>
+    <span class="n">total</span><span class="p">:</span>     <span class="mf">24.62</span>     <span class="mf">11.27</span>     <span class="mf">10.90</span>
+
+</pre></div>
+</div>
+<p>Given the knot values and locations from the fit, we construct
+the spline function <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">cspline</span><span class="o">.</span><span class="n">CSpline</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;mknot&#39;</span><span class="p">],</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;fknot&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is the function we sought from the fit.</p>
+<p>The quality of a function’s spline representation depends
+critically on the number and location of the spline knots.
+Here the first and last knots are placed at the lowest and
+highest <code class="docutils literal notranslate"><span class="pre">m</span></code> values for which we have data, since
+splines are more reliable for interpolation than for
+extrapolation. The
+locations of the interior knots are weighted towards
+smaller <code class="docutils literal notranslate"><span class="pre">m</span></code>, based on inspection of the data,
+but are relatively
+unconstrained so the fitter can make the best choice.
+We use four knots in all; three knots give marginal
+fits (<code class="docutils literal notranslate"><span class="pre">chi2/dof=2</span></code>). Using five knots improves <code class="docutils literal notranslate"><span class="pre">chi2</span></code>
+somewhat (<code class="docutils literal notranslate"><span class="pre">chi2/dof=0.35</span></code>), but also
+decreases the Bayes Factor
+significantly (<code class="docutils literal notranslate"><span class="pre">logGBF=5.6</span></code>); the fit results are
+almost unchanged from the fit with four knots.
+More knots would
+be needed if the data were more accurate.</p>
+<p>The script
+generates an error budget for <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> at a few values
+of <code class="docutils literal notranslate"><span class="pre">m</span></code>. These show that the errors come almost
+entirely from the initial errors in the data;
+very little uncertainty comes from the spline parameters.</p>
+<p>The fit result for <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> is the black dotted line
+in the following figure, while the gray band shows
+the 1-sigma uncertainty in <code class="docutils literal notranslate"><span class="pre">f(m)</span></code>.</p>
+<a class="reference internal image-reference" href="_images/eg-spline.png"><img alt="_images/eg-spline.png" src="_images/eg-spline.png" style="width: 60%;" /></a>
+<p>The data are shown in color, with dotted lines showing
+the fit results for each set. The fit is
+excellent overall. Even at <code class="docutils literal notranslate"><span class="pre">m=9</span></code>, where the
+data pull away, the fit gives 10% accuracy.</p>
+<p>These data are artificially generated so we
+know what the real <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> function is.
+It is plotted in the figure as a black
+dashed line. The fit result for <code class="docutils literal notranslate"><span class="pre">f(m)</span></code>
+agrees well with the exact result for all <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Case Study: Fitting a Spline</a><ul>
+<li><a class="reference internal" href="#the-problem">The Problem</a></li>
+<li><a class="reference internal" href="#spline-fit">Spline Fit</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="case-pendulum.html"
+                        title="previous chapter">Case Study: Numerical Analysis inside a Fit</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="case-outliers.html"
+                        title="next chapter">Case Study: Outliers and Bayesian Integrals</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/case-spline.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2009-2019, G. P. Lepage.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+    </div>
+  </body>
+</html>

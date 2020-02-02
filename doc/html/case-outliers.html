@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Case Study: Outliers and Bayesian Integrals &#8212; lsqfit 11.4 documentation</title>
+    <title>Case Study: Outliers and Bayesian Integrals &#8212; lsqfit 11.4.1 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="lsqfit - Nonlinear Least Squares Fitting" href="lsqfit.html" />
-    <link rel="prev" title="Case Study: Numerical Analysis inside a Fit" href="case-pendulum.html" />
+    <link rel="prev" title="Case Study: Fitting a Spline" href="case-spline.html" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
@@ -37,9 +37,9 @@
           <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
+          <a href="case-spline.html" title="Case Study: Fitting a Spline"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -239,12 +239,12 @@ as follows:</p>
 <span class="k">class</span> <span class="nc">ModifiedPDF</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Modified PDF to account for measurement failure. &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fcn</span> <span class="o">=</span> <span class="n">fcn</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prior</span> <span class="o">=</span> <span class="n">prior</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
         <span class="n">w</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;2w-1&#39;</span><span class="p">]</span>
         <span class="n">y_fx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">fcn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
         <span class="n">data_pdf1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gaussian_pdf</span><span class="p">(</span><span class="n">y_fx</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)</span>
@@ -415,8 +415,8 @@ example, the intercept would be 0.35(17).</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="case-pendulum.html"
-                        title="previous chapter">Case Study: Numerical Analysis inside a Fit</a></p>
+  <p class="topless"><a href="case-spline.html"
+                        title="previous chapter">Case Study: Fitting a Spline</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="lsqfit.html"
                         title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></p>
@@ -454,14 +454,14 @@ example, the intercept would be 0.35(17).</p>
           <a href="lsqfit.html" title="lsqfit - Nonlinear Least Squares Fitting"
              >next</a> |</li>
         <li class="right" >
-          <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
+          <a href="case-spline.html" title="Case Study: Fitting a Spline"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
     </div>
   </body>
 </html>

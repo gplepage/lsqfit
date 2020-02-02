@@ -1314,8 +1314,8 @@ new fit data ``ymod[i]``::
   fit_prior = gv.BufferDict()
   ymod_prior = gv.BufferDict()
   for k in prior:
-    fit_prior[k] = prior[:nexp]
-    ymod_prior[k] = prior[nexp:]
+      fit_prior[k] = prior[:nexp]
+      ymod_prior[k] = prior[nexp:]
 
   ymod = y - fcn(x, ymod_prior)
   fit = lsqfit.nonlinear_fit(data=(x, ymod), prior=fit_prior, fcn=fcn)
@@ -1975,33 +1975,25 @@ parameter table are the actual  parameters used in the fit; those listed below
 the dashed line are derived from those above the line. The "correct" value for
 ``a`` here is 0.015 (given the method used to generate the ``y``\s).
 
-Other distributions are available:
-parameters can  also be
-replaced by their square roots as fit parameters, or by the inverse error
-function of their values. The latter option is
-useful here because it allows us to define a prior distribution
-for parameter ``a`` that is uniform between 0 and 0.04::
+Other distributions are available. For example, the code ::
 
    prior = {}
-   prior['erfinv(50*a-1)'] = gv.gvar('0(1)') / gv.sqrt(2)
+   prior['f(a)'] = gv.BufferDict.uniform('f', 0, 0.04)
 
    def fcn(p, N=len(y)):
-      a = (1 + p['50*a-1']) / 50
-      return N * [a]
+      return N * [p['a']]
 
    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
-   print('a =', (1+fit.p['50*a-1']) / 50)
+   print('a =', fit.p['a'])                       # exp(log(a))
 
-In general,  setting a prior ``prior['erfinv(w)']`` equal to (0±1)/sqrt(2)
-means that the prior probability for variable ``w`` is constant between -1 and
-1, and zero elsewhere. Here ``w=50*a-1``, so that the prior distribution for
-``a`` is uniform between 0 and 0.04, and zero elsewhere. This again guarantees
-a positive parameter.
+creates a function ``f(a)`` such that the prior for 
+parameter |~| ``p['a']`` is uniformly distributed between |~| 0
+and |~| 0.04, and zero otherwise. The function name |~| ``f``
+is arbitrary; ``f(a)`` has a Gaussian prior 0 |~| ± |~| 1. 
+This code gives the following output:
 
-The result from this last fit is:
-
-.. literalinclude:: eg6-erfinv.out
+.. literalinclude:: eg6-f_a.out
 
 This fit implies that ``a=0.011(13)``
 which is almost identical to the result obtained from the log-normal

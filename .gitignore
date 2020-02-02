@@ -33,3 +33,9 @@ doc/source/outputfile.p
 lsqfit.egg-info
 outputfile.p
 README.html
+x*.py
+y*.py
+z*.py
+*.p
+*.json
+multi/

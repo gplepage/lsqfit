@@ -1,3 +1,8 @@
+Version 11.4.1 2020-02-02
+=========================
+Update to documentation to synchronize with gvar updates (v10.0).
+No other changes.
+
 Version 11.4 2020-01-01
 =======================
 A minor bug fix and a new diagnostic tool.

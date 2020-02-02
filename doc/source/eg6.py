@@ -16,18 +16,20 @@ import inspect
 import sys
 import tee
 
-DO_PLOT = True
+DO_PLOT = False # True
 sys_stdout = sys.stdout
 
-# ranseed(12345)
-# ygen = gvar(0.015, 0.2)
-# print(ygen)
+if False:
+  ranseed(12345)
+  ygen = gvar(0.015, 0.2)
+  print(ygen)
 
-# y = [gi for gi in bootstrap_iter(ygen, 20)]
-# y = [gvar(ygen(), ygen.sdev) for i in range(20)]
-# ystr = [yi.fmt(2) for yi in y]
-# y = gvar(fmt(y, 2))
-y = gvar([
+  # y = [gi for gi in bootstrap_iter(ygen, 20)]
+  y = [gvar(ygen(), ygen.sdev) for i in range(16000)]
+  ystr = [yi.fmt(2) for yi in y]
+  y = gvar(fmt(y, 2))
+else:
+  y = gvar([
    '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)',
    '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)',
    '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)',
@@ -36,15 +38,17 @@ y = gvar([
 
 # print (y)
 
-print
+print()
 log_prior = BufferDict()
 log_prior['log(a)'] = log(gvar(0.02, 0.02))
 sqrt_prior = BufferDict()
 sqrt_prior['sqrt(a)'] = sqrt(gvar(0.02, 0.02))
 prior = BufferDict(a = gvar(0.02, 0.02))
+unif_prior = BufferDict()
+unif_prior['f(a)'] = BufferDict.uniform('f', 0, 0.04)
 
 stdout = sys.stdout
-for p in [prior, log_prior, sqrt_prior]:
+for p in [prior, log_prior, sqrt_prior, unif_prior]:
 	key = list(p.keys())[0].replace('(a)','_a')
 	sys.stdout = tee.tee(sys_stdout, open("eg6-{}.out".format(key), "w"))
 	def fcn(p, N=len(y)):
@@ -52,6 +56,7 @@ for p in [prior, log_prior, sqrt_prior]:
 	f = nonlinear_fit(prior=p, fcn=fcn, data=(y))
 	print (f)
 	print ("a =", f.p['a'])
+
 
 sys.stdout = tee.tee(sys_stdout, open("eg6-erfinv.out", "w"))
 prior = BufferDict()

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview and Tutorial &#8212; lsqfit 11.4 documentation</title>
+    <title>Overview and Tutorial &#8212; lsqfit 11.4.1 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -68,8 +68,8 @@ a variety of unusual fitting strategies, as we illustrate below;
 it is a feature that distinguishes <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> from
 standard fitting packages.</p>
 <p>The following (complete) code illustrates basic usage of <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="p">{</span>                                 <span class="c1"># data for the dependent variable</span>
@@ -93,15 +93,15 @@ standard fitting packages.</p>
   <span class="k">return</span> <span class="n">ans</span>
 
 <span class="c1"># do the fit</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>       <span class="c1"># print standard summary of fit</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">maxline</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>       <span class="c1"># print standard summary of fit</span>
 
 <span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>                             <span class="c1"># best-fit values for parameters</span>
 <span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
 <span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
 <span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>              <span class="c1"># tabulate outputs</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="c1"># print error budget for outputs</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>              <span class="c1"># tabulate outputs</span>
+<span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span> <span class="c1"># print error budget for outputs</span>
 </pre></div>
 </div>
 <p>This code fits the function <code class="docutils literal notranslate"><span class="pre">f(x,a,b)=</span> <span class="pre">exp(a+b*x)</span></code> (see <code class="docutils literal notranslate"><span class="pre">fcn(x,p)</span></code>)
@@ -111,11 +111,11 @@ equal <code class="docutils literal notranslate"><span class="pre">y['data1']</s
 <code class="docutils literal notranslate"><span class="pre">y</span></code>s’ errors.</p>
 <p>The means and covariance matrices for the <code class="docutils literal notranslate"><span class="pre">y</span></code>s are
 specified in the <code class="docutils literal notranslate"><span class="pre">gv.gvar(...)</span></code>s used to create them: thus, for example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">])</span>
 <span class="go">[1.376(69) 2.01(24)]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;+-&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sdev</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="s2">&quot;+-&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sdev</span><span class="p">)</span>
 <span class="go">1.376 +- 0.068556546004</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">]))</span>   <span class="c1"># covariance matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="s1">&#39;data1&#39;</span><span class="p">]))</span>   <span class="c1"># covariance matrix</span>
 <span class="go">[[ 0.0047  0.01  ]</span>
 <span class="go"> [ 0.01    0.056 ]]</span>
 </pre></div>
@@ -316,17 +316,17 @@ There are five important things to know about them (see the
 <div><ol class="arabic">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s are created by <code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.gvar()</span></code>, individually or in
 groups: for example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;1.0 +- 0.2&#39;</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;1.0(4)&#39;</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;1.0 +- 0.2&#39;</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;1.0(4)&#39;</span><span class="p">))</span>
 <span class="go">1.00(10) 1.00(20) 1.00(40)</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.41</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.41</span><span class="p">]))</span>
 <span class="go">[1.00(10) 1.00(20) 1.00(41)]</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.00(41)&#39;</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.00(41)&#39;</span><span class="p">]))</span>
 <span class="go">[1.00(10) 1.00(20) 1.00(41)]</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0(4)&#39;</span><span class="p">])))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;1.0(1)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;1.0(2)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.0(4)&#39;</span><span class="p">])))</span>
 <span class="go">{&#39;a&#39;: 1.00(10),&#39;b&#39;: array([1.00(20), 1.00(40)], dtype=object)}</span>
 </pre></div>
 </div>
@@ -339,22 +339,22 @@ mean value. Very large (or small) numbers use a notation like
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s describe not only means and standard deviations, but also
 statistical correlations between different objects. For example, the
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s created by</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.010001</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">1.00(10) 1.00(10)</span>
 </pre></div>
 </div>
 <p>both have means of <code class="docutils literal notranslate"><span class="pre">1</span></code> and standard deviations equal to or
 very close to <code class="docutils literal notranslate"><span class="pre">0.1</span></code>, but the ratio <code class="docutils literal notranslate"><span class="pre">b/a</span></code> has a
 standard deviation that is 100x smaller:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
 <span class="go">1.0000(10)</span>
 </pre></div>
 </div>
 <p>This is because the covariance matrix specified for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code>
 when they were created has large, positive off-diagonal elements:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>         <span class="c1"># covariance matrix</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>         <span class="c1"># covariance matrix</span>
 <span class="go">[[ 0.01      0.01    ]</span>
 <span class="go"> [ 0.01      0.010001]]</span>
 </pre></div>
@@ -363,7 +363,7 @@ when they were created has large, positive off-diagonal elements:</p>
 correlated, which means that <code class="docutils literal notranslate"><span class="pre">b/a</span></code> or <code class="docutils literal notranslate"><span class="pre">b-a</span></code> will have
 much smaller uncertainties than <code class="docutils literal notranslate"><span class="pre">a</span></code> or <code class="docutils literal notranslate"><span class="pre">b</span></code> separately. The
 correlation coefficient for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> is 0.99995:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>        <span class="c1"># correlation matrix</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>        <span class="c1"># correlation matrix</span>
 <span class="go">[[ 1.       0.99995]</span>
 <span class="go"> [ 0.99995  1.     ]]</span>
 </pre></div>
@@ -375,16 +375,16 @@ are propagated through these expressions following the usual rules,
 (automatically) preserving information about correlations. For
 example, the <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> above could have been created
 using the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">1.00(10) 1.00(10)</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">b</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
 <span class="go">1.0000(10)</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">]))</span>
 <span class="go">[[ 0.01      0.01    ]</span>
 <span class="go"> [ 0.01      0.010001]]</span>
 </pre></div>
@@ -394,10 +394,10 @@ plus a very small correction. From these variables we can
 create new variables that are also highly correlated:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span> <span class="o">/</span> <span class="n">x</span><span class="p">)</span>
 <span class="go">0.69(10) 1.13(14) 1.627(34)</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
 <span class="go">[[ 0.01        0.01388174]</span>
 <span class="go"> [ 0.01388174  0.01927153]]</span>
 </pre></div>
@@ -428,19 +428,19 @@ uncertainties in the primary <code class="xref py py-class docutils literal notr
 It is easy to create an “error budget” that decomposes the
 uncertainty in a derived <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> into components coming from each
 of the primary <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s involved in its creation. For example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;1.0(1)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.9(2)&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">cosh</span><span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
 <span class="go">Values:</span>
 <span class="go">                  y: 1.01(23)</span>
 <span class="go">                  x: 0.69(10)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="o">=</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="n">inputs</span><span class="p">))</span>
 <span class="go">Partial % Errors:</span>
 <span class="go">                   y         x</span>
 <span class="go">------------------------------</span>
@@ -468,9 +468,9 @@ for example,  use</p>
 Loading the file into a Python code later, with <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.load()</span></code>,
 recovers the array with standard deviations and correlations intact:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;outputfile.p&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="go">1.00(10) 0.90(20) 0.69(10) 1.01(23)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="n">b</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="n">b</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">a</span><span class="p">)</span>
 <span class="go">1.128(26) 1(0)</span>
 </pre></div>
 </div>
@@ -505,8 +505,8 @@ problem, one that is
 familiar from numerical simulations of quantum chromodynamics (QCD).</p>
 <p>We need code for each of the three fit inputs. The fit data in our example
 is assembled by the following function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>  <span class="mf">5.</span><span class="p">,</span>   <span class="mf">6.</span><span class="p">,</span>   <span class="mf">7.</span><span class="p">,</span>   <span class="mf">8.</span><span class="p">,</span>   <span class="mf">9.</span><span class="p">,</span>  <span class="mf">10.</span><span class="p">,</span>  <span class="mf">12.</span><span class="p">,</span>  <span class="mf">14.</span><span class="p">])</span>
@@ -548,10 +548,10 @@ is assembled by the following function:</p>
 corresponding values <code class="docutils literal notranslate"><span class="pre">y[i]</span></code> that we will fit. The <code class="docutils literal notranslate"><span class="pre">y[i]</span></code> are <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s
 (Gaussian random variables — see previous section)
 built from the mean values in <code class="docutils literal notranslate"><span class="pre">ymean</span></code> and the covariance matrix <code class="docutils literal notranslate"><span class="pre">ycov</span></code>, which shows strong correlations:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>                      <span class="c1"># fit data</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>                      <span class="c1"># fit data</span>
 <span class="go">[0.004502(46) 0.001817(19) 0.0007362(79) ... 1.342(19)e-06]</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>         <span class="c1"># correlation matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>         <span class="c1"># correlation matrix</span>
 <span class="go">[[ 1.          0.99853801  0.99397698  ... 0.83814041]</span>
 <span class="go"> [ 0.99853801  1.          0.99843828  ... 0.86234032]</span>
 <span class="go"> [ 0.99397698  0.99843828  1.          ... 0.88605708]</span>
@@ -575,7 +575,7 @@ parameters <code class="docutils literal notranslate"><span class="pre">a[i]</sp
 that a sum of decaying exponentials is appropriate,
 and therefore we define the following
 Python function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>       <span class="c1"># function used to fit x, y data</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>       <span class="c1"># array of a[i]s</span>
@@ -604,7 +604,7 @@ Here we know that each <code class="docutils literal notranslate"><span class="p
 0.5±0.4, while <code class="docutils literal notranslate"><span class="pre">E[i]</span></code> is of order 1+i±0.4. A prior
 that represents this information is built using the following code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">):</span>               <span class="c1"># make priors for fit parameters</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>         <span class="c1"># any dictionary works</span>
@@ -616,10 +616,10 @@ that represents this information is built using the following code:</p>
 <p>where <code class="docutils literal notranslate"><span class="pre">nexp</span></code> is the number of exponential terms that will be used (and
 therefore the number of <code class="docutils literal notranslate"><span class="pre">a[i]</span></code>s and <code class="docutils literal notranslate"><span class="pre">E[i]</span></code>s). With <code class="docutils literal notranslate"><span class="pre">nexp=3</span></code>,
 for example, we have:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 <span class="go">[0.50(40) 0.50(40) 0.50(40)]</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">])</span>
 <span class="go">[1.00(40), 2.00(40), 3.00(40)]</span>
 </pre></div>
 </div>
@@ -636,25 +636,25 @@ finally ready to do the fit, which is now easy:</p>
 </div>
 <p>Our complete Python program is, therefore:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>              <span class="c1"># collect fit data</span>
-    <span class="n">p0</span> <span class="o">=</span> <span class="kc">None</span>                       <span class="c1"># make larger fits go faster (opt.)</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="bp">None</span>                       <span class="c1"># make larger fits go faster (opt.)</span>
     <span class="k">for</span> <span class="n">nexp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;************************************* nexp =&#39;</span><span class="p">,</span> <span class="n">nexp</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;************************************* nexp =&#39;</span><span class="p">,</span> <span class="n">nexp</span><span class="p">)</span>
         <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">)</span>
         <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>                  <span class="c1"># print the fit results</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>                  <span class="c1"># print the fit results</span>
         <span class="k">if</span> <span class="n">nexp</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]</span>          <span class="c1"># best-fit parameters</span>
             <span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">fit</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">dof</span> <span class="o">&lt;</span> <span class="mf">1.</span><span class="p">:</span>
             <span class="n">p0</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span>          <span class="c1"># starting point for next fit (opt.)</span>
-        <span class="nb">print</span><span class="p">()</span>
+        <span class="k">print</span><span class="p">()</span>
 
     <span class="c1"># error budget analysis</span>
     <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span>
@@ -662,9 +662,9 @@ finally ready to do the fit, which is now easy:</p>
         <span class="s1">&#39;a1/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;a2/a0&#39;</span><span class="p">:</span><span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">}</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;E&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">],</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span><span class="n">y</span><span class="p">}</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;================= Error Budget Analysis&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span><span class="n">inputs</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;================= Error Budget Analysis&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span><span class="n">inputs</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>                      <span class="c1"># function used to fit x, y data</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>                      <span class="c1"># array of a[i]s</span>
@@ -910,7 +910,7 @@ for example, we actually have 20 pieces of data to fit: the 8 <code class="docu
 plus the 12 prior values for the 12 parameters.</p>
 <p>The function of priors as fit data becomes obvious if we rewrite
 our fit function as</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>       <span class="c1"># function used to fit x, y data</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>       <span class="c1"># array of a[i]s</span>
@@ -925,7 +925,7 @@ our fit function as</p>
 <p>and make the following change to the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]))</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This gives exactly the same results, but now with the prior
@@ -957,7 +957,7 @@ is evident in the ratio <code class="docutils literal notranslate"><span class="
 there was no statistical correlation between our estimates for <code class="docutils literal notranslate"><span class="pre">a1</span></code>
 and <code class="docutils literal notranslate"><span class="pre">a0</span></code>, but in fact is 1.010(31) in this fit. The modest (positive)
 correlation is clear from the correlation matrix:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">]))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">]))</span>
 <span class="go">[[ 1.          0.36353303]</span>
 <span class="go"> [ 0.36353303  1.        ]]</span>
 </pre></div>
@@ -991,8 +991,8 @@ output from <code class="docutils literal notranslate"><span class="pre">fit.for
         <span class="mi">8</span>     <span class="mf">0.0002987</span> <span class="p">(</span><span class="mi">33</span><span class="p">)</span>     <span class="mf">0.0002993</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>
         <span class="mi">9</span>     <span class="mf">0.0001213</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.0001216</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>
        <span class="mi">10</span>    <span class="mf">0.00004926</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>    <span class="mf">0.00004941</span> <span class="p">(</span><span class="mi">56</span><span class="p">)</span>
-       <span class="mi">12</span>       <span class="mf">8.13</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mi">06</span>      <span class="mf">8.160</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mi">06</span>
-       <span class="mi">14</span>      <span class="mf">1.342</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mi">06</span>      <span class="mf">1.348</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mi">06</span>
+       <span class="mi">12</span>       <span class="mf">8.13</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mo">06</span>      <span class="mf">8.160</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mo">06</span>
+       <span class="mi">14</span>      <span class="mf">1.342</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mo">06</span>      <span class="mf">1.348</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span><span class="n">e</span><span class="o">-</span><span class="mo">06</span>
 </pre></div>
 </div>
 <p>The fit is excellent over the entire three orders of magnitude. This
@@ -1005,7 +1005,7 @@ in the data — smooth compared with the size of the statistical-error bars
 <a class="reference internal image-reference" href="_images/eg1.png"><img alt="_images/eg1.png" src="_images/eg1.png" style="width: 70%;" /></a>
 <p>This particular plot was made using the <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> module, with the
 following code added to the end of <code class="docutils literal notranslate"><span class="pre">main()</span></code> (outside the loop):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">ratio</span> <span class="o">=</span> <span class="n">y</span> <span class="o">/</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">)</span>
@@ -1036,7 +1036,7 @@ the <code class="docutils literal notranslate"><span class="pre">main()</span></
 end:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>              <span class="c1"># collect fit data</span>
-    <span class="n">p0</span> <span class="o">=</span> <span class="kc">None</span>                       <span class="c1"># make larger fits go faster (opt.)</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="bp">None</span>                       <span class="c1"># make larger fits go faster (opt.)</span>
     <span class="k">for</span> <span class="n">nexp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">):</span>
         <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">)</span>
         <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
@@ -1044,12 +1044,12 @@ end:</p>
             <span class="n">p0</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span>          <span class="c1"># starting point for next fit (opt.)</span>
 
     <span class="c1"># print nexp=4 fit results</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--------------------- original fit&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;--------------------- original fit&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
     <span class="n">E</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]</span>                  <span class="c1"># best-fit parameters</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># new fit adds new data about a[1] / a[0]</span>
     <span class="k">def</span> <span class="nf">ratio</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>                   <span class="c1"># new fit function</span>
@@ -1060,12 +1060,12 @@ end:</p>
     <span class="n">data</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">)</span>         <span class="c1"># new data for the ratio</span>
 
     <span class="n">newfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">ratio</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------- new fit to extra information&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">--------------------- new fit to extra information&#39;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">newfit</span><span class="p">)</span>
     <span class="n">E</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">]</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">newfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;E1/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  E2/E0 =&#39;</span><span class="p">,</span> <span class="n">E</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">E</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;a1/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;  a2/a0 =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>The results of the new fit (to one piece of new data) are at the end of the
@@ -1135,10 +1135,10 @@ onto the end of the <code class="docutils literal notranslate"><span class="pre"
 <span class="n">new_data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a1/a0&#39;</span> <span class="p">:</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mf">1e-5</span><span class="p">)}</span>
 <span class="n">new_p</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">wavg</span><span class="p">([</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">new_data</span><span class="p">])</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;chi2/dof = </span><span class="si">{:.2f}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_p</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="n">new_p</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;E:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a1/a0:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;a1/a0&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;chi2/dof = {:.2f}</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">new_p</span><span class="o">.</span><span class="n">chi2</span> <span class="o">/</span> <span class="n">new_p</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;E:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">][:</span><span class="mi">4</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a1/a0:&#39;</span><span class="p">,</span> <span class="n">new_p</span><span class="p">[</span><span class="s1">&#39;a1/a0&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>gives the following output:</p>
@@ -1170,10 +1170,10 @@ part of the fit process involves diagonalizing the fit data’s (dense)
 batches of 100 and do chained fits of one batch after another:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># read data from disk</span>
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x = [</span><span class="si">{}</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> ... </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y = [</span><span class="si">{}</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> ... </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(y[0],y[9999]) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;x = [{}  {} ... {}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;y = [{}  {} ... {}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;corr(y[0],y[9999]) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">([</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">print</span><span class="p">()</span>
 
 <span class="c1"># fit function and prior</span>
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -1190,10 +1190,10 @@ batches of 100 and do chained fits of one batch after another:</p>
         <span class="p">)</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>
     <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">]:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;******* Results from &#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nfit</span><span class="p">,</span> <span class="s1">&#39;data points&#39;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;******* Results from &#39;</span><span class="p">,</span> <span class="n">Nstride</span> <span class="o">*</span> <span class="n">nfit</span><span class="p">,</span> <span class="s1">&#39;data points (final)&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;******* Results from &#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nfit</span><span class="p">,</span> <span class="s1">&#39;data points&#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;******* Results from &#39;</span><span class="p">,</span> <span class="n">Nstride</span> <span class="o">*</span> <span class="n">nfit</span><span class="p">,</span> <span class="s1">&#39;data points (final)&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>In the loop, we fit only 100 data points at a time, but the prior we use is
@@ -1255,9 +1255,9 @@ correlations, which can be expensive for lots of data).
 The fitter is informed by using argument
 <code class="docutils literal notranslate"><span class="pre">udata</span></code> instead of <code class="docutils literal notranslate"><span class="pre">data</span></code> to specify the fit data:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">read_data</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;x = [</span><span class="si">{}</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> ... </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y = [</span><span class="si">{}</span><span class="s1">  </span><span class="si">{}</span><span class="s1"> ... </span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
-<span class="nb">print</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;x = [{}  {} ... {}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;y = [{}  {} ... {}]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+<span class="k">print</span><span class="p">()</span>
 
 <span class="c1"># fit function and prior</span>
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -1265,7 +1265,7 @@ The fitter is informed by using argument
 <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">udata</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Using <code class="docutils literal notranslate"><span class="pre">udata</span></code> rather than <code class="docutils literal notranslate"><span class="pre">data</span></code> causes <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to
@@ -1285,7 +1285,7 @@ turning the <code class="docutils literal notranslate"><span class="pre">x</span
 with independent variables.</p>
 <p>To illustrate, consider the data assembled by the following <code class="docutils literal notranslate"><span class="pre">make_data</span></code>
 function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
@@ -1309,7 +1309,7 @@ the corresponding <code class="docutils literal notranslate"><span class="pre">y
 </div>
 <p>So we have two sets of parameters for which we need priors: the <code class="docutils literal notranslate"><span class="pre">b[i]</span></code>s and
 the <code class="docutils literal notranslate"><span class="pre">x[i]</span></code>s:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
@@ -1320,7 +1320,7 @@ the <code class="docutils literal notranslate"><span class="pre">x[i]</span></co
 </div>
 <p>The prior values for the <code class="docutils literal notranslate"><span class="pre">x[i]</span></code> are just the values returned by
 <code class="docutils literal notranslate"><span class="pre">make_data()</span></code>. The corresponding fit function is:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="n">b0</span><span class="p">,</span> <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">b3</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span>
@@ -1337,7 +1337,7 @@ but rather are fit parameter in dictionary <code class="docutils literal notran
 <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This generates the following output:</p>
@@ -1382,17 +1382,17 @@ plot shows the fit (dashed line) compared with the input data for <code class="
 priors that correlate different fit parameters.
 The following fit analysis code illustrates
 how this is done:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;p3/p2 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;p3/p2 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
@@ -1520,7 +1520,7 @@ the analysis by subtracting it out from the input data. This is called
 <p>To illustrate how it is done,
 we consider data that is generated from
 an infinite sum of decaying exponentials, like that in <a class="reference internal" href="#basic-fits"><span class="std std-ref">Basic Fits</span></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
   <span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
       <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.4</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">,</span> <span class="mf">1.8</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">])</span>
@@ -1537,7 +1537,7 @@ corresponding <code class="docutils literal notranslate"><span class="pre">y[i]<
 no longer represented by <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
 <p>We want to fit these data
 with a sum of exponentials, as before:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>       <span class="c1"># array of a[i]s</span>
@@ -1549,8 +1549,8 @@ with a sum of exponentials, as before:</p>
 that the leading exponent <code class="docutils literal notranslate"><span class="pre">E[0]</span></code> is 1±0.1, as are the differences
 between subsequent exponents <code class="docutils literal notranslate"><span class="pre">dE[i]</span> <span class="pre">=</span> <span class="pre">E[i]</span> <span class="pre">-</span> <span class="pre">E[i-1]</span></code>. This <em>a priori</em>
 knowledge is encoded in the priors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">make_prior</span><span class="p">(</span><span class="n">nexp</span><span class="p">):</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
@@ -1575,8 +1575,8 @@ new fit data <code class="docutils literal notranslate"><span class="pre">ymod[i
 <span class="n">fit_prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
 <span class="n">ymod_prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">prior</span><span class="p">:</span>
-  <span class="n">fit_prior</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[:</span><span class="n">nexp</span><span class="p">]</span>
-  <span class="n">ymod_prior</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="n">nexp</span><span class="p">:]</span>
+    <span class="n">fit_prior</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[:</span><span class="n">nexp</span><span class="p">]</span>
+    <span class="n">ymod_prior</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">[</span><span class="n">nexp</span><span class="p">:]</span>
 
 <span class="n">ymod</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="n">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod_prior</span><span class="p">)</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ymod</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">fit_prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
@@ -1587,14 +1587,14 @@ that are in <code class="docutils literal notranslate"><span class="pre">ymod_pr
 need not be included in fit function. The fitter uses only
 the parameters left in <code class="docutils literal notranslate"><span class="pre">fit_prior</span></code>.</p>
 <p>Our complete code, therefore, is:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>             <span class="c1"># 100 exponential terms in all</span>
-    <span class="n">p0</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">for</span> <span class="n">nexp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
         <span class="c1"># marginalize the last 100 - nexp terms (in ymod_prior)</span>
         <span class="n">fit_prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>     <span class="c1"># part of prior used in fit</span>
@@ -1610,8 +1610,8 @@ the parameters left in <code class="docutils literal notranslate"><span class="p
             <span class="p">)</span>
 
         <span class="c1"># print fit information</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;************************************* nexp =&#39;</span><span class="p">,</span><span class="n">nexp</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;************************************* nexp =&#39;</span><span class="p">,</span><span class="n">nexp</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
         <span class="n">p0</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">pmean</span>
 
     <span class="c1"># print summary information and error budget</span>
@@ -1625,8 +1625,8 @@ the parameters left in <code class="docutils literal notranslate"><span class="p
         <span class="s1">&#39;E prior&#39;</span><span class="p">:</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">],</span> <span class="s1">&#39;a prior&#39;</span><span class="p">:</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span>
         <span class="s1">&#39;svd cut&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">svdcorrection</span><span class="p">,</span>
         <span class="p">}</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>       <span class="c1"># array of a[i]s</span>
@@ -1988,7 +1988,7 @@ apply SVD cuts to either of these separately using <code class="xref py py-func 
 the fit: for example,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">ymod</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>applies different SVD cuts to the prior and data.</p>
@@ -2012,8 +2012,8 @@ is done automatically if <code class="docutils literal notranslate"><span class=
 statistics. Consider the following example, which seeks to fit
 data obtained by averaging <code class="docutils literal notranslate"><span class="pre">N=5</span></code> random samples (a very small
 number of samples):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
@@ -2030,7 +2030,7 @@ number of samples):</p>
         <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;0.75(5)&#39;</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="s1">&#39;0.30(3)&#39;</span><span class="p">)</span>
     <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">main</span><span class="p">()</span>
@@ -2129,8 +2129,8 @@ varied as functions of <code class="docutils literal notranslate"><span class="p
 <p>Here we want to vary the relative error assigned to the data values,
 so we use the following code, where the uncertainty in <code class="docutils literal notranslate"><span class="pre">y[i]</span></code> is set
 equal to <code class="docutils literal notranslate"><span class="pre">dy[i]</span> <span class="pre">=</span> <span class="pre">y[i]</span> <span class="pre">*</span> <span class="pre">z</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="c1"># fit data and prior</span>
@@ -2149,7 +2149,7 @@ equal to <code class="docutils literal notranslate"><span class="pre">dy[i]</spa
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">newy</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
 
 <span class="n">fit</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">fitargs</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>This code produces the following output:</p>
@@ -2238,8 +2238,8 @@ procedure for setting priors is again, as in the previous section,
 an example of the Empirical Bayes method and can be implemented using
 function <a class="reference internal" href="lsqfit.html#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsqfit.empbayes_fit()</span></code></a>.</p>
 <p>The following code illustrates how this is done:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
@@ -2257,7 +2257,7 @@ function <a class="reference internal" href="lsqfit.html#lsqfit.empbayes_fit" ti
     <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
 
 <span class="n">fit</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">fitargs</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Here the fitter varies parameters <code class="docutils literal notranslate"><span class="pre">p</span></code> until <code class="docutils literal notranslate"><span class="pre">fcn(x,p)</span></code> equals the
@@ -2411,7 +2411,7 @@ distribution chosen for the <code class="docutils literal notranslate"><span cla
 <p>To illustrate consider a simple problem where an experimental quantity <code class="docutils literal notranslate"><span class="pre">y</span></code> is
 known to be positive, but experimental errors mean that measured values can
 often be negative:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
@@ -2430,8 +2430,8 @@ use the following fitting code:</p>
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>where we are assuming <em>a priori</em> information that suggests
@@ -2443,7 +2443,7 @@ the average is around 0.02. The output from this code is:</p>
               <span class="n">a</span>   <span class="mf">0.004</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.020</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.1</span><span class="p">)</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 
 <span class="n">a</span> <span class="o">=</span> <span class="mf">0.004</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
 </pre></div>
@@ -2458,8 +2458,8 @@ is negative, and yet we know that <code class="docutils literal notranslate"><sp
    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>                       <span class="c1"># exp(log(a))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>                       <span class="c1"># exp(log(a))</span>
 </pre></div>
 </div>
 <p>The fit parameter is now <code class="docutils literal notranslate"><span class="pre">log(a)</span></code> rather than <code class="docutils literal notranslate"><span class="pre">a</span></code> itself, but the code
@@ -2485,37 +2485,30 @@ parameter dictionary <code class="docutils literal notranslate"><span class="pre
 parameter table are the actual  parameters used in the fit; those listed below
 the dashed line are derived from those above the line. The “correct” value for
 <code class="docutils literal notranslate"><span class="pre">a</span></code> here is 0.015 (given the method used to generate the <code class="docutils literal notranslate"><span class="pre">y</span></code>s).</p>
-<p>Other distributions are available:
-parameters can  also be
-replaced by their square roots as fit parameters, or by the inverse error
-function of their values. The latter option is
-useful here because it allows us to define a prior distribution
-for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> that is uniform between 0 and 0.04:</p>
+<p>Other distributions are available. For example, the code</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">prior</span><span class="p">[</span><span class="s1">&#39;erfinv(50*a-1)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0(1)&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">gv</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">prior</span><span class="p">[</span><span class="s1">&#39;f(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
-   <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span>
-   <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
+   <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;50*a-1&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>                       <span class="c1"># exp(log(a))</span>
 </pre></div>
 </div>
-<p>In general,  setting a prior <code class="docutils literal notranslate"><span class="pre">prior['erfinv(w)']</span></code> equal to (0±1)/sqrt(2)
-means that the prior probability for variable <code class="docutils literal notranslate"><span class="pre">w</span></code> is constant between -1 and
-1, and zero elsewhere. Here <code class="docutils literal notranslate"><span class="pre">w=50*a-1</span></code>, so that the prior distribution for
-<code class="docutils literal notranslate"><span class="pre">a</span></code> is uniform between 0 and 0.04, and zero elsewhere. This again guarantees
-a positive parameter.</p>
-<p>The result from this last fit is:</p>
+<p>creates a function <code class="docutils literal notranslate"><span class="pre">f(a)</span></code> such that the prior for
+parameter <code class="docutils literal notranslate"><span class="pre">p['a']</span></code> is uniformly distributed between 0
+and 0.04, and zero otherwise. The function name <code class="docutils literal notranslate"><span class="pre">f</span></code>
+is arbitrary; <code class="docutils literal notranslate"><span class="pre">f(a)</span></code> has a Gaussian prior 0 ± 1.
+This code gives the following output:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
   <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.2385</span>
 
 <span class="n">Parameters</span><span class="p">:</span>
-  <span class="n">erfinv</span><span class="p">(</span><span class="mi">50</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>   <span class="o">-</span><span class="mf">0.42</span> <span class="p">(</span><span class="mi">68</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.00</span> <span class="p">(</span><span class="mi">71</span><span class="p">)</span> <span class="p">]</span>  
+           <span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>   <span class="o">-</span><span class="mf">0.59</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
 <span class="o">-----------------------------------------------</span>
-          <span class="mi">50</span><span class="n">a</span><span class="o">-</span><span class="mi">1</span>   <span class="o">-</span><span class="mf">0.44</span> <span class="p">(</span><span class="mi">64</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.00</span> <span class="p">(</span><span class="mi">80</span><span class="p">)</span> <span class="p">]</span>  
+              <span class="n">a</span>   <span class="mf">0.011</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.020</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="p">]</span>  
 
 <span class="n">Settings</span><span class="p">:</span>
   <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">15</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
@@ -2530,7 +2523,7 @@ distribution.</p>
 using <code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.BufferDict.add_distribution()</span></code>.
 For example,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 
 <span class="k">def</span> <span class="nf">invf</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mf">0.02</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">gv</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
@@ -2547,8 +2540,8 @@ For example,</p>
     <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>does a fit with Gaussian parameter <code class="docutils literal notranslate"><span class="pre">f(a)</span></code>, which forces <code class="docutils literal notranslate"><span class="pre">a</span></code>
@@ -2665,7 +2658,7 @@ important modes mostly unaffected.</p>
 of the covariance matrices has a zero mode. A common cause is if the same
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> was used for more than one prior. For example, one might
 think that</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
@@ -2674,9 +2667,9 @@ think that</p>
 Indeed each parameter separately is of order 1±1, but in a fit the two
 parameters would be forced equal to each other because their priors are both
 set equal to the same <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">prior</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">prior</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
 <span class="go">1.0(1.0) 1.0(1.0)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
 <span class="go">0(0)</span>
 </pre></div>
 </div>
@@ -2684,9 +2677,9 @@ set equal to the same <code class="xref py py-class docutils literal notranslate
 1±1, they fluctuate together, in exact lock-step. The covariance matrix
 for <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> must therefore be singular, with a zero mode corresponding
 to the combination <code class="docutils literal notranslate"><span class="pre">a-b</span></code>; it is all 1s in this case:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cov</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcov</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span>    <span class="c1"># prior&#39;s covariance matrix</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">cov</span><span class="p">))</span>       <span class="c1"># determinant is zero</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">cov</span><span class="p">))</span>       <span class="c1"># determinant is zero</span>
 <span class="go">0.0</span>
 </pre></div>
 </div>
@@ -2788,12 +2781,12 @@ a variety of starting points.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.1.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
     </div>
   </body>
 </html>
