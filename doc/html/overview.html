@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview and Tutorial &#8212; lsqfit 11.4.1 documentation</title>
+    <title>Overview and Tutorial &#8212; lsqfit 11.5 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -474,16 +474,56 @@ recovers the array with standard deviations and correlations intact:</p>
 <span class="go">1.128(26) 1(0)</span>
 </pre></div>
 </div>
-<p>This recipe works with arrays of any shape, and also with
-dictionaries whose values are either <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays of
-<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s. In particular, the best-fit values for the
-fit parameters from a fit can be saved using something
-like <code class="docutils literal notranslate"><span class="pre">gv.dump(fit.p,</span> <span class="pre">'fitparam.p')</span></code>.</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.dump()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.load()</span></code> are similar to the same
+functions in Python’s <code class="xref py py-mod docutils literal notranslate"><span class="pre">pickle</span></code> module, except that they
+can deal properly with <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s. They can be used to archive
+(possibly nested) containers like dictionaries and lists that
+contain <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s (together with other data types), as well as
+many other types of object containing <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s. In particular,
+they can be used to save the best-fit parameters
+from a fit,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gv</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;fitpfile.p&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or the entire <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gv</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="s1">&#39;fitfile.p&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The archived fit preserves all
+or most of the fit object’s functionality (depending upon
+whether or not the fit function can be pickled): for
+example,</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fit</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;fitfile.p&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+<span class="go">Least Square Fit:</span>
+<span class="go">  chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538</span>
+
+<span class="go">Parameters:</span>
+<span class="go">              a   0.253 (32)     [  0.50 (50) ]</span>
+<span class="go">              b   0.449 (65)     [  0.50 (50) ]</span>
+
+<span class="go">Settings:</span>
+<span class="go">  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 8/0.0)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">p</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span> <span class="n">b</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span><span class="p">[</span><span class="s1">&#39;b/a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">inputs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+<span class="go">Partial % Errors:</span>
+<span class="go">                  a       b/a         b</span>
+<span class="go">----------------------------------------</span>
+<span class="go">        y:     12.75     16.72     14.30</span>
+<span class="go">    prior:      0.92      1.58      1.88</span>
+<span class="go">----------------------------------------</span>
+<span class="go">    total:     12.78     16.80     14.42</span>
+</pre></div>
+</div>
 </li>
 </ol>
 </div></blockquote>
-<p>There is considerably more information about <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s in the documentation for
-module <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar</span></code>.</p>
+<p>There is considerably more information about <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s in the <a class="reference external" href="https://gvar.readthedocs.io/en/latest/">documentation</a>
+for module <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar</span></code>.</p>
 </div>
 <div class="section" id="basic-fits">
 <span id="id1"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this headline">¶</a></h2>
@@ -2781,7 +2821,7 @@ a variety of starting points.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.4.1 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

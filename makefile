@@ -34,6 +34,9 @@ src/lsqfit/_utilities.c : src/lsqfit/_utilities.pyx
 
 # $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
 
+update:
+	make uninstall install
+
 uninstall :			# mostly works (may leave some empty directories)
 	- $(PIP) uninstall lsqfit
 

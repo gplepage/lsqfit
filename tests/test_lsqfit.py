@@ -27,6 +27,8 @@ import gvar as gv
 from lsqfit import *
 import lsqfit
 
+PY3 = (sys.version_info.major == 3)
+
 ## test_lsqfit should work for any of the fitters. Use DEFAULTS to choose:
 #
 # lsqfit.nonlinear_fit.DEFAULTS.update(dict(
@@ -380,6 +382,47 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         fit = nonlinear_fit(data=y,prior=prior,fcn=f, tol=1e-8)
         self.assertEqual(str(fit.p), str(wavg(y.tolist()+[prior])))
+
+    @staticmethod
+    def fcn(p):
+        return 10 * [p['a']] 
+
+    def test_dump(self):
+        y = gv.gvar('1(2)')
+        data = gv.gvar(10 * ['0(2)']) + [gv.sample(y) for i in range(10)]
+        prior = gv.gvar(dict(a='1(2)'))
+        if not PY3:
+            with warnings.catch_warnings(record=True) as w:
+                fit = nonlinear_fit(prior=prior, data=data, fcn=self.fcn, debug=True)
+                dfit = gv.loads(gv.dumps(fit))
+                self.assertEqual(fit.format(), dfit.format())
+                self.assertEqual(
+                    gv.fmt_errorbudget(outputs=dict(a=fit.p['a']), inputs=dict(prior=fit.prior, data=fit.data)),
+                    gv.fmt_errorbudget(outputs=dict(a=dfit.p['a']), inputs=dict(prior=dfit.prior, data=dfit.data)),
+                    )
+            return
+        fit = nonlinear_fit(prior=prior, data=data, fcn=self.fcn, debug=True)
+        dfit = gv.loads(gv.dumps(fit))
+        self.assertTrue(hasattr(dfit, 'fcn'))
+        self.assertEqual(fit.format(True), dfit.format(True))
+        self.assertEqual(
+            gv.fmt_errorbudget(outputs=dict(a=fit.p['a']), inputs=dict(prior=fit.prior, data=fit.data)),
+            gv.fmt_errorbudget(outputs=dict(a=dfit.p['a']), inputs=dict(prior=dfit.prior, data=dfit.data)),
+            )
+        # redo with lambda function -- can't be pickled
+        fit = nonlinear_fit(prior=prior, data=data, fcn=lambda p: 10 * [p['a']], debug=True)
+        with warnings.catch_warnings(record=True) as w:
+            pickled_fit = gv.dumps(fit)
+            self.assertTrue('unable to pickle fit function' in str(w[-1].message))
+        with warnings.catch_warnings(record=True) as w:
+            dfit = gv.loads(pickled_fit)
+            self.assertTrue('unable to unpickle fit function' in str(w[-1].message))
+        self.assertTrue(not hasattr(dfit, 'fcn'))
+        self.assertEqual(fit.format(), dfit.format())
+        self.assertEqual(
+            gv.fmt_errorbudget(outputs=dict(a=fit.p['a']), inputs=dict(prior=fit.prior, data=fit.data)),
+            gv.fmt_errorbudget(outputs=dict(a=dfit.p['a']), inputs=dict(prior=dfit.prior, data=dfit.data)),
+            )
 
     def test_wavg1(self):
         """ fit vs wavg uncorrelated """
@@ -1498,7 +1541,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         prior = gv.gvar(dict(a="0(2)"))
         with self.assertRaises(ValueError):
             def f(p):
-                return [p['a']]*3
+                return [p['a']] * 4
 
             fit = nonlinear_fit(data=y, prior=prior, fcn=f, debug=False)
         with self.assertRaises(ZeroDivisionError):

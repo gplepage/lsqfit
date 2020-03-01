@@ -85,6 +85,7 @@ module for fits and, especially, error budgets.
 # GNU General Public License for more details.
 
 import collections
+import functools
 import sys
 import warnings
 import math, pickle, time, copy
@@ -128,7 +129,7 @@ if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
 _FDATA = collections.namedtuple(
-    '_FDATA', 'mean inv_wgts svdcorrection logdet nblocks svdn'
+    '_FDATA', 'mean inv_wgts svdcorrection logdet nblocks svdn nw niw'
     )
 # Internal data type for _unpack_data()
 
@@ -545,13 +546,12 @@ class nonlinear_fit(object):
         self.p0 = p0 if self.p0file is None else None
         self.fcn = fcn
         self._p = None
-        self._palt = None
         self.debug = debug
         self.fitter = DEFAULT_FITTER if fitter is None else fitter
         if self.fitter not in nonlinear_fit.FITTERS:
             raise ValueError('unknown fitter: ' + str(self.fitter))
 
-        clock = time.process_timer if hasattr(time, 'process_timer') else time.time
+        clock = time.perf_counter if hasattr(time, 'perf_counter') else time.time
         cpu_time = clock()
 
         if add_priornoise:
@@ -590,8 +590,8 @@ class nonlinear_fit(object):
         self._chiv, self._chivw = _build_chiv_chivw(
             fdata=self.fdata, fcn=flatfcn, prior=self.prior
             )
-        self.dof = self._chiv.nf - self.p0.size
-        nf = self._chiv.nf
+        nf = self.fdata.nw
+        self.dof = nf - self.p0.size
 
         # check for linear variables
         if linear is not None:
@@ -735,7 +735,8 @@ class nonlinear_fit(object):
             with open(self.p0file, "wb") as ofile:
                 pickle.dump(self.pmean, ofile)
 
-        self.time = clock()-cpu_time
+        # self.fcn_p = self.fcn(self.palt) if self.x is False else self.fcn(self.x, self.palt)
+        self.time = clock() - cpu_time
         if self.debug:
             self.check_roundoff()
 
@@ -791,6 +792,33 @@ class nonlinear_fit(object):
         fit.cov = _gvar.evalcov(p)
         fit.f = self._chiv(fit.x)
         return fit
+
+    def _remove_gvars(self, gvlist):
+        self.p  # need to fill _p
+        fit = copy.copy(self)
+        try:
+            # if can pickle fcn then keep everything
+            fit.pickled_fcn = pickle.dumps((self.fcn, self._chiv, self._chivw))
+        except:
+            if self.debug:
+                warnings.warn('unable to pickle fit function; it is omitted')
+        for k in ['_chiv', '_chivw', 'fcn']:
+            del fit.__dict__[k]
+        fit.__dict__ = _gvar.remove_gvars(fit.__dict__, gvlist)
+        return fit
+    
+    def _distribute_gvars(self, gvlist):
+        self.__dict__ = _gvar.distribute_gvars(self.__dict__, gvlist)
+        try:
+            # try restoring fit function
+            fcn,chiv,chivw = pickle.loads(self.pickled_fcn)
+            self.fcn = fcn
+            self._chiv = chiv 
+            self._chivw = chivw
+        except:
+            if self.debug:
+                warnings.warn('unable to unpickle fit function; it is omitted')
+        return self 
 
     @staticmethod
     def set(clear=False, **defaults):
@@ -1678,6 +1706,8 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
             logdet=ans.logdet,
             nblocks=ans.nblocks,
             svdn=ans.nmod,
+            nw=sum(len(wgts) for iw, wgts in inv_wgts),
+            niw=sum(len(iw) for iw, wgts in inv_wgts),
             )
         del ans.nblocks
         # del ans.svdcorrection
@@ -1688,7 +1718,7 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
         if prior is None:
             pfdata = _FDATA(
                 mean=[], inv_wgts=[([],[])], svdcorrection=_gvar.gvar(0,0),
-                logdet=0.0, nblocks={1:0}, svdn=0,
+                logdet=0.0, nblocks={1:0}, svdn=0, nw=0, niw=0,
                 )
         else:
             prior, pfdata = _apply_svd(prior)
@@ -1711,6 +1741,8 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
             logdet=2 * numpy.sum(numpy.log(ysdev)) + pfdata.logdet,
             nblocks=pfdata.nblocks,
             svdn=pfdata.svdn,
+            nw=sum(len(wgts) for iw, wgts in inv_wgts),
+            niw=sum(len(iw) for iw, wgts in inv_wgts),
             )
     elif prior is None:
         y, fdata = _apply_svd(y)
@@ -1823,40 +1855,75 @@ def _unpack_fcn(fcn, p0, y, x):
     """ reconfigure fitting fcn so inputs, outputs = flat arrays; hide x """
     if y.shape is not None:
         if p0.shape is not None:
-            def nfcn(p, x=x, fcn=fcn, pshape=p0.shape):
-                po = p.reshape(pshape)
-                ans = fcn(po) if x is False else fcn(x, po)
-                if hasattr(ans, 'flat'):
-                    return ans.flat
-                else:
-                    return numpy.array(ans).flat
+            nfcn = functools.partial(flatfcn_aa, x=x, fcn=fcn, pshape=p0.shape)
+            # def nfcn(p, x=x, fcn=fcn, pshape=p0.shape):
+            #     po = p.reshape(pshape)
+            #     ans = fcn(po) if x is False else fcn(x, po)
+            #     if hasattr(ans, 'flat'):
+            #         return ans.flat
+            #     else:
+            #         return numpy.array(ans).flat
         else:
             po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
-            def nfcn(p, x=x, fcn=fcn, po=po):
-                po.buf = p
-                ans = fcn(po) if x is False else fcn(x, po)
-                if hasattr(ans, 'flat'):
-                    return ans.flat
-                else:
-                    return numpy.array(ans).flat
+            nfcn = functools.partial(flatfcn_ad, x=x, fcn=fcn, po=po)
+            # def nfcn(p, x=x, fcn=fcn, po=po):
+            #     po.buf = p
+            #     ans = fcn(po) if x is False else fcn(x, po)
+            #     if hasattr(ans, 'flat'):
+            #         return ans.flat
+            #     else:
+            #         return numpy.array(ans).flat
     else:
         yo = _gvar.BufferDict(y, buf=y.size*[None])
         if p0.shape is not None:
-            def nfcn(p, x=x, fcn=fcn, pshape=p0.shape, yo=yo):
-                po = p.reshape(pshape)
-                fxp = fcn(po) if x is False else fcn(x, po)
-                for k in yo:
-                    yo[k] = fxp[k]
-                return yo.flat
+            nfcn = functools.partial(flatfcn_da, x=x, fcn=fcn, pshape=p0.shape, yo=yo)
+            # def nfcn(p, x=x, fcn=fcn, pshape=p0.shape, yo=yo):
+            #     po = p.reshape(pshape)
+            #     fxp = fcn(po) if x is False else fcn(x, po)
+            #     for k in yo:
+            #         yo[k] = fxp[k]
+            #     return yo.flat
         else:
             po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
-            def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
-                po.buf = p
-                fxp = fcn(po) if x is False else fcn(x, po)
-                for k in yo:
-                    yo[k] = fxp[k]
-                return yo.flat
+            nfcn = functools.partial(flatfcn_dd, x=x, fcn=fcn, po=po, yo=yo)
+            # def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
+            #     po.buf = p
+            #     fxp = fcn(po) if x is False else fcn(x, po)
+            #     for k in yo:
+            #         yo[k] = fxp[k]
+            #     return yo.flat
     return nfcn
+
+def flatfcn_aa(p, x, fcn, pshape):
+    po = p.reshape(pshape)
+    ans = fcn(po) if x is False else fcn(x, po)
+    if hasattr(ans, 'flat'):
+        return ans.flat
+    else:
+        return numpy.array(ans).flat
+
+def flatfcn_ad(p, x, fcn, po):
+    po.buf = p
+    ans = fcn(po) if x is False else fcn(x, po)
+    if hasattr(ans, 'flat'):
+        return ans.flat
+    else:
+        return numpy.array(ans).flat
+
+def flatfcn_da(p, x, fcn, pshape, yo):
+    po = p.reshape(pshape)
+    fxp = fcn(po) if x is False else fcn(x, po)
+    for k in yo:
+        yo[k] = fxp[k]
+    return yo.flat
+
+def flatfcn_dd(p, x, fcn, po, yo):
+    po.buf = p
+    fxp = fcn(po) if x is False else fcn(x, po)
+    for k in yo:
+        yo[k] = fxp[k]
+    return yo.flat
+
 
 def _y_fcn_match(y, f):
     if hasattr(f,'keys'):

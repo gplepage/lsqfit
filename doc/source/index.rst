@@ -9,7 +9,6 @@ lsqfit Documentation
 .. image:: https://zenodo.org/badge/4593457.svg
     :target: https://zenodo.org/badge/latestdoi/4593457
 
-10.5281/zenodo.592174
 Contents:
 
 .. toctree::

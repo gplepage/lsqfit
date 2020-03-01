@@ -424,16 +424,54 @@ There are five important things to know about them (see the
         >>> print(y / b, gv.sqrt(gv.exp(x) - 1) / a)
         1.128(26) 1(0)
 
-      This recipe works with arrays of any shape, and also with
-      dictionaries whose values are either |GVar|\s or arrays of
-      |GVar|\s. In particular, the best-fit values for the
-      fit parameters from a fit can be saved using something
-      like ``gv.dump(fit.p, 'fitparam.p')``.
+      :func:`gvar.dump` and :func:`gvar.load` are similar to the same 
+      functions in Python's :mod:`pickle` module, except that they 
+      can deal properly with |GVar|\s. They can be used to archive 
+      (possibly nested) containers like dictionaries and lists that 
+      contain |GVar|\s (together with other data types), as well as 
+      many other types of object containing |GVar|\s. In particular,
+      they can be used to save the best-fit parameters
+      from a fit, ::
+      
+        >>> gv.dump(fit.p, 'fitpfile.p')
+        
+      or the entire :class:`lsqfit.nonlinear_fit` object::
 
+        >>> gv.dump(fit, 'fitfile.p')
+        
+      The archived fit preserves all 
+      or most of the fit object's functionality (depending upon
+      whether or not the fit function can be pickled): for 
+      example, ::
 
-There is considerably more information about |GVar|\s in the documentation for
-module :mod:`gvar`.
+        >>> fit = gv.load('fitfile.p')
+        >>> print(fit)
+        Least Square Fit:
+          chi2/dof [dof] = 0.17 [5]    Q = 0.97    logGBF = 0.65538
 
+        Parameters:
+                      a   0.253 (32)     [  0.50 (50) ]  
+                      b   0.449 (65)     [  0.50 (50) ]  
+
+        Settings:
+          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 8/0.0)
+
+        >>> p = fit.p                             
+        >>> outputs = dict(a=p['a'], b=p['b'])
+        >>> outputs['b/a'] = p['b']/p['a']
+        >>> inputs = dict(y=y, prior=prior)
+        >>> print(gv.fmt_errorbudget(outputs, inputs)) 
+        Partial % Errors:
+                          a       b/a         b
+        ----------------------------------------
+                y:     12.75     16.72     14.30
+            prior:      0.92      1.58      1.88
+        ----------------------------------------
+            total:     12.78     16.80     14.42
+
+There is considerably more information about |GVar|\s in the `documentation
+<https://gvar.readthedocs.io/en/latest/>`_
+for module :mod:`gvar`.
 
 .. _basic-fits:
 

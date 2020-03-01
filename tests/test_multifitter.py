@@ -202,6 +202,14 @@ class test_multifitter(unittest.TestCase):
         fit2 = fitter.lsqfit(data=self.data, prior=self.prior)
         self.assertEqual(self.ref_fit.format(), fit2.format())
 
+    def test_dump_lsqfit(self):
+        " MultiFitter.lsqfit "
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        dfit = gv.loads(gv.dumps(
+            fitter.lsqfit(data=self.data, prior=self.prior)
+            ))
+        self.assertEqual(self.ref_fit.format(True), dfit.format(True))
+
     def test_lsqfit_coarse_grain(self):
         " MultiFitter.lsqfit(..., ncg=2) "
         fitter = MultiFitter(models=self.make_models(ncg=2))
@@ -276,6 +284,14 @@ class test_multifitter(unittest.TestCase):
             "{'log(a)': -0.00083(62),'b': 0.49977(90),'log(aa)': -0.00083(62)}"
             # "{'log(a)': -0.00073(48),'b': 0.50015(82),'log(aa)': -0.00073(48)}"
             )
+
+    def test_dump_chained_lsqfit(self):
+        " MultiFitter.chained_lsqfit(...) "
+        # sequential fit
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        fit1 = gv.loads(gv.dumps(fitter.chained_lsqfit(data=self.data, prior=self.prior)))
+        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
 
     def test_chained_fit_simul(self):
         " MultiFitter(models=[m1, (m2,m3)], ...) "

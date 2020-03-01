@@ -14,6 +14,8 @@
 # GNU General Public License for more details.
 
 import collections
+import copy
+import pickle
 import time
 import warnings
 
@@ -626,10 +628,76 @@ class MultiFitterModel(object):
         """
         raise NotImplementedError("buildprior not defined")
 
+class unchained_nonlinear_fit(lsqfit.nonlinear_fit):
+    def __init__(self, fname, fitter_args_kargs, *args, **kargs):
+        super(unchained_nonlinear_fit, self).__init__(*args, **kargs)
+        self.chained_fits = collections.OrderedDict([(fname, self)])    
+        fitter_args_kargs[1]['p0'] = self.pmean    
+        self.fitter_args_kargs = fitter_args_kargs
+
+    def _remove_gvars(self, gvlist):
+        self.p  # need to fill _p
+        fit = copy.copy(self)
+        fitter,args,kargs = fit.fitter_args_kargs
+        try:
+            fit.pickled_models = pickle.dumps(args['models'])
+        except:
+            if self.debug:
+                warnings.warn('unable to pickle fit function; it is omitted')
+        fit.chained_fits = list(fit.chained_fits.keys())[0]
+        for k in ['_chiv', '_chivw', 'fcn', 'fitter_args_kargs']:
+            del fit.__dict__[k]
+        fit.__dict__ = gvar.remove_gvars(fit.__dict__, gvlist)
+        return fit
+    
+    def _distribute_gvars(self, gvlist):
+        self.__dict__ = gvar.distribute_gvars(self.__dict__, gvlist)
+        self.chained_fits = collections.OrderedDict([(self.chained_fits, self)])
+        try:
+            models = pickle.loads(self.pickled_models)
+            self.fcn = MultiFitter(models).buildfitfcn()
+            del self.__dict__['pickled_models']
+        except:
+            if self.debug:
+                warnings.warn('unable to unpickle fit function; it is omitted')
+        return self 
+
+    def formatall(self, *args, **kargs):
+        " Add-on method for fits returned by chained_lsqfit. "
+        ans = ''
+        for x in self.chained_fits:
+            ans += 10 * '=' + ' ' + str(x) + '\n'
+            ans += self.chained_fits[x].format(*args, **kargs)
+            ans += '\n'
+        return ans[:-1]
+
+    def show_plots(self, save=False, view='ratio'):
+        fitdata = collections.OrderedDict()
+        fitval = collections.OrderedDict()
+        for k in self.chained_fits:
+            # there is only one k in chained_fits but this is easiest way
+            if k[:5] == 'wavg(' and k[-1] == ')':
+                continue
+            fit = self.chained_fits[k]
+            # need OrderedDict conversion because otherwise
+            # converts to dict, which doesn't work (BufferDict issue)
+            fitdata.update(collections.OrderedDict(fit.data))
+            fitval.update(collections.OrderedDict(fit.fcn(self.p)))
+        MultiFitter.show_plots(
+            fitdata=fitdata, fitval=fitval, save=save, view=view,
+            )
+
+    def bootstrapped_fit_iter(
+        self, n=None, datalist=None, pdatalist=None, **kargs
+        ):
+        return MultiFitter._bootstrapped_fit_iter(
+            self.fitter_args_kargs,
+            n=n, datalist=datalist, pdatalist=pdatalist, **kargs
+            )
 
 class chained_nonlinear_fit(lsqfit.nonlinear_fit):
     " Fit results from chained fit. "
-    def __init__(self, p, chained_fits, multifitter, prior):
+    def __init__(self, p, chained_fits, multifitter, prior, fitter_args_kargs):
         if len(chained_fits) <= 0:
             raise ValueError('no chained fits')
         self._p = p
@@ -637,7 +705,8 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.pmean = gvar.mean(p)
         self.psdev = gvar.sdev(p)
         self.chained_fits = chained_fits
-        self.multifitter = multifitter
+        self.fitter_args_kargs = fitter_args_kargs
+        self.fitter_args_kargs[1]['p0'] = self.pmean
 
         # extract fcn, fcn values, and data from fits and fitter
         # (for format(...))
@@ -711,6 +780,31 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.p0 = None
         self.nblocks = None
 
+    def _remove_gvars(self, gvlist):
+        self.p  # need to fill _p
+        fit = copy.copy(self)
+        fitter,args,kargs = fit.fitter_args_kargs
+        try:
+            fit.pickled_models = pickle.dumps(args['models'])
+        except:
+            if self.debug:
+                warn.warnings('unable to pickle fit function; it is omitted')
+        for k in ['fcn', 'fitter_args_kargs']:
+            del fit.__dict__[k]
+        fit.__dict__ = gvar.remove_gvars(fit.__dict__, gvlist)
+        return fit
+    
+    def _distribute_gvars(self, gvlist):
+        self.__dict__ = gvar.distribute_gvars(self.__dict__, gvlist)
+        try:
+            models = pickle.loads(self.pickled_models)
+            self.fcn = MultiFitter(models).buildfitfcn()
+            del self.__dict__['pickled_models']
+        except:
+            if self.debug:
+                warn.warnings('unable to unpickle fit function; it is omitted')
+        return self 
+
     def simulated_fit_iter(self, **kargs):
         raise NotImplementedError('use with individual fits in self.chained_fits')
 
@@ -769,12 +863,20 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
             ans += '\n'
         return ans[:-1]
 
+    def bootstrapped_fit_iter(
+        self, n=None, datalist=None, pdatalist=None, **kargs
+        ):
+        return MultiFitter._bootstrapped_fit_iter(
+            self.fitter_args_kargs,
+            n=n, datalist=datalist, pdatalist=pdatalist, **kargs
+            )
+
 class MultiFitter(object):
     """ Nonlinear least-squares fitter for a collection of models.
 
     Fits collections of data that are modeled by collections of models.
     Fits can be simultaneous (:meth:`lsqfit.MultiFitter.lsqfit`) or chained
-    (:meth:`lsqfit.MultiFitterl.chained_lsqfit`).
+    (:meth:`lsqfit.MultiFitter.chained_lsqfit`).
 
     Args:
         models: List of models, derived from :mod:`lsqfit.MultiFitterModel`,
@@ -1016,7 +1118,7 @@ class MultiFitter(object):
 
         # save parameters for bootstrap (in case needed)
         fitter_args_kargs = (
-            self.chained_lsqfit,
+            self.lsqfit,
             dict(data=data, prior=prior, pdata=pdata, models=self.models),
             dict(kargs),
             )
@@ -1028,11 +1130,7 @@ class MultiFitter(object):
             )
         fitfcn = self.buildfitfcn()
 
-        # fit
-        self.fit = lsqfit.nonlinear_fit(
-            data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
-            **self.fitterargs
-            )
+        # build name
         if len(self.flatmodels) > 1:
             fname = self.fitname(
                 '(' +
@@ -1041,38 +1139,16 @@ class MultiFitter(object):
                 )
         else:
             fname = self.fitname(self.flatmodels[0].datatag)
-        self.fit.chained_fits = collections.OrderedDict([(fname, self.fit)])
 
-        # add methods for printing and plotting
-        def _formatall(*args, **kargs):
-            " Add-on method for fits returned by chained_lsqfit. "
-            ans = ''
-            for x in self.fit.chained_fits:
-                ans += 10 * '=' + ' ' + str(x) + '\n'
-                ans += self.fit.chained_fits[x].format(*args, **kargs)
-                ans += '\n'
-            return ans[:-1]
-        self.fit.formatall = _formatall
-        def _show_plots(save=False, view='ratio'):
-            MultiFitter.show_plots(
-                fitdata=fitdata, fitval=fitfcn(self.fit.p),
-                save=save, view=view,
-                )
-        self.fit.show_plots = _show_plots
+        # fit
+        self.fit = unchained_nonlinear_fit(
+            fname=fname, fitter_args_kargs=fitter_args_kargs,
+            data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
+            **self.fitterargs
+            )
 
         # restore default keywords
         self.set(**oldargs)
-
-        # add bootstrap method
-        fitter_args_kargs[1]['p0'] = self.fit.pmean
-        def _bstrap_iter(
-            n=None, datalist=None, pdatalist=None, **kargs
-            ):
-            return MultiFitter._bootstrapped_fit_iter(
-                fitter_args_kargs,
-                n=n, datalist=datalist, pdatalist=pdatalist, **kargs
-                )
-        self.fit.bootstrapped_fit_iter = _bstrap_iter
         return self.fit
 
     def chained_lsqfit(
@@ -1236,19 +1312,10 @@ class MultiFitter(object):
         # build output class
         self.fit = chained_nonlinear_fit(
             p=prior, chained_fits=chained_fits,
-            multifitter=self, prior=fitter_args_kargs[1]['prior'],
+            multifitter=self,
+            prior=fitter_args_kargs[1]['prior'],
+            fitter_args_kargs=fitter_args_kargs,
             )
-
-        # add bootstrap method
-        fitter_args_kargs[1]['p0'] = self.fit.pmean
-        def _bstrap_iter(
-            n=None, datalist=None, pdatalist=None, **kargs
-            ):
-            return MultiFitter._bootstrapped_fit_iter(
-                fitter_args_kargs,
-                n=n, datalist=datalist, pdatalist=pdatalist, **kargs
-                )
-        self.fit.bootstrapped_fit_iter = _bstrap_iter
 
         # restore default keywords
         self.set(**oldargs)
