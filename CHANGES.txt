@@ -1,3 +1,7 @@
+Version 11.5.1 ????
+========================
+Small improvement in how p0 is handled when using MultiFitter -- responds to a feature request.
+
 Version 11.5 2020-03-01
 ========================
 Minor update, responding to a feature request: nonlinear_fit objects

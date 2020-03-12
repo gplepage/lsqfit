@@ -900,7 +900,7 @@ class nonlinear_fit(object):
         for a in range(D.shape[0]): # der[a] = sum_i D[a,i]*buf[i].der
             p.append(_gvar.gvar(pmean[a], _gvar.wsum_der(D[a], buf),
                      buf[0].cov))
-        self._p = _reformat(self.p0, p)
+        self._p = _reformat(self.palt, p)
         return self._p
 
     p = property(_getp, doc="Best-fit parameters with correlations.")
@@ -1367,7 +1367,7 @@ class nonlinear_fit(object):
             DeprecationWarning,
             )
         with open(filename, "wb") as f:
-            if self.p0.shape is not None:
+            if self.pmean.shape is not None:
                 pickle.dump(numpy.array(self.pmean), f)
             else:
                 pickle.dump(collections.OrderedDict(self.pmean), f) # dump as a dict
@@ -1817,11 +1817,6 @@ def _unpack_p0(p0, p0file, prior):
                 p0 = pp
             else:
                 # pp and p0 are dicts
-                # if set(pp.keys()) != set(p0.keys()):
-                #     # mismatch in keys between prior and p0
-                #     raise ValueError("Key mismatch between prior and p0: "
-                #                      + ' '.join(str(k) for k in
-                #                      set(prior.keys()) ^ set(p0.keys())))
                 # adjust p0[k] to be compatible with shape of prior[k]
                 for k in pp:
                     if k not in p0:
@@ -1856,42 +1851,16 @@ def _unpack_fcn(fcn, p0, y, x):
     if y.shape is not None:
         if p0.shape is not None:
             nfcn = functools.partial(flatfcn_aa, x=x, fcn=fcn, pshape=p0.shape)
-            # def nfcn(p, x=x, fcn=fcn, pshape=p0.shape):
-            #     po = p.reshape(pshape)
-            #     ans = fcn(po) if x is False else fcn(x, po)
-            #     if hasattr(ans, 'flat'):
-            #         return ans.flat
-            #     else:
-            #         return numpy.array(ans).flat
         else:
             po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             nfcn = functools.partial(flatfcn_ad, x=x, fcn=fcn, po=po)
-            # def nfcn(p, x=x, fcn=fcn, po=po):
-            #     po.buf = p
-            #     ans = fcn(po) if x is False else fcn(x, po)
-            #     if hasattr(ans, 'flat'):
-            #         return ans.flat
-            #     else:
-            #         return numpy.array(ans).flat
     else:
         yo = _gvar.BufferDict(y, buf=y.size*[None])
         if p0.shape is not None:
             nfcn = functools.partial(flatfcn_da, x=x, fcn=fcn, pshape=p0.shape, yo=yo)
-            # def nfcn(p, x=x, fcn=fcn, pshape=p0.shape, yo=yo):
-            #     po = p.reshape(pshape)
-            #     fxp = fcn(po) if x is False else fcn(x, po)
-            #     for k in yo:
-            #         yo[k] = fxp[k]
-            #     return yo.flat
         else:
             po = _gvar.BufferDict(p0, buf=numpy.zeros(p0.size, float))
             nfcn = functools.partial(flatfcn_dd, x=x, fcn=fcn, po=po, yo=yo)
-            # def nfcn(p, x=x, fcn=fcn, po=po, yo=yo):
-            #     po.buf = p
-            #     fxp = fcn(po) if x is False else fcn(x, po)
-            #     for k in yo:
-            #         yo[k] = fxp[k]
-            #     return yo.flat
     return nfcn
 
 def flatfcn_aa(p, x, fcn, pshape):

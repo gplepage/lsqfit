@@ -740,6 +740,7 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.description = ''
         self.stopping_criterion = None
         self.residuals = []
+        self.p0 = []
         for k in self.chained_fits:
             self.svdcorrection += self.chained_fits[k].svdcorrection
             if k[:5] == 'wavg(' and k[-1] == ')':
@@ -750,6 +751,7 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
             self.chi2 += self.chained_fits[k].chi2
             self.nit += self.chained_fits[k].nit
             self.time += self.chained_fits[k].time
+            self.p0.append(self.chained_fits[k].p0)
             svdcut = self.chained_fits[k].svdcut
             if self.chained_fits[k].add_svdnoise:
                 self.add_svdnoise = True
@@ -777,7 +779,6 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         # others
         self.cov = None
         self.fitter_results = None
-        self.p0 = None
         self.nblocks = None
 
     def _remove_gvars(self, gvlist):
@@ -1140,12 +1141,45 @@ class MultiFitter(object):
         else:
             fname = self.fitname(self.flatmodels[0].datatag)
 
+        # read in p0 if in file (can't leave to nonlinear_fit)
+        if isinstance(p0, str):
+            p0file = p0 
+        else:
+            # check whether p0 is a list of strings (from chained fits)
+            try:
+                if isinstance(p0[0], str):
+                    p0file = p0[0]
+                else:
+                    p0file = None
+            except:
+                p0file = None
+        if p0file is not None:
+            try:
+                with open(p0file, 'rb') as ifile:
+                    _p0 = pickle.load(ifile)
+            except (IOError, EOFError):
+                _p0 = None
+        else:
+            _p0 = p0 
+        if _p0 is not None and not hasattr(_p0, 'keys'):
+            # _p0 is a list from a chained fit
+            _p0list = _p0 
+            _p0 = _p0list[0]
+            for p in _p0list[1:]:
+                _p0.update(p)
+        
         # fit
         self.fit = unchained_nonlinear_fit(
             fname=fname, fitter_args_kargs=fitter_args_kargs,
-            data=fitdata, prior=fitprior, fcn=fitfcn, p0=p0,
+            data=fitdata, prior=fitprior, fcn=fitfcn, p0=_p0,
             **self.fitterargs
             )
+
+        # manage p0
+        if p0file is not None:
+            _p0 = self.fit.pmean
+            with open(p0file, 'wb') as ofile:
+                pickle.dump(_p0, ofile)
 
         # restore default keywords
         self.set(**oldargs)
@@ -1188,8 +1222,9 @@ class MultiFitter(object):
                 dictionaries can be included in the model chain.
 
 
-        Fit results are returned in a :class:`lsqfit.MultiFitter.chained_fit`
-        object ``fit``, which is very similar to a :class:`nonlinear_fit`
+        Fit results are returned in a 
+        :class:`lsqfit.MultiFitter.chained_nonlinear_fit` object ``fit``,
+        which is very similar to a :class:`nonlinear_fit`
         object (see documentation for more information). Object ``fit`` has an
         extra attribute ``fit.chained_fits`` which is an ordered dictionary
         containing fit results for each link in the chain of fits, indexed by
@@ -1233,7 +1268,13 @@ class MultiFitter(object):
                 prior. Setting ``p0="filename"`` causes the fitter to look in
                 the file with name ``"filename"`` for initial values and to
                 write out best-fit parameter values after the fit (for the
-                next call to ``self.lsqfit()``).
+                next call to ``self.chained_lsqfit()``). Finally,
+                ``p0`` can be a list containing a different ``p0`` for each 
+                fit in the chain: for example, ::
+
+                    p0 = [f.pmean for f in fit.chained_fits.values()]
+
+                might be a good starting point for the next fit.
             kargs: Arguments that override parameters specified when
                 the :class:`MultiFitter` was created. Can also include
                 additional arguments to be passed through to
@@ -1259,6 +1300,19 @@ class MultiFitter(object):
         else:
             prior = gvar.BufferDict(prior)
 
+        # read in p0 if in file
+        p0file = p0 if isinstance(p0, str) else None
+        if p0file is not None:
+            try:
+                with open(p0file, 'rb') as ifile:
+                    _p0 = pickle.load(ifile)
+            except (IOError, EOFError):
+                _p0 = None
+        else:
+            _p0 = p0 
+        p0_iter = iter([_p0]) if (hasattr(_p0, 'keys') or _p0 is None) else iter(_p0)
+        next_p0 = None
+
         # execute tasks in self.tasklist
         chained_fits = collections.OrderedDict()
         all_fnames = []
@@ -1266,8 +1320,9 @@ class MultiFitter(object):
         for tasktype, taskdata in self.tasklist:
             if tasktype == 'fit':
                 fitter = self.__class__(models=taskdata, **kargs)
+                next_p0 = next(p0_iter, next_p0)
                 fit = fitter.lsqfit(
-                    data=data, pdata=pdata, prior=prior, p0=p0
+                    data=data, pdata=pdata, prior=prior, p0=next_p0
                     )
                 fname = list(fit.chained_fits.keys())[0]
                 if fname in chained_fits:
@@ -1309,10 +1364,18 @@ class MultiFitter(object):
             chained_fits[fname] = fit
             prior = fit.p
 
+        # p0 management
+        if p0file is not None:
+            _p0 = []
+            for k in chained_fits:
+                _p0.append(chained_fits[k].pmean)
+            with open(p0file, 'wb') as ofile:
+                pickle.dump(_p0, ofile)
+
         # build output class
         self.fit = chained_nonlinear_fit(
             p=prior, chained_fits=chained_fits,
-            multifitter=self,
+            multifitter=self, 
             prior=fitter_args_kargs[1]['prior'],
             fitter_args_kargs=fitter_args_kargs,
             )

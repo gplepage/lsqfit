@@ -1,6 +1,6 @@
 """
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-19 G. Peter Lepage.
+Copyright (c) 2011-20 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 """
 
-LSQFIT_VERSION = '11.5'
+LSQFIT_VERSION = '11.5.1'
 
 from distutils.core import setup
 from distutils.extension import Extension
