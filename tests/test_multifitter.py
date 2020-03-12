@@ -2,6 +2,7 @@ from __future__ import print_function   # makes this work for python2 and 3
 
 import unittest
 import inspect
+import os 
 import numpy as np
 import gvar as gv
 import lsqfit
@@ -212,6 +213,13 @@ class test_multifitter(unittest.TestCase):
         fit2 = fitter.lsqfit(data=self.data, prior=self.prior, p0=3 * [p0])
         self.assertEqual(self.ref_fit.format()[:-20], fit2.format()[:-20])
         self.assertEqual(p0, fit2.p0)
+        fn = 'test_multifitter.p'
+        fit1 = fitter.lsqfit(data=self.data, prior=self.prior, p0=fn)
+        fit2 = fitter.lsqfit(data=self.data, prior=self.prior, p0=fn)
+        self.assertEqual(self.ref_fit.format()[:-20], fit2.format()[:-20])
+        self.assertEqual(fit1.pmean, fit2.p0)
+        os.unlink(fn)
+
 
     def test_dump_lsqfit(self):
         " MultiFitter.lsqfit "
@@ -310,7 +318,14 @@ class test_multifitter(unittest.TestCase):
         self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
         self.assertEqual(fit1.p0, p0list)
-
+        fn = 'test_multifitter.p'
+        fit1 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=fn)
+        fit2 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=fn)
+        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
+        self.assertEqual([f.pmean for f in fit1.chained_fits.values()], fit2.p0)
+        os.unlink(fn)
+         
     def test_dump_chained_lsqfit(self):
         " MultiFitter.chained_lsqfit(...) "
         # sequential fit
