@@ -39,12 +39,9 @@ and a variety of ``m`` values::
     -----------------------
 
 There are statistical correlations between the data values,
-so we have dumped the data (using ``gvar.dump(data, 'spline.json')``)
-into a file called ``'spline.json'`` that can be read by
-the fit code; the file contains a single, very
-long line:
-
-.. literalinclude:: spline.json
+so we have dumped the data (using ``gvar.dump(data, 'spline.p')``)
+into a file called ``'spline.p'`` that can be read by
+the fit code.
 
 
 We do not know the functional form of ``f(m)``, so we 
@@ -62,7 +59,7 @@ is the grid spacing.
 
 Spline Fit 
 --------------
-The following code reads the fit data from file ``'spline.json'``,
+The following code reads the fit data from file ``'spline.p'``,
 and fits it using a cubic spline (:func:`gvar.cspline.CSpline`)::
 
     import gvar as gv 
@@ -71,7 +68,7 @@ and fits it using a cubic spline (:func:`gvar.cspline.CSpline`)::
 
     def main():
         # do the fit
-        param, data = collect_data('spline.json')
+        param, data = collect_data('spline.p')
         F, prior = make_fcn_prior(param)
         fit = lsqfit.nonlinear_fit(data=data, prior=prior, fcn=F)
         print(fit)

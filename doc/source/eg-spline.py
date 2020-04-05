@@ -1,11 +1,6 @@
 """
 eg-spline.py --- fitting a spline to data in file spline.json
 
-This codes fits data for the location of a pendulum at different times
-to determine the pendulum's parameters (especially the ratio g/l where
-g is the acceleration due to gravity and l is the pendulum's length).
-The fit function uses gvar.ode.Integrator to integrate the
-equation of motion (Newton's Law) for a pendulum.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2014-04-28.
@@ -28,7 +23,7 @@ import lsqfit
 import numpy as np 
 
 def main():
-    param, data = collect_data('spline.json')
+    param, data = collect_data('spline.p')
     F, prior = make_fcn_prior(param)
     fit = lsqfit.nonlinear_fit(data=data, prior=prior, fcn=F)
     print(fit)
