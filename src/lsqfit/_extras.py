@@ -1207,7 +1207,7 @@ class MultiFitter(object):
                 are useful for closely related models.
 
             3) A list ``[p1, p2, p3 ...]`` where each ``pn`` is either
-                a model, a tuple of models (see #2), or a dictionary (see #3).
+                a model, a tuple of models (see #2), or a dictionary (see #4).
                 The ``pn`` are fit separately: the fit output from one fit is
                 *not* fed into the prior of the next (i.e., the fits are
                 effectively in parallel). Results from the separate fits are
