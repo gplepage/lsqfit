@@ -1345,6 +1345,8 @@ class MultiFitter(object):
                     else:
                         prior[k] = lastfit.p[k]
             elif tasktype == 'wavg':
+                    if taskdata <= 1:
+                        continue
                     nlist = all_fnames[-taskdata:]
                     plist = [chained_fits[k].p for k in nlist]
                     wavg_kargs = kargs.get('wavg_kargs', self.wavg_kargs)
@@ -1410,11 +1412,14 @@ class MultiFitter(object):
                 tasklist += [('fit', list(m))]
                 tasklist += [('update-prior', None)]
             elif isinstance(m, list):
+                nfit = 0
                 for sm in m:
                     if isinstance(sm, MultiFitterModel):
                         tasklist += [('fit', [sm])]
+                        nfit += 1
                     elif isinstance(sm, tuple):
                         tasklist += [('fit', list(sm))]
+                        nfit += 1
                     elif hasattr(sm, 'keys'):
                         tasklist += [('update-kargs', sm)]
                     else:
@@ -1423,8 +1428,9 @@ class MultiFitter(object):
                                 str(type(sm))
                                 )
                             )
-                tasklist += [('wavg', len(m))]
-                tasklist += [('update-prior', None)]
+                if nfit > 0:
+                    tasklist += [('wavg', nfit)]
+                    tasklist += [('update-prior', None)]
             else:
                 raise RuntimeError('bad model list')
         return tasklist

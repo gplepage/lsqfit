@@ -376,6 +376,22 @@ class test_multifitter(unittest.TestCase):
         self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
         self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
 
+        # degenerate parallel fit (nfit=1)
+        models = self.make_models(ncg=1)
+        models = [[models[0]], models[1:]]
+        fitter = MultiFitter(models=models)
+        fit5 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
+        self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
+        self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
+
+        # dictionaries in parallel fits
+        models = self.make_models(ncg=1)
+        models = [[dict(svdcut=1e-12), models[0]], [dict(svdcut=1e-12)] + models[1:]]
+        fitter = MultiFitter(models=models)
+        fit5 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
+        self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
+        self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
+
         # with coarse grain, marginalization
         models = self.make_models(ncg=2)
         models = [models[0], models[1:]]
