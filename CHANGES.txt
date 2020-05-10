@@ -1,3 +1,7 @@
+Version 11.5.3 2020-05-10
+=========================
+Minor fix for compatibility with gvar v11.5.2. 
+
 Version 11.5.2 2020-04-12
 =========================
 Bug fix for problem in Multifitter when parallel fits included in chained fits.

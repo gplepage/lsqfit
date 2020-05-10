@@ -59,8 +59,8 @@ outputs['b'] = p['b']
 inputs = OrderedDict()
 inputs['y'] = y
 inputs['prior'] =prior
-print(fit.fmt_values(outputs))             # tabulate outputs
-print(fit.fmt_errorbudget(outputs,inputs)) # print error budget for outputs
+print(gv.fmt_values(outputs))             # tabulate outputs
+print(gv.fmt_errorbudget(outputs,inputs)) # print error budget for outputs
 
 # save best-fit values in file "outputfile.p" for later use
 import pickle

@@ -1,3 +1,4 @@
+# cython: language_level=3str
 # Copyright (c) 2016 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify

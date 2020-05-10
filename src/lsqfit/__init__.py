@@ -907,9 +907,9 @@ class nonlinear_fit(object):
 
     # transformed_p = property(_getp, doc="Same as fit.p --- for legacy code.")  # legacy name
 
-    fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
-    fmt_errorbudget = _gvar.fmt_errorbudget
-    fmt_values = _gvar.fmt_values
+    # fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
+    # fmt_errorbudget = _gvar.fmt_errorbudget
+    # fmt_values = _gvar.fmt_values
 
     def qqplot_residuals(self, plot=None):
         """ QQ plot normalized fit residuals.

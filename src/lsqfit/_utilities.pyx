@@ -1,3 +1,4 @@
+# cython: language_level=3str
 # Copyright (c) 2011-17 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -35,7 +36,7 @@ def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
     cdef Py_ssize_t i, nx, nans
     cdef numpy.ndarray[object, ndim=1] ans
     if not isinstance(x[0], gvar.GVar):
-        return numpy.dot(w, x)
+        return w.dot(x) # numpy.dot(w, x)
     nx = len(x)
     nans = w.shape[0]
     assert nx==w.shape[1], str(nx)+'!='+str(w.shape[1])

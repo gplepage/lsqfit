@@ -52,8 +52,8 @@ def main():
     inputs['y'] = y
     inputs['E'] = fit.prior['E']
     print('================= Error Budget Analysis')
-    print(fit.fmt_values(outputs))
-    print(fit.fmt_errorbudget(outputs,inputs))
+    print(gv.fmt_values(outputs))
+    print(gv.fmt_errorbudget(outputs,inputs))
 
 def fcn(x, p):                      # function used to fit x, y data
     a = p['a']                      # array of a[i]s

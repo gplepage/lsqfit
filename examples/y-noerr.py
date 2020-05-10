@@ -62,8 +62,8 @@ def main():
     inputs['E prior'] = prior['E']
     inputs['svd cut'] = fit.svdcorrection
     inputs['a prior'] = prior['a']
-    print(fit.fmt_values(outputs))
-    print(fit.fmt_errorbudget(outputs, inputs))
+    print(gv.fmt_values(outputs))
+    print(gv.fmt_errorbudget(outputs, inputs))
 
 def fcn(x,p):
     a = p['a']       # array of a[i]s

@@ -93,8 +93,8 @@ def print_fit(fit,vd):
         cd = {'data':fit.y}
     else:
         cd = {'data':fit.y,'priors':fit.prior}
-    output += fit.fmt_values(vd) + '\n'
-    output += fit.fmt_errorbudget(vd,cd,percent=next(bool_iter))
+    output += gv.fmt_values(vd) + '\n'
+    output += gv.fmt_errorbudget(vd,cd,percent=next(bool_iter))
     output += '\n'+fit.format(nline=1000)+'\n'
     if PRINT_FIT:
         print(output)
@@ -691,14 +691,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         y = y0 + next(gv.raniter(y0)) - gv.mean(y0)
         p02 = gvar(1., sig1) * np.array([1,1]) + gvar(0.1, sig2) * np.array([1,-1])
         p = (p02 + next(gv.raniter(p02)) - gv.mean(p02))**0.5
-        eps = gvar(1., 1.e-8)
+        eps = gvar(1., 1.e-6)
         reps = eps**0.5
 
         cases = [
             (y, p, 1e-20, False),
             (y, p, 1e-2, False),
             (y*eps, p*reps, 1e-20, True),
-            (y*eps,p*reps, 1e-2, True),
+            (y*eps, p*reps, 1e-2, True),
             ((gv.mean(y), gv.evalcov(y)), p, 1e-20, False),
             ((gv.mean(y), gv.evalcov(y)), p, 1e-2, False)
             ]
@@ -714,6 +714,9 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             fit = nonlinear_fit(data=data,fcn=fcn,prior=prior,
                                 svdcut=svdcut,debug=True)
             # print(fit.format(nline=100))
+            # print(fit.nblocks)
+            # print(gv.evalcov(y.tolist() + p.tolist()))
+            # print(gv.evalcov_blocks(y.tolist() + p.tolist()))
             y = fit.y.flatten()
             pr = fit.prior.flatten()
             p = fit.p.flatten()
@@ -894,7 +897,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
 
         # case 3 - prior and data correlated
-        one = gv.gvar(1,1e-4)
+        one = gv.gvar(1,1e-3)
         yo['y'][0] *= one
         po['p'] *= one
         x, y, prior, fdata = lsqfit._unpack_data(
