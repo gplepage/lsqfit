@@ -1660,33 +1660,6 @@ are many more samples than data points — 10 or 100 times as many.
 See the discussions in :ref:`goodness-of-fit` and :ref:`fit-residuals` for further 
 analysis of this example.
 
-.. The ``chi**2`` for a fit where many modes are modified (by a large SVD cut)
-.. can be quite low. This is because the SVD cut increases uncertainties
-.. in the data associated with the modified modes, typically making them
-.. much larger than the corresponding
-.. fluctuations in the mean values of the data. As a result the contribution
-.. to ``chi**2`` from each of these modes is much smaller than |~| 1.
-.. Adding parameter ``add_svdnoise=True`` to the fitter call modifies the
-.. data means to include noise that is commensurate with the new
-.. uncertainties. The ``chi**2`` per degree of freedom should then be closer
-.. to |~| 1. Rerunning the previous
-.. fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
-
-.. .. literalinclude:: eg10c.out
-
-.. The fit is still good even with the additional noise,
-.. suggesting that the SVD cut is well chosen.
-
-.. The data samples above are from a simulation,
-.. so we know the exact correlation matrix
-.. for the underlying distribution. Fitting with this correlation matrix, we
-.. obtain the following fit (without an SVD cut)
-
-.. .. literalinclude:: eg10d.out
-
-.. which looks quite similar to the fit above, using the approximate correlation
-.. matrix (with an SVD cut).
-
 :class:`lsqfit.nonlinear_fit` will apply an SVD cut if keyword parameter
 ``svdcut`` is set. Another way to implement SVD cuts is using
 :meth:`gvar.regulate` to modify the fit data before it is fit.
