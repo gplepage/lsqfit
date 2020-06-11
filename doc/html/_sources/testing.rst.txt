@@ -554,7 +554,7 @@ The first situation is when there is a large SVD cut on the data.
 As discussed in :ref:`svd-cuts-statistics`, an SVD cut increases
 the uncertainties
 in the data without increasing the random fluctuations in the
-data means (unless ``add_svdnoise=True``). As a result contributions
+data means. As a result contributions
 from the parts of the ``chi**2`` function affected by the SVD cut
 tend to be much smaller than naively expected, artificially
 pulling ``chi**2/N`` down.
@@ -571,19 +571,19 @@ associated with such priors tend to be much smaller than naively expected,
 pulling ``chi**2`` down.
 
 These complications can conspire to make ``chi**2/N``
-signficantly less than |~| 1 when the fit is good. Of greater concern,
+significantly less than |~| 1 when the fit is good. Of greater concern,
 they can mask evidence of a bad fit:  ``chi**2/N ≈ 1`` is *not*
 necessarily evidence of a good fit in such situations.
 
 A simple way to address these situations is to redo the fit with
-keyword parameters ``add_svdnoise=True`` and
-``add_priornoise=True``. These cause :class:`lsqfit.nonlinear_fit` to
+keyword parameter ``noise=True``. 
+This causes :class:`lsqfit.nonlinear_fit` to
 add extra fluctuations to the means in the prior and the data
 that are characteristic of the probability distributions associated
 with the priors and the SVD cut, respectively::
 
     prior =>  prior + (gv.sample(prior) - gv.mean(prior))
-        y =>  y + gv.sample(y.svdcorrection)
+        y =>  y + gv.sample(y.correction)
 
 These fluctuations
 should leave fit results unchanged (within errors) but increase
@@ -614,8 +614,7 @@ code to include a second fit at the end::
 
         print('\n================ Add noise to prior, SVD')
         noisyfit = lsqfit.nonlinear_fit(
-            data=y, prior=prior, fcn=fcn, svdcut=0.0028,
-            add_svdnoise=True, add_priornoise=True,
+            data=y, prior=prior, fcn=fcn, svdcut=0.0028, noise=True,
             )
         print(noisyfit.format(True))
 

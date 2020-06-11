@@ -37,6 +37,10 @@ src/lsqfit/_utilities.c : src/lsqfit/_utilities.pyx
 update:
 	make uninstall install
 
+rebuild:
+	rm src/lsqfit/*.c 
+	make update
+
 uninstall :			# mostly works (may leave some empty directories)
 	- $(PIP) uninstall lsqfit
 

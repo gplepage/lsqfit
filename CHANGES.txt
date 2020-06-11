@@ -1,3 +1,24 @@
+Version 11.6 2020-06-11
+========================
+- Additional sanity checks added for debug=True in nonlinear_fit.
+
+- nonlinear_fit now uses gvar.regulate rather than gvar.svd to 
+  deal with singular correlation matrices and to decompose the 
+  correlation matrices when forming the chi**2 function. 
+  To regulate the correlation matrix, one now specifies 
+  either eps or svdcut. The eps regulator uses Cholesky 
+  decomposition, while the svdcut uses SVD decomposition
+  (the only option previously). Cholesky decomposition 
+  is faster but less robust. Keywords add_svdnoise and 
+  add_priornoise are replaced by addnoise, but the old
+  keywords continue to work (for legacy code).
+
+- Tweak to reporting on stopping conditions.
+
+- Updated documentation.
+
+- Requires gvar v11.6 or later.
+
 Version 11.5.3 2020-05-10
 =========================
 Minor fix for compatibility with gvar v11.5.2. 

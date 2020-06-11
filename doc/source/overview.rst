@@ -1401,7 +1401,7 @@ Our complete code, therefore, is::
             }
         inputs = {
             'E prior':prior['E'], 'a prior':prior['a'],
-            'svd cut':fit.svdcorrection,
+            'svd cut':fit.correction,
             }
         print(fit.fmt_values(outputs))
         print(fit.fmt_errorbudget(outputs, inputs))
@@ -1540,7 +1540,7 @@ in the final results.
 
 The results shown in the previous section include an error budget, and it
 has an entry for the error introduced by the (default) SVD cut (obtained
-from ``fit.svdcorrection``).
+from ``fit.correction``).
 The contribution is negligible. It is zero when ``svdcut=1e-19``, of course,
 but the instability caused by the ill-conditioned covariance matrix in
 that case makes it unacceptable.
@@ -1569,11 +1569,11 @@ when there are strong correlations between different parts of the fit
 data or prior.  Then much larger ``svdcut``\s may be needed.
 
 The SVD cut is applied to both the data and the prior. It is possible to
-apply SVD cuts to either of these separately using :func:`gvar.svd` before
+apply SVD cuts to either of these separately using :func:`gvar.regulate` before
 the fit: for example, ::
 
-  y = gv.svd(ymod, svdcut=1e-10)
-  prior = gv.svd(prior, svdcut=1e-12)
+  y = gv.regulate(ymod, svdcut=1e-10)
+  prior = gv.regulate(prior, svdcut=1e-12)
   fit = nonlinear_fit(data=(x, y), fcn=f, prior=prior, svdcut=None)
 
 applies different SVD cuts to the prior and data.
@@ -1660,36 +1660,9 @@ are many more samples than data points — 10 or 100 times as many.
 See the discussions in :ref:`goodness-of-fit` and :ref:`fit-residuals` for further 
 analysis of this example.
 
-.. The ``chi**2`` for a fit where many modes are modified (by a large SVD cut)
-.. can be quite low. This is because the SVD cut increases uncertainties
-.. in the data associated with the modified modes, typically making them
-.. much larger than the corresponding
-.. fluctuations in the mean values of the data. As a result the contribution
-.. to ``chi**2`` from each of these modes is much smaller than |~| 1.
-.. Adding parameter ``add_svdnoise=True`` to the fitter call modifies the
-.. data means to include noise that is commensurate with the new
-.. uncertainties. The ``chi**2`` per degree of freedom should then be closer
-.. to |~| 1. Rerunning the previous
-.. fit with ``add_svdnoise=True`` gives a reasonable ``chi**2``:
-
-.. .. literalinclude:: eg10c.out
-
-.. The fit is still good even with the additional noise,
-.. suggesting that the SVD cut is well chosen.
-
-.. The data samples above are from a simulation,
-.. so we know the exact correlation matrix
-.. for the underlying distribution. Fitting with this correlation matrix, we
-.. obtain the following fit (without an SVD cut)
-
-.. .. literalinclude:: eg10d.out
-
-.. which looks quite similar to the fit above, using the approximate correlation
-.. matrix (with an SVD cut).
-
 :class:`lsqfit.nonlinear_fit` will apply an SVD cut if keyword parameter
 ``svdcut`` is set. Another way to implement SVD cuts is using
-:meth:`gvar.svd` to modify the fit data before it is fit.
+:meth:`gvar.regulate` to modify the fit data before it is fit.
 
 
 ``y`` has Unknown Errors
@@ -2151,11 +2124,33 @@ more specialized applications.
 
 Debugging and Troubleshooting
 -----------------------------
-It is a very good idea to set parameter ``debug=True`` in |nonlinear_fit|, at
-least in the early stages of a project. This causes the code to look for
-common mistakes and report on them with  more intelligible error messages. The
-code also then checks for significant roundoff errors in the matrix inversion
-of the covariance matrix.
+When a fit refuses to work, the first thing to check is that the data, prior, and fit 
+function are properly constructed. Setting parameter ``debug=True`` in 
+|nonlinear_fit| causes the code to look for common mistakes and report on 
+them with more intelligible error messages. The code also then checks for 
+significant roundoff errors in the matrix inversion of the covariance matrix.
+It is a good idea to set this parameter in the early stages of any project.
+
+Sometimes the optimization algorithm has trouble finding the true 
+minimum of the ``chi**2`` function, leading to unexpectedly poor fits. 
+Trying a different algorithm 
+(see :ref:`faster-fitters`) will sometimes help. Another option is 
+to replace ``svdcut`` with ``eps`` in |nonlinear_fit|, which changes 
+the underlying fit functions from which ``chi**2`` is constructed. 
+A third option is to try different starting points ``p0``. The 
+following code, for example, tries 5 starting points drawn at 
+random from the prior::
+
+    import gvar as gv 
+    import lsqfit 
+    ...
+    gv.ranseed(12345)     # gives same results if run script again
+    for p0 in gv.raniter(prior, n=5):
+        fit = lsqfit.nonlinear_fit(data=data, prior=prior, fcn=fcn, p0=p0)
+        print(fit)
+
+Alternatively, simply set parameter ``p0=True`` to generate a random starting
+point for each fit.
 
 A common mistake is a mismatch between the format of the data and the
 format of what comes back from the fit function. Another mistake is when  a
@@ -2166,21 +2161,21 @@ function requires an extra |GVar|, that |GVar| should be turned into a
 parameter by adding it to the prior.
 
 Error messages that come from inside the GSL routines used by
-|nonlinear_fit| are sometimes less than useful. They are usually due to errors
+|nonlinear_fit| are usually due to errors
 in one of the inputs to the fit  (that is, the fit data, the prior, or the fit
 function). Again setting ``debug=True`` may catch the errors before they
 land in GSL.
 
-Occasionally :class:`lsqfit.nonlinear_fit` appears to go crazy, with gigantic
+Occasionally |nonlinear_fit| appears to go crazy, with gigantic
 ``chi**2``\s (*e.g.*, ``1e78``). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
-``chi**2``. One fix is to include SVD cuts in the fit by setting, for
-example, ``svdcut=1e-8`` in the call to :class:`lsqfit.nonlinear_fit`.
-These cuts will exclude exact or nearly exact zero modes, while leaving
-important modes mostly unaffected.
+``chi**2``. One fix is to regulate the covariance matrix used in the fit by setting, 
+for example, ``svdcut=1e-8`` (or ``eps=1e-8``) in the call 
+to |nonlinear_fit|. Such cuts regulate exact or nearly 
+exact zero modes, while leaving important modes mostly unaffected.
 
-Even if the SVD cuts work in such a case, the question remains as to why one
+Even if regulation works in such a case, the question remains as to why one
 of the covariance matrices has a zero mode. A common cause is if the same
 :class:`gvar.GVar` was used for more than one prior. For example, one might
 think that ::
@@ -2224,16 +2219,4 @@ This line can be rewritten ::
    >>> prior = gv.gvar(dict(a='1(1)', b='1(1)'))
 
 which is slighlty more succinct.
-
-Your code is fully debugged and it still gives a poor fit.
-Before discarding your model and/or data, it 
-is worth trying different fitters, as discussed 
-in :ref:`faster-fitters` above. Also some fits are quite
-sensitive to the starting point |~| (``p0``) used by the fitting 
-algorithm in its search for the best fit. In such 
-cases it is worth trying different starting points. 
-When using a prior, set ``p0=True`` in |nonlinear_fit| 
-to generate random starting points from 
-the prior; run the fit multiple times to sample 
-a variety of starting points.
 

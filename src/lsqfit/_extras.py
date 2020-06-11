@@ -93,7 +93,7 @@ def empbayes_fit(z0, fitargs, **minargs):
                 4    0.1725 (27)    0.1744 (23)
 
         Settings:
-          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+          eps = 1e-12    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
 
 
     We have, in effect, used the variation in the data relative to the best
@@ -199,7 +199,7 @@ class GVarWAvg(gvar.GVar):
 
         Time required to do average.
 
-    .. attribute:: svdcorrection
+    .. attribute:: correction
 
         The *svd* corrections added to the data in the average.
 
@@ -213,7 +213,7 @@ class GVarWAvg(gvar.GVar):
             self.chi2 = 0
             self.dof = 1
             self.Q = 1
-            self.svdcorrection = gvar.gvar(0,0)
+            self.correction = gvar.gvar(0,0)
             self.time = 0
             self.fit = None
         else:
@@ -221,8 +221,9 @@ class GVarWAvg(gvar.GVar):
             self.dof = fit.dof
             self.Q = fit.Q
             self.time = fit.time
-            self.svdcorrection = fit.svdcorrection
+            self.correction = fit.correction
             self.fit = fit
+        self.svdcorrection = self.correction # legacy name
 
 class ArrayWAvg(numpy.ndarray):
     """ Result from weighted average :func:`lsqfit.wavg`.
@@ -252,7 +253,7 @@ class ArrayWAvg(numpy.ndarray):
 
         Time required to do average.
 
-    .. attribute:: svdcorrection
+    .. attribute:: correction
 
         The *svd* corrections added to the data in the average.
 
@@ -267,13 +268,13 @@ class ArrayWAvg(numpy.ndarray):
             obj.dof = 1
             obj.Q = 1
             obj.time = 0
-            obj.svdcorrection = gvar.gvar(0, 0)
+            obj.correction = gvar.gvar(0, 0)
         else:
             obj.chi2 = fit.chi2
             obj.dof = fit.dof
             obj.Q = fit.Q
             obj.time = fit.time
-            obj.svdcorrection = fit.svdcorrection
+            obj.correction = fit.correction
             obj.fit = fit
         return obj
 
@@ -314,7 +315,7 @@ class BufferDictWAvg(gvar.BufferDict):
 
         Time required to do average.
 
-    .. attribute:: svdcorrection
+    .. attribute:: correction
 
         The *svd* corrections added to the data in the average.
 
@@ -328,7 +329,7 @@ class BufferDictWAvg(gvar.BufferDict):
             self.chi2 = 0
             self.dof = 1
             self.Q = 1
-            self.svdcorrection = gvar.gvar(0,0)
+            self.correction = gvar.gvar(0,0)
             self.time = 0
             self.fit = None
         else:
@@ -336,8 +337,9 @@ class BufferDictWAvg(gvar.BufferDict):
             self.dof = fit.dof
             self.Q = fit.Q
             self.time = fit.time
-            self.svdcorrection = fit.svdcorrection
+            self.correction = fit.correction
             self.fit = fit
+        self.svdcorrection = self.correction  # legacy name
 
 def wavg(datalist, fast=False, prior=None, **fitterargs):
     """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
@@ -389,8 +391,9 @@ def wavg(datalist, fast=False, prior=None, **fitterargs):
             sequentially. This can be much faster when averaging a large
             number of sampes but is only approximate if the different
             elements of ``datalist`` are correlated. Default is ``False``.
-        fitterargs (dict): Additional arguments (e.g., ``svdcut``) for the
-            :class:`lsqfit.nonlinear_fit` fitter used to do the averaging.
+        fitterargs (dict): Additional arguments (e.g., ``svdcut`` or ``eps``) 
+            for the :class:`lsqfit.nonlinear_fit` fitter used to do the 
+            averaging.
 
     Returns:
         The weighted average is returned as a |GVar| or an array of
@@ -410,8 +413,8 @@ def wavg(datalist, fast=False, prior=None, **fitterargs):
 
         **time** - Time required to do average.
 
-        **svdcorrection** - The *svd* corrections made to the data
-            when ``svdcut`` is not ``None``.
+        **correction** - The corrections made to the data
+            when ``svdcut>0`` or ``eps>0``.
 
         **fit** - Fit returned by :class:`lsqfit.nonlinear_fit`.
     """
@@ -431,19 +434,19 @@ def wavg(datalist, fast=False, prior=None, **fitterargs):
         else:
             return ArrayWAvg(numpy.asarray(datalist[0]), None)
     if fast:
-        chi2 = dof = time = svdcorrection = 0
+        chi2 = dof = time = correction = 0
         ans = datalist[0]
         for i, di in enumerate(datalist[1:]):
             ans = wavg([ans, di], fast=False, **fitterargs)
             chi2 += ans.chi2
             dof += ans.dof
             time += ans.time
-            svdcorrection += ans.svdcorrection
+            correction += ans.correction
         ans.fit.dof = dof
         ans.fit.Q = _gammaQ(dof / 2., chi2 / 2.)
         ans.fit.chi2 = chi2
         ans.fit.time = time
-        ans.fit.svdcorrection = svdcorrection
+        ans.fit.correction = correction
         return ans
     if hasattr(datalist[0], 'keys'):
         datashape = None
@@ -725,24 +728,25 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.y = self.data
 
         self.linear = []
-        self.svdcorrection = 0
+        self.correction = 0
         self.svdn = 0
         self.dof = 0
         self.chi2 = 0
         self.nit = 0
         self.time = 0
-        self.svdcut = 0
+        self.svdcut = None
+        self.eps = None
         self.tol = [0., 0., 0.]
         self.error = []
         self.logGBF = 0.
-        self.add_svdnoise = False
+        self.noise = (False, False)
         self.fitter = 'chained fit'
         self.description = ''
         self.stopping_criterion = None
         self.residuals = []
         self.p0 = []
         for k in self.chained_fits:
-            self.svdcorrection += self.chained_fits[k].svdcorrection
+            self.correction += self.chained_fits[k].correction
             if k[:5] == 'wavg(' and k[-1] == ')':
                 continue
             self.residuals.extend(self.chained_fits[k].residuals)
@@ -753,10 +757,21 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
             self.time += self.chained_fits[k].time
             self.p0.append(self.chained_fits[k].p0)
             svdcut = self.chained_fits[k].svdcut
-            if self.chained_fits[k].add_svdnoise:
-                self.add_svdnoise = True
-            if svdcut is not None and  abs(svdcut) > abs(self.svdcut):
-                self.svdcut = svdcut
+            eps = self.chained_fits[k].eps
+            if self.chained_fits[k].noise[0]:
+                self.noise = (True, self.noise[1])
+            if self.chained_fits[k].noise[1]:
+                self.noise = (self.noise[0], True)
+            if svdcut is not None:
+                if self.svdcut is None:
+                    self.svdcut = svdcut
+                elif abs(svdcut) > abs(self.svdcut):
+                    self.svdcut = svdcut
+            if eps is not None:
+                if self.eps is None:
+                    self.eps = eps 
+                elif eps > self.eps:
+                    self.eps = eps
             tol = self.chained_fits[k].tol
             for i in range(3):
                 self.tol[i] = max(self.tol[i], tol[i])
@@ -780,6 +795,7 @@ class chained_nonlinear_fit(lsqfit.nonlinear_fit):
         self.cov = None
         self.fitter_results = None
         self.nblocks = None
+        self.svdcorrection = self.correction # legacy name
 
     def _remove_gvars(self, gvlist):
         self.p  # need to fill _p
@@ -921,7 +937,7 @@ class MultiFitter(object):
 
     def __init__(
         self, models, mopt=None, ratio=False, fast=True, wavg_all=False,
-        wavg_kargs=dict(svdcut=1e-12), fitname=None, fitterargs={},
+        wavg_kargs=dict(eps=1e-12), fitname=None, fitterargs={},
         **more_fitterargs
         ):
         super(MultiFitter, self).__init__()
@@ -1186,7 +1202,7 @@ class MultiFitter(object):
         return self.fit
 
     def chained_lsqfit(
-        self, data=None, pdata=None, prior=None, p0=None, add_priornoise=None,
+        self, data=None, pdata=None, prior=None, p0=None,
         **kargs
         ):
         """ Compute chained least-squares fit of models to data.
@@ -1282,9 +1298,16 @@ class MultiFitter(object):
         """
         if prior is None:
             raise ValueError('no prior')
-        if add_priornoise:
-            # intercept at top level so same treatment for all fits
+        # prior is shared by many subfits so need to handle prior noise here
+        if 'noise' in kargs:
+            if isinstance(kargs['noise'], bool):
+                kargs['noise'] = (kargs['noise'], kargs['noise'])
+            if kargs['noise'][1]:
+                prior = prior + (gvar.sample(prior) - gvar.mean(prior))
+                kargs['noise'] = (kargs['noise'][0], False)
+        elif kargs.get('add_priornoise', False):
             prior = prior + (gvar.sample(prior) - gvar.mean(prior))
+            kargs['add_priornoise'] = False
         kargs, oldargs = self.set(**kargs)
 
         # parameters for bootstrap (see below)

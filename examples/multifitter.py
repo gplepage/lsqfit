@@ -62,7 +62,7 @@ def main():
     fitter = lsqfit.MultiFitter(models=models)
     # simultaneous fit
     print(30 * '-', 'lsqfit')
-    fit = fitter.lsqfit(data=data, prior=prior, svdcut=1e-10)
+    fit = fitter.lsqfit(data=data, prior=prior, eps=1e-10)
     print(fit.formatall())
     if SHOW_PLOTS:
         fit.show_plots(view='diff')

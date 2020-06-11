@@ -1,5 +1,5 @@
 # cython: language_level=3str
-# Copyright (c) 2011-17 G. Peter Lepage.
+# Copyright (c) 2011-20 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -41,8 +41,9 @@ def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
     nans = w.shape[0]
     assert nx==w.shape[1], str(nx)+'!='+str(w.shape[1])
     ans = numpy.zeros(nans, object)
-    for i in range(nans):
-        ans[i] = gvar.wsum_gvar(w[i], x)
+    gvar.msum_gvar(w, x, out=ans)
+    # for i in range(nans):
+    #     ans[i] = gvar.wsum_gvar(w[i], x)
     return ans
 
 

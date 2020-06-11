@@ -1176,6 +1176,7 @@ static CYTHON_INLINE __pyx_t_double_complex __pyx_t_double_complex_from_parts(do
 
 /*--- Type declarations ---*/
 struct __pyx_obj_4gvar_10_svec_smat_svec;
+struct __pyx_obj_4gvar_10_svec_smat_smask;
 struct __pyx_obj_4gvar_10_svec_smat_smat;
 struct __pyx_obj_4gvar_9_gvarcore_GVar;
 struct __pyx_array_obj;
@@ -1221,6 +1222,8 @@ typedef npy_cdouble __pyx_t_5numpy_complex_t;
 struct __pyx_t_4gvar_10_svec_smat_svec_element;
 struct __pyx_opt_args_4gvar_10_svec_smat_4svec_toarray;
 struct __pyx_opt_args_4gvar_10_svec_smat_4svec_add;
+struct __pyx_opt_args_4gvar_10_svec_smat_4svec_masked_vec;
+struct __pyx_opt_args_4gvar_10_svec_smat_4smat_masked_mat;
 
 /* "gvar/_svec_smat.pxd":19
  * # index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
@@ -1256,17 +1259,39 @@ struct __pyx_opt_args_4gvar_10_svec_smat_4svec_toarray {
   npy_intp msize;
 };
 
-/* "gvar/_svec_smat.pxd":33
+/* "gvar/_svec_smat.pxd":32
  *     cpdef double dot(svec,svec)
  *     cpdef svec clone(svec)
  *     cpdef svec add(svec,svec,double a=*,double b=*)             # <<<<<<<<<<<<<<
  *     cpdef svec mul(svec self,double a)
- * 
+ *     cpdef numpy.ndarray[numpy.float_t, ndim=1] masked_vec(svec, smask, out=*)
  */
 struct __pyx_opt_args_4gvar_10_svec_smat_4svec_add {
   int __pyx_n;
   double a;
   double b;
+};
+
+/* "gvar/_svec_smat.pxd":34
+ *     cpdef svec add(svec,svec,double a=*,double b=*)
+ *     cpdef svec mul(svec self,double a)
+ *     cpdef numpy.ndarray[numpy.float_t, ndim=1] masked_vec(svec, smask, out=*)             # <<<<<<<<<<<<<<
+ * 
+ * cdef class smask:
+ */
+struct __pyx_opt_args_4gvar_10_svec_smat_4svec_masked_vec {
+  int __pyx_n;
+  PyObject *out;
+};
+
+/* "gvar/_svec_smat.pxd":54
+ *     cpdef double expval(self,svec)
+ *     cpdef numpy.ndarray[numpy.float_t, ndim=2] toarray(self)
+ *     cpdef numpy.ndarray[numpy.float_t, ndim=2] masked_mat(smat self, smask mask, out=*)             # <<<<<<<<<<<<<<
+ */
+struct __pyx_opt_args_4gvar_10_svec_smat_4smat_masked_mat {
+  int __pyx_n;
+  PyObject *out;
 };
 
 /* "gvar/_svec_smat.pxd":23
@@ -1284,8 +1309,25 @@ struct __pyx_obj_4gvar_10_svec_smat_svec {
 };
 
 
-/* "gvar/_svec_smat.pxd":37
+/* "gvar/_svec_smat.pxd":36
+ *     cpdef numpy.ndarray[numpy.float_t, ndim=1] masked_vec(svec, smask, out=*)
  * 
+ * cdef class smask:             # <<<<<<<<<<<<<<
+ *     cdef readonly numpy.int8_t[::1] mask
+ *     cdef readonly INTP_TYPE[::1] map
+ */
+struct __pyx_obj_4gvar_10_svec_smat_smask {
+  PyObject_HEAD
+  __Pyx_memviewslice mask;
+  __Pyx_memviewslice map;
+  npy_intp starti;
+  npy_intp stopi;
+  npy_intp len;
+};
+
+
+/* "gvar/_svec_smat.pxd":41
+ *     cdef readonly INTP_TYPE starti, stopi, len
  * 
  * cdef class smat:             # <<<<<<<<<<<<<<
  *     # cdef object rowlist
@@ -1408,17 +1450,18 @@ struct __pyx_vtabstruct_4gvar_10_svec_smat_svec {
   PyArrayObject *(*toarray)(struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch, struct __pyx_opt_args_4gvar_10_svec_smat_4svec_toarray *__pyx_optional_args);
   PyArrayObject *(*indices)(struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
   PyArrayObject *(*values)(struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
-  PyObject *(*_assign)(struct __pyx_obj_4gvar_10_svec_smat_svec *, PyArrayObject *, PyArrayObject *, int __pyx_skip_dispatch);
+  PyObject *(*_assign)(struct __pyx_obj_4gvar_10_svec_smat_svec *, __Pyx_memviewslice, __Pyx_memviewslice, int __pyx_skip_dispatch);
   double (*dot)(struct __pyx_obj_4gvar_10_svec_smat_svec *, struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
   struct __pyx_obj_4gvar_10_svec_smat_svec *(*clone)(struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
   struct __pyx_obj_4gvar_10_svec_smat_svec *(*add)(struct __pyx_obj_4gvar_10_svec_smat_svec *, struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch, struct __pyx_opt_args_4gvar_10_svec_smat_4svec_add *__pyx_optional_args);
   struct __pyx_obj_4gvar_10_svec_smat_svec *(*mul)(struct __pyx_obj_4gvar_10_svec_smat_svec *, double, int __pyx_skip_dispatch);
+  PyArrayObject *(*masked_vec)(struct __pyx_obj_4gvar_10_svec_smat_svec *, struct __pyx_obj_4gvar_10_svec_smat_smask *, int __pyx_skip_dispatch, struct __pyx_opt_args_4gvar_10_svec_smat_4svec_masked_vec *__pyx_optional_args);
 };
 static struct __pyx_vtabstruct_4gvar_10_svec_smat_svec *__pyx_vtabptr_4gvar_10_svec_smat_svec;
 
 
-/* "gvar/_svec_smat.pxd":37
- * 
+/* "gvar/_svec_smat.pxd":41
+ *     cdef readonly INTP_TYPE starti, stopi, len
  * 
  * cdef class smat:             # <<<<<<<<<<<<<<
  *     # cdef object rowlist
@@ -1428,12 +1471,13 @@ static struct __pyx_vtabstruct_4gvar_10_svec_smat_svec *__pyx_vtabptr_4gvar_10_s
 struct __pyx_vtabstruct_4gvar_10_svec_smat_smat {
   PyObject *(*_add_memory)(struct __pyx_obj_4gvar_10_svec_smat_smat *, int __pyx_skip_dispatch);
   npy_intp (*blockid)(struct __pyx_obj_4gvar_10_svec_smat_smat *, npy_intp, int __pyx_skip_dispatch);
-  PyArrayObject *(*append_diag)(struct __pyx_obj_4gvar_10_svec_smat_smat *, PyArrayObject *, int __pyx_skip_dispatch);
-  PyArrayObject *(*append_diag_m)(struct __pyx_obj_4gvar_10_svec_smat_smat *, PyArrayObject *, int __pyx_skip_dispatch);
+  PyArrayObject *(*append_diag)(struct __pyx_obj_4gvar_10_svec_smat_smat *, __Pyx_memviewslice, int __pyx_skip_dispatch);
+  PyArrayObject *(*append_diag_m)(struct __pyx_obj_4gvar_10_svec_smat_smat *, __Pyx_memviewslice, int __pyx_skip_dispatch);
   struct __pyx_obj_4gvar_10_svec_smat_svec *(*dot)(struct __pyx_obj_4gvar_10_svec_smat_smat *, struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
-  struct __pyx_obj_4gvar_10_svec_smat_svec *(*masked_dot)(struct __pyx_obj_4gvar_10_svec_smat_smat *, struct __pyx_obj_4gvar_10_svec_smat_svec *, PyArrayObject *, int __pyx_skip_dispatch);
+  struct __pyx_obj_4gvar_10_svec_smat_svec *(*masked_dot)(struct __pyx_obj_4gvar_10_svec_smat_smat *, struct __pyx_obj_4gvar_10_svec_smat_svec *, __Pyx_memviewslice, int __pyx_skip_dispatch);
   double (*expval)(struct __pyx_obj_4gvar_10_svec_smat_smat *, struct __pyx_obj_4gvar_10_svec_smat_svec *, int __pyx_skip_dispatch);
   PyArrayObject *(*toarray)(struct __pyx_obj_4gvar_10_svec_smat_smat *, int __pyx_skip_dispatch);
+  PyArrayObject *(*masked_mat)(struct __pyx_obj_4gvar_10_svec_smat_smat *, struct __pyx_obj_4gvar_10_svec_smat_smask *, int __pyx_skip_dispatch, struct __pyx_opt_args_4gvar_10_svec_smat_4smat_masked_mat *__pyx_optional_args);
 };
 static struct __pyx_vtabstruct_4gvar_10_svec_smat_smat *__pyx_vtabptr_4gvar_10_svec_smat_smat;
 
@@ -2384,6 +2428,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, cha
 
 /* Module declarations from 'gvar._svec_smat' */
 static PyTypeObject *__pyx_ptype_4gvar_10_svec_smat_svec = 0;
+static PyTypeObject *__pyx_ptype_4gvar_10_svec_smat_smask = 0;
 static PyTypeObject *__pyx_ptype_4gvar_10_svec_smat_smat = 0;
 
 /* Module declarations from 'gvar._gvarcore' */
@@ -2650,7 +2695,7 @@ static const char __pyx_k_covariance_matrix_mismatch[] = "covariance matrix mism
 static const char __pyx_k_itemsize_0_for_cython_array[] = "itemsize <= 0 for cython.array";
 static const char __pyx_k_ndarray_is_not_C_contiguous[] = "ndarray is not C contiguous";
 static const char __pyx_k_unable_to_allocate_array_data[] = "unable to allocate array data.";
-static const char __pyx_k_GSL_fitter_for_nonlinear_least[] = " GSL fitter for nonlinear least-squares multidimensional fits.\n\n    :class:`gsl_multifit` is a function-class whose constructor does a\n    least-squares fit by minimizing ``sum_i f_i(x)**2`` as a function of\n    vector ``x``.\n\n    :class:`gsl_multifit` is a wrapper for the ``multifit`` GSL routine.\n\n    Args:\n        x0 (array of floats): Starting point for minimization.\n\n        n (positive int): Length of vector returned by the fit function ``f(x)``.\n\n        f (array-valued function): ``sum_i f_i(x)**2`` is minimized\n            by varying parameters ``x``. The parameters are a 1-d\n            :class:`numpy` array of either numbers or :class:`gvar.GVar`\\s.\n\n        tol (float or tuple): Assigning ``tol=(xtol, gtol, ftol)`` causes the\n            fit to stop searching for a minimum when any of\n\n                ``xtol >=`` relative change in parameters between iterations\n\n                ``gtol >=`` relative size of gradient of ``chi**2``\n\n                ``ftol >=`` relative change in ``chi**2`` between iterations\n\n            is statisfied. See the GSL documentation for detailed\n            definitions of the stopping conditions. Typically one sets\n            ``xtol=1/10**d`` where ``d`` is the number of digits of precision\n            desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting\n            ``tol=eps`` where ``eps`` is a number is equivalent to setting\n            ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is\n            equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is\n            ``tol=1e-5``. (Note: ``ftol`` option is disabled in some versions\n            of  the GSL library.)\n\n        maxit (int): Maximum number of iterations in search for minimum;\n                default is 1000.\n\n        alg (str): GSL algorithm to use for minimization. The following\n            options are supported (see GSL documentation for more\n            information):\n\n                ``'lm'``\n   ""                 Levenberg-Marquardt algorithm (default).\n\n                ``'lmaccel'``\n                    Levenberg-Marquardt algorithm with geodesic\n                    acceleration. Can be faster than ``'lm'`` but\n                    less stable. Stability is controlled by damping\n                    parameter ``avmax``; setting it to zero turns\n                    acceleration off.\n\n                ``'subspace2D'``\n                    2D generalization of dogleg algorithm. This\n                    can be substantially faster than the two ``'lm'``\n                    algorithms.\n\n                ``'dogleg'``\n                    dogleg algorithm.\n\n                ``'ddogleg'``\n                    double dogleg algorithm.\n\n        scaler (str): Scaling method used in minimization. The following\n            options are supported (see GSL documentation for more\n            information):\n\n                ``'more'``\n                    More rescaling, which makes the problem scale\n                    invariant. Default.\n\n                ``'levenberg'``\n                    Levenberg rescaling, which is not scale\n                    invariant but may be more efficient in certain problems.\n\n                ``'marquardt'``\n                    Marquardt rescaling. Probably not as good as\n                    the other two options.\n\n        solver (str): Method use to solve the linear equations for the\n            solution from a given step. The following options\n            are supported (see GSL documentation for more information):\n\n                ``'qr'``\n                    QR decomposition of the Jacobian. Default.\n\n                ``'cholesky'``\n                    Cholesky decomposition of the Jacobian. Can\n                    be substantially faster than ``'qr'`` but not as reliable\n                    for singular Jacobians.\n\n                ``'svd'``\n                    SVD decomposition. The most robust for singul""ar\n                    situations, but also the slowest.\n\n        factor_up (float): Factor by which search region is increased\n            when a search step is accepted. Values that are too large\n            destablize the search; values that are too small slow down\n            the search. Default is ``factor_up=3``.\n\n        factor_down (float): Factor by which search region is decreased\n            when a search step is rejected. Values that are too large\n            destablize the search; values that are too small slow down\n            the search. Default is ``factor_up=2``.\n\n        avmax (float): Damping parameter for geodesic acceleration. It\n            is the maximum allowed value for the acceleration divided\n            by the velocity. Smaller values imply less acceleration.\n            Default is ``avmax=0.75``.\n\n    :class:`lsqfit.gsl_multifit` objects have the following attributes.\n\n    Attributes:\n        x (array): Location of the most recently computed (best) fit point.\n\n        cov (array): Covariance matrix at the minimum point.\n\n        description (str): Short description of internal fitter settings.\n\n        f (array): Fit function value ``f(x)`` at the minimum in\n            the most recent fit.\n\n        J (array): Gradient ``J_ij = df_i/dx[j]`` for most recent fit.\n\n        nit (int): Number of function evaluations used in last fit to find\n            the minimum.\n\n        stopping_criterion (int): Criterion used to\n            stop fit:\n\n                0. didn't converge\n\n                1. ``xtol >=`` relative change in parameters between iterations\n\n                2. ``gtol >=`` relative size of gradient of ``chi**2``\n\n                3. ``ftol >=`` relative change in ``chi**2`` between iterations\n\n        error (str or None): ``None`` if fit successful; an error\n            message otherwise.\n    ";
+static const char __pyx_k_GSL_fitter_for_nonlinear_least[] = " GSL fitter for nonlinear least-squares multidimensional fits.\n\n    :class:`gsl_multifit` is a function-class whose constructor does a\n    least-squares fit by minimizing ``sum_i f_i(x)**2`` as a function of\n    vector ``x``.\n\n    :class:`gsl_multifit` is a wrapper for the ``multifit`` GSL routine.\n\n    Args:\n        x0 (array of floats): Starting point for minimization.\n\n        n (positive int): Length of vector returned by the fit function ``f(x)``.\n\n        f (array-valued function): ``sum_i f_i(x)**2`` is minimized\n            by varying parameters ``x``. The parameters are a 1-d\n            :class:`numpy` array of either numbers or :class:`gvar.GVar`\\s.\n\n        tol (float or tuple): Assigning ``tol=(xtol, gtol, ftol)`` causes the\n            fit to stop searching for a minimum when any of\n\n                ``xtol >=`` relative change in parameters between iterations\n\n                ``gtol >=`` relative size of gradient of ``chi**2``\n\n                ``ftol >=`` relative change in ``chi**2`` between iterations\n\n            is statisfied. See the GSL documentation for detailed\n            definitions of the stopping conditions. Typically one sets\n            ``xtol=1/10**d`` where ``d`` is the number of digits of precision\n            desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting\n            ``tol=eps`` where ``eps`` is a number is equivalent to setting\n            ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is\n            equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is\n            ``tol=1e-5``. (Note: ``ftol`` option is disabled in some versions\n            of  the GSL library.)\n\n        maxit (int): Maximum number of iterations in search for minimum;\n                default is 1000.\n\n        alg (str): GSL algorithm to use for minimization. The following\n            options are supported (see GSL documentation for more\n            information):\n\n                ``'lm'``\n   ""                 Levenberg-Marquardt algorithm (default).\n\n                ``'lmaccel'``\n                    Levenberg-Marquardt algorithm with geodesic\n                    acceleration. Can be faster than ``'lm'`` but\n                    less stable. Stability is controlled by damping\n                    parameter ``avmax``; setting it to zero turns\n                    acceleration off.\n\n                ``'subspace2D'``\n                    2D generalization of dogleg algorithm. This\n                    can be substantially faster than the two ``'lm'``\n                    algorithms.\n\n                ``'dogleg'``\n                    dogleg algorithm.\n\n                ``'ddogleg'``\n                    double dogleg algorithm.\n\n        scaler (str): Scaling method used in minimization. The following\n            options are supported (see GSL documentation for more\n            information):\n\n                ``'more'``\n                    More rescaling, which makes the problem scale\n                    invariant. Default.\n\n                ``'levenberg'``\n                    Levenberg rescaling, which is not scale\n                    invariant but may be more efficient in certain problems.\n\n                ``'marquardt'``\n                    Marquardt rescaling. Probably not as good as\n                    the other two options.\n\n        solver (str): Method use to solve the linear equations for the\n            solution from a given step. The following options\n            are supported (see GSL documentation for more information):\n\n                ``'qr'``\n                    QR decomposition of the Jacobian. Default.\n\n                ``'cholesky'``\n                    Cholesky decomposition of the Jacobian. Can\n                    be substantially faster than ``'qr'`` but not as reliable\n                    for singular Jacobians.\n\n                ``'svd'``\n                    SVD decomposition. The most robust for singul""ar\n                    situations, but also the slowest.\n\n        factor_up (float): Factor by which search region is increased\n            when a search step is accepted. Values that are too large\n            destablize the search; values that are too small slow down\n            the search. Default is ``factor_up=3``.\n\n        factor_down (float): Factor by which search region is decreased\n            when a search step is rejected. Values that are too large\n            destablize the search; values that are too small slow down\n            the search. Default is ``factor_up=2``.\n\n        avmax (float): Damping parameter for geodesic acceleration. It\n            is the maximum allowed value for the acceleration divided\n            by the velocity. Smaller values imply less acceleration.\n            Default is ``avmax=0.75``.\n\n    :class:`lsqfit.gsl_multifit` objects have the following attributes.\n\n    Attributes:\n        x (array): Location of the most recently computed (best) fit point.\n\n        cov (array): Covariance matrix at the minimum point.\n\n        description (str): Short description of internal fitter settings.\n\n        f (array): Fit function value ``f(x)`` at the minimum in\n            the most recent fit.\n\n        J (array): Gradient ``J_ij = df_i/dx[j]`` for most recent fit.\n\n        nit (int): Number of function evaluations used in last fit to find\n            the minimum.\n\n        stopping_criterion (int): Criterion used to\n            stop fit:\n\n                0. didn't converge\n\n                1. ``xtol >=`` relative change in parameters between iterations\n\n                2. ``gtol >=`` relative size of gradient of ``chi**2``\n\n                3. ``ftol >=`` relative change in ``chi**2`` between iterations\n\n                4. stopped for other reason (eg, already converged)\n\n        error (str or None): ``None`` if fit successful; an error\n            message otherwise.\n    ";
 static const char __pyx_k_Minimizer_for_multidimensional[] = " Minimizer for multidimensional functions.\n\n    :class:`multiminex` is a function-class whose constructor minimizes a\n    multidimensional function ``f(x)`` by varying vector ``x``. This routine\n    does *not* use user-supplied information about the gradient of ``f(x)``.\n\n    :class:`multiminex` is a wrapper for the ``multimin`` GSL routine.\n\n    Args:\n        x0 (array): Starting point for minimization search.\n        f (callable): Function ``f(x)`` to be minimized by varying vector ``x``.\n        tol (float): Minimization stops when ``x`` has converged to with\n            tolerance ``tol``; default is ``1e-4``.\n        maxit (int): Maximum number of iterations in search for minimum;\n            default is 1000.\n        step (float): Initial step size to use in varying components of ``x``;\n            default is 1.\n        alg (str): GSL algorithm to use for minimization. Three options are\n            currently available: ``\"nmsimplex\"``, Nelder Mead Simplex\n            algorithm; ``\"nmsimplex2\"``, an improved version of\n            ``\"nmsimplex\"`` (default); and ``\"nmsimplex2rand\"``, a version\n            of ``\"nmsimplex2\"`` with random shifts in the start position.\n        analyzer: Optional function of ``x``, which is called after\n            each iteration. This can be used to inspect intermediate steps in\n            the minimization, if needed.\n\n    :class:`lsqfit.gsl_multiminex` objects have the following attributes.\n\n    Attributes:\n        x (array): Location of the minimum.\n\n        f (float): Value of function ``f(x)`` at the minimum.\n\n        nit (int):  Number of iterations required to find the minimum.\n\n        error (None or str): ``None`` if minimization successful; an error\n            message otherwise.\n    ";
 static const char __pyx_k_strided_and_direct_or_indirect[] = "<strided and direct or indirect>";
 static const char __pyx_k_Fitter_for_nonlinear_least_squa[] = " Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)\n\n    :class:`gsl_v1_ multifit` is a function-class whose constructor does a\n    least-squares fit by minimizing ``sum_i f_i(x)**2`` as a function of\n    vector ``x``.\n\n    :class:`gsl_v1_multifit` is a wrapper for the (older, v1) ``multifit``\n    GSL routine (see ``nlin.h``). This package was used in earlier\n    versions of :mod:`lsqfit` (<9.0).\n\n    Args:\n        x0 (array of floats): Starting point for minimization.\n\n        n (positive int): Length of vector returned by the fit function ``f(x)``.\n\n        f (array-valued function): ``sum_i f_i(x)**2`` is minimized\n            by varying parameters ``x``. The parameters are a 1-d\n            :class:`numpy` array of either numbers or :class:`gvar.GVar`\\s.\n\n        tol (float or tuple): Assigning ``tol=(xtol, gtol, ftol)`` causes the\n            fit to stop searching for a minimum when any of\n\n                ``xtol >=`` relative change in parameters between iterations\n\n                ``gtol >=`` relative size of gradient of ``chi**2``\n\n                ``ftol >=`` relative change in ``chi**2`` between iterations\n\n            is statisfied. See the GSL documentation for detailed\n            definitions of the stopping conditions. Typically one sets\n            ``xtol=1/10**d`` where ``d`` is the number of digits of precision\n            desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting\n            ``tol=eps`` where ``eps`` is a number is equivalent to setting\n            ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is\n            equivlent to setting ``tol=(eps1,eps2,1e-10)``. Default is\n            ``tol=1e-5``. (Note: the ``ftol`` option is disabled in some\n            versions of  the GSL library.)\n\n        maxit (int): Maximum number of iterations in search for minimum;\n                default is 1000.\n\n        alg (str): GSL algorithm to use for minimization. Two options are""\n            currently available: ``\"lmsder\"``, the scaled LMDER algorithm\n            (default); and ``\"lmder\"``, the unscaled LMDER algorithm.\n            With version 2 of the GSL library, another option is ``\"lmniel\"``,\n            which can be useful when there is much more data than parameters.\n\n        analyzer: Optional function of ``x, [...f_i(x)...], [[..df_ij(x)..]]``\n            which is called after each iteration. This can be used to inspect\n            intermediate steps in the minimization, if needed.\n\n    :class:`lsqfit.gsl_v1_multifit` objects have the following attributes.\n\n    Attributes:\n        x (array): Location of the most recently computed (best) fit point.\n\n        cov (array): Covariance matrix at the minimum point.\n\n        f (callable): Fit function value ``f(x)`` at the minimum in\n            the most recent fit.\n\n        J (array): Gradient ``J_ij = df_i/dx[j]`` for most recent fit.\n\n        nit (int): Number of function evaluations used in last fit to find\n            the minimum.\n\n        stopping_criterion (int): Criterion used to\n            stop fit:\n\n                0. didn't converge\n\n                1. ``xtol >=`` relative change in parameters between iterations\n\n                2. ``gtol >=`` relative size of gradient of ``chi**2``\n\n                3. ``ftol >=`` relative change in ``chi**2`` between iterations\n\n        error (str or None): ``None`` if fit successful; an error\n            message otherwise.\n    ";
@@ -2956,6 +3001,7 @@ static PyObject *__pyx_int_0;
 static PyObject *__pyx_int_1;
 static PyObject *__pyx_int_2;
 static PyObject *__pyx_int_3;
+static PyObject *__pyx_int_4;
 static PyObject *__pyx_int_184977713;
 static PyObject *__pyx_int_neg_1;
 static PyObject *__pyx_tuple_;
@@ -3709,7 +3755,7 @@ static PyArrayObject *__pyx_f_6lsqfit_4_gsl_vector2array(gsl_vector *__pyx_v_v) 
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":558
+/* "lsqfit/_gsl.pyx":560
  *             message otherwise.
  *     """
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -3740,7 +3786,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_12gsl_multifit_1__init__(PyObject *__pyx
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_self,&__pyx_n_s_x0,&__pyx_n_s_n,&__pyx_n_s_f,&__pyx_n_s_tol,&__pyx_n_s_maxit,&__pyx_n_s_alg,&__pyx_n_s_solver,&__pyx_n_s_scaler,&__pyx_n_s_factor_up,&__pyx_n_s_factor_down,&__pyx_n_s_avmax,0};
     PyObject* values[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
 
-    /* "lsqfit/_gsl.pyx":563
+    /* "lsqfit/_gsl.pyx":565
  *         size_t n,
  *         object f,
  *         object tol=(1e-5, 0.0, 0.0),             # <<<<<<<<<<<<<<
@@ -3791,19 +3837,19 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_12gsl_multifit_1__init__(PyObject *__pyx
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 1); __PYX_ERR(0, 558, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 1); __PYX_ERR(0, 560, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_n)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 2); __PYX_ERR(0, 558, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 2); __PYX_ERR(0, 560, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_f)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 3); __PYX_ERR(0, 558, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, 3); __PYX_ERR(0, 560, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
@@ -3855,7 +3901,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_12gsl_multifit_1__init__(PyObject *__pyx
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 558, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 560, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -3885,11 +3931,11 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_12gsl_multifit_1__init__(PyObject *__pyx
     }
     __pyx_v_self = values[0];
     __pyx_v_x0 = ((PyArrayObject *)values[1]);
-    __pyx_v_n = __Pyx_PyInt_As_size_t(values[2]); if (unlikely((__pyx_v_n == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 561, __pyx_L3_error)
+    __pyx_v_n = __Pyx_PyInt_As_size_t(values[2]); if (unlikely((__pyx_v_n == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 563, __pyx_L3_error)
     __pyx_v_f = values[3];
     __pyx_v_tol = values[4];
     if (values[5]) {
-      __pyx_v_maxit = __Pyx_PyInt_As_unsigned_int(values[5]); if (unlikely((__pyx_v_maxit == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 564, __pyx_L3_error)
+      __pyx_v_maxit = __Pyx_PyInt_As_unsigned_int(values[5]); if (unlikely((__pyx_v_maxit == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 566, __pyx_L3_error)
     } else {
       __pyx_v_maxit = ((unsigned int)((unsigned int)0x3E8));
     }
@@ -3897,33 +3943,33 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_12gsl_multifit_1__init__(PyObject *__pyx
     __pyx_v_solver = values[7];
     __pyx_v_scaler = values[8];
     if (values[9]) {
-      __pyx_v_factor_up = __pyx_PyFloat_AsDouble(values[9]); if (unlikely((__pyx_v_factor_up == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 568, __pyx_L3_error)
+      __pyx_v_factor_up = __pyx_PyFloat_AsDouble(values[9]); if (unlikely((__pyx_v_factor_up == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 570, __pyx_L3_error)
     } else {
       __pyx_v_factor_up = ((double)((double)3.0));
     }
     if (values[10]) {
-      __pyx_v_factor_down = __pyx_PyFloat_AsDouble(values[10]); if (unlikely((__pyx_v_factor_down == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 569, __pyx_L3_error)
+      __pyx_v_factor_down = __pyx_PyFloat_AsDouble(values[10]); if (unlikely((__pyx_v_factor_down == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 571, __pyx_L3_error)
     } else {
       __pyx_v_factor_down = ((double)((double)2.0));
     }
     if (values[11]) {
-      __pyx_v_avmax = __pyx_PyFloat_AsDouble(values[11]); if (unlikely((__pyx_v_avmax == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 570, __pyx_L3_error)
+      __pyx_v_avmax = __pyx_PyFloat_AsDouble(values[11]); if (unlikely((__pyx_v_avmax == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 572, __pyx_L3_error)
     } else {
       __pyx_v_avmax = ((double)((double)0.75));
     }
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 558, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 12, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 560, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("lsqfit._gsl.gsl_multifit.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 560, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 562, __pyx_L1_error)
   __pyx_r = __pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(__pyx_self, __pyx_v_self, __pyx_v_x0, __pyx_v_n, __pyx_v_f, __pyx_v_tol, __pyx_v_maxit, __pyx_v_alg, __pyx_v_solver, __pyx_v_scaler, __pyx_v_factor_up, __pyx_v_factor_down, __pyx_v_avmax);
 
-  /* "lsqfit/_gsl.pyx":558
+  /* "lsqfit/_gsl.pyx":560
  *             message otherwise.
  *     """
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -3980,11 +4026,11 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __pyx_pybuffernd_x0.rcbuffer = &__pyx_pybuffer_x0;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 558, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 560, __pyx_L1_error)
   }
   __pyx_pybuffernd_x0.diminfo[0].strides = __pyx_pybuffernd_x0.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x0.diminfo[0].shape = __pyx_pybuffernd_x0.rcbuffer->pybuffer.shape[0];
 
-  /* "lsqfit/_gsl.pyx":573
+  /* "lsqfit/_gsl.pyx":575
  *         ):
  *         global _valder, _p_f, _pyerr
  *         cdef gsl_multifit_nlinear_type *T = gsl_multifit_nlinear_trust             # <<<<<<<<<<<<<<
@@ -3993,7 +4039,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_T = gsl_multifit_nlinear_trust;
 
-  /* "lsqfit/_gsl.pyx":577
+  /* "lsqfit/_gsl.pyx":579
  *         cdef gsl_multifit_nlinear_fdf fdf
  *         cdef gsl_multifit_nlinear_parameters fdf_params = \
  *             gsl_multifit_nlinear_default_parameters()             # <<<<<<<<<<<<<<
@@ -4002,16 +4048,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf_params = gsl_multifit_nlinear_default_parameters();
 
-  /* "lsqfit/_gsl.pyx":587
+  /* "lsqfit/_gsl.pyx":589
  *         cdef int status, info
  * 
  *         super(gsl_multifit, self).__init__()             # <<<<<<<<<<<<<<
  * 
  *         # standardize tol
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gsl_multifit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 587, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gsl_multifit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 589, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 587, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 589, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
@@ -4019,10 +4065,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __Pyx_GIVEREF(__pyx_v_self);
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_v_self);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 587, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 589, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 587, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 589, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4037,21 +4083,21 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 587, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 589, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":590
+  /* "lsqfit/_gsl.pyx":592
  * 
  *         # standardize tol
  *         if numpy.shape(tol) == ():             # <<<<<<<<<<<<<<
  *             tol = (tol, 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (1,):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 590, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 592, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 590, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 592, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -4066,23 +4112,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_v_tol) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_tol);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 590, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 592, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_empty_tuple, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 590, __pyx_L1_error)
+  __pyx_t_2 = PyObject_RichCompare(__pyx_t_1, __pyx_empty_tuple, Py_EQ); __Pyx_XGOTREF(__pyx_t_2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 592, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 590, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_2); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 592, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":591
+    /* "lsqfit/_gsl.pyx":593
  *         # standardize tol
  *         if numpy.shape(tol) == ():
  *             tol = (tol, 1e-10, 1e-10)             # <<<<<<<<<<<<<<
  *         elif numpy.shape(tol) == (1,):
  *             tol = (tol[0], 1e-10, 1e-10)
  */
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 591, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 593, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_v_tol);
     __Pyx_GIVEREF(__pyx_v_tol);
@@ -4096,7 +4142,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "lsqfit/_gsl.pyx":590
+    /* "lsqfit/_gsl.pyx":592
  * 
  *         # standardize tol
  *         if numpy.shape(tol) == ():             # <<<<<<<<<<<<<<
@@ -4106,16 +4152,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":592
+  /* "lsqfit/_gsl.pyx":594
  *         if numpy.shape(tol) == ():
  *             tol = (tol, 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (1,):             # <<<<<<<<<<<<<<
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 592, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numpy); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 592, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = NULL;
@@ -4130,25 +4176,25 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_t_2 = (__pyx_t_1) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_1, __pyx_v_tol) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_tol);
   __Pyx_XDECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 592, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_tuple__2, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 592, __pyx_L1_error)
+  __pyx_t_3 = PyObject_RichCompare(__pyx_t_2, __pyx_tuple__2, Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 592, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":593
+    /* "lsqfit/_gsl.pyx":595
  *             tol = (tol, 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (1,):
  *             tol = (tol[0], 1e-10, 1e-10)             # <<<<<<<<<<<<<<
  *         elif numpy.shape(tol) == (2,):
  *             tol = (tol[0], tol[1], 1e-10)
  */
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 593, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 595, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 593, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 595, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
@@ -4162,7 +4208,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_2);
     __pyx_t_2 = 0;
 
-    /* "lsqfit/_gsl.pyx":592
+    /* "lsqfit/_gsl.pyx":594
  *         if numpy.shape(tol) == ():
  *             tol = (tol, 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (1,):             # <<<<<<<<<<<<<<
@@ -4172,16 +4218,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":594
+  /* "lsqfit/_gsl.pyx":596
  *         elif numpy.shape(tol) == (1,):
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):             # <<<<<<<<<<<<<<
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_3 = NULL;
@@ -4196,27 +4242,27 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_t_2 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_3, __pyx_v_tol) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_tol);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 594, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_tuple__3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_2, __pyx_tuple__3, Py_EQ); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":595
+    /* "lsqfit/_gsl.pyx":597
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):
  *             tol = (tol[0], tol[1], 1e-10)             # <<<<<<<<<<<<<<
  *         elif numpy.shape(tol) != (3,):
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
  */
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 595, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 597, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 595, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 597, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 595, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 597, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_1);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -4230,7 +4276,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "lsqfit/_gsl.pyx":594
+    /* "lsqfit/_gsl.pyx":596
  *         elif numpy.shape(tol) == (1,):
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):             # <<<<<<<<<<<<<<
@@ -4240,16 +4286,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":596
+  /* "lsqfit/_gsl.pyx":598
  *         elif numpy.shape(tol) == (2,):
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):             # <<<<<<<<<<<<<<
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
  *         self.tol = tol
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_numpy); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_shape); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4264,29 +4310,29 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_t_3 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_2, __pyx_v_tol) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_v_tol);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 596, __pyx_L1_error)
+  if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyObject_RichCompare(__pyx_t_3, __pyx_tuple__4, Py_NE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_t_1 = PyObject_RichCompare(__pyx_t_3, __pyx_tuple__4, Py_NE); __Pyx_XGOTREF(__pyx_t_1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_IsTrue(__pyx_t_1); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (unlikely(__pyx_t_4)) {
 
-    /* "lsqfit/_gsl.pyx":597
+    /* "lsqfit/_gsl.pyx":599
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")             # <<<<<<<<<<<<<<
  *         self.tol = tol
  *         self.maxit = maxit
  */
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 597, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_builtin_ValueError, __pyx_tuple__5, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 599, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 597, __pyx_L1_error)
+    __PYX_ERR(0, 599, __pyx_L1_error)
 
-    /* "lsqfit/_gsl.pyx":596
+    /* "lsqfit/_gsl.pyx":598
  *         elif numpy.shape(tol) == (2,):
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):             # <<<<<<<<<<<<<<
@@ -4296,142 +4342,142 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   }
   __pyx_L3:;
 
-  /* "lsqfit/_gsl.pyx":598
+  /* "lsqfit/_gsl.pyx":600
  *         elif numpy.shape(tol) != (3,):
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
  *         self.tol = tol             # <<<<<<<<<<<<<<
  *         self.maxit = maxit
  *         self.alg = alg
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_v_tol) < 0) __PYX_ERR(0, 598, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_v_tol) < 0) __PYX_ERR(0, 600, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":599
+  /* "lsqfit/_gsl.pyx":601
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
  *         self.tol = tol
  *         self.maxit = maxit             # <<<<<<<<<<<<<<
  *         self.alg = alg
  *         self.solver = solver
  */
-  __pyx_t_1 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 599, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 601, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_1) < 0) __PYX_ERR(0, 599, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_1) < 0) __PYX_ERR(0, 601, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":600
+  /* "lsqfit/_gsl.pyx":602
  *         self.tol = tol
  *         self.maxit = maxit
  *         self.alg = alg             # <<<<<<<<<<<<<<
  *         self.solver = solver
  *         self.scaler = scaler
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 600, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 602, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":601
+  /* "lsqfit/_gsl.pyx":603
  *         self.maxit = maxit
  *         self.alg = alg
  *         self.solver = solver             # <<<<<<<<<<<<<<
  *         self.scaler = scaler
  *         self.factor_up = factor_up
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_solver, __pyx_v_solver) < 0) __PYX_ERR(0, 601, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_solver, __pyx_v_solver) < 0) __PYX_ERR(0, 603, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":602
+  /* "lsqfit/_gsl.pyx":604
  *         self.alg = alg
  *         self.solver = solver
  *         self.scaler = scaler             # <<<<<<<<<<<<<<
  *         self.factor_up = factor_up
  *         self.factor_down = factor_down
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_scaler, __pyx_v_scaler) < 0) __PYX_ERR(0, 602, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_scaler, __pyx_v_scaler) < 0) __PYX_ERR(0, 604, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":603
+  /* "lsqfit/_gsl.pyx":605
  *         self.solver = solver
  *         self.scaler = scaler
  *         self.factor_up = factor_up             # <<<<<<<<<<<<<<
  *         self.factor_down = factor_down
  *         self.avmax = avmax
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_factor_up); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 603, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_factor_up); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 605, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_factor_up, __pyx_t_1) < 0) __PYX_ERR(0, 603, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_factor_up, __pyx_t_1) < 0) __PYX_ERR(0, 605, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":604
+  /* "lsqfit/_gsl.pyx":606
  *         self.scaler = scaler
  *         self.factor_up = factor_up
  *         self.factor_down = factor_down             # <<<<<<<<<<<<<<
  *         self.avmax = avmax
  *         self.x0 = x0
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_factor_down); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 604, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_factor_down); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 606, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_factor_down, __pyx_t_1) < 0) __PYX_ERR(0, 604, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_factor_down, __pyx_t_1) < 0) __PYX_ERR(0, 606, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":605
+  /* "lsqfit/_gsl.pyx":607
  *         self.factor_up = factor_up
  *         self.factor_down = factor_down
  *         self.avmax = avmax             # <<<<<<<<<<<<<<
  *         self.x0 = x0
  *         self.n = n
  */
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_avmax); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 605, __pyx_L1_error)
+  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_avmax); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 607, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_avmax, __pyx_t_1) < 0) __PYX_ERR(0, 605, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_avmax, __pyx_t_1) < 0) __PYX_ERR(0, 607, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":606
+  /* "lsqfit/_gsl.pyx":608
  *         self.factor_down = factor_down
  *         self.avmax = avmax
  *         self.x0 = x0             # <<<<<<<<<<<<<<
  *         self.n = n
  *         self.error =  None
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 606, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 608, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":607
+  /* "lsqfit/_gsl.pyx":609
  *         self.avmax = avmax
  *         self.x0 = x0
  *         self.n = n             # <<<<<<<<<<<<<<
  *         self.error =  None
  *         self.description = "methods = {}/{}/{}".format(
  */
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 607, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_n); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 609, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_n, __pyx_t_1) < 0) __PYX_ERR(0, 607, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_n, __pyx_t_1) < 0) __PYX_ERR(0, 609, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":608
+  /* "lsqfit/_gsl.pyx":610
  *         self.x0 = x0
  *         self.n = n
  *         self.error =  None             # <<<<<<<<<<<<<<
  *         self.description = "methods = {}/{}/{}".format(
  *             self.alg, self.scaler, self.solver
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 608, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 610, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":609
+  /* "lsqfit/_gsl.pyx":611
  *         self.n = n
  *         self.error =  None
  *         self.description = "methods = {}/{}/{}".format(             # <<<<<<<<<<<<<<
  *             self.alg, self.scaler, self.solver
  *             )
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_methods, __pyx_n_s_format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 609, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_methods, __pyx_n_s_format); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 611, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "lsqfit/_gsl.pyx":610
+  /* "lsqfit/_gsl.pyx":612
  *         self.error =  None
  *         self.description = "methods = {}/{}/{}".format(
  *             self.alg, self.scaler, self.solver             # <<<<<<<<<<<<<<
  *             )
  *         if self.alg == 'lmaccel':
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 610, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_scaler); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 610, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_scaler); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_solver); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 610, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_solver); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 612, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __pyx_t_7 = NULL;
   __pyx_t_8 = 0;
@@ -4448,7 +4494,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   #if CYTHON_FAST_PYCALL
   if (PyFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[4] = {__pyx_t_7, __pyx_t_2, __pyx_t_5, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 3+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 609, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 3+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 611, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4459,7 +4505,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   #if CYTHON_FAST_PYCCALL
   if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
     PyObject *__pyx_temp[4] = {__pyx_t_7, __pyx_t_2, __pyx_t_5, __pyx_t_6};
-    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 3+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 609, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_8, 3+__pyx_t_8); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 611, __pyx_L1_error)
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
@@ -4468,7 +4514,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   } else
   #endif
   {
-    __pyx_t_9 = PyTuple_New(3+__pyx_t_8); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 609, __pyx_L1_error)
+    __pyx_t_9 = PyTuple_New(3+__pyx_t_8); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 611, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     if (__pyx_t_7) {
       __Pyx_GIVEREF(__pyx_t_7); PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_7); __pyx_t_7 = NULL;
@@ -4482,47 +4528,47 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __pyx_t_2 = 0;
     __pyx_t_5 = 0;
     __pyx_t_6 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 609, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_9, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 611, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   }
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-  /* "lsqfit/_gsl.pyx":609
+  /* "lsqfit/_gsl.pyx":611
  *         self.n = n
  *         self.error =  None
  *         self.description = "methods = {}/{}/{}".format(             # <<<<<<<<<<<<<<
  *             self.alg, self.scaler, self.solver
  *             )
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_1) < 0) __PYX_ERR(0, 609, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_1) < 0) __PYX_ERR(0, 611, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":612
+  /* "lsqfit/_gsl.pyx":614
  *             self.alg, self.scaler, self.solver
  *             )
  *         if self.alg == 'lmaccel':             # <<<<<<<<<<<<<<
  *             self.description += "    avmax = {}".format(self.avmax)
  *         p = len(x0)
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 612, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 614, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_lmaccel, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 612, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_1, __pyx_n_s_lmaccel, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 614, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":613
+    /* "lsqfit/_gsl.pyx":615
  *             )
  *         if self.alg == 'lmaccel':
  *             self.description += "    avmax = {}".format(self.avmax)             # <<<<<<<<<<<<<<
  *         p = len(x0)
  * 
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_description); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 613, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_description); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_avmax_2, __pyx_n_s_format); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 613, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_avmax_2, __pyx_n_s_format); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_avmax); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 613, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_avmax); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_5 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_9))) {
@@ -4537,17 +4583,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __pyx_t_3 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_9, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_9, __pyx_t_6);
     __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 613, __pyx_L1_error)
+    if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 613, __pyx_L1_error)
+    __pyx_t_9 = PyNumber_InPlaceAdd(__pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_9) < 0) __PYX_ERR(0, 613, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_9) < 0) __PYX_ERR(0, 615, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "lsqfit/_gsl.pyx":612
+    /* "lsqfit/_gsl.pyx":614
  *             self.alg, self.scaler, self.solver
  *             )
  *         if self.alg == 'lmaccel':             # <<<<<<<<<<<<<<
@@ -4556,30 +4602,30 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   }
 
-  /* "lsqfit/_gsl.pyx":614
+  /* "lsqfit/_gsl.pyx":616
  *         if self.alg == 'lmaccel':
  *             self.description += "    avmax = {}".format(self.avmax)
  *         p = len(x0)             # <<<<<<<<<<<<<<
  * 
  *         # choose algorithms fdf_params
  */
-  __pyx_t_10 = PyObject_Length(((PyObject *)__pyx_v_x0)); if (unlikely(__pyx_t_10 == ((Py_ssize_t)-1))) __PYX_ERR(0, 614, __pyx_L1_error)
+  __pyx_t_10 = PyObject_Length(((PyObject *)__pyx_v_x0)); if (unlikely(__pyx_t_10 == ((Py_ssize_t)-1))) __PYX_ERR(0, 616, __pyx_L1_error)
   __pyx_v_p = __pyx_t_10;
 
-  /* "lsqfit/_gsl.pyx":617
+  /* "lsqfit/_gsl.pyx":619
  * 
  *         # choose algorithms fdf_params
  *         if self.alg == 'lm':             # <<<<<<<<<<<<<<
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lm
  *         elif self.alg == 'lmaccel':
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 617, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 619, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_lm, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 617, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_lm, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 619, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":618
+    /* "lsqfit/_gsl.pyx":620
  *         # choose algorithms fdf_params
  *         if self.alg == 'lm':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lm             # <<<<<<<<<<<<<<
@@ -4588,7 +4634,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.trs = gsl_multifit_nlinear_trs_lm;
 
-    /* "lsqfit/_gsl.pyx":617
+    /* "lsqfit/_gsl.pyx":619
  * 
  *         # choose algorithms fdf_params
  *         if self.alg == 'lm':             # <<<<<<<<<<<<<<
@@ -4598,20 +4644,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L5;
   }
 
-  /* "lsqfit/_gsl.pyx":619
+  /* "lsqfit/_gsl.pyx":621
  *         if self.alg == 'lm':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lm
  *         elif self.alg == 'lmaccel':             # <<<<<<<<<<<<<<
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel
  *         elif self.alg == 'dogleg':
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 619, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 621, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_lmaccel, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 619, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_lmaccel, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 621, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":620
+    /* "lsqfit/_gsl.pyx":622
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lm
  *         elif self.alg == 'lmaccel':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel             # <<<<<<<<<<<<<<
@@ -4620,7 +4666,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel;
 
-    /* "lsqfit/_gsl.pyx":619
+    /* "lsqfit/_gsl.pyx":621
  *         if self.alg == 'lm':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lm
  *         elif self.alg == 'lmaccel':             # <<<<<<<<<<<<<<
@@ -4630,20 +4676,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L5;
   }
 
-  /* "lsqfit/_gsl.pyx":621
+  /* "lsqfit/_gsl.pyx":623
  *         elif self.alg == 'lmaccel':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel
  *         elif self.alg == 'dogleg':             # <<<<<<<<<<<<<<
  *             fdf_params.trs = gsl_multifit_nlinear_trs_dogleg
  *         elif self.alg == 'ddogleg':
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 621, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 623, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_dogleg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 621, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_dogleg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 623, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":622
+    /* "lsqfit/_gsl.pyx":624
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel
  *         elif self.alg == 'dogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_dogleg             # <<<<<<<<<<<<<<
@@ -4652,7 +4698,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.trs = gsl_multifit_nlinear_trs_dogleg;
 
-    /* "lsqfit/_gsl.pyx":621
+    /* "lsqfit/_gsl.pyx":623
  *         elif self.alg == 'lmaccel':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_lmaccel
  *         elif self.alg == 'dogleg':             # <<<<<<<<<<<<<<
@@ -4662,20 +4708,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L5;
   }
 
-  /* "lsqfit/_gsl.pyx":623
+  /* "lsqfit/_gsl.pyx":625
  *         elif self.alg == 'dogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_dogleg
  *         elif self.alg == 'ddogleg':             # <<<<<<<<<<<<<<
  *             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg
  *         elif self.alg == 'subspace2D':
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 623, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 625, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_ddogleg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 623, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_ddogleg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 625, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":624
+    /* "lsqfit/_gsl.pyx":626
  *             fdf_params.trs = gsl_multifit_nlinear_trs_dogleg
  *         elif self.alg == 'ddogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg             # <<<<<<<<<<<<<<
@@ -4684,7 +4730,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg;
 
-    /* "lsqfit/_gsl.pyx":623
+    /* "lsqfit/_gsl.pyx":625
  *         elif self.alg == 'dogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_dogleg
  *         elif self.alg == 'ddogleg':             # <<<<<<<<<<<<<<
@@ -4694,20 +4740,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L5;
   }
 
-  /* "lsqfit/_gsl.pyx":625
+  /* "lsqfit/_gsl.pyx":627
  *         elif self.alg == 'ddogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg
  *         elif self.alg == 'subspace2D':             # <<<<<<<<<<<<<<
  *             fdf_params.trs = gsl_multifit_nlinear_trs_subspace2D
  *         else:
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 625, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 627, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_subspace2D, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 625, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_t_9, __pyx_n_s_subspace2D, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 627, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   if (likely(__pyx_t_4)) {
 
-    /* "lsqfit/_gsl.pyx":626
+    /* "lsqfit/_gsl.pyx":628
  *             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg
  *         elif self.alg == 'subspace2D':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_subspace2D             # <<<<<<<<<<<<<<
@@ -4716,7 +4762,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.trs = gsl_multifit_nlinear_trs_subspace2D;
 
-    /* "lsqfit/_gsl.pyx":625
+    /* "lsqfit/_gsl.pyx":627
  *         elif self.alg == 'ddogleg':
  *             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg
  *         elif self.alg == 'subspace2D':             # <<<<<<<<<<<<<<
@@ -4726,7 +4772,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L5;
   }
 
-  /* "lsqfit/_gsl.pyx":628
+  /* "lsqfit/_gsl.pyx":630
  *             fdf_params.trs = gsl_multifit_nlinear_trs_subspace2D
  *         else:
  *             raise ValueError('unkown algorithm ' + str(alg))             # <<<<<<<<<<<<<<
@@ -4734,31 +4780,31 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  *         if scaler == 'more':
  */
   /*else*/ {
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 628, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_alg); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 630, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_algorithm, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 628, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_algorithm, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 630, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 628, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 630, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_9, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __PYX_ERR(0, 628, __pyx_L1_error)
+    __PYX_ERR(0, 630, __pyx_L1_error)
   }
   __pyx_L5:;
 
-  /* "lsqfit/_gsl.pyx":630
+  /* "lsqfit/_gsl.pyx":632
  *             raise ValueError('unkown algorithm ' + str(alg))
  * 
  *         if scaler == 'more':             # <<<<<<<<<<<<<<
  *             fdf_params.scale = gsl_multifit_nlinear_scale_more
  *         elif scaler == 'levenberg':
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_more, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 630, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_more, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 632, __pyx_L1_error)
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":631
+    /* "lsqfit/_gsl.pyx":633
  * 
  *         if scaler == 'more':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_more             # <<<<<<<<<<<<<<
@@ -4767,7 +4813,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.scale = gsl_multifit_nlinear_scale_more;
 
-    /* "lsqfit/_gsl.pyx":630
+    /* "lsqfit/_gsl.pyx":632
  *             raise ValueError('unkown algorithm ' + str(alg))
  * 
  *         if scaler == 'more':             # <<<<<<<<<<<<<<
@@ -4777,17 +4823,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L6;
   }
 
-  /* "lsqfit/_gsl.pyx":632
+  /* "lsqfit/_gsl.pyx":634
  *         if scaler == 'more':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_more
  *         elif scaler == 'levenberg':             # <<<<<<<<<<<<<<
  *             fdf_params.scale = gsl_multifit_nlinear_scale_levenberg
  *         elif scaler == 'marquardt':
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_levenberg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 632, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_levenberg, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 634, __pyx_L1_error)
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":633
+    /* "lsqfit/_gsl.pyx":635
  *             fdf_params.scale = gsl_multifit_nlinear_scale_more
  *         elif scaler == 'levenberg':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_levenberg             # <<<<<<<<<<<<<<
@@ -4796,7 +4842,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.scale = gsl_multifit_nlinear_scale_levenberg;
 
-    /* "lsqfit/_gsl.pyx":632
+    /* "lsqfit/_gsl.pyx":634
  *         if scaler == 'more':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_more
  *         elif scaler == 'levenberg':             # <<<<<<<<<<<<<<
@@ -4806,17 +4852,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L6;
   }
 
-  /* "lsqfit/_gsl.pyx":634
+  /* "lsqfit/_gsl.pyx":636
  *         elif scaler == 'levenberg':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_levenberg
  *         elif scaler == 'marquardt':             # <<<<<<<<<<<<<<
  *             fdf_params.scale = gsl_multifit_nlinear_scale_marquardt
  *         else:
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_marquardt, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 634, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_scaler, __pyx_n_s_marquardt, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 636, __pyx_L1_error)
   if (likely(__pyx_t_4)) {
 
-    /* "lsqfit/_gsl.pyx":635
+    /* "lsqfit/_gsl.pyx":637
  *             fdf_params.scale = gsl_multifit_nlinear_scale_levenberg
  *         elif scaler == 'marquardt':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_marquardt             # <<<<<<<<<<<<<<
@@ -4825,7 +4871,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.scale = gsl_multifit_nlinear_scale_marquardt;
 
-    /* "lsqfit/_gsl.pyx":634
+    /* "lsqfit/_gsl.pyx":636
  *         elif scaler == 'levenberg':
  *             fdf_params.scale = gsl_multifit_nlinear_scale_levenberg
  *         elif scaler == 'marquardt':             # <<<<<<<<<<<<<<
@@ -4835,7 +4881,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L6;
   }
 
-  /* "lsqfit/_gsl.pyx":637
+  /* "lsqfit/_gsl.pyx":639
  *             fdf_params.scale = gsl_multifit_nlinear_scale_marquardt
  *         else:
  *             raise ValueError('unkown scaler ' + str(scaler))             # <<<<<<<<<<<<<<
@@ -4843,31 +4889,31 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  *         if solver == 'qr':
  */
   /*else*/ {
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_scaler); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 637, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_scaler); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 639, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_scaler, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 637, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_scaler, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 639, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 637, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 639, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_9, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __PYX_ERR(0, 637, __pyx_L1_error)
+    __PYX_ERR(0, 639, __pyx_L1_error)
   }
   __pyx_L6:;
 
-  /* "lsqfit/_gsl.pyx":639
+  /* "lsqfit/_gsl.pyx":641
  *             raise ValueError('unkown scaler ' + str(scaler))
  * 
  *         if solver == 'qr':             # <<<<<<<<<<<<<<
  *             fdf_params.solver = gsl_multifit_nlinear_solver_qr
  *         elif solver == 'cholesky':
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_qr, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 639, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_qr, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 641, __pyx_L1_error)
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":640
+    /* "lsqfit/_gsl.pyx":642
  * 
  *         if solver == 'qr':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_qr             # <<<<<<<<<<<<<<
@@ -4876,7 +4922,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.solver = gsl_multifit_nlinear_solver_qr;
 
-    /* "lsqfit/_gsl.pyx":639
+    /* "lsqfit/_gsl.pyx":641
  *             raise ValueError('unkown scaler ' + str(scaler))
  * 
  *         if solver == 'qr':             # <<<<<<<<<<<<<<
@@ -4886,17 +4932,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":641
+  /* "lsqfit/_gsl.pyx":643
  *         if solver == 'qr':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_qr
  *         elif solver == 'cholesky':             # <<<<<<<<<<<<<<
  *             fdf_params.solver = gsl_multifit_nlinear_solver_cholesky
  *         elif solver == 'svd':
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_cholesky, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 641, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_cholesky, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 643, __pyx_L1_error)
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":642
+    /* "lsqfit/_gsl.pyx":644
  *             fdf_params.solver = gsl_multifit_nlinear_solver_qr
  *         elif solver == 'cholesky':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_cholesky             # <<<<<<<<<<<<<<
@@ -4905,7 +4951,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.solver = gsl_multifit_nlinear_solver_cholesky;
 
-    /* "lsqfit/_gsl.pyx":641
+    /* "lsqfit/_gsl.pyx":643
  *         if solver == 'qr':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_qr
  *         elif solver == 'cholesky':             # <<<<<<<<<<<<<<
@@ -4915,17 +4961,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":643
+  /* "lsqfit/_gsl.pyx":645
  *         elif solver == 'cholesky':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_cholesky
  *         elif solver == 'svd':             # <<<<<<<<<<<<<<
  *             fdf_params.solver = gsl_multifit_nlinear_solver_svd
  *         else:
  */
-  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_svd, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 643, __pyx_L1_error)
+  __pyx_t_4 = (__Pyx_PyString_Equals(__pyx_v_solver, __pyx_n_s_svd, Py_EQ)); if (unlikely(__pyx_t_4 < 0)) __PYX_ERR(0, 645, __pyx_L1_error)
   if (likely(__pyx_t_4)) {
 
-    /* "lsqfit/_gsl.pyx":644
+    /* "lsqfit/_gsl.pyx":646
  *             fdf_params.solver = gsl_multifit_nlinear_solver_cholesky
  *         elif solver == 'svd':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_svd             # <<<<<<<<<<<<<<
@@ -4934,7 +4980,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     __pyx_v_fdf_params.solver = gsl_multifit_nlinear_solver_svd;
 
-    /* "lsqfit/_gsl.pyx":643
+    /* "lsqfit/_gsl.pyx":645
  *         elif solver == 'cholesky':
  *             fdf_params.solver = gsl_multifit_nlinear_solver_cholesky
  *         elif solver == 'svd':             # <<<<<<<<<<<<<<
@@ -4944,7 +4990,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":646
+  /* "lsqfit/_gsl.pyx":648
  *             fdf_params.solver = gsl_multifit_nlinear_solver_svd
  *         else:
  *             raise ValueError('unkown solver ' + str(solver))             # <<<<<<<<<<<<<<
@@ -4952,60 +4998,60 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  *         # set other parameters
  */
   /*else*/ {
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_solver); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 646, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_solver); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 648, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_solver, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 646, __pyx_L1_error)
+    __pyx_t_3 = PyNumber_Add(__pyx_kp_s_unkown_solver, __pyx_t_9); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 648, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 646, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 648, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_Raise(__pyx_t_9, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __PYX_ERR(0, 646, __pyx_L1_error)
+    __PYX_ERR(0, 648, __pyx_L1_error)
   }
   __pyx_L7:;
 
-  /* "lsqfit/_gsl.pyx":649
+  /* "lsqfit/_gsl.pyx":651
  * 
  *         # set other parameters
  *         fdf_params.factor_up = self.factor_up             # <<<<<<<<<<<<<<
  *         fdf_params.factor_down = self.factor_down
  *         fdf_params.avmax = self.avmax
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_factor_up); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 649, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_factor_up); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 651, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 649, __pyx_L1_error)
+  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 651, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_v_fdf_params.factor_up = __pyx_t_11;
 
-  /* "lsqfit/_gsl.pyx":650
+  /* "lsqfit/_gsl.pyx":652
  *         # set other parameters
  *         fdf_params.factor_up = self.factor_up
  *         fdf_params.factor_down = self.factor_down             # <<<<<<<<<<<<<<
  *         fdf_params.avmax = self.avmax
  * 
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_factor_down); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 650, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_factor_down); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 652, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 650, __pyx_L1_error)
+  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 652, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_v_fdf_params.factor_down = __pyx_t_11;
 
-  /* "lsqfit/_gsl.pyx":651
+  /* "lsqfit/_gsl.pyx":653
  *         fdf_params.factor_up = self.factor_up
  *         fdf_params.factor_down = self.factor_down
  *         fdf_params.avmax = self.avmax             # <<<<<<<<<<<<<<
  * 
  *         # set up fit function
  */
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_avmax); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 651, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_avmax); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 653, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 651, __pyx_L1_error)
+  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 653, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_v_fdf_params.avmax = __pyx_t_11;
 
-  /* "lsqfit/_gsl.pyx":654
+  /* "lsqfit/_gsl.pyx":656
  * 
  *         # set up fit function
  *         fdf.f = &_c_f             # <<<<<<<<<<<<<<
@@ -5014,7 +5060,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.f = (&__pyx_f_6lsqfit_4_gsl__c_f);
 
-  /* "lsqfit/_gsl.pyx":655
+  /* "lsqfit/_gsl.pyx":657
  *         # set up fit function
  *         fdf.f = &_c_f
  *         fdf.df = &_c_df             # <<<<<<<<<<<<<<
@@ -5023,7 +5069,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.df = (&__pyx_f_6lsqfit_4_gsl__c_df);
 
-  /* "lsqfit/_gsl.pyx":656
+  /* "lsqfit/_gsl.pyx":658
  *         fdf.f = &_c_f
  *         fdf.df = &_c_df
  *         fdf.fvv = NULL             # <<<<<<<<<<<<<<
@@ -5032,7 +5078,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.fvv = NULL;
 
-  /* "lsqfit/_gsl.pyx":657
+  /* "lsqfit/_gsl.pyx":659
  *         fdf.df = &_c_df
  *         fdf.fvv = NULL
  *         fdf.p = p             # <<<<<<<<<<<<<<
@@ -5041,7 +5087,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.p = __pyx_v_p;
 
-  /* "lsqfit/_gsl.pyx":658
+  /* "lsqfit/_gsl.pyx":660
  *         fdf.fvv = NULL
  *         fdf.p = p
  *         fdf.n = n             # <<<<<<<<<<<<<<
@@ -5050,7 +5096,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.n = __pyx_v_n;
 
-  /* "lsqfit/_gsl.pyx":659
+  /* "lsqfit/_gsl.pyx":661
  *         fdf.p = p
  *         fdf.n = n
  *         fdf.params = NULL             # <<<<<<<<<<<<<<
@@ -5059,47 +5105,47 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_fdf.params = NULL;
 
-  /* "lsqfit/_gsl.pyx":660
+  /* "lsqfit/_gsl.pyx":662
  *         fdf.n = n
  *         fdf.params = NULL
  *         old_p_f = _p_f             # <<<<<<<<<<<<<<
  *         _p_f = f
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_p_f); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 660, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_p_f); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 662, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __pyx_v_old_p_f = __pyx_t_9;
   __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":661
+  /* "lsqfit/_gsl.pyx":663
  *         fdf.params = NULL
  *         old_p_f = _p_f
  *         _p_f = f             # <<<<<<<<<<<<<<
  * 
  *         # allocate parameter and fitter workspaces
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_f) < 0) __PYX_ERR(0, 661, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_f) < 0) __PYX_ERR(0, 663, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":664
+  /* "lsqfit/_gsl.pyx":666
  * 
  *         # allocate parameter and fitter workspaces
  *         _valder = gvar.valder(p * [0.0])             # <<<<<<<<<<<<<<
  *         w = gsl_multifit_nlinear_alloc (T, &fdf_params, n, p)
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_gvar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 664, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_gvar); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_valder); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 664, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_valder); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_p); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 664, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_FromSize_t(__pyx_v_p); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_6 = PyList_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 664, __pyx_L1_error)
+  __pyx_t_6 = PyList_New(1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_INCREF(__pyx_float_0_0);
   __Pyx_GIVEREF(__pyx_float_0_0);
   PyList_SET_ITEM(__pyx_t_6, 0, __pyx_float_0_0);
-  __pyx_t_5 = PyNumber_Multiply(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 664, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Multiply(__pyx_t_3, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -5116,13 +5162,13 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __pyx_t_9 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_t_5) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_5);
   __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 664, __pyx_L1_error)
+  if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_valder_2, __pyx_t_9) < 0) __PYX_ERR(0, 664, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_valder_2, __pyx_t_9) < 0) __PYX_ERR(0, 666, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":665
+  /* "lsqfit/_gsl.pyx":667
  *         # allocate parameter and fitter workspaces
  *         _valder = gvar.valder(p * [0.0])
  *         w = gsl_multifit_nlinear_alloc (T, &fdf_params, n, p)             # <<<<<<<<<<<<<<
@@ -5131,7 +5177,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_w = gsl_multifit_nlinear_alloc(__pyx_v_T, (&__pyx_v_fdf_params), __pyx_v_n, __pyx_v_p);
 
-  /* "lsqfit/_gsl.pyx":668
+  /* "lsqfit/_gsl.pyx":670
  * 
  *         # initialize and run fit
  *         x0v = array2vector(x0)             # <<<<<<<<<<<<<<
@@ -5140,7 +5186,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_x0v = __pyx_f_6lsqfit_4_gsl_array2vector(((PyArrayObject *)__pyx_v_x0));
 
-  /* "lsqfit/_gsl.pyx":669
+  /* "lsqfit/_gsl.pyx":671
  *         # initialize and run fit
  *         x0v = array2vector(x0)
  *         gsl_multifit_nlinear_init (x0v, &fdf, w)             # <<<<<<<<<<<<<<
@@ -5149,27 +5195,27 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   (void)(gsl_multifit_nlinear_init(__pyx_v_x0v, (&__pyx_v_fdf), __pyx_v_w));
 
-  /* "lsqfit/_gsl.pyx":670
+  /* "lsqfit/_gsl.pyx":672
  *         x0v = array2vector(x0)
  *         gsl_multifit_nlinear_init (x0v, &fdf, w)
  *         status = gsl_multifit_nlinear_driver(maxit, tol[0], tol[1], tol[2],             # <<<<<<<<<<<<<<
  *                                        NULL, NULL, &info, w)
  *         # check for Python errors; record other errors
  */
-  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_11 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_11 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tol, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_13 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_13 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 670, __pyx_L1_error)
+  __pyx_t_13 = __pyx_PyFloat_AsDouble(__pyx_t_9); if (unlikely((__pyx_t_13 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 672, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":671
+  /* "lsqfit/_gsl.pyx":673
  *         gsl_multifit_nlinear_init (x0v, &fdf, w)
  *         status = gsl_multifit_nlinear_driver(maxit, tol[0], tol[1], tol[2],
  *                                        NULL, NULL, &info, w)             # <<<<<<<<<<<<<<
@@ -5178,63 +5224,63 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_status = gsl_multifit_nlinear_driver(__pyx_v_maxit, __pyx_t_11, __pyx_t_12, __pyx_t_13, NULL, NULL, (&__pyx_v_info), __pyx_v_w);
 
-  /* "lsqfit/_gsl.pyx":673
+  /* "lsqfit/_gsl.pyx":675
  *                                        NULL, NULL, &info, w)
  *         # check for Python errors; record other errors
  *         if _pyerr is not None:             # <<<<<<<<<<<<<<
  *             tmp, _pyerr = _pyerr, None
  *             if hasattr(tmp[1],'with_traceback'):
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 673, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 675, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
   __pyx_t_4 = (__pyx_t_9 != Py_None);
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __pyx_t_14 = (__pyx_t_4 != 0);
   if (__pyx_t_14) {
 
-    /* "lsqfit/_gsl.pyx":674
+    /* "lsqfit/_gsl.pyx":676
  *         # check for Python errors; record other errors
  *         if _pyerr is not None:
  *             tmp, _pyerr = _pyerr, None             # <<<<<<<<<<<<<<
  *             if hasattr(tmp[1],'with_traceback'):
  *                 raise tmp[1].with_traceback(tmp[2]) # python3
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 674, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 676, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __pyx_t_1 = Py_None;
     __Pyx_INCREF(__pyx_t_1);
     __pyx_v_tmp = __pyx_t_9;
     __pyx_t_9 = 0;
-    if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_1) < 0) __PYX_ERR(0, 674, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_1) < 0) __PYX_ERR(0, 676, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-    /* "lsqfit/_gsl.pyx":675
+    /* "lsqfit/_gsl.pyx":677
  *         if _pyerr is not None:
  *             tmp, _pyerr = _pyerr, None
  *             if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
  *                 raise tmp[1].with_traceback(tmp[2]) # python3
  *             else:
  */
-    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 675, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 677, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_14 = __Pyx_HasAttr(__pyx_t_1, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_14 == ((int)-1))) __PYX_ERR(0, 675, __pyx_L1_error)
+    __pyx_t_14 = __Pyx_HasAttr(__pyx_t_1, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_14 == ((int)-1))) __PYX_ERR(0, 677, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_4 = (__pyx_t_14 != 0);
     if (unlikely(__pyx_t_4)) {
 
-      /* "lsqfit/_gsl.pyx":676
+      /* "lsqfit/_gsl.pyx":678
  *             tmp, _pyerr = _pyerr, None
  *             if hasattr(tmp[1],'with_traceback'):
  *                 raise tmp[1].with_traceback(tmp[2]) # python3             # <<<<<<<<<<<<<<
  *             else:
  *                 raise tmp[0], tmp[1].args, tmp[2]   # python2
  */
-      __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 676, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 678, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
-      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 676, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 678, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 676, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 678, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       __pyx_t_6 = NULL;
       if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_5))) {
@@ -5249,14 +5295,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
       __pyx_t_1 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_6, __pyx_t_9) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_9);
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 676, __pyx_L1_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 678, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
       __Pyx_Raise(__pyx_t_1, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __PYX_ERR(0, 676, __pyx_L1_error)
+      __PYX_ERR(0, 678, __pyx_L1_error)
 
-      /* "lsqfit/_gsl.pyx":675
+      /* "lsqfit/_gsl.pyx":677
  *         if _pyerr is not None:
  *             tmp, _pyerr = _pyerr, None
  *             if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
@@ -5265,7 +5311,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
     }
 
-    /* "lsqfit/_gsl.pyx":678
+    /* "lsqfit/_gsl.pyx":680
  *                 raise tmp[1].with_traceback(tmp[2]) # python3
  *             else:
  *                 raise tmp[0], tmp[1].args, tmp[2]   # python2             # <<<<<<<<<<<<<<
@@ -5273,23 +5319,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  *             self.error = (status, str(gsl_strerror(status)))
  */
     /*else*/ {
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 678, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 680, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 678, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 680, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_args); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 678, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_args); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 680, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 678, __pyx_L1_error)
+      __pyx_t_5 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 680, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_1, __pyx_t_9, __pyx_t_5, 0);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __PYX_ERR(0, 678, __pyx_L1_error)
+      __PYX_ERR(0, 680, __pyx_L1_error)
     }
 
-    /* "lsqfit/_gsl.pyx":673
+    /* "lsqfit/_gsl.pyx":675
  *                                        NULL, NULL, &info, w)
  *         # check for Python errors; record other errors
  *         if _pyerr is not None:             # <<<<<<<<<<<<<<
@@ -5298,7 +5344,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   }
 
-  /* "lsqfit/_gsl.pyx":679
+  /* "lsqfit/_gsl.pyx":681
  *             else:
  *                 raise tmp[0], tmp[1].args, tmp[2]   # python2
  *         elif status:             # <<<<<<<<<<<<<<
@@ -5308,21 +5354,21 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __pyx_t_4 = (__pyx_v_status != 0);
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":680
+    /* "lsqfit/_gsl.pyx":682
  *                 raise tmp[0], tmp[1].args, tmp[2]   # python2
  *         elif status:
  *             self.error = (status, str(gsl_strerror(status)))             # <<<<<<<<<<<<<<
  * 
  *         # identify stopping criterion
  */
-    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 680, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 682, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_9 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 680, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 682, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 680, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_9); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 682, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 680, __pyx_L1_error)
+    __pyx_t_9 = PyTuple_New(2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 682, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_GIVEREF(__pyx_t_5);
     PyTuple_SET_ITEM(__pyx_t_9, 0, __pyx_t_5);
@@ -5330,10 +5376,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     PyTuple_SET_ITEM(__pyx_t_9, 1, __pyx_t_1);
     __pyx_t_5 = 0;
     __pyx_t_1 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_9) < 0) __PYX_ERR(0, 680, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_9) < 0) __PYX_ERR(0, 682, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "lsqfit/_gsl.pyx":679
+    /* "lsqfit/_gsl.pyx":681
  *             else:
  *                 raise tmp[0], tmp[1].args, tmp[2]   # python2
  *         elif status:             # <<<<<<<<<<<<<<
@@ -5342,12 +5388,12 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   }
 
-  /* "lsqfit/_gsl.pyx":683
+  /* "lsqfit/_gsl.pyx":685
  * 
  *         # identify stopping criterion
  *         if info >= 0 and info <= 3:             # <<<<<<<<<<<<<<
  *             self.stopping_criterion = info
- *         elif info == 30:
+ *         elif info == 30:        # GSL_ETOLX - dx too small
  */
   __pyx_t_14 = ((__pyx_v_info >= 0) != 0);
   if (__pyx_t_14) {
@@ -5360,128 +5406,157 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __pyx_L11_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":684
+    /* "lsqfit/_gsl.pyx":686
  *         # identify stopping criterion
  *         if info >= 0 and info <= 3:
  *             self.stopping_criterion = info             # <<<<<<<<<<<<<<
- *         elif info == 30:
+ *         elif info == 30:        # GSL_ETOLX - dx too small
  *             self.stopping_criterion = 1
  */
-    __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_info); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 684, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyInt_From_int(__pyx_v_info); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 686, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_t_9) < 0) __PYX_ERR(0, 684, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_t_9) < 0) __PYX_ERR(0, 686, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "lsqfit/_gsl.pyx":683
+    /* "lsqfit/_gsl.pyx":685
  * 
  *         # identify stopping criterion
  *         if info >= 0 and info <= 3:             # <<<<<<<<<<<<<<
  *             self.stopping_criterion = info
- *         elif info == 30:
- */
-    goto __pyx_L10;
-  }
-
-  /* "lsqfit/_gsl.pyx":685
- *         if info >= 0 and info <= 3:
- *             self.stopping_criterion = info
- *         elif info == 30:             # <<<<<<<<<<<<<<
- *             self.stopping_criterion = 1
- *         elif info == 31:
- */
-  __pyx_t_4 = ((__pyx_v_info == 30) != 0);
-  if (__pyx_t_4) {
-
-    /* "lsqfit/_gsl.pyx":686
- *             self.stopping_criterion = info
- *         elif info == 30:
- *             self.stopping_criterion = 1             # <<<<<<<<<<<<<<
- *         elif info == 31:
- *             self.stopping_criterion = 2
- */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_1) < 0) __PYX_ERR(0, 686, __pyx_L1_error)
-
-    /* "lsqfit/_gsl.pyx":685
- *         if info >= 0 and info <= 3:
- *             self.stopping_criterion = info
- *         elif info == 30:             # <<<<<<<<<<<<<<
- *             self.stopping_criterion = 1
- *         elif info == 31:
+ *         elif info == 30:        # GSL_ETOLX - dx too small
  */
     goto __pyx_L10;
   }
 
   /* "lsqfit/_gsl.pyx":687
- *         elif info == 30:
+ *         if info >= 0 and info <= 3:
+ *             self.stopping_criterion = info
+ *         elif info == 30:        # GSL_ETOLX - dx too small             # <<<<<<<<<<<<<<
  *             self.stopping_criterion = 1
- *         elif info == 31:             # <<<<<<<<<<<<<<
- *             self.stopping_criterion = 2
- *         elif info == 29:
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
  */
-  __pyx_t_4 = ((__pyx_v_info == 31) != 0);
+  __pyx_t_4 = ((__pyx_v_info == 30) != 0);
   if (__pyx_t_4) {
 
     /* "lsqfit/_gsl.pyx":688
- *             self.stopping_criterion = 1
- *         elif info == 31:
- *             self.stopping_criterion = 2             # <<<<<<<<<<<<<<
- *         elif info == 29:
- *             self.stopping_criterion = 3
+ *             self.stopping_criterion = info
+ *         elif info == 30:        # GSL_ETOLX - dx too small
+ *             self.stopping_criterion = 1             # <<<<<<<<<<<<<<
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
+ *             self.stopping_criterion = 2
  */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_2) < 0) __PYX_ERR(0, 688, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_1) < 0) __PYX_ERR(0, 688, __pyx_L1_error)
 
     /* "lsqfit/_gsl.pyx":687
- *         elif info == 30:
+ *         if info >= 0 and info <= 3:
+ *             self.stopping_criterion = info
+ *         elif info == 30:        # GSL_ETOLX - dx too small             # <<<<<<<<<<<<<<
  *             self.stopping_criterion = 1
- *         elif info == 31:             # <<<<<<<<<<<<<<
- *             self.stopping_criterion = 2
- *         elif info == 29:
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
  */
     goto __pyx_L10;
   }
 
   /* "lsqfit/_gsl.pyx":689
- *         elif info == 31:
+ *         elif info == 30:        # GSL_ETOLX - dx too small
+ *             self.stopping_criterion = 1
+ *         elif info == 31:        # GSL_ETOLG - gradient too small             # <<<<<<<<<<<<<<
  *             self.stopping_criterion = 2
- *         elif info == 29:             # <<<<<<<<<<<<<<
+ *         elif info == 29:        # GSL_ETOLF - df too small
+ */
+  __pyx_t_4 = ((__pyx_v_info == 31) != 0);
+  if (__pyx_t_4) {
+
+    /* "lsqfit/_gsl.pyx":690
+ *             self.stopping_criterion = 1
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
+ *             self.stopping_criterion = 2             # <<<<<<<<<<<<<<
+ *         elif info == 29:        # GSL_ETOLF - df too small
  *             self.stopping_criterion = 3
- *         else:
+ */
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_2) < 0) __PYX_ERR(0, 690, __pyx_L1_error)
+
+    /* "lsqfit/_gsl.pyx":689
+ *         elif info == 30:        # GSL_ETOLX - dx too small
+ *             self.stopping_criterion = 1
+ *         elif info == 31:        # GSL_ETOLG - gradient too small             # <<<<<<<<<<<<<<
+ *             self.stopping_criterion = 2
+ *         elif info == 29:        # GSL_ETOLF - df too small
+ */
+    goto __pyx_L10;
+  }
+
+  /* "lsqfit/_gsl.pyx":691
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
+ *             self.stopping_criterion = 2
+ *         elif info == 29:        # GSL_ETOLF - df too small             # <<<<<<<<<<<<<<
+ *             self.stopping_criterion = 3
+ *         elif info == 27:        # GSL_ENOPROG - can't get started
  */
   __pyx_t_4 = ((__pyx_v_info == 29) != 0);
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":690
+    /* "lsqfit/_gsl.pyx":692
  *             self.stopping_criterion = 2
- *         elif info == 29:
+ *         elif info == 29:        # GSL_ETOLF - df too small
  *             self.stopping_criterion = 3             # <<<<<<<<<<<<<<
+ *         elif info == 27:        # GSL_ENOPROG - can't get started
+ *             self.stopping_criterion = 4
+ */
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_3) < 0) __PYX_ERR(0, 692, __pyx_L1_error)
+
+    /* "lsqfit/_gsl.pyx":691
+ *         elif info == 31:        # GSL_ETOLG - gradient too small
+ *             self.stopping_criterion = 2
+ *         elif info == 29:        # GSL_ETOLF - df too small             # <<<<<<<<<<<<<<
+ *             self.stopping_criterion = 3
+ *         elif info == 27:        # GSL_ENOPROG - can't get started
+ */
+    goto __pyx_L10;
+  }
+
+  /* "lsqfit/_gsl.pyx":693
+ *         elif info == 29:        # GSL_ETOLF - df too small
+ *             self.stopping_criterion = 3
+ *         elif info == 27:        # GSL_ENOPROG - can't get started             # <<<<<<<<<<<<<<
+ *             self.stopping_criterion = 4
+ *         else:
+ */
+  __pyx_t_4 = ((__pyx_v_info == 27) != 0);
+  if (__pyx_t_4) {
+
+    /* "lsqfit/_gsl.pyx":694
+ *             self.stopping_criterion = 3
+ *         elif info == 27:        # GSL_ENOPROG - can't get started
+ *             self.stopping_criterion = 4             # <<<<<<<<<<<<<<
  *         else:
  *             self.stopping_criterion = 0
  */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_3) < 0) __PYX_ERR(0, 690, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_4) < 0) __PYX_ERR(0, 694, __pyx_L1_error)
 
-    /* "lsqfit/_gsl.pyx":689
- *         elif info == 31:
- *             self.stopping_criterion = 2
- *         elif info == 29:             # <<<<<<<<<<<<<<
+    /* "lsqfit/_gsl.pyx":693
+ *         elif info == 29:        # GSL_ETOLF - df too small
  *             self.stopping_criterion = 3
+ *         elif info == 27:        # GSL_ENOPROG - can't get started             # <<<<<<<<<<<<<<
+ *             self.stopping_criterion = 4
  *         else:
  */
     goto __pyx_L10;
   }
 
-  /* "lsqfit/_gsl.pyx":692
- *             self.stopping_criterion = 3
+  /* "lsqfit/_gsl.pyx":696
+ *             self.stopping_criterion = 4
  *         else:
  *             self.stopping_criterion = 0             # <<<<<<<<<<<<<<
  * 
  *         # calculate covariance matrix for fit output
  */
   /*else*/ {
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_0) < 0) __PYX_ERR(0, 692, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_int_0) < 0) __PYX_ERR(0, 696, __pyx_L1_error)
   }
   __pyx_L10:;
 
-  /* "lsqfit/_gsl.pyx":695
+  /* "lsqfit/_gsl.pyx":699
  * 
  *         # calculate covariance matrix for fit output
  *         J = gsl_multifit_nlinear_jac(w)             # <<<<<<<<<<<<<<
@@ -5490,7 +5565,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_J = gsl_multifit_nlinear_jac(__pyx_v_w);
 
-  /* "lsqfit/_gsl.pyx":696
+  /* "lsqfit/_gsl.pyx":700
  *         # calculate covariance matrix for fit output
  *         J = gsl_multifit_nlinear_jac(w)
  *         covar = gsl_matrix_alloc(p, p)             # <<<<<<<<<<<<<<
@@ -5499,7 +5574,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   __pyx_v_covar = gsl_matrix_alloc(__pyx_v_p, __pyx_v_p);
 
-  /* "lsqfit/_gsl.pyx":697
+  /* "lsqfit/_gsl.pyx":701
  *         J = gsl_multifit_nlinear_jac(w)
  *         covar = gsl_matrix_alloc(p, p)
  *         gsl_multifit_nlinear_covar (J, 0.0, covar)             # <<<<<<<<<<<<<<
@@ -5508,67 +5583,67 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   (void)(gsl_multifit_nlinear_covar(__pyx_v_J, 0.0, __pyx_v_covar));
 
-  /* "lsqfit/_gsl.pyx":700
+  /* "lsqfit/_gsl.pyx":704
  * 
  *         # convert results to Python
  *         self.cov = matrix2array(covar)             # <<<<<<<<<<<<<<
  *         self.x = vector2array(gsl_multifit_nlinear_position(w))
  *         self.f = vector2array(gsl_multifit_nlinear_residual(w))
  */
-  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_covar)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 700, __pyx_L1_error)
+  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_covar)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 704, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_cov, __pyx_t_9) < 0) __PYX_ERR(0, 700, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_cov, __pyx_t_9) < 0) __PYX_ERR(0, 704, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":701
+  /* "lsqfit/_gsl.pyx":705
  *         # convert results to Python
  *         self.cov = matrix2array(covar)
  *         self.x = vector2array(gsl_multifit_nlinear_position(w))             # <<<<<<<<<<<<<<
  *         self.f = vector2array(gsl_multifit_nlinear_residual(w))
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
  */
-  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multifit_nlinear_position(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 701, __pyx_L1_error)
+  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multifit_nlinear_position(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 705, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_9) < 0) __PYX_ERR(0, 701, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_9) < 0) __PYX_ERR(0, 705, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":702
+  /* "lsqfit/_gsl.pyx":706
  *         self.cov = matrix2array(covar)
  *         self.x = vector2array(gsl_multifit_nlinear_position(w))
  *         self.f = vector2array(gsl_multifit_nlinear_residual(w))             # <<<<<<<<<<<<<<
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
  *         self.nit = gsl_multifit_nlinear_niter(w)
  */
-  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multifit_nlinear_residual(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 702, __pyx_L1_error)
+  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multifit_nlinear_residual(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 706, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_9) < 0) __PYX_ERR(0, 702, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_9) < 0) __PYX_ERR(0, 706, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":703
+  /* "lsqfit/_gsl.pyx":707
  *         self.x = vector2array(gsl_multifit_nlinear_position(w))
  *         self.f = vector2array(gsl_multifit_nlinear_residual(w))
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))             # <<<<<<<<<<<<<<
  *         self.nit = gsl_multifit_nlinear_niter(w)
  *         if status == 11 and self.nit < self.maxit:
  */
-  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(gsl_multifit_nlinear_jac(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 703, __pyx_L1_error)
+  __pyx_t_9 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(gsl_multifit_nlinear_jac(__pyx_v_w))); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 707, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_J, __pyx_t_9) < 0) __PYX_ERR(0, 703, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_J, __pyx_t_9) < 0) __PYX_ERR(0, 707, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":704
+  /* "lsqfit/_gsl.pyx":708
  *         self.f = vector2array(gsl_multifit_nlinear_residual(w))
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
  *         self.nit = gsl_multifit_nlinear_niter(w)             # <<<<<<<<<<<<<<
  *         if status == 11 and self.nit < self.maxit:
  *             self.error = "gsl_multifit can't improve on starting value; may have converged already."
  */
-  __pyx_t_9 = __Pyx_PyInt_FromSize_t(gsl_multifit_nlinear_niter(__pyx_v_w)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 704, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyInt_FromSize_t(gsl_multifit_nlinear_niter(__pyx_v_w)); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 708, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_9) < 0) __PYX_ERR(0, 704, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_9) < 0) __PYX_ERR(0, 708, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-  /* "lsqfit/_gsl.pyx":705
+  /* "lsqfit/_gsl.pyx":709
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
  *         self.nit = gsl_multifit_nlinear_niter(w)
  *         if status == 11 and self.nit < self.maxit:             # <<<<<<<<<<<<<<
@@ -5581,29 +5656,29 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __pyx_t_4 = __pyx_t_14;
     goto __pyx_L14_bool_binop_done;
   }
-  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_nit); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 705, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_nit); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 709, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_9);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 705, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 709, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = PyObject_RichCompare(__pyx_t_9, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 705, __pyx_L1_error)
+  __pyx_t_5 = PyObject_RichCompare(__pyx_t_9, __pyx_t_1, Py_LT); __Pyx_XGOTREF(__pyx_t_5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 709, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(0, 705, __pyx_L1_error)
+  __pyx_t_14 = __Pyx_PyObject_IsTrue(__pyx_t_5); if (unlikely(__pyx_t_14 < 0)) __PYX_ERR(0, 709, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
   __pyx_t_4 = __pyx_t_14;
   __pyx_L14_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":706
+    /* "lsqfit/_gsl.pyx":710
  *         self.nit = gsl_multifit_nlinear_niter(w)
  *         if status == 11 and self.nit < self.maxit:
  *             self.error = "gsl_multifit can't improve on starting value; may have converged already."             # <<<<<<<<<<<<<<
  *         if info == 0 and self.error is None:
  *             self.error = "gsl_multifit didn't converge in {} iterations".format(maxit)
  */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_kp_s_gsl_multifit_can_t_improve_on_st) < 0) __PYX_ERR(0, 706, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_kp_s_gsl_multifit_can_t_improve_on_st) < 0) __PYX_ERR(0, 710, __pyx_L1_error)
 
-    /* "lsqfit/_gsl.pyx":705
+    /* "lsqfit/_gsl.pyx":709
  *         self.J = matrix2array(gsl_multifit_nlinear_jac(w))
  *         self.nit = gsl_multifit_nlinear_niter(w)
  *         if status == 11 and self.nit < self.maxit:             # <<<<<<<<<<<<<<
@@ -5612,7 +5687,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   }
 
-  /* "lsqfit/_gsl.pyx":707
+  /* "lsqfit/_gsl.pyx":711
  *         if status == 11 and self.nit < self.maxit:
  *             self.error = "gsl_multifit can't improve on starting value; may have converged already."
  *         if info == 0 and self.error is None:             # <<<<<<<<<<<<<<
@@ -5625,7 +5700,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __pyx_t_4 = __pyx_t_14;
     goto __pyx_L17_bool_binop_done;
   }
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_error); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 707, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_error); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 711, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __pyx_t_14 = (__pyx_t_5 == Py_None);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -5634,16 +5709,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   __pyx_L17_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":708
+    /* "lsqfit/_gsl.pyx":712
  *             self.error = "gsl_multifit can't improve on starting value; may have converged already."
  *         if info == 0 and self.error is None:
  *             self.error = "gsl_multifit didn't converge in {} iterations".format(maxit)             # <<<<<<<<<<<<<<
  *         self.results = None
  *         # deallocate work areas
  */
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_gsl_multifit_didn_t_converge_in, __pyx_n_s_format); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 708, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_gsl_multifit_didn_t_converge_in, __pyx_n_s_format); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 712, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_9 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 708, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 712, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __pyx_t_6 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_1))) {
@@ -5658,13 +5733,13 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
     __pyx_t_5 = (__pyx_t_6) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_6, __pyx_t_9) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_9);
     __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 708, __pyx_L1_error)
+    if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 712, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_5) < 0) __PYX_ERR(0, 708, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_5) < 0) __PYX_ERR(0, 712, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "lsqfit/_gsl.pyx":707
+    /* "lsqfit/_gsl.pyx":711
  *         if status == 11 and self.nit < self.maxit:
  *             self.error = "gsl_multifit can't improve on starting value; may have converged already."
  *         if info == 0 and self.error is None:             # <<<<<<<<<<<<<<
@@ -5673,16 +5748,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   }
 
-  /* "lsqfit/_gsl.pyx":709
+  /* "lsqfit/_gsl.pyx":713
  *         if info == 0 and self.error is None:
  *             self.error = "gsl_multifit didn't converge in {} iterations".format(maxit)
  *         self.results = None             # <<<<<<<<<<<<<<
  *         # deallocate work areas
  *         gsl_multifit_nlinear_free(w);
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_results, Py_None) < 0) __PYX_ERR(0, 709, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_results, Py_None) < 0) __PYX_ERR(0, 713, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":711
+  /* "lsqfit/_gsl.pyx":715
  *         self.results = None
  *         # deallocate work areas
  *         gsl_multifit_nlinear_free(w);             # <<<<<<<<<<<<<<
@@ -5691,7 +5766,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   gsl_multifit_nlinear_free(__pyx_v_w);
 
-  /* "lsqfit/_gsl.pyx":712
+  /* "lsqfit/_gsl.pyx":716
  *         # deallocate work areas
  *         gsl_multifit_nlinear_free(w);
  *         gsl_matrix_free(covar)             # <<<<<<<<<<<<<<
@@ -5700,7 +5775,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   gsl_matrix_free(__pyx_v_covar);
 
-  /* "lsqfit/_gsl.pyx":713
+  /* "lsqfit/_gsl.pyx":717
  *         gsl_multifit_nlinear_free(w);
  *         gsl_matrix_free(covar)
  *         gsl_vector_free(x0v)             # <<<<<<<<<<<<<<
@@ -5709,16 +5784,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
  */
   gsl_vector_free(__pyx_v_x0v);
 
-  /* "lsqfit/_gsl.pyx":714
+  /* "lsqfit/_gsl.pyx":718
  *         gsl_matrix_free(covar)
  *         gsl_vector_free(x0v)
  *         _p_f = old_p_f             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_old_p_f) < 0) __PYX_ERR(0, 714, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_old_p_f) < 0) __PYX_ERR(0, 718, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":558
+  /* "lsqfit/_gsl.pyx":560
  *             message otherwise.
  *     """
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -5757,7 +5832,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_12gsl_multifit___init__(CYTHON_UNUSED Py
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":718
+/* "lsqfit/_gsl.pyx":722
  * 
  * # wrappers for multifit's python function #
  * cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):             # <<<<<<<<<<<<<<
@@ -5787,7 +5862,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
   PyObject *__pyx_t_14 = NULL;
   __Pyx_RefNannySetupContext("_c_f", 0);
 
-  /* "lsqfit/_gsl.pyx":723
+  /* "lsqfit/_gsl.pyx":727
  *     # can't do numpy.ndarray[object,ndim=1] because might be numbers
  *     cdef Py_ssize_t i
  *     cdef Py_ssize_t n = vf.size             # <<<<<<<<<<<<<<
@@ -5797,7 +5872,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
   __pyx_t_1 = __pyx_v_vf->size;
   __pyx_v_n = __pyx_t_1;
 
-  /* "lsqfit/_gsl.pyx":724
+  /* "lsqfit/_gsl.pyx":728
  *     cdef Py_ssize_t i
  *     cdef Py_ssize_t n = vf.size
  *     try:             # <<<<<<<<<<<<<<
@@ -5813,16 +5888,16 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
     __Pyx_XGOTREF(__pyx_t_4);
     /*try:*/ {
 
-      /* "lsqfit/_gsl.pyx":725
+      /* "lsqfit/_gsl.pyx":729
  *     cdef Py_ssize_t n = vf.size
  *     try:
  *         f = _p_f(vector2array(vx))             # <<<<<<<<<<<<<<
  *         for i in range(n):
  *             gsl_vector_set(vf, i, f[i])
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_p_f); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 725, __pyx_L3_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_p_f); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 729, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 725, __pyx_L3_error)
+      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 729, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_7);
       __pyx_t_8 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_6))) {
@@ -5837,14 +5912,14 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
       __pyx_t_5 = (__pyx_t_8) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_8, __pyx_t_7) : __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_7);
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 725, __pyx_L3_error)
+      if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 729, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 725, __pyx_L3_error)
+      if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 729, __pyx_L3_error)
       __pyx_v_f = ((PyArrayObject *)__pyx_t_5);
       __pyx_t_5 = 0;
 
-      /* "lsqfit/_gsl.pyx":726
+      /* "lsqfit/_gsl.pyx":730
  *     try:
  *         f = _p_f(vector2array(vx))
  *         for i in range(n):             # <<<<<<<<<<<<<<
@@ -5856,21 +5931,21 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
       for (__pyx_t_11 = 0; __pyx_t_11 < __pyx_t_10; __pyx_t_11+=1) {
         __pyx_v_i = __pyx_t_11;
 
-        /* "lsqfit/_gsl.pyx":727
+        /* "lsqfit/_gsl.pyx":731
  *         f = _p_f(vector2array(vx))
  *         for i in range(n):
  *             gsl_vector_set(vf, i, f[i])             # <<<<<<<<<<<<<<
  *         return GSL_SUCCESS
  *     except:
  */
-        __pyx_t_5 = __Pyx_GetItemInt(((PyObject *)__pyx_v_f), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 727, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_GetItemInt(((PyObject *)__pyx_v_f), __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 731, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
-        __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 727, __pyx_L3_error)
+        __pyx_t_12 = __pyx_PyFloat_AsDouble(__pyx_t_5); if (unlikely((__pyx_t_12 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 731, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         __pyx_f_6lsqfit_4_gsl_gsl_vector_set(__pyx_v_vf, __pyx_v_i, __pyx_t_12);
       }
 
-      /* "lsqfit/_gsl.pyx":728
+      /* "lsqfit/_gsl.pyx":732
  *         for i in range(n):
  *             gsl_vector_set(vf, i, f[i])
  *         return GSL_SUCCESS             # <<<<<<<<<<<<<<
@@ -5880,7 +5955,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
       __pyx_r = GSL_SUCCESS;
       goto __pyx_L7_try_return;
 
-      /* "lsqfit/_gsl.pyx":724
+      /* "lsqfit/_gsl.pyx":728
  *     cdef Py_ssize_t i
  *     cdef Py_ssize_t n = vf.size
  *     try:             # <<<<<<<<<<<<<<
@@ -5894,7 +5969,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "lsqfit/_gsl.pyx":729
+    /* "lsqfit/_gsl.pyx":733
  *             gsl_vector_set(vf, i, f[i])
  *         return GSL_SUCCESS
  *     except:             # <<<<<<<<<<<<<<
@@ -5903,21 +5978,21 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
  */
     /*except:*/ {
       __Pyx_AddTraceback("lsqfit._gsl._c_f", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_6, &__pyx_t_7) < 0) __PYX_ERR(0, 729, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_6, &__pyx_t_7) < 0) __PYX_ERR(0, 733, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_GOTREF(__pyx_t_7);
 
-      /* "lsqfit/_gsl.pyx":730
+      /* "lsqfit/_gsl.pyx":734
  *         return GSL_SUCCESS
  *     except:
  *         _pyerr = sys.exc_info()             # <<<<<<<<<<<<<<
  *         return GSL_EBADFUNC
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_sys); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 730, __pyx_L5_except_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_13, __pyx_n_s_sys); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 734, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_13);
-      __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 730, __pyx_L5_except_error)
+      __pyx_t_14 = __Pyx_PyObject_GetAttrStr(__pyx_t_13, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_14)) __PYX_ERR(0, 734, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_14);
       __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       __pyx_t_13 = NULL;
@@ -5932,13 +6007,13 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
       }
       __pyx_t_8 = (__pyx_t_13) ? __Pyx_PyObject_CallOneArg(__pyx_t_14, __pyx_t_13) : __Pyx_PyObject_CallNoArg(__pyx_t_14);
       __Pyx_XDECREF(__pyx_t_13); __pyx_t_13 = 0;
-      if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 730, __pyx_L5_except_error)
+      if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 734, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_14); __pyx_t_14 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_8) < 0) __PYX_ERR(0, 730, __pyx_L5_except_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_8) < 0) __PYX_ERR(0, 734, __pyx_L5_except_error)
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-      /* "lsqfit/_gsl.pyx":731
+      /* "lsqfit/_gsl.pyx":735
  *     except:
  *         _pyerr = sys.exc_info()
  *         return GSL_EBADFUNC             # <<<<<<<<<<<<<<
@@ -5953,7 +6028,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
     }
     __pyx_L5_except_error:;
 
-    /* "lsqfit/_gsl.pyx":724
+    /* "lsqfit/_gsl.pyx":728
  *     cdef Py_ssize_t i
  *     cdef Py_ssize_t n = vf.size
  *     try:             # <<<<<<<<<<<<<<
@@ -5979,7 +6054,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
     goto __pyx_L0;
   }
 
-  /* "lsqfit/_gsl.pyx":718
+  /* "lsqfit/_gsl.pyx":722
  * 
  * # wrappers for multifit's python function #
  * cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):             # <<<<<<<<<<<<<<
@@ -6003,7 +6078,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_f(gsl_vector *__pyx_v_vx, CYTHON_UNUSED void
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":733
+/* "lsqfit/_gsl.pyx":737
  *         return GSL_EBADFUNC
  * 
  * cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ):             # <<<<<<<<<<<<<<
@@ -6051,7 +6126,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
   __pyx_pybuffernd_f.data = NULL;
   __pyx_pybuffernd_f.rcbuffer = &__pyx_pybuffer_f;
 
-  /* "lsqfit/_gsl.pyx":738
+  /* "lsqfit/_gsl.pyx":742
  *     cdef gvar.svec fi_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6067,20 +6142,20 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "lsqfit/_gsl.pyx":739
+      /* "lsqfit/_gsl.pyx":743
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:
  *         f = _p_f(_valder+vector2array(vx))             # <<<<<<<<<<<<<<
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_p_f); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 739, __pyx_L3_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_p_f); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 743, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_valder_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 739, __pyx_L3_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_valder_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 743, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 739, __pyx_L3_error)
+      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 743, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 739, __pyx_L3_error)
+      __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 743, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -6097,10 +6172,10 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
       __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 739, __pyx_L3_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 743, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 739, __pyx_L3_error)
+      if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 743, __pyx_L3_error)
       __pyx_t_9 = ((PyArrayObject *)__pyx_t_4);
       {
         __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -6117,13 +6192,13 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
           __pyx_t_11 = __pyx_t_12 = __pyx_t_13 = 0;
         }
         __pyx_pybuffernd_f.diminfo[0].strides = __pyx_pybuffernd_f.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_f.diminfo[0].shape = __pyx_pybuffernd_f.rcbuffer->pybuffer.shape[0];
-        if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 739, __pyx_L3_error)
+        if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 743, __pyx_L3_error)
       }
       __pyx_t_9 = 0;
       __pyx_v_f = ((PyArrayObject *)__pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "lsqfit/_gsl.pyx":740
+      /* "lsqfit/_gsl.pyx":744
  *     try:
  *         f = _p_f(_valder+vector2array(vx))
  *         gsl_matrix_set_zero(mJ)             # <<<<<<<<<<<<<<
@@ -6132,7 +6207,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
  */
       gsl_matrix_set_zero(__pyx_v_mJ);
 
-      /* "lsqfit/_gsl.pyx":741
+      /* "lsqfit/_gsl.pyx":745
  *         f = _p_f(_valder+vector2array(vx))
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \             # <<<<<<<<<<<<<<
@@ -6149,18 +6224,18 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
         } else if (unlikely(__pyx_t_14 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_10 = 0;
         if (unlikely(__pyx_t_10 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_10);
-          __PYX_ERR(0, 741, __pyx_L3_error)
+          __PYX_ERR(0, 745, __pyx_L3_error)
         }
         __pyx_t_4 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_f.diminfo[0].strides);
         __Pyx_INCREF((PyObject*)__pyx_t_4);
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_cov); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 741, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_cov); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 745, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_t_15 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 741, __pyx_L3_error)
+        __pyx_t_15 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 745, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (unlikely(!((__pyx_t_15 == __pyx_v_mJ->size2) != 0))) {
 
-          /* "lsqfit/_gsl.pyx":742
+          /* "lsqfit/_gsl.pyx":746
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))             # <<<<<<<<<<<<<<
@@ -6175,20 +6250,20 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
           } else if (unlikely(__pyx_t_16 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_10 = 0;
           if (unlikely(__pyx_t_10 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_10);
-            __PYX_ERR(0, 742, __pyx_L3_error)
+            __PYX_ERR(0, 746, __pyx_L3_error)
           }
           __pyx_t_5 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_16, __pyx_pybuffernd_f.diminfo[0].strides);
           __Pyx_INCREF((PyObject*)__pyx_t_5);
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_cov); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_cov); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_17 = PyObject_Length(__pyx_t_4); if (unlikely(__pyx_t_17 == ((Py_ssize_t)-1))) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_17 = PyObject_Length(__pyx_t_4); if (unlikely(__pyx_t_17 == ((Py_ssize_t)-1))) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_17); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_17); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_mJ->size2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_mJ->size2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_GIVEREF(__pyx_t_4);
           PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_4);
@@ -6196,23 +6271,23 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
           PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_5);
           __pyx_t_4 = 0;
           __pyx_t_5 = 0;
-          __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_8 = PyNumber_Add(__pyx_kp_s_covariance_matrix_mismatch, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_8 = PyNumber_Add(__pyx_kp_s_covariance_matrix_mismatch, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_5 = PyTuple_Pack(1, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 742, __pyx_L3_error)
+          __pyx_t_5 = PyTuple_Pack(1, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 746, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
           PyErr_SetObject(PyExc_AssertionError, __pyx_t_5);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __PYX_ERR(0, 741, __pyx_L3_error)
+          __PYX_ERR(0, 745, __pyx_L3_error)
         }
       }
       #endif
 
-      /* "lsqfit/_gsl.pyx":743
+      /* "lsqfit/_gsl.pyx":747
  *         assert len(f[0].cov) == mJ.size2, \
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
  *         for i in range(mJ.size1):             # <<<<<<<<<<<<<<
@@ -6224,7 +6299,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
       for (__pyx_t_19 = 0; __pyx_t_19 < __pyx_t_18; __pyx_t_19+=1) {
         __pyx_v_i = __pyx_t_19;
 
-        /* "lsqfit/_gsl.pyx":744
+        /* "lsqfit/_gsl.pyx":748
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
  *         for i in range(mJ.size1):
  *             fi = f[i]             # <<<<<<<<<<<<<<
@@ -6239,15 +6314,15 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
         } else if (unlikely(__pyx_t_20 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_21 = 0;
         if (unlikely(__pyx_t_21 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_21);
-          __PYX_ERR(0, 744, __pyx_L3_error)
+          __PYX_ERR(0, 748, __pyx_L3_error)
         }
         __pyx_t_5 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_f.diminfo[0].strides);
         __Pyx_INCREF((PyObject*)__pyx_t_5);
-        if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_4gvar_9_gvarcore_GVar))))) __PYX_ERR(0, 744, __pyx_L3_error)
+        if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_4gvar_9_gvarcore_GVar))))) __PYX_ERR(0, 748, __pyx_L3_error)
         __Pyx_XDECREF_SET(__pyx_v_fi, ((struct __pyx_obj_4gvar_9_gvarcore_GVar *)__pyx_t_5));
         __pyx_t_5 = 0;
 
-        /* "lsqfit/_gsl.pyx":745
+        /* "lsqfit/_gsl.pyx":749
  *         for i in range(mJ.size1):
  *             fi = f[i]
  *             fi_d = fi.d             # <<<<<<<<<<<<<<
@@ -6259,7 +6334,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
         __Pyx_XDECREF_SET(__pyx_v_fi_d, ((struct __pyx_obj_4gvar_10_svec_smat_svec *)__pyx_t_5));
         __pyx_t_5 = 0;
 
-        /* "lsqfit/_gsl.pyx":746
+        /* "lsqfit/_gsl.pyx":750
  *             fi = f[i]
  *             fi_d = fi.d
  *             for j in range(fi_d.size):             # <<<<<<<<<<<<<<
@@ -6271,7 +6346,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
         for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
           __pyx_v_j = __pyx_t_23;
 
-          /* "lsqfit/_gsl.pyx":747
+          /* "lsqfit/_gsl.pyx":751
  *             fi_d = fi.d
  *             for j in range(fi_d.size):
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)             # <<<<<<<<<<<<<<
@@ -6282,7 +6357,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
         }
       }
 
-      /* "lsqfit/_gsl.pyx":748
+      /* "lsqfit/_gsl.pyx":752
  *             for j in range(fi_d.size):
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
  *         return GSL_SUCCESS             # <<<<<<<<<<<<<<
@@ -6292,7 +6367,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
       __pyx_r = GSL_SUCCESS;
       goto __pyx_L7_try_return;
 
-      /* "lsqfit/_gsl.pyx":738
+      /* "lsqfit/_gsl.pyx":742
  *     cdef gvar.svec fi_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6307,7 +6382,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "lsqfit/_gsl.pyx":749
+    /* "lsqfit/_gsl.pyx":753
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
  *         return GSL_SUCCESS
  *     except:             # <<<<<<<<<<<<<<
@@ -6316,21 +6391,21 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
  */
     /*except:*/ {
       __Pyx_AddTraceback("lsqfit._gsl._c_df", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_8, &__pyx_t_4) < 0) __PYX_ERR(0, 749, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_8, &__pyx_t_4) < 0) __PYX_ERR(0, 753, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "lsqfit/_gsl.pyx":750
+      /* "lsqfit/_gsl.pyx":754
  *         return GSL_SUCCESS
  *     except:
  *         _pyerr = sys.exc_info()             # <<<<<<<<<<<<<<
  *         return GSL_EBADFUNC
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_sys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 750, __pyx_L5_except_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_sys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 754, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 750, __pyx_L5_except_error)
+      __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 754, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_24);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_6 = NULL;
@@ -6345,13 +6420,13 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
       }
       __pyx_t_7 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_24, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_24);
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 750, __pyx_L5_except_error)
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 754, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_7) < 0) __PYX_ERR(0, 750, __pyx_L5_except_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_7) < 0) __PYX_ERR(0, 754, __pyx_L5_except_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "lsqfit/_gsl.pyx":751
+      /* "lsqfit/_gsl.pyx":755
  *     except:
  *         _pyerr = sys.exc_info()
  *         return GSL_EBADFUNC             # <<<<<<<<<<<<<<
@@ -6366,7 +6441,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
     }
     __pyx_L5_except_error:;
 
-    /* "lsqfit/_gsl.pyx":738
+    /* "lsqfit/_gsl.pyx":742
  *     cdef gvar.svec fi_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6392,7 +6467,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
     goto __pyx_L0;
   }
 
-  /* "lsqfit/_gsl.pyx":733
+  /* "lsqfit/_gsl.pyx":737
  *         return GSL_EBADFUNC
  * 
  * cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ):             # <<<<<<<<<<<<<<
@@ -6427,7 +6502,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_df(gsl_vector *__pyx_v_vx, CYTHON_UNUSED voi
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":753
+/* "lsqfit/_gsl.pyx":757
  *         return GSL_EBADFUNC
  * 
  * cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ):             # <<<<<<<<<<<<<<
@@ -6475,7 +6550,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
   __pyx_pybuffernd_f.data = NULL;
   __pyx_pybuffernd_f.rcbuffer = &__pyx_pybuffer_f;
 
-  /* "lsqfit/_gsl.pyx":758
+  /* "lsqfit/_gsl.pyx":762
  *     cdef gvar.svec f_i_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6491,20 +6566,20 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
     __Pyx_XGOTREF(__pyx_t_3);
     /*try:*/ {
 
-      /* "lsqfit/_gsl.pyx":759
+      /* "lsqfit/_gsl.pyx":763
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:
  *         f = _p_f(_valder+vector2array(vx))             # <<<<<<<<<<<<<<
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_p_f); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 759, __pyx_L3_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_5, __pyx_n_s_p_f); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 763, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_valder_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 759, __pyx_L3_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_valder_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 763, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 759, __pyx_L3_error)
+      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 763, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 759, __pyx_L3_error)
+      __pyx_t_8 = PyNumber_Add(__pyx_t_6, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 763, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -6521,10 +6596,10 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
       __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_5, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_5, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 759, __pyx_L3_error)
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 763, __pyx_L3_error)
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 759, __pyx_L3_error)
+      if (!(likely(((__pyx_t_4) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_4, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 763, __pyx_L3_error)
       __pyx_t_9 = ((PyArrayObject *)__pyx_t_4);
       {
         __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -6541,13 +6616,13 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
           __pyx_t_11 = __pyx_t_12 = __pyx_t_13 = 0;
         }
         __pyx_pybuffernd_f.diminfo[0].strides = __pyx_pybuffernd_f.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_f.diminfo[0].shape = __pyx_pybuffernd_f.rcbuffer->pybuffer.shape[0];
-        if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 759, __pyx_L3_error)
+        if (unlikely(__pyx_t_10 < 0)) __PYX_ERR(0, 763, __pyx_L3_error)
       }
       __pyx_t_9 = 0;
       __pyx_v_f = ((PyArrayObject *)__pyx_t_4);
       __pyx_t_4 = 0;
 
-      /* "lsqfit/_gsl.pyx":760
+      /* "lsqfit/_gsl.pyx":764
  *     try:
  *         f = _p_f(_valder+vector2array(vx))
  *         gsl_matrix_set_zero(mJ)             # <<<<<<<<<<<<<<
@@ -6556,7 +6631,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
  */
       gsl_matrix_set_zero(__pyx_v_mJ);
 
-      /* "lsqfit/_gsl.pyx":761
+      /* "lsqfit/_gsl.pyx":765
  *         f = _p_f(_valder+vector2array(vx))
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \             # <<<<<<<<<<<<<<
@@ -6573,18 +6648,18 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
         } else if (unlikely(__pyx_t_14 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_10 = 0;
         if (unlikely(__pyx_t_10 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_10);
-          __PYX_ERR(0, 761, __pyx_L3_error)
+          __PYX_ERR(0, 765, __pyx_L3_error)
         }
         __pyx_t_4 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_14, __pyx_pybuffernd_f.diminfo[0].strides);
         __Pyx_INCREF((PyObject*)__pyx_t_4);
-        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_cov); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 761, __pyx_L3_error)
+        __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_cov); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 765, __pyx_L3_error)
         __Pyx_GOTREF(__pyx_t_5);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_t_15 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 761, __pyx_L3_error)
+        __pyx_t_15 = PyObject_Length(__pyx_t_5); if (unlikely(__pyx_t_15 == ((Py_ssize_t)-1))) __PYX_ERR(0, 765, __pyx_L3_error)
         __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
         if (unlikely(!((__pyx_t_15 == __pyx_v_mJ->size2) != 0))) {
 
-          /* "lsqfit/_gsl.pyx":762
+          /* "lsqfit/_gsl.pyx":766
  *         gsl_matrix_set_zero(mJ)
  *         assert len(f[0].cov) == mJ.size2, \
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))             # <<<<<<<<<<<<<<
@@ -6599,20 +6674,20 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
           } else if (unlikely(__pyx_t_16 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_10 = 0;
           if (unlikely(__pyx_t_10 != -1)) {
             __Pyx_RaiseBufferIndexError(__pyx_t_10);
-            __PYX_ERR(0, 762, __pyx_L3_error)
+            __PYX_ERR(0, 766, __pyx_L3_error)
           }
           __pyx_t_5 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_16, __pyx_pybuffernd_f.diminfo[0].strides);
           __Pyx_INCREF((PyObject*)__pyx_t_5);
-          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_cov); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_cov); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_4);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_17 = PyObject_Length(__pyx_t_4); if (unlikely(__pyx_t_17 == ((Py_ssize_t)-1))) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_17 = PyObject_Length(__pyx_t_4); if (unlikely(__pyx_t_17 == ((Py_ssize_t)-1))) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-          __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_17); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_4 = PyInt_FromSsize_t(__pyx_t_17); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_4);
-          __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_mJ->size2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_5 = __Pyx_PyInt_From_int(__pyx_v_mJ->size2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
-          __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_GIVEREF(__pyx_t_4);
           PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_4);
@@ -6620,23 +6695,23 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
           PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_t_5);
           __pyx_t_4 = 0;
           __pyx_t_5 = 0;
-          __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_5 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-          __pyx_t_8 = PyNumber_Add(__pyx_kp_s_covariance_matrix_mismatch, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_8 = PyNumber_Add(__pyx_kp_s_covariance_matrix_mismatch, __pyx_t_5); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_8);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __pyx_t_5 = PyTuple_Pack(1, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 762, __pyx_L3_error)
+          __pyx_t_5 = PyTuple_Pack(1, __pyx_t_8); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 766, __pyx_L3_error)
           __Pyx_GOTREF(__pyx_t_5);
           __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
           PyErr_SetObject(PyExc_AssertionError, __pyx_t_5);
           __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-          __PYX_ERR(0, 761, __pyx_L3_error)
+          __PYX_ERR(0, 765, __pyx_L3_error)
         }
       }
       #endif
 
-      /* "lsqfit/_gsl.pyx":763
+      /* "lsqfit/_gsl.pyx":767
  *         assert len(f[0].cov) == mJ.size2, \
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
  *         for i in range(mJ.size1):             # <<<<<<<<<<<<<<
@@ -6648,7 +6723,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
       for (__pyx_t_19 = 0; __pyx_t_19 < __pyx_t_18; __pyx_t_19+=1) {
         __pyx_v_i = __pyx_t_19;
 
-        /* "lsqfit/_gsl.pyx":764
+        /* "lsqfit/_gsl.pyx":768
  *             'covariance matrix mismatch: '+str((len(f[0].cov), mJ.size2))
  *         for i in range(mJ.size1):
  *             fi = f[i]             # <<<<<<<<<<<<<<
@@ -6663,15 +6738,15 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
         } else if (unlikely(__pyx_t_20 >= __pyx_pybuffernd_f.diminfo[0].shape)) __pyx_t_21 = 0;
         if (unlikely(__pyx_t_21 != -1)) {
           __Pyx_RaiseBufferIndexError(__pyx_t_21);
-          __PYX_ERR(0, 764, __pyx_L3_error)
+          __PYX_ERR(0, 768, __pyx_L3_error)
         }
         __pyx_t_5 = (PyObject *) *__Pyx_BufPtrStrided1d(PyObject **, __pyx_pybuffernd_f.rcbuffer->pybuffer.buf, __pyx_t_20, __pyx_pybuffernd_f.diminfo[0].strides);
         __Pyx_INCREF((PyObject*)__pyx_t_5);
-        if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_4gvar_9_gvarcore_GVar))))) __PYX_ERR(0, 764, __pyx_L3_error)
+        if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_4gvar_9_gvarcore_GVar))))) __PYX_ERR(0, 768, __pyx_L3_error)
         __Pyx_XDECREF_SET(__pyx_v_fi, ((struct __pyx_obj_4gvar_9_gvarcore_GVar *)__pyx_t_5));
         __pyx_t_5 = 0;
 
-        /* "lsqfit/_gsl.pyx":765
+        /* "lsqfit/_gsl.pyx":769
  *         for i in range(mJ.size1):
  *             fi = f[i]
  *             fi_d = fi.d             # <<<<<<<<<<<<<<
@@ -6683,7 +6758,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
         __Pyx_XDECREF_SET(__pyx_v_fi_d, ((struct __pyx_obj_4gvar_10_svec_smat_svec *)__pyx_t_5));
         __pyx_t_5 = 0;
 
-        /* "lsqfit/_gsl.pyx":766
+        /* "lsqfit/_gsl.pyx":770
  *             fi = f[i]
  *             fi_d = fi.d
  *             gsl_vector_set(vf, i, fi.v)             # <<<<<<<<<<<<<<
@@ -6692,7 +6767,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
  */
         __pyx_f_6lsqfit_4_gsl_gsl_vector_set(__pyx_v_vf, __pyx_v_i, __pyx_v_fi->v);
 
-        /* "lsqfit/_gsl.pyx":767
+        /* "lsqfit/_gsl.pyx":771
  *             fi_d = fi.d
  *             gsl_vector_set(vf, i, fi.v)
  *             for j in range(fi_d.size):             # <<<<<<<<<<<<<<
@@ -6704,7 +6779,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
         for (__pyx_t_23 = 0; __pyx_t_23 < __pyx_t_22; __pyx_t_23+=1) {
           __pyx_v_j = __pyx_t_23;
 
-          /* "lsqfit/_gsl.pyx":768
+          /* "lsqfit/_gsl.pyx":772
  *             gsl_vector_set(vf, i, fi.v)
  *             for j in range(fi_d.size):
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)             # <<<<<<<<<<<<<<
@@ -6715,7 +6790,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
         }
       }
 
-      /* "lsqfit/_gsl.pyx":769
+      /* "lsqfit/_gsl.pyx":773
  *             for j in range(fi_d.size):
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
  *         return GSL_SUCCESS             # <<<<<<<<<<<<<<
@@ -6725,7 +6800,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
       __pyx_r = GSL_SUCCESS;
       goto __pyx_L7_try_return;
 
-      /* "lsqfit/_gsl.pyx":758
+      /* "lsqfit/_gsl.pyx":762
  *     cdef gvar.svec f_i_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6740,7 +6815,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
     __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
 
-    /* "lsqfit/_gsl.pyx":770
+    /* "lsqfit/_gsl.pyx":774
  *                 gsl_matrix_set(mJ, i, fi_d.v[j].i, fi_d.v[j].v)
  *         return GSL_SUCCESS
  *     except:             # <<<<<<<<<<<<<<
@@ -6749,21 +6824,21 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
  */
     /*except:*/ {
       __Pyx_AddTraceback("lsqfit._gsl._c_fdf", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_8, &__pyx_t_4) < 0) __PYX_ERR(0, 770, __pyx_L5_except_error)
+      if (__Pyx_GetException(&__pyx_t_5, &__pyx_t_8, &__pyx_t_4) < 0) __PYX_ERR(0, 774, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_GOTREF(__pyx_t_8);
       __Pyx_GOTREF(__pyx_t_4);
 
-      /* "lsqfit/_gsl.pyx":771
+      /* "lsqfit/_gsl.pyx":775
  *         return GSL_SUCCESS
  *     except:
  *         _pyerr = sys.exc_info()             # <<<<<<<<<<<<<<
  *         return GSL_EBADFUNC
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_sys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 771, __pyx_L5_except_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_6, __pyx_n_s_sys); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 775, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 771, __pyx_L5_except_error)
+      __pyx_t_24 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_24)) __PYX_ERR(0, 775, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_24);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_6 = NULL;
@@ -6778,13 +6853,13 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
       }
       __pyx_t_7 = (__pyx_t_6) ? __Pyx_PyObject_CallOneArg(__pyx_t_24, __pyx_t_6) : __Pyx_PyObject_CallNoArg(__pyx_t_24);
       __Pyx_XDECREF(__pyx_t_6); __pyx_t_6 = 0;
-      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 771, __pyx_L5_except_error)
+      if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 775, __pyx_L5_except_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_DECREF(__pyx_t_24); __pyx_t_24 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_7) < 0) __PYX_ERR(0, 771, __pyx_L5_except_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_7) < 0) __PYX_ERR(0, 775, __pyx_L5_except_error)
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-      /* "lsqfit/_gsl.pyx":772
+      /* "lsqfit/_gsl.pyx":776
  *     except:
  *         _pyerr = sys.exc_info()
  *         return GSL_EBADFUNC             # <<<<<<<<<<<<<<
@@ -6799,7 +6874,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
     }
     __pyx_L5_except_error:;
 
-    /* "lsqfit/_gsl.pyx":758
+    /* "lsqfit/_gsl.pyx":762
  *     cdef gvar.svec f_i_d
  *     cdef numpy.ndarray[object, ndim=1] f
  *     try:             # <<<<<<<<<<<<<<
@@ -6825,7 +6900,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
     goto __pyx_L0;
   }
 
-  /* "lsqfit/_gsl.pyx":753
+  /* "lsqfit/_gsl.pyx":757
  *         return GSL_EBADFUNC
  * 
  * cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ):             # <<<<<<<<<<<<<<
@@ -6860,7 +6935,7 @@ static int __pyx_f_6lsqfit_4_gsl__c_fdf(gsl_vector *__pyx_v_vx, CYTHON_UNUSED vo
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":856
+/* "lsqfit/_gsl.pyx":860
  *     """
  * 
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -6890,7 +6965,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
     PyObject* values[10] = {0,0,0,0,0,0,0,0,0,0};
     values[4] = ((PyObject *)((PyObject*)__pyx_float_1eneg_5));
 
-    /* "lsqfit/_gsl.pyx":860
+    /* "lsqfit/_gsl.pyx":864
  *         object f,
  *         object tol=1e-5,
  *         object reltol=None,             # <<<<<<<<<<<<<<
@@ -6899,7 +6974,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
  */
     values[5] = ((PyObject *)((PyObject *)Py_None));
 
-    /* "lsqfit/_gsl.pyx":861
+    /* "lsqfit/_gsl.pyx":865
  *         object tol=1e-5,
  *         object reltol=None,
  *         object abstol=None,             # <<<<<<<<<<<<<<
@@ -6909,7 +6984,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
     values[6] = ((PyObject *)((PyObject *)Py_None));
     values[8] = ((PyObject *)((PyObject*)__pyx_n_s_lmsder));
 
-    /* "lsqfit/_gsl.pyx":864
+    /* "lsqfit/_gsl.pyx":868
  *         unsigned int maxit=1000,
  *         object alg='lmsder',
  *         object analyzer=None             # <<<<<<<<<<<<<<
@@ -6953,19 +7028,19 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 1); __PYX_ERR(0, 856, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 1); __PYX_ERR(0, 860, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_n)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 2); __PYX_ERR(0, 856, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 2); __PYX_ERR(0, 860, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_f)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 3); __PYX_ERR(0, 856, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, 3); __PYX_ERR(0, 860, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
@@ -7005,7 +7080,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 856, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 860, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -7031,13 +7106,13 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
     }
     __pyx_v_self = values[0];
     __pyx_v_x0 = ((PyArrayObject *)values[1]);
-    __pyx_v_n = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 857, __pyx_L3_error)
+    __pyx_v_n = __Pyx_PyInt_As_int(values[2]); if (unlikely((__pyx_v_n == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 861, __pyx_L3_error)
     __pyx_v_f = values[3];
     __pyx_v_tol = values[4];
     __pyx_v_reltol = values[5];
     __pyx_v_abstol = values[6];
     if (values[7]) {
-      __pyx_v_maxit = __Pyx_PyInt_As_unsigned_int(values[7]); if (unlikely((__pyx_v_maxit == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 862, __pyx_L3_error)
+      __pyx_v_maxit = __Pyx_PyInt_As_unsigned_int(values[7]); if (unlikely((__pyx_v_maxit == (unsigned int)-1) && PyErr_Occurred())) __PYX_ERR(0, 866, __pyx_L3_error)
     } else {
       __pyx_v_maxit = ((unsigned int)((unsigned int)0x3E8));
     }
@@ -7046,16 +7121,16 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__(PyObject *__
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 856, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 4, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 860, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("lsqfit._gsl.gsl_v1_multifit.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 857, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 861, __pyx_L1_error)
   __pyx_r = __pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(__pyx_self, __pyx_v_self, __pyx_v_x0, __pyx_v_n, __pyx_v_f, __pyx_v_tol, __pyx_v_reltol, __pyx_v_abstol, __pyx_v_maxit, __pyx_v_alg, __pyx_v_analyzer);
 
-  /* "lsqfit/_gsl.pyx":856
+  /* "lsqfit/_gsl.pyx":860
  *     """
  * 
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -7115,20 +7190,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_pybuffernd_x0.rcbuffer = &__pyx_pybuffer_x0;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 856, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 860, __pyx_L1_error)
   }
   __pyx_pybuffernd_x0.diminfo[0].strides = __pyx_pybuffernd_x0.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x0.diminfo[0].shape = __pyx_pybuffernd_x0.rcbuffer->pybuffer.shape[0];
 
-  /* "lsqfit/_gsl.pyx":875
+  /* "lsqfit/_gsl.pyx":879
  *         cdef gsl_vector* x0v
  *         # cdef numpy.ndarray[numpy.float_t, ndim=1] ans
  *         super(gsl_v1_multifit, self).__init__()             # <<<<<<<<<<<<<<
  *         # hold onto inputs
  *         # reltol and abstol are deprecated but still work (for legacy code)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gsl_v1_multifit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 875, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gsl_v1_multifit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 879, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 875, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 879, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
@@ -7136,10 +7211,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __Pyx_GIVEREF(__pyx_v_self);
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_v_self);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 875, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 879, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 875, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_init); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 879, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -7154,12 +7229,12 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2) : __Pyx_PyObject_CallNoArg(__pyx_t_3);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 875, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 879, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":878
+  /* "lsqfit/_gsl.pyx":882
  *         # hold onto inputs
  *         # reltol and abstol are deprecated but still work (for legacy code)
  *         if reltol is not None:             # <<<<<<<<<<<<<<
@@ -7170,14 +7245,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_t_5 = (__pyx_t_4 != 0);
   if (__pyx_t_5) {
 
-    /* "lsqfit/_gsl.pyx":879
+    /* "lsqfit/_gsl.pyx":883
  *         # reltol and abstol are deprecated but still work (for legacy code)
  *         if reltol is not None:
  *             tol = (reltol, 1e-10, 1e-10)             # <<<<<<<<<<<<<<
  *         elif abstol is not None:
  *             tol = (abstol, 1e-10, 1e-10)
  */
-    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 879, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 883, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_reltol);
     __Pyx_GIVEREF(__pyx_v_reltol);
@@ -7191,7 +7266,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "lsqfit/_gsl.pyx":878
+    /* "lsqfit/_gsl.pyx":882
  *         # hold onto inputs
  *         # reltol and abstol are deprecated but still work (for legacy code)
  *         if reltol is not None:             # <<<<<<<<<<<<<<
@@ -7201,7 +7276,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":880
+  /* "lsqfit/_gsl.pyx":884
  *         if reltol is not None:
  *             tol = (reltol, 1e-10, 1e-10)
  *         elif abstol is not None:             # <<<<<<<<<<<<<<
@@ -7212,14 +7287,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_t_4 = (__pyx_t_5 != 0);
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":881
+    /* "lsqfit/_gsl.pyx":885
  *             tol = (reltol, 1e-10, 1e-10)
  *         elif abstol is not None:
  *             tol = (abstol, 1e-10, 1e-10)             # <<<<<<<<<<<<<<
  *         elif type(tol) in [list, tuple]:
  *             if len(tol) == 1:
  */
-    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 881, __pyx_L1_error)
+    __pyx_t_1 = PyTuple_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 885, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_INCREF(__pyx_v_abstol);
     __Pyx_GIVEREF(__pyx_v_abstol);
@@ -7233,7 +7308,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_1);
     __pyx_t_1 = 0;
 
-    /* "lsqfit/_gsl.pyx":880
+    /* "lsqfit/_gsl.pyx":884
  *         if reltol is not None:
  *             tol = (reltol, 1e-10, 1e-10)
  *         elif abstol is not None:             # <<<<<<<<<<<<<<
@@ -7243,7 +7318,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":882
+  /* "lsqfit/_gsl.pyx":886
  *         elif abstol is not None:
  *             tol = (abstol, 1e-10, 1e-10)
  *         elif type(tol) in [list, tuple]:             # <<<<<<<<<<<<<<
@@ -7252,16 +7327,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __Pyx_INCREF(((PyObject *)Py_TYPE(__pyx_v_tol)));
   __pyx_t_1 = ((PyObject *)Py_TYPE(__pyx_v_tol));
-  __pyx_t_3 = PyObject_RichCompare(((PyObject *)__pyx_t_1), ((PyObject *)(&PyList_Type)), Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 882, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 882, __pyx_L1_error)
+  __pyx_t_3 = PyObject_RichCompare(((PyObject *)__pyx_t_1), ((PyObject *)(&PyList_Type)), Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 886, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 886, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   if (!__pyx_t_5) {
   } else {
     __pyx_t_4 = __pyx_t_5;
     goto __pyx_L4_bool_binop_done;
   }
-  __pyx_t_3 = PyObject_RichCompare(((PyObject *)__pyx_t_1), ((PyObject *)(&PyTuple_Type)), Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 882, __pyx_L1_error)
-  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 882, __pyx_L1_error)
+  __pyx_t_3 = PyObject_RichCompare(((PyObject *)__pyx_t_1), ((PyObject *)(&PyTuple_Type)), Py_EQ); __Pyx_XGOTREF(__pyx_t_3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 886, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_IsTrue(__pyx_t_3); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 886, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_t_4 = __pyx_t_5;
   __pyx_L4_bool_binop_done:;
@@ -7269,27 +7344,27 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_t_5 = (__pyx_t_4 != 0);
   if (__pyx_t_5) {
 
-    /* "lsqfit/_gsl.pyx":883
+    /* "lsqfit/_gsl.pyx":887
  *             tol = (abstol, 1e-10, 1e-10)
  *         elif type(tol) in [list, tuple]:
  *             if len(tol) == 1:             # <<<<<<<<<<<<<<
  *                 tol = (tol[0], 1e-10, 1e-10)
  *             elif len(tol) == 2:
  */
-    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 883, __pyx_L1_error)
+    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 887, __pyx_L1_error)
     __pyx_t_5 = ((__pyx_t_6 == 1) != 0);
     if (__pyx_t_5) {
 
-      /* "lsqfit/_gsl.pyx":884
+      /* "lsqfit/_gsl.pyx":888
  *         elif type(tol) in [list, tuple]:
  *             if len(tol) == 1:
  *                 tol = (tol[0], 1e-10, 1e-10)             # <<<<<<<<<<<<<<
  *             elif len(tol) == 2:
  *                 tol = (tol[0], tol[1], 1e-10)
  */
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 884, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 888, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 884, __pyx_L1_error)
+      __pyx_t_3 = PyTuple_New(3); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 888, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_GIVEREF(__pyx_t_1);
       PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
@@ -7303,7 +7378,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "lsqfit/_gsl.pyx":883
+      /* "lsqfit/_gsl.pyx":887
  *             tol = (abstol, 1e-10, 1e-10)
  *         elif type(tol) in [list, tuple]:
  *             if len(tol) == 1:             # <<<<<<<<<<<<<<
@@ -7313,29 +7388,29 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       goto __pyx_L6;
     }
 
-    /* "lsqfit/_gsl.pyx":885
+    /* "lsqfit/_gsl.pyx":889
  *             if len(tol) == 1:
  *                 tol = (tol[0], 1e-10, 1e-10)
  *             elif len(tol) == 2:             # <<<<<<<<<<<<<<
  *                 tol = (tol[0], tol[1], 1e-10)
  *             elif len(tol) == 3:
  */
-    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 885, __pyx_L1_error)
+    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 889, __pyx_L1_error)
     __pyx_t_5 = ((__pyx_t_6 == 2) != 0);
     if (__pyx_t_5) {
 
-      /* "lsqfit/_gsl.pyx":886
+      /* "lsqfit/_gsl.pyx":890
  *                 tol = (tol[0], 1e-10, 1e-10)
  *             elif len(tol) == 2:
  *                 tol = (tol[0], tol[1], 1e-10)             # <<<<<<<<<<<<<<
  *             elif len(tol) == 3:
  *                 pass
  */
-      __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 886, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 890, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 886, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 890, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 886, __pyx_L1_error)
+      __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 890, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_3);
       PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_3);
@@ -7349,7 +7424,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       __Pyx_DECREF_SET(__pyx_v_tol, __pyx_t_2);
       __pyx_t_2 = 0;
 
-      /* "lsqfit/_gsl.pyx":885
+      /* "lsqfit/_gsl.pyx":889
  *             if len(tol) == 1:
  *                 tol = (tol[0], 1e-10, 1e-10)
  *             elif len(tol) == 2:             # <<<<<<<<<<<<<<
@@ -7359,20 +7434,20 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       goto __pyx_L6;
     }
 
-    /* "lsqfit/_gsl.pyx":887
+    /* "lsqfit/_gsl.pyx":891
  *             elif len(tol) == 2:
  *                 tol = (tol[0], tol[1], 1e-10)
  *             elif len(tol) == 3:             # <<<<<<<<<<<<<<
  *                 pass
  *             else:
  */
-    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 887, __pyx_L1_error)
+    __pyx_t_6 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 891, __pyx_L1_error)
     __pyx_t_5 = ((__pyx_t_6 == 3) != 0);
     if (likely(__pyx_t_5)) {
       goto __pyx_L6;
     }
 
-    /* "lsqfit/_gsl.pyx":890
+    /* "lsqfit/_gsl.pyx":894
  *                 pass
  *             else:
  *                 raise ValueError('bad format for tol: ' + str(tol))             # <<<<<<<<<<<<<<
@@ -7380,21 +7455,21 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  *             tol = (tol, 1e-10, 1e-10)
  */
     /*else*/ {
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_tol); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 890, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_v_tol); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 894, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_1 = PyNumber_Add(__pyx_kp_s_bad_format_for_tol, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 890, __pyx_L1_error)
+      __pyx_t_1 = PyNumber_Add(__pyx_kp_s_bad_format_for_tol, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 894, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 890, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 894, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __Pyx_Raise(__pyx_t_2, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __PYX_ERR(0, 890, __pyx_L1_error)
+      __PYX_ERR(0, 894, __pyx_L1_error)
     }
     __pyx_L6:;
 
-    /* "lsqfit/_gsl.pyx":882
+    /* "lsqfit/_gsl.pyx":886
  *         elif abstol is not None:
  *             tol = (abstol, 1e-10, 1e-10)
  *         elif type(tol) in [list, tuple]:             # <<<<<<<<<<<<<<
@@ -7404,7 +7479,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":892
+  /* "lsqfit/_gsl.pyx":896
  *                 raise ValueError('bad format for tol: ' + str(tol))
  *         else:
  *             tol = (tol, 1e-10, 1e-10)             # <<<<<<<<<<<<<<
@@ -7412,7 +7487,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  *         self.maxit = maxit
  */
   /*else*/ {
-    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 892, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 896, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_v_tol);
     __Pyx_GIVEREF(__pyx_v_tol);
@@ -7428,77 +7503,77 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   }
   __pyx_L3:;
 
-  /* "lsqfit/_gsl.pyx":893
+  /* "lsqfit/_gsl.pyx":897
  *         else:
  *             tol = (tol, 1e-10, 1e-10)
  *         self.tol = tol             # <<<<<<<<<<<<<<
  *         self.maxit = maxit
  *         self.alg = alg
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_v_tol) < 0) __PYX_ERR(0, 893, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_v_tol) < 0) __PYX_ERR(0, 897, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":894
+  /* "lsqfit/_gsl.pyx":898
  *             tol = (tol, 1e-10, 1e-10)
  *         self.tol = tol
  *         self.maxit = maxit             # <<<<<<<<<<<<<<
  *         self.alg = alg
  *         self.x0 = x0
  */
-  __pyx_t_2 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 894, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 898, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_2) < 0) __PYX_ERR(0, 894, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_2) < 0) __PYX_ERR(0, 898, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":895
+  /* "lsqfit/_gsl.pyx":899
  *         self.tol = tol
  *         self.maxit = maxit
  *         self.alg = alg             # <<<<<<<<<<<<<<
  *         self.x0 = x0
  *         self.n = n
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 895, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 899, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":896
+  /* "lsqfit/_gsl.pyx":900
  *         self.maxit = maxit
  *         self.alg = alg
  *         self.x0 = x0             # <<<<<<<<<<<<<<
  *         self.n = n
  *         self.error =  None
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 896, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 900, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":897
+  /* "lsqfit/_gsl.pyx":901
  *         self.alg = alg
  *         self.x0 = x0
  *         self.n = n             # <<<<<<<<<<<<<<
  *         self.error =  None
  *         p = len(x0)
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 897, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_n); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 901, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_n, __pyx_t_2) < 0) __PYX_ERR(0, 897, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_n, __pyx_t_2) < 0) __PYX_ERR(0, 901, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":898
+  /* "lsqfit/_gsl.pyx":902
  *         self.x0 = x0
  *         self.n = n
  *         self.error =  None             # <<<<<<<<<<<<<<
  *         p = len(x0)
  *         covar = gsl_matrix_alloc(p, p)
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 898, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 902, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":899
+  /* "lsqfit/_gsl.pyx":903
  *         self.n = n
  *         self.error =  None
  *         p = len(x0)             # <<<<<<<<<<<<<<
  *         covar = gsl_matrix_alloc(p, p)
  *         if alg=="lmsder":
  */
-  __pyx_t_6 = PyObject_Length(((PyObject *)__pyx_v_x0)); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 899, __pyx_L1_error)
+  __pyx_t_6 = PyObject_Length(((PyObject *)__pyx_v_x0)); if (unlikely(__pyx_t_6 == ((Py_ssize_t)-1))) __PYX_ERR(0, 903, __pyx_L1_error)
   __pyx_v_p = __pyx_t_6;
 
-  /* "lsqfit/_gsl.pyx":900
+  /* "lsqfit/_gsl.pyx":904
  *         self.error =  None
  *         p = len(x0)
  *         covar = gsl_matrix_alloc(p, p)             # <<<<<<<<<<<<<<
@@ -7507,17 +7582,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_covar = gsl_matrix_alloc(__pyx_v_p, __pyx_v_p);
 
-  /* "lsqfit/_gsl.pyx":901
+  /* "lsqfit/_gsl.pyx":905
  *         p = len(x0)
  *         covar = gsl_matrix_alloc(p, p)
  *         if alg=="lmsder":             # <<<<<<<<<<<<<<
  *             T = gsl_multifit_fdfsolver_lmsder
  *         elif alg=="lmder":
  */
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmsder, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 901, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmsder, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 905, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "lsqfit/_gsl.pyx":902
+    /* "lsqfit/_gsl.pyx":906
  *         covar = gsl_matrix_alloc(p, p)
  *         if alg=="lmsder":
  *             T = gsl_multifit_fdfsolver_lmsder             # <<<<<<<<<<<<<<
@@ -7526,7 +7601,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     __pyx_v_T = gsl_multifit_fdfsolver_lmsder;
 
-    /* "lsqfit/_gsl.pyx":901
+    /* "lsqfit/_gsl.pyx":905
  *         p = len(x0)
  *         covar = gsl_matrix_alloc(p, p)
  *         if alg=="lmsder":             # <<<<<<<<<<<<<<
@@ -7536,17 +7611,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":903
+  /* "lsqfit/_gsl.pyx":907
  *         if alg=="lmsder":
  *             T = gsl_multifit_fdfsolver_lmsder
  *         elif alg=="lmder":             # <<<<<<<<<<<<<<
  *             T = gsl_multifit_fdfsolver_lmder
  *         elif alg=="lmniel":
  */
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmder, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 903, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmder, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 907, __pyx_L1_error)
   if (__pyx_t_5) {
 
-    /* "lsqfit/_gsl.pyx":904
+    /* "lsqfit/_gsl.pyx":908
  *             T = gsl_multifit_fdfsolver_lmsder
  *         elif alg=="lmder":
  *             T = gsl_multifit_fdfsolver_lmder             # <<<<<<<<<<<<<<
@@ -7555,7 +7630,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     __pyx_v_T = gsl_multifit_fdfsolver_lmder;
 
-    /* "lsqfit/_gsl.pyx":903
+    /* "lsqfit/_gsl.pyx":907
  *         if alg=="lmsder":
  *             T = gsl_multifit_fdfsolver_lmsder
  *         elif alg=="lmder":             # <<<<<<<<<<<<<<
@@ -7565,17 +7640,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":905
+  /* "lsqfit/_gsl.pyx":909
  *         elif alg=="lmder":
  *             T = gsl_multifit_fdfsolver_lmder
  *         elif alg=="lmniel":             # <<<<<<<<<<<<<<
  *             T = gsl_multifit_fdfsolver_lmniel
  *         else:
  */
-  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmniel, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 905, __pyx_L1_error)
+  __pyx_t_5 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_lmniel, Py_EQ)); if (unlikely(__pyx_t_5 < 0)) __PYX_ERR(0, 909, __pyx_L1_error)
   if (likely(__pyx_t_5)) {
 
-    /* "lsqfit/_gsl.pyx":906
+    /* "lsqfit/_gsl.pyx":910
  *             T = gsl_multifit_fdfsolver_lmder
  *         elif alg=="lmniel":
  *             T = gsl_multifit_fdfsolver_lmniel             # <<<<<<<<<<<<<<
@@ -7584,7 +7659,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     __pyx_v_T = gsl_multifit_fdfsolver_lmniel;
 
-    /* "lsqfit/_gsl.pyx":905
+    /* "lsqfit/_gsl.pyx":909
  *         elif alg=="lmder":
  *             T = gsl_multifit_fdfsolver_lmder
  *         elif alg=="lmniel":             # <<<<<<<<<<<<<<
@@ -7594,7 +7669,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     goto __pyx_L7;
   }
 
-  /* "lsqfit/_gsl.pyx":908
+  /* "lsqfit/_gsl.pyx":912
  *             T = gsl_multifit_fdfsolver_lmniel
  *         else:
  *             raise ValueError("Unknown algorithm: "+alg)             # <<<<<<<<<<<<<<
@@ -7602,25 +7677,25 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  *         cdef gsl_multifit_function_fdf gf
  */
   /*else*/ {
-    __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Unknown_algorithm, __pyx_v_alg); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 908, __pyx_L1_error)
+    __pyx_t_2 = PyNumber_Add(__pyx_kp_s_Unknown_algorithm, __pyx_v_alg); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 912, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 908, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_ValueError, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 912, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __Pyx_Raise(__pyx_t_1, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __PYX_ERR(0, 908, __pyx_L1_error)
+    __PYX_ERR(0, 912, __pyx_L1_error)
   }
   __pyx_L7:;
 
-  /* "lsqfit/_gsl.pyx":909
+  /* "lsqfit/_gsl.pyx":913
  *         else:
  *             raise ValueError("Unknown algorithm: "+alg)
  *         self.description = "alg = {}".format(alg)             # <<<<<<<<<<<<<<
  *         cdef gsl_multifit_function_fdf gf
  *         gf.f = &_c_f
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_alg_2, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 909, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_kp_s_alg_2, __pyx_n_s_format); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 913, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -7634,13 +7709,13 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_2, __pyx_t_3, __pyx_v_alg) : __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_v_alg);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 909, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 913, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_1) < 0) __PYX_ERR(0, 909, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_description, __pyx_t_1) < 0) __PYX_ERR(0, 913, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":911
+  /* "lsqfit/_gsl.pyx":915
  *         self.description = "alg = {}".format(alg)
  *         cdef gsl_multifit_function_fdf gf
  *         gf.f = &_c_f             # <<<<<<<<<<<<<<
@@ -7649,7 +7724,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.f = (&__pyx_f_6lsqfit_4_gsl__c_f);
 
-  /* "lsqfit/_gsl.pyx":912
+  /* "lsqfit/_gsl.pyx":916
  *         cdef gsl_multifit_function_fdf gf
  *         gf.f = &_c_f
  *         gf.df = &_c_df             # <<<<<<<<<<<<<<
@@ -7658,7 +7733,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.df = (&__pyx_f_6lsqfit_4_gsl__c_df);
 
-  /* "lsqfit/_gsl.pyx":913
+  /* "lsqfit/_gsl.pyx":917
  *         gf.f = &_c_f
  *         gf.df = &_c_df
  *         gf.fdf = &_c_fdf             # <<<<<<<<<<<<<<
@@ -7667,7 +7742,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.fdf = (&__pyx_f_6lsqfit_4_gsl__c_fdf);
 
-  /* "lsqfit/_gsl.pyx":914
+  /* "lsqfit/_gsl.pyx":918
  *         gf.df = &_c_df
  *         gf.fdf = &_c_fdf
  *         gf.p = p             # <<<<<<<<<<<<<<
@@ -7676,7 +7751,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.p = __pyx_v_p;
 
-  /* "lsqfit/_gsl.pyx":915
+  /* "lsqfit/_gsl.pyx":919
  *         gf.fdf = &_c_fdf
  *         gf.p = p
  *         gf.n = n             # <<<<<<<<<<<<<<
@@ -7685,7 +7760,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.n = __pyx_v_n;
 
-  /* "lsqfit/_gsl.pyx":916
+  /* "lsqfit/_gsl.pyx":920
  *         gf.p = p
  *         gf.n = n
  *         gf.params = NULL             # <<<<<<<<<<<<<<
@@ -7694,47 +7769,47 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_gf.params = NULL;
 
-  /* "lsqfit/_gsl.pyx":917
+  /* "lsqfit/_gsl.pyx":921
  *         gf.n = n
  *         gf.params = NULL
  *         old_p_f = _p_f             # <<<<<<<<<<<<<<
  *         _p_f = f
  *         _valder = gvar.valder(p*[0.0])  # workspace
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_p_f); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 917, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_p_f); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 921, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_v_old_p_f = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":918
+  /* "lsqfit/_gsl.pyx":922
  *         gf.params = NULL
  *         old_p_f = _p_f
  *         _p_f = f             # <<<<<<<<<<<<<<
  *         _valder = gvar.valder(p*[0.0])  # workspace
  *         s = gsl_multifit_fdfsolver_alloc(T, n, p)
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_f) < 0) __PYX_ERR(0, 918, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_f) < 0) __PYX_ERR(0, 922, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":919
+  /* "lsqfit/_gsl.pyx":923
  *         old_p_f = _p_f
  *         _p_f = f
  *         _valder = gvar.valder(p*[0.0])  # workspace             # <<<<<<<<<<<<<<
  *         s = gsl_multifit_fdfsolver_alloc(T, n, p)
  *         x0v = array2vector(x0)
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gvar); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 919, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_gvar); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_valder); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 919, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_valder); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_p); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 919, __pyx_L1_error)
+  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_p); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_7 = PyList_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 919, __pyx_L1_error)
+  __pyx_t_7 = PyList_New(1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(__pyx_float_0_0);
   __Pyx_GIVEREF(__pyx_float_0_0);
   PyList_SET_ITEM(__pyx_t_7, 0, __pyx_float_0_0);
-  __pyx_t_8 = PyNumber_Multiply(__pyx_t_2, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 919, __pyx_L1_error)
+  __pyx_t_8 = PyNumber_Multiply(__pyx_t_2, __pyx_t_7); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_8);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
@@ -7751,13 +7826,13 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_t_1 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_8);
   __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 919, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_valder_2, __pyx_t_1) < 0) __PYX_ERR(0, 919, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_valder_2, __pyx_t_1) < 0) __PYX_ERR(0, 923, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":920
+  /* "lsqfit/_gsl.pyx":924
  *         _p_f = f
  *         _valder = gvar.valder(p*[0.0])  # workspace
  *         s = gsl_multifit_fdfsolver_alloc(T, n, p)             # <<<<<<<<<<<<<<
@@ -7766,7 +7841,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_s = gsl_multifit_fdfsolver_alloc(__pyx_v_T, __pyx_v_n, __pyx_v_p);
 
-  /* "lsqfit/_gsl.pyx":921
+  /* "lsqfit/_gsl.pyx":925
  *         _valder = gvar.valder(p*[0.0])  # workspace
  *         s = gsl_multifit_fdfsolver_alloc(T, n, p)
  *         x0v = array2vector(x0)             # <<<<<<<<<<<<<<
@@ -7775,7 +7850,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_x0v = __pyx_f_6lsqfit_4_gsl_array2vector(((PyArrayObject *)__pyx_v_x0));
 
-  /* "lsqfit/_gsl.pyx":922
+  /* "lsqfit/_gsl.pyx":926
  *         s = gsl_multifit_fdfsolver_alloc(T, n, p)
  *         x0v = array2vector(x0)
  *         gsl_multifit_fdfsolver_set(s, &gf, x0v)             # <<<<<<<<<<<<<<
@@ -7784,7 +7859,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   (void)(gsl_multifit_fdfsolver_set(__pyx_v_s, (&__pyx_v_gf), __pyx_v_x0v));
 
-  /* "lsqfit/_gsl.pyx":923
+  /* "lsqfit/_gsl.pyx":927
  *         x0v = array2vector(x0)
  *         gsl_multifit_fdfsolver_set(s, &gf, x0v)
  *         J = gsl_matrix_alloc(n, p)             # <<<<<<<<<<<<<<
@@ -7793,7 +7868,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   __pyx_v_J = gsl_matrix_alloc(__pyx_v_n, __pyx_v_p);
 
-  /* "lsqfit/_gsl.pyx":924
+  /* "lsqfit/_gsl.pyx":928
  *         gsl_multifit_fdfsolver_set(s, &gf, x0v)
  *         J = gsl_matrix_alloc(n, p)
  *         for it in range(1, maxit+1):             # <<<<<<<<<<<<<<
@@ -7805,7 +7880,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   for (__pyx_t_6 = 1; __pyx_t_6 < __pyx_t_10; __pyx_t_6+=1) {
     __pyx_v_it = __pyx_t_6;
 
-    /* "lsqfit/_gsl.pyx":925
+    /* "lsqfit/_gsl.pyx":929
  *         J = gsl_matrix_alloc(n, p)
  *         for it in range(1, maxit+1):
  *             status = gsl_multifit_fdfsolver_iterate(s)             # <<<<<<<<<<<<<<
@@ -7814,63 +7889,63 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     __pyx_v_status = gsl_multifit_fdfsolver_iterate(__pyx_v_s);
 
-    /* "lsqfit/_gsl.pyx":926
+    /* "lsqfit/_gsl.pyx":930
  *         for it in range(1, maxit+1):
  *             status = gsl_multifit_fdfsolver_iterate(s)
  *             if _pyerr is not None:             # <<<<<<<<<<<<<<
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 926, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 930, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __pyx_t_5 = (__pyx_t_1 != Py_None);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_t_4 = (__pyx_t_5 != 0);
     if (__pyx_t_4) {
 
-      /* "lsqfit/_gsl.pyx":927
+      /* "lsqfit/_gsl.pyx":931
  *             status = gsl_multifit_fdfsolver_iterate(s)
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None             # <<<<<<<<<<<<<<
  *                 if hasattr(tmp[1],'with_traceback'):
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 927, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 931, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __pyx_t_3 = Py_None;
       __Pyx_INCREF(__pyx_t_3);
       __pyx_v_tmp = __pyx_t_1;
       __pyx_t_1 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_3) < 0) __PYX_ERR(0, 927, __pyx_L1_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_3) < 0) __PYX_ERR(0, 931, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
 
-      /* "lsqfit/_gsl.pyx":928
+      /* "lsqfit/_gsl.pyx":932
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  *                 else:
  */
-      __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 928, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 932, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_4 = __Pyx_HasAttr(__pyx_t_3, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(0, 928, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_HasAttr(__pyx_t_3, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_4 == ((int)-1))) __PYX_ERR(0, 932, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __pyx_t_5 = (__pyx_t_4 != 0);
       if (unlikely(__pyx_t_5)) {
 
-        /* "lsqfit/_gsl.pyx":929
+        /* "lsqfit/_gsl.pyx":933
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):
  *                     raise tmp[1].with_traceback(tmp[2]) # python3             # <<<<<<<<<<<<<<
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  */
-        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 929, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 933, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
-        __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 929, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 933, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 929, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 933, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __pyx_t_7 = NULL;
         if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
@@ -7885,14 +7960,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
         __pyx_t_3 = (__pyx_t_7) ? __Pyx_PyObject_Call2Args(__pyx_t_8, __pyx_t_7, __pyx_t_1) : __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_1);
         __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 929, __pyx_L1_error)
+        if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 933, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
         __Pyx_Raise(__pyx_t_3, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-        __PYX_ERR(0, 929, __pyx_L1_error)
+        __PYX_ERR(0, 933, __pyx_L1_error)
 
-        /* "lsqfit/_gsl.pyx":928
+        /* "lsqfit/_gsl.pyx":932
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
@@ -7901,7 +7976,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
       }
 
-      /* "lsqfit/_gsl.pyx":931
+      /* "lsqfit/_gsl.pyx":935
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2             # <<<<<<<<<<<<<<
@@ -7909,23 +7984,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  *                 self.error = (status, str(gsl_strerror(status)))
  */
       /*else*/ {
-        __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 931, __pyx_L1_error)
+        __pyx_t_3 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 935, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_3);
-        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 931, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 935, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
-        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 931, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_args); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 935, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 931, __pyx_L1_error)
+        __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 935, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_8);
         __Pyx_Raise(__pyx_t_3, __pyx_t_1, __pyx_t_8, 0);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
         __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
         __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-        __PYX_ERR(0, 931, __pyx_L1_error)
+        __PYX_ERR(0, 935, __pyx_L1_error)
       }
 
-      /* "lsqfit/_gsl.pyx":926
+      /* "lsqfit/_gsl.pyx":930
  *         for it in range(1, maxit+1):
  *             status = gsl_multifit_fdfsolver_iterate(s)
  *             if _pyerr is not None:             # <<<<<<<<<<<<<<
@@ -7934,7 +8009,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     }
 
-    /* "lsqfit/_gsl.pyx":932
+    /* "lsqfit/_gsl.pyx":936
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             elif status:             # <<<<<<<<<<<<<<
@@ -7944,21 +8019,21 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     __pyx_t_5 = (__pyx_v_status != 0);
     if (__pyx_t_5) {
 
-      /* "lsqfit/_gsl.pyx":933
+      /* "lsqfit/_gsl.pyx":937
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             elif status:
  *                 self.error = (status, str(gsl_strerror(status)))             # <<<<<<<<<<<<<<
  *                 criterion = 0
  *                 break
  */
-      __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 933, __pyx_L1_error)
+      __pyx_t_8 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 937, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
-      __pyx_t_1 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 933, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 937, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 933, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 937, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 933, __pyx_L1_error)
+      __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 937, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_GIVEREF(__pyx_t_8);
       PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_8);
@@ -7966,10 +8041,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_t_3);
       __pyx_t_8 = 0;
       __pyx_t_3 = 0;
-      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_1) < 0) __PYX_ERR(0, 933, __pyx_L1_error)
+      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_1) < 0) __PYX_ERR(0, 937, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "lsqfit/_gsl.pyx":934
+      /* "lsqfit/_gsl.pyx":938
  *             elif status:
  *                 self.error = (status, str(gsl_strerror(status)))
  *                 criterion = 0             # <<<<<<<<<<<<<<
@@ -7978,7 +8053,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
       __pyx_v_criterion = 0;
 
-      /* "lsqfit/_gsl.pyx":935
+      /* "lsqfit/_gsl.pyx":939
  *                 self.error = (status, str(gsl_strerror(status)))
  *                 criterion = 0
  *                 break             # <<<<<<<<<<<<<<
@@ -7987,7 +8062,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
       goto __pyx_L9_break;
 
-      /* "lsqfit/_gsl.pyx":932
+      /* "lsqfit/_gsl.pyx":936
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             elif status:             # <<<<<<<<<<<<<<
@@ -7996,7 +8071,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     }
 
-    /* "lsqfit/_gsl.pyx":936
+    /* "lsqfit/_gsl.pyx":940
  *                 criterion = 0
  *                 break
  *             if analyzer is not None:             # <<<<<<<<<<<<<<
@@ -8007,7 +8082,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     __pyx_t_4 = (__pyx_t_5 != 0);
     if (__pyx_t_4) {
 
-      /* "lsqfit/_gsl.pyx":937
+      /* "lsqfit/_gsl.pyx":941
  *                 break
  *             if analyzer is not None:
  *                 gsl_multifit_fdfsolver_jac(s, J)             # <<<<<<<<<<<<<<
@@ -8016,26 +8091,26 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
       (void)(gsl_multifit_fdfsolver_jac(__pyx_v_s, __pyx_v_J));
 
-      /* "lsqfit/_gsl.pyx":938
+      /* "lsqfit/_gsl.pyx":942
  *             if analyzer is not None:
  *                 gsl_multifit_fdfsolver_jac(s, J)
  *                 analyzer(vector2array(s.x), vector2array(s.f),             # <<<<<<<<<<<<<<
  *                         matrix2array(J))
  *             if len(tol) == 2:
  */
-      __pyx_t_3 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->x)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 938, __pyx_L1_error)
+      __pyx_t_3 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->x)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 942, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      __pyx_t_8 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->f)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 938, __pyx_L1_error)
+      __pyx_t_8 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->f)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 942, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_8);
 
-      /* "lsqfit/_gsl.pyx":939
+      /* "lsqfit/_gsl.pyx":943
  *                 gsl_multifit_fdfsolver_jac(s, J)
  *                 analyzer(vector2array(s.x), vector2array(s.f),
  *                         matrix2array(J))             # <<<<<<<<<<<<<<
  *             if len(tol) == 2:
  *                 rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
  */
-      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_J)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 939, __pyx_L1_error)
+      __pyx_t_7 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_J)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 943, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_INCREF(__pyx_v_analyzer);
       __pyx_t_2 = __pyx_v_analyzer; __pyx_t_11 = NULL;
@@ -8053,7 +8128,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       #if CYTHON_FAST_PYCALL
       if (PyFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[4] = {__pyx_t_11, __pyx_t_3, __pyx_t_8, __pyx_t_7};
-        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_12, 3+__pyx_t_12); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 938, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_12, 3+__pyx_t_12); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 942, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -8064,7 +8139,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       #if CYTHON_FAST_PYCCALL
       if (__Pyx_PyFastCFunction_Check(__pyx_t_2)) {
         PyObject *__pyx_temp[4] = {__pyx_t_11, __pyx_t_3, __pyx_t_8, __pyx_t_7};
-        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_12, 3+__pyx_t_12); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 938, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyCFunction_FastCall(__pyx_t_2, __pyx_temp+1-__pyx_t_12, 3+__pyx_t_12); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 942, __pyx_L1_error)
         __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -8073,7 +8148,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       } else
       #endif
       {
-        __pyx_t_13 = PyTuple_New(3+__pyx_t_12); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 938, __pyx_L1_error)
+        __pyx_t_13 = PyTuple_New(3+__pyx_t_12); if (unlikely(!__pyx_t_13)) __PYX_ERR(0, 942, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_13);
         if (__pyx_t_11) {
           __Pyx_GIVEREF(__pyx_t_11); PyTuple_SET_ITEM(__pyx_t_13, 0, __pyx_t_11); __pyx_t_11 = NULL;
@@ -8087,14 +8162,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
         __pyx_t_3 = 0;
         __pyx_t_8 = 0;
         __pyx_t_7 = 0;
-        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 938, __pyx_L1_error)
+        __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_13, NULL); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 942, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_1);
         __Pyx_DECREF(__pyx_t_13); __pyx_t_13 = 0;
       }
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-      /* "lsqfit/_gsl.pyx":936
+      /* "lsqfit/_gsl.pyx":940
  *                 criterion = 0
  *                 break
  *             if analyzer is not None:             # <<<<<<<<<<<<<<
@@ -8103,35 +8178,35 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
     }
 
-    /* "lsqfit/_gsl.pyx":940
+    /* "lsqfit/_gsl.pyx":944
  *                 analyzer(vector2array(s.x), vector2array(s.f),
  *                         matrix2array(J))
  *             if len(tol) == 2:             # <<<<<<<<<<<<<<
  *                 rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
  *                 criterion = 1 if rval != GSL_CONTINUE else 0
  */
-    __pyx_t_14 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_14 == ((Py_ssize_t)-1))) __PYX_ERR(0, 940, __pyx_L1_error)
+    __pyx_t_14 = PyObject_Length(__pyx_v_tol); if (unlikely(__pyx_t_14 == ((Py_ssize_t)-1))) __PYX_ERR(0, 944, __pyx_L1_error)
     __pyx_t_4 = ((__pyx_t_14 == 2) != 0);
     if (__pyx_t_4) {
 
-      /* "lsqfit/_gsl.pyx":941
+      /* "lsqfit/_gsl.pyx":945
  *                         matrix2array(J))
  *             if len(tol) == 2:
  *                 rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])             # <<<<<<<<<<<<<<
  *                 criterion = 1 if rval != GSL_CONTINUE else 0
  *             else:
  */
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 941, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 945, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 941, __pyx_L1_error)
+      __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 945, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 941, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 945, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_16 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_16 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 941, __pyx_L1_error)
+      __pyx_t_16 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_16 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 945, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_v_rval = gsl_multifit_test_delta(__pyx_v_s->dx, __pyx_v_s->x, __pyx_t_15, __pyx_t_16);
 
-      /* "lsqfit/_gsl.pyx":942
+      /* "lsqfit/_gsl.pyx":946
  *             if len(tol) == 2:
  *                 rval = gsl_multifit_test_delta(s.dx, s.x, tol[1], tol[0])
  *                 criterion = 1 if rval != GSL_CONTINUE else 0             # <<<<<<<<<<<<<<
@@ -8145,7 +8220,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       }
       __pyx_v_criterion = __pyx_t_12;
 
-      /* "lsqfit/_gsl.pyx":940
+      /* "lsqfit/_gsl.pyx":944
  *                 analyzer(vector2array(s.x), vector2array(s.f),
  *                         matrix2array(J))
  *             if len(tol) == 2:             # <<<<<<<<<<<<<<
@@ -8155,7 +8230,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
       goto __pyx_L13;
     }
 
-    /* "lsqfit/_gsl.pyx":944
+    /* "lsqfit/_gsl.pyx":948
  *                 criterion = 1 if rval != GSL_CONTINUE else 0
  *             else:
  *                 rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)             # <<<<<<<<<<<<<<
@@ -8163,23 +8238,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  *                 break
  */
     /*else*/ {
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_16 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_16 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_16 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_16 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_15 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_15 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_tol, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_17 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_17 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 944, __pyx_L1_error)
+      __pyx_t_17 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_17 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 948, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_v_rval = gsl_multifit_fdfsolver_test(__pyx_v_s, __pyx_t_16, __pyx_t_15, __pyx_t_17, (&__pyx_v_criterion));
     }
     __pyx_L13:;
 
-    /* "lsqfit/_gsl.pyx":945
+    /* "lsqfit/_gsl.pyx":949
  *             else:
  *                 rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
  *             if rval != GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -8189,7 +8264,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
     __pyx_t_4 = ((__pyx_v_rval != GSL_CONTINUE) != 0);
     if (__pyx_t_4) {
 
-      /* "lsqfit/_gsl.pyx":946
+      /* "lsqfit/_gsl.pyx":950
  *                 rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
  *             if rval != GSL_CONTINUE:
  *                 break             # <<<<<<<<<<<<<<
@@ -8198,7 +8273,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
       goto __pyx_L9_break;
 
-      /* "lsqfit/_gsl.pyx":945
+      /* "lsqfit/_gsl.pyx":949
  *             else:
  *                 rval = gsl_multifit_fdfsolver_test(s, tol[0], tol[1], tol[2], &criterion)
  *             if rval != GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -8209,7 +8284,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   }
   __pyx_L9_break:;
 
-  /* "lsqfit/_gsl.pyx":948
+  /* "lsqfit/_gsl.pyx":952
  *                 break
  * 
  *         gsl_multifit_fdfsolver_jac(s, J)             # <<<<<<<<<<<<<<
@@ -8218,7 +8293,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   (void)(gsl_multifit_fdfsolver_jac(__pyx_v_s, __pyx_v_J));
 
-  /* "lsqfit/_gsl.pyx":949
+  /* "lsqfit/_gsl.pyx":953
  * 
  *         gsl_multifit_fdfsolver_jac(s, J)
  *         gsl_multifit_covar(J, 0.0, covar)             # <<<<<<<<<<<<<<
@@ -8227,79 +8302,79 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   (void)(gsl_multifit_covar(__pyx_v_J, 0.0, __pyx_v_covar));
 
-  /* "lsqfit/_gsl.pyx":950
+  /* "lsqfit/_gsl.pyx":954
  *         gsl_multifit_fdfsolver_jac(s, J)
  *         gsl_multifit_covar(J, 0.0, covar)
  *         self.cov = matrix2array(covar)             # <<<<<<<<<<<<<<
  *         self.x = vector2array(s.x)
  *         self.f = vector2array(s.f)
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_covar)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 950, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_covar)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 954, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_cov, __pyx_t_1) < 0) __PYX_ERR(0, 950, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_cov, __pyx_t_1) < 0) __PYX_ERR(0, 954, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":951
+  /* "lsqfit/_gsl.pyx":955
  *         gsl_multifit_covar(J, 0.0, covar)
  *         self.cov = matrix2array(covar)
  *         self.x = vector2array(s.x)             # <<<<<<<<<<<<<<
  *         self.f = vector2array(s.f)
  *         self.J = matrix2array(J)
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 951, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->x)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 955, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_1) < 0) __PYX_ERR(0, 951, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_1) < 0) __PYX_ERR(0, 955, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":952
+  /* "lsqfit/_gsl.pyx":956
  *         self.cov = matrix2array(covar)
  *         self.x = vector2array(s.x)
  *         self.f = vector2array(s.f)             # <<<<<<<<<<<<<<
  *         self.J = matrix2array(J)
  *         self.nit = it
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->f)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 952, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_s->f)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 956, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_1) < 0) __PYX_ERR(0, 952, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_1) < 0) __PYX_ERR(0, 956, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":953
+  /* "lsqfit/_gsl.pyx":957
  *         self.x = vector2array(s.x)
  *         self.f = vector2array(s.f)
  *         self.J = matrix2array(J)             # <<<<<<<<<<<<<<
  *         self.nit = it
  *         self.stopping_criterion = criterion
  */
-  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_J)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 953, __pyx_L1_error)
+  __pyx_t_1 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_matrix2array(__pyx_v_J)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 957, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_J, __pyx_t_1) < 0) __PYX_ERR(0, 953, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_J, __pyx_t_1) < 0) __PYX_ERR(0, 957, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":954
+  /* "lsqfit/_gsl.pyx":958
  *         self.f = vector2array(s.f)
  *         self.J = matrix2array(J)
  *         self.nit = it             # <<<<<<<<<<<<<<
  *         self.stopping_criterion = criterion
  *         if it>=maxit and rval==GSL_CONTINUE:
  */
-  __pyx_t_1 = PyInt_FromSsize_t(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 954, __pyx_L1_error)
+  __pyx_t_1 = PyInt_FromSsize_t(__pyx_v_it); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 958, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_1) < 0) __PYX_ERR(0, 954, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_1) < 0) __PYX_ERR(0, 958, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":955
+  /* "lsqfit/_gsl.pyx":959
  *         self.J = matrix2array(J)
  *         self.nit = it
  *         self.stopping_criterion = criterion             # <<<<<<<<<<<<<<
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error ="multifit didn't convernge in %d iterations" % maxit
  */
-  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_criterion); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 955, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_criterion); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 959, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_t_1) < 0) __PYX_ERR(0, 955, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_stopping_criterion, __pyx_t_1) < 0) __PYX_ERR(0, 959, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":956
+  /* "lsqfit/_gsl.pyx":960
  *         self.nit = it
  *         self.stopping_criterion = criterion
  *         if it>=maxit and rval==GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -8317,22 +8392,22 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   __pyx_L16_bool_binop_done:;
   if (__pyx_t_4) {
 
-    /* "lsqfit/_gsl.pyx":957
+    /* "lsqfit/_gsl.pyx":961
  *         self.stopping_criterion = criterion
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error ="multifit didn't convernge in %d iterations" % maxit             # <<<<<<<<<<<<<<
  *         self.results = None
  *         gsl_multifit_fdfsolver_free(s)
  */
-    __pyx_t_1 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 957, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyInt_From_unsigned_int(__pyx_v_maxit); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 961, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_2 = __Pyx_PyString_Format(__pyx_kp_s_multifit_didn_t_convernge_in_d_i, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 957, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyString_Format(__pyx_kp_s_multifit_didn_t_convernge_in_d_i, __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 961, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_2) < 0) __PYX_ERR(0, 957, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_2) < 0) __PYX_ERR(0, 961, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "lsqfit/_gsl.pyx":956
+    /* "lsqfit/_gsl.pyx":960
  *         self.nit = it
  *         self.stopping_criterion = criterion
  *         if it>=maxit and rval==GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -8341,16 +8416,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   }
 
-  /* "lsqfit/_gsl.pyx":958
+  /* "lsqfit/_gsl.pyx":962
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error ="multifit didn't convernge in %d iterations" % maxit
  *         self.results = None             # <<<<<<<<<<<<<<
  *         gsl_multifit_fdfsolver_free(s)
  *         gsl_matrix_free(covar)
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_results, Py_None) < 0) __PYX_ERR(0, 958, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_results, Py_None) < 0) __PYX_ERR(0, 962, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":959
+  /* "lsqfit/_gsl.pyx":963
  *             self.error ="multifit didn't convernge in %d iterations" % maxit
  *         self.results = None
  *         gsl_multifit_fdfsolver_free(s)             # <<<<<<<<<<<<<<
@@ -8359,7 +8434,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   gsl_multifit_fdfsolver_free(__pyx_v_s);
 
-  /* "lsqfit/_gsl.pyx":960
+  /* "lsqfit/_gsl.pyx":964
  *         self.results = None
  *         gsl_multifit_fdfsolver_free(s)
  *         gsl_matrix_free(covar)             # <<<<<<<<<<<<<<
@@ -8368,7 +8443,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   gsl_matrix_free(__pyx_v_covar);
 
-  /* "lsqfit/_gsl.pyx":961
+  /* "lsqfit/_gsl.pyx":965
  *         gsl_multifit_fdfsolver_free(s)
  *         gsl_matrix_free(covar)
  *         gsl_matrix_free(J)             # <<<<<<<<<<<<<<
@@ -8377,7 +8452,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   gsl_matrix_free(__pyx_v_J);
 
-  /* "lsqfit/_gsl.pyx":962
+  /* "lsqfit/_gsl.pyx":966
  *         gsl_matrix_free(covar)
  *         gsl_matrix_free(J)
  *         gsl_vector_free(x0v)             # <<<<<<<<<<<<<<
@@ -8386,16 +8461,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
  */
   gsl_vector_free(__pyx_v_x0v);
 
-  /* "lsqfit/_gsl.pyx":963
+  /* "lsqfit/_gsl.pyx":967
  *         gsl_matrix_free(J)
  *         gsl_vector_free(x0v)
  *         _p_f = old_p_f             # <<<<<<<<<<<<<<
  * 
  * # multiminex
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_old_p_f) < 0) __PYX_ERR(0, 963, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_f, __pyx_v_old_p_f) < 0) __PYX_ERR(0, 967, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":856
+  /* "lsqfit/_gsl.pyx":860
  *     """
  * 
  *     def __init__(             # <<<<<<<<<<<<<<
@@ -8434,7 +8509,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_15gsl_v1_multifit___init__(CYTHON_UNUSED
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":1009
+/* "lsqfit/_gsl.pyx":1013
  *             message otherwise.
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):             # <<<<<<<<<<<<<<
@@ -8463,7 +8538,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_1__init__(PyObject *__p
     values[5] = ((PyObject *)((PyObject*)__pyx_float_1_0));
     values[6] = ((PyObject *)((PyObject*)__pyx_n_s_nmsimplex2));
 
-    /* "lsqfit/_gsl.pyx":1011
+    /* "lsqfit/_gsl.pyx":1015
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):
  *                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
  *                  analyzer=None):             # <<<<<<<<<<<<<<
@@ -8503,13 +8578,13 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_1__init__(PyObject *__p
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x0)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, 1); __PYX_ERR(0, 1009, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, 1); __PYX_ERR(0, 1013, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_f)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, 2); __PYX_ERR(0, 1009, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, 2); __PYX_ERR(0, 1013, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
@@ -8543,7 +8618,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_1__init__(PyObject *__p
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 1009, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__init__") < 0)) __PYX_ERR(0, 1013, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -8568,12 +8643,12 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_1__init__(PyObject *__p
     __pyx_v_x0 = ((PyArrayObject *)values[1]);
     __pyx_v_f = values[2];
     if (values[3]) {
-      __pyx_v_tol = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_tol == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1010, __pyx_L3_error)
+      __pyx_v_tol = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_tol == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1014, __pyx_L3_error)
     } else {
       __pyx_v_tol = ((double)((double)1e-4));
     }
     if (values[4]) {
-      __pyx_v_maxit = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_maxit == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1010, __pyx_L3_error)
+      __pyx_v_maxit = __Pyx_PyInt_As_int(values[4]); if (unlikely((__pyx_v_maxit == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 1014, __pyx_L3_error)
     } else {
       __pyx_v_maxit = ((int)((int)0x3E8));
     }
@@ -8583,16 +8658,16 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_1__init__(PyObject *__p
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1009, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__init__", 0, 3, 8, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1013, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("lsqfit._gsl.gsl_multiminex.__init__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 1009, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_x0), __pyx_ptype_5numpy_ndarray, 1, "x0", 0))) __PYX_ERR(0, 1013, __pyx_L1_error)
   __pyx_r = __pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(__pyx_self, __pyx_v_self, __pyx_v_x0, __pyx_v_f, __pyx_v_tol, __pyx_v_maxit, __pyx_v_step, __pyx_v_alg, __pyx_v_analyzer);
 
-  /* "lsqfit/_gsl.pyx":1009
+  /* "lsqfit/_gsl.pyx":1013
  *             message otherwise.
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):             # <<<<<<<<<<<<<<
@@ -8653,11 +8728,11 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   __pyx_pybuffernd_x0.rcbuffer = &__pyx_pybuffer_x0;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 1009, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_x0.rcbuffer->pybuffer, (PyObject*)__pyx_v_x0, &__Pyx_TypeInfo_nn___pyx_t_5numpy_float_t, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 1013, __pyx_L1_error)
   }
   __pyx_pybuffernd_x0.diminfo[0].strides = __pyx_pybuffernd_x0.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x0.diminfo[0].shape = __pyx_pybuffernd_x0.rcbuffer->pybuffer.shape[0];
 
-  /* "lsqfit/_gsl.pyx":1013
+  /* "lsqfit/_gsl.pyx":1017
  *                  analyzer=None):
  *         global _p_fs, _pyerr
  *         cdef gsl_vector* vx0 = array2vector(x0)             # <<<<<<<<<<<<<<
@@ -8666,7 +8741,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   __pyx_v_vx0 = __pyx_f_6lsqfit_4_gsl_array2vector(((PyArrayObject *)__pyx_v_x0));
 
-  /* "lsqfit/_gsl.pyx":1014
+  /* "lsqfit/_gsl.pyx":1018
  *         global _p_fs, _pyerr
  *         cdef gsl_vector* vx0 = array2vector(x0)
  *         cdef int dim = vx0.size             # <<<<<<<<<<<<<<
@@ -8676,26 +8751,26 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   __pyx_t_1 = __pyx_v_vx0->size;
   __pyx_v_dim = __pyx_t_1;
 
-  /* "lsqfit/_gsl.pyx":1015
+  /* "lsqfit/_gsl.pyx":1019
  *         cdef gsl_vector* vx0 = array2vector(x0)
  *         cdef int dim = vx0.size
  *         cdef gsl_vector* ss = array2vector(numpy.array(dim*[step]))             # <<<<<<<<<<<<<<
  *         cdef gsl_multimin_function fcn
  *         cdef int i, status, rval
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_numpy); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_array); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_dim); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_int(__pyx_v_dim); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_5 = PyList_New(1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_v_step);
   __Pyx_GIVEREF(__pyx_v_step);
   PyList_SET_ITEM(__pyx_t_5, 0, __pyx_v_step);
-  __pyx_t_6 = PyNumber_Multiply(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  __pyx_t_6 = PyNumber_Multiply(__pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -8712,23 +8787,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   __pyx_t_2 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_6) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_6);
   __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1015, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1019, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 1015, __pyx_L1_error)
+  if (!(likely(((__pyx_t_2) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_2, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 1019, __pyx_L1_error)
   __pyx_v_ss = __pyx_f_6lsqfit_4_gsl_array2vector(((PyArrayObject *)__pyx_t_2));
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1023
+  /* "lsqfit/_gsl.pyx":1027
  *         cdef double fx
  * 
  *         super(gsl_multiminex, self).__init__()             # <<<<<<<<<<<<<<
  *         old_p_fs = _p_fs
  *         _p_fs = f
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_gsl_multiminex); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1023, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_gsl_multiminex); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1027, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1023, __pyx_L1_error)
+  __pyx_t_6 = PyTuple_New(2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1027, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_t_4);
@@ -8736,10 +8811,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   __Pyx_GIVEREF(__pyx_v_self);
   PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_self);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_6, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1023, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_builtin_super, __pyx_t_6, NULL); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1027, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_init); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1023, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_init); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1027, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = NULL;
@@ -8754,84 +8829,84 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   }
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_CallOneArg(__pyx_t_6, __pyx_t_4) : __Pyx_PyObject_CallNoArg(__pyx_t_6);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1023, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1027, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1024
+  /* "lsqfit/_gsl.pyx":1028
  * 
  *         super(gsl_multiminex, self).__init__()
  *         old_p_fs = _p_fs             # <<<<<<<<<<<<<<
  *         _p_fs = f
  *         # preserve inputs
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_p_fs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1024, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_p_fs); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1028, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_v_old_p_fs = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1025
+  /* "lsqfit/_gsl.pyx":1029
  *         super(gsl_multiminex, self).__init__()
  *         old_p_fs = _p_fs
  *         _p_fs = f             # <<<<<<<<<<<<<<
  *         # preserve inputs
  *         self.x0 = x0
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, __pyx_v_f) < 0) __PYX_ERR(0, 1025, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, __pyx_v_f) < 0) __PYX_ERR(0, 1029, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1027
+  /* "lsqfit/_gsl.pyx":1031
  *         _p_fs = f
  *         # preserve inputs
  *         self.x0 = x0             # <<<<<<<<<<<<<<
  *         self.tol = tol
  *         self.maxit = maxit
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 1027, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x0, ((PyObject *)__pyx_v_x0)) < 0) __PYX_ERR(0, 1031, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1028
+  /* "lsqfit/_gsl.pyx":1032
  *         # preserve inputs
  *         self.x0 = x0
  *         self.tol = tol             # <<<<<<<<<<<<<<
  *         self.maxit = maxit
  *         self.step = step
  */
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_tol); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1028, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_tol); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1032, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_t_2) < 0) __PYX_ERR(0, 1028, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_tol, __pyx_t_2) < 0) __PYX_ERR(0, 1032, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1029
+  /* "lsqfit/_gsl.pyx":1033
  *         self.x0 = x0
  *         self.tol = tol
  *         self.maxit = maxit             # <<<<<<<<<<<<<<
  *         self.step = step
  *         self.alg = alg
  */
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1029, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1033, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_2) < 0) __PYX_ERR(0, 1029, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_maxit, __pyx_t_2) < 0) __PYX_ERR(0, 1033, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1030
+  /* "lsqfit/_gsl.pyx":1034
  *         self.tol = tol
  *         self.maxit = maxit
  *         self.step = step             # <<<<<<<<<<<<<<
  *         self.alg = alg
  * 
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_step, __pyx_v_step) < 0) __PYX_ERR(0, 1030, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_step, __pyx_v_step) < 0) __PYX_ERR(0, 1034, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1031
+  /* "lsqfit/_gsl.pyx":1035
  *         self.maxit = maxit
  *         self.step = step
  *         self.alg = alg             # <<<<<<<<<<<<<<
  * 
  *         fcn.f = &_c_fs
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 1031, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_alg, __pyx_v_alg) < 0) __PYX_ERR(0, 1035, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1033
+  /* "lsqfit/_gsl.pyx":1037
  *         self.alg = alg
  * 
  *         fcn.f = &_c_fs             # <<<<<<<<<<<<<<
@@ -8840,7 +8915,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   __pyx_v_fcn.f = (&__pyx_f_6lsqfit_4_gsl__c_fs);
 
-  /* "lsqfit/_gsl.pyx":1034
+  /* "lsqfit/_gsl.pyx":1038
  * 
  *         fcn.f = &_c_fs
  *         fcn.n = dim             # <<<<<<<<<<<<<<
@@ -8849,7 +8924,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   __pyx_v_fcn.n = __pyx_v_dim;
 
-  /* "lsqfit/_gsl.pyx":1035
+  /* "lsqfit/_gsl.pyx":1039
  *         fcn.f = &_c_fs
  *         fcn.n = dim
  *         fcn.params = NULL             # <<<<<<<<<<<<<<
@@ -8858,17 +8933,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   __pyx_v_fcn.params = NULL;
 
-  /* "lsqfit/_gsl.pyx":1036
+  /* "lsqfit/_gsl.pyx":1040
  *         fcn.n = dim
  *         fcn.params = NULL
  *         if alg=="nmsimplex":             # <<<<<<<<<<<<<<
  *             s = gsl_multimin_fminimizer_alloc(
  *                 gsl_multimin_fminimizer_nmsimplex, dim
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_nmsimplex, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 1036, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_nmsimplex, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 1040, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "lsqfit/_gsl.pyx":1037
+    /* "lsqfit/_gsl.pyx":1041
  *         fcn.params = NULL
  *         if alg=="nmsimplex":
  *             s = gsl_multimin_fminimizer_alloc(             # <<<<<<<<<<<<<<
@@ -8877,7 +8952,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     __pyx_v_s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex, __pyx_v_dim);
 
-    /* "lsqfit/_gsl.pyx":1036
+    /* "lsqfit/_gsl.pyx":1040
  *         fcn.n = dim
  *         fcn.params = NULL
  *         if alg=="nmsimplex":             # <<<<<<<<<<<<<<
@@ -8887,17 +8962,17 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":1040
+  /* "lsqfit/_gsl.pyx":1044
  *                 gsl_multimin_fminimizer_nmsimplex, dim
  *                 )
  *         elif alg=="nmsimplex2rand":             # <<<<<<<<<<<<<<
  *             s = gsl_multimin_fminimizer_alloc(
  *                 gsl_multimin_fminimizer_nmsimplex2rand, dim
  */
-  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_nmsimplex2rand, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 1040, __pyx_L1_error)
+  __pyx_t_7 = (__Pyx_PyString_Equals(__pyx_v_alg, __pyx_n_s_nmsimplex2rand, Py_EQ)); if (unlikely(__pyx_t_7 < 0)) __PYX_ERR(0, 1044, __pyx_L1_error)
   if (__pyx_t_7) {
 
-    /* "lsqfit/_gsl.pyx":1041
+    /* "lsqfit/_gsl.pyx":1045
  *                 )
  *         elif alg=="nmsimplex2rand":
  *             s = gsl_multimin_fminimizer_alloc(             # <<<<<<<<<<<<<<
@@ -8906,7 +8981,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     __pyx_v_s = gsl_multimin_fminimizer_alloc(gsl_multimin_fminimizer_nmsimplex2rand, __pyx_v_dim);
 
-    /* "lsqfit/_gsl.pyx":1040
+    /* "lsqfit/_gsl.pyx":1044
  *                 gsl_multimin_fminimizer_nmsimplex, dim
  *                 )
  *         elif alg=="nmsimplex2rand":             # <<<<<<<<<<<<<<
@@ -8916,7 +8991,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
     goto __pyx_L3;
   }
 
-  /* "lsqfit/_gsl.pyx":1045
+  /* "lsqfit/_gsl.pyx":1049
  *                 )
  *         else:
  *             s = gsl_multimin_fminimizer_alloc(             # <<<<<<<<<<<<<<
@@ -8925,7 +9000,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   /*else*/ {
 
-    /* "lsqfit/_gsl.pyx":1046
+    /* "lsqfit/_gsl.pyx":1050
  *         else:
  *             s = gsl_multimin_fminimizer_alloc(
  *                 gsl_multimin_fminimizer_nmsimplex2, dim             # <<<<<<<<<<<<<<
@@ -8936,7 +9011,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   }
   __pyx_L3:;
 
-  /* "lsqfit/_gsl.pyx":1048
+  /* "lsqfit/_gsl.pyx":1052
  *                 gsl_multimin_fminimizer_nmsimplex2, dim
  *                 )
  *         gsl_multimin_fminimizer_set(s, &fcn, vx0, ss)             # <<<<<<<<<<<<<<
@@ -8945,7 +9020,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   (void)(gsl_multimin_fminimizer_set(__pyx_v_s, (&__pyx_v_fcn), __pyx_v_vx0, __pyx_v_ss));
 
-  /* "lsqfit/_gsl.pyx":1050
+  /* "lsqfit/_gsl.pyx":1054
  *         gsl_multimin_fminimizer_set(s, &fcn, vx0, ss)
  * 
  *         for it in range(1, maxit+1):             # <<<<<<<<<<<<<<
@@ -8957,7 +9032,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   for (__pyx_t_10 = 1; __pyx_t_10 < __pyx_t_9; __pyx_t_10+=1) {
     __pyx_v_it = __pyx_t_10;
 
-    /* "lsqfit/_gsl.pyx":1051
+    /* "lsqfit/_gsl.pyx":1055
  * 
  *         for it in range(1, maxit+1):
  *             status = gsl_multimin_fminimizer_iterate(s)             # <<<<<<<<<<<<<<
@@ -8966,63 +9041,63 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     __pyx_v_status = gsl_multimin_fminimizer_iterate(__pyx_v_s);
 
-    /* "lsqfit/_gsl.pyx":1052
+    /* "lsqfit/_gsl.pyx":1056
  *         for it in range(1, maxit+1):
  *             status = gsl_multimin_fminimizer_iterate(s)
  *             if _pyerr is not None:             # <<<<<<<<<<<<<<
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1052, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1056, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_t_7 = (__pyx_t_2 != Py_None);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_t_11 = (__pyx_t_7 != 0);
     if (__pyx_t_11) {
 
-      /* "lsqfit/_gsl.pyx":1053
+      /* "lsqfit/_gsl.pyx":1057
  *             status = gsl_multimin_fminimizer_iterate(s)
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None             # <<<<<<<<<<<<<<
  *                 if hasattr(tmp[1],'with_traceback'):
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1053, __pyx_L1_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1057, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __pyx_t_6 = Py_None;
       __Pyx_INCREF(__pyx_t_6);
       __pyx_v_tmp = __pyx_t_2;
       __pyx_t_2 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_6) < 0) __PYX_ERR(0, 1053, __pyx_L1_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_6) < 0) __PYX_ERR(0, 1057, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-      /* "lsqfit/_gsl.pyx":1054
+      /* "lsqfit/_gsl.pyx":1058
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  *                 else:
  */
-      __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1054, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1058, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_11 = __Pyx_HasAttr(__pyx_t_6, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 1054, __pyx_L1_error)
+      __pyx_t_11 = __Pyx_HasAttr(__pyx_t_6, __pyx_n_s_with_traceback); if (unlikely(__pyx_t_11 == ((int)-1))) __PYX_ERR(0, 1058, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __pyx_t_7 = (__pyx_t_11 != 0);
       if (unlikely(__pyx_t_7)) {
 
-        /* "lsqfit/_gsl.pyx":1055
+        /* "lsqfit/_gsl.pyx":1059
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):
  *                     raise tmp[1].with_traceback(tmp[2]) # python3             # <<<<<<<<<<<<<<
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  */
-        __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1055, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1059, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
-        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1055, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_with_traceback); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1059, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1055, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1059, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __pyx_t_5 = NULL;
         if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_4))) {
@@ -9037,14 +9112,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
         __pyx_t_6 = (__pyx_t_5) ? __Pyx_PyObject_Call2Args(__pyx_t_4, __pyx_t_5, __pyx_t_2) : __Pyx_PyObject_CallOneArg(__pyx_t_4, __pyx_t_2);
         __Pyx_XDECREF(__pyx_t_5); __pyx_t_5 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1055, __pyx_L1_error)
+        if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1059, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
         __Pyx_Raise(__pyx_t_6, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-        __PYX_ERR(0, 1055, __pyx_L1_error)
+        __PYX_ERR(0, 1059, __pyx_L1_error)
 
-        /* "lsqfit/_gsl.pyx":1054
+        /* "lsqfit/_gsl.pyx":1058
  *             if _pyerr is not None:
  *                 tmp, _pyerr = _pyerr, None
  *                 if hasattr(tmp[1],'with_traceback'):             # <<<<<<<<<<<<<<
@@ -9053,7 +9128,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
       }
 
-      /* "lsqfit/_gsl.pyx":1057
+      /* "lsqfit/_gsl.pyx":1061
  *                     raise tmp[1].with_traceback(tmp[2]) # python3
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2             # <<<<<<<<<<<<<<
@@ -9061,23 +9136,23 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  *                 self.error = (status, str(gsl_strerror(status)))
  */
       /*else*/ {
-        __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1057, __pyx_L1_error)
+        __pyx_t_6 = __Pyx_GetItemInt(__pyx_v_tmp, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1061, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_6);
-        __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1057, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_tmp, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1061, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
-        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1057, __pyx_L1_error)
+        __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_args); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1061, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_2);
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1057, __pyx_L1_error)
+        __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_tmp, 2, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1061, __pyx_L1_error)
         __Pyx_GOTREF(__pyx_t_4);
         __Pyx_Raise(__pyx_t_6, __pyx_t_2, __pyx_t_4, 0);
         __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
         __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
         __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-        __PYX_ERR(0, 1057, __pyx_L1_error)
+        __PYX_ERR(0, 1061, __pyx_L1_error)
       }
 
-      /* "lsqfit/_gsl.pyx":1052
+      /* "lsqfit/_gsl.pyx":1056
  *         for it in range(1, maxit+1):
  *             status = gsl_multimin_fminimizer_iterate(s)
  *             if _pyerr is not None:             # <<<<<<<<<<<<<<
@@ -9086,7 +9161,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     }
 
-    /* "lsqfit/_gsl.pyx":1058
+    /* "lsqfit/_gsl.pyx":1062
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             if status:             # <<<<<<<<<<<<<<
@@ -9096,21 +9171,21 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
     __pyx_t_7 = (__pyx_v_status != 0);
     if (__pyx_t_7) {
 
-      /* "lsqfit/_gsl.pyx":1059
+      /* "lsqfit/_gsl.pyx":1063
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             if status:
  *                 self.error = (status, str(gsl_strerror(status)))             # <<<<<<<<<<<<<<
  *                 break
  *             if analyzer is not None:
  */
-      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1059, __pyx_L1_error)
+      __pyx_t_4 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 1063, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_2 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1059, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyBytes_FromString(gsl_strerror(__pyx_v_status)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1063, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_6 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1059, __pyx_L1_error)
+      __pyx_t_6 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1063, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_6);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1059, __pyx_L1_error)
+      __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1063, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_4);
       PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
@@ -9118,10 +9193,10 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
       PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_6);
       __pyx_t_4 = 0;
       __pyx_t_6 = 0;
-      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_2) < 0) __PYX_ERR(0, 1059, __pyx_L1_error)
+      if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_2) < 0) __PYX_ERR(0, 1063, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "lsqfit/_gsl.pyx":1060
+      /* "lsqfit/_gsl.pyx":1064
  *             if status:
  *                 self.error = (status, str(gsl_strerror(status)))
  *                 break             # <<<<<<<<<<<<<<
@@ -9130,7 +9205,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
       goto __pyx_L5_break;
 
-      /* "lsqfit/_gsl.pyx":1058
+      /* "lsqfit/_gsl.pyx":1062
  *                 else:
  *                     raise tmp[0], tmp[1].args, tmp[2]   # python2
  *             if status:             # <<<<<<<<<<<<<<
@@ -9139,7 +9214,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     }
 
-    /* "lsqfit/_gsl.pyx":1061
+    /* "lsqfit/_gsl.pyx":1065
  *                 self.error = (status, str(gsl_strerror(status)))
  *                 break
  *             if analyzer is not None:             # <<<<<<<<<<<<<<
@@ -9150,14 +9225,14 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
     __pyx_t_11 = (__pyx_t_7 != 0);
     if (__pyx_t_11) {
 
-      /* "lsqfit/_gsl.pyx":1062
+      /* "lsqfit/_gsl.pyx":1066
  *                 break
  *             if analyzer is not None:
  *                 x = vector2array(gsl_multimin_fminimizer_x(s))             # <<<<<<<<<<<<<<
  *                 fx = gsl_multimin_fminimizer_minimum(s)
  *                 analyzer(x)
  */
-      __pyx_t_2 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multimin_fminimizer_x(__pyx_v_s))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1062, __pyx_L1_error)
+      __pyx_t_2 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multimin_fminimizer_x(__pyx_v_s))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1066, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       {
         __Pyx_BufFmt_StackElem __pyx_stack[1];
@@ -9174,12 +9249,12 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
           __pyx_t_12 = __pyx_t_13 = __pyx_t_14 = 0;
         }
         __pyx_pybuffernd_x.diminfo[0].strides = __pyx_pybuffernd_x.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_x.diminfo[0].shape = __pyx_pybuffernd_x.rcbuffer->pybuffer.shape[0];
-        if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 1062, __pyx_L1_error)
+        if (unlikely(__pyx_t_1 < 0)) __PYX_ERR(0, 1066, __pyx_L1_error)
       }
       __Pyx_XDECREF_SET(__pyx_v_x, ((PyArrayObject *)__pyx_t_2));
       __pyx_t_2 = 0;
 
-      /* "lsqfit/_gsl.pyx":1063
+      /* "lsqfit/_gsl.pyx":1067
  *             if analyzer is not None:
  *                 x = vector2array(gsl_multimin_fminimizer_x(s))
  *                 fx = gsl_multimin_fminimizer_minimum(s)             # <<<<<<<<<<<<<<
@@ -9188,7 +9263,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
       __pyx_v_fx = gsl_multimin_fminimizer_minimum(__pyx_v_s);
 
-      /* "lsqfit/_gsl.pyx":1064
+      /* "lsqfit/_gsl.pyx":1068
  *                 x = vector2array(gsl_multimin_fminimizer_x(s))
  *                 fx = gsl_multimin_fminimizer_minimum(s)
  *                 analyzer(x)             # <<<<<<<<<<<<<<
@@ -9208,12 +9283,12 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
       }
       __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_6, __pyx_t_4, ((PyObject *)__pyx_v_x)) : __Pyx_PyObject_CallOneArg(__pyx_t_6, ((PyObject *)__pyx_v_x));
       __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1064, __pyx_L1_error)
+      if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1068, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "lsqfit/_gsl.pyx":1061
+      /* "lsqfit/_gsl.pyx":1065
  *                 self.error = (status, str(gsl_strerror(status)))
  *                 break
  *             if analyzer is not None:             # <<<<<<<<<<<<<<
@@ -9222,7 +9297,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     }
 
-    /* "lsqfit/_gsl.pyx":1065
+    /* "lsqfit/_gsl.pyx":1069
  *                 fx = gsl_multimin_fminimizer_minimum(s)
  *                 analyzer(x)
  *             rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s), tol)             # <<<<<<<<<<<<<<
@@ -9231,7 +9306,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
     __pyx_v_rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(__pyx_v_s), __pyx_v_tol);
 
-    /* "lsqfit/_gsl.pyx":1066
+    /* "lsqfit/_gsl.pyx":1070
  *                 analyzer(x)
  *             rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s), tol)
  *             if rval!=GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -9241,7 +9316,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
     __pyx_t_11 = ((__pyx_v_rval != GSL_CONTINUE) != 0);
     if (__pyx_t_11) {
 
-      /* "lsqfit/_gsl.pyx":1067
+      /* "lsqfit/_gsl.pyx":1071
  *             rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s), tol)
  *             if rval!=GSL_CONTINUE:
  *                 break             # <<<<<<<<<<<<<<
@@ -9250,7 +9325,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
       goto __pyx_L5_break;
 
-      /* "lsqfit/_gsl.pyx":1066
+      /* "lsqfit/_gsl.pyx":1070
  *                 analyzer(x)
  *             rval = gsl_multimin_test_size(gsl_multimin_fminimizer_size(s), tol)
  *             if rval!=GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -9261,52 +9336,52 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   }
   __pyx_L5_break:;
 
-  /* "lsqfit/_gsl.pyx":1068
+  /* "lsqfit/_gsl.pyx":1072
  *             if rval!=GSL_CONTINUE:
  *                 break
  *         self.x = vector2array(gsl_multimin_fminimizer_x(s))             # <<<<<<<<<<<<<<
  *         self.f = gsl_multimin_fminimizer_minimum(s)
  *         self.nit = it
  */
-  __pyx_t_2 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multimin_fminimizer_x(__pyx_v_s))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1068, __pyx_L1_error)
+  __pyx_t_2 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(gsl_multimin_fminimizer_x(__pyx_v_s))); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1072, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_2) < 0) __PYX_ERR(0, 1068, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_x, __pyx_t_2) < 0) __PYX_ERR(0, 1072, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1069
+  /* "lsqfit/_gsl.pyx":1073
  *                 break
  *         self.x = vector2array(gsl_multimin_fminimizer_x(s))
  *         self.f = gsl_multimin_fminimizer_minimum(s)             # <<<<<<<<<<<<<<
  *         self.nit = it
  *         self.error = None
  */
-  __pyx_t_2 = PyFloat_FromDouble(gsl_multimin_fminimizer_minimum(__pyx_v_s)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1069, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(gsl_multimin_fminimizer_minimum(__pyx_v_s)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1073, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_2) < 0) __PYX_ERR(0, 1069, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_f, __pyx_t_2) < 0) __PYX_ERR(0, 1073, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1070
+  /* "lsqfit/_gsl.pyx":1074
  *         self.x = vector2array(gsl_multimin_fminimizer_x(s))
  *         self.f = gsl_multimin_fminimizer_minimum(s)
  *         self.nit = it             # <<<<<<<<<<<<<<
  *         self.error = None
  *         if it>=maxit and rval==GSL_CONTINUE:
  */
-  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_it); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1070, __pyx_L1_error)
+  __pyx_t_2 = PyInt_FromSsize_t(__pyx_v_it); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1074, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_2) < 0) __PYX_ERR(0, 1070, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_nit, __pyx_t_2) < 0) __PYX_ERR(0, 1074, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "lsqfit/_gsl.pyx":1071
+  /* "lsqfit/_gsl.pyx":1075
  *         self.f = gsl_multimin_fminimizer_minimum(s)
  *         self.nit = it
  *         self.error = None             # <<<<<<<<<<<<<<
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error = (
  */
-  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 1071, __pyx_L1_error)
+  if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, Py_None) < 0) __PYX_ERR(0, 1075, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1072
+  /* "lsqfit/_gsl.pyx":1076
  *         self.nit = it
  *         self.error = None
  *         if it>=maxit and rval==GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -9324,30 +9399,30 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   __pyx_L12_bool_binop_done:;
   if (__pyx_t_11) {
 
-    /* "lsqfit/_gsl.pyx":1074
+    /* "lsqfit/_gsl.pyx":1078
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error = (
  *                 "MultiMinimizer failed to converge in %d iterations" % maxit             # <<<<<<<<<<<<<<
  *                 )
  *         gsl_vector_free(vx0)
  */
-    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1074, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_maxit); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1078, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_6 = __Pyx_PyString_Format(__pyx_kp_s_MultiMinimizer_failed_to_converg, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1074, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyString_Format(__pyx_kp_s_MultiMinimizer_failed_to_converg, __pyx_t_2); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1078, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "lsqfit/_gsl.pyx":1073
+    /* "lsqfit/_gsl.pyx":1077
  *         self.error = None
  *         if it>=maxit and rval==GSL_CONTINUE:
  *             self.error = (             # <<<<<<<<<<<<<<
  *                 "MultiMinimizer failed to converge in %d iterations" % maxit
  *                 )
  */
-    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_6) < 0) __PYX_ERR(0, 1073, __pyx_L1_error)
+    if (__Pyx_PyObject_SetAttrStr(__pyx_v_self, __pyx_n_s_error, __pyx_t_6) < 0) __PYX_ERR(0, 1077, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-    /* "lsqfit/_gsl.pyx":1072
+    /* "lsqfit/_gsl.pyx":1076
  *         self.nit = it
  *         self.error = None
  *         if it>=maxit and rval==GSL_CONTINUE:             # <<<<<<<<<<<<<<
@@ -9356,7 +9431,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   }
 
-  /* "lsqfit/_gsl.pyx":1076
+  /* "lsqfit/_gsl.pyx":1080
  *                 "MultiMinimizer failed to converge in %d iterations" % maxit
  *                 )
  *         gsl_vector_free(vx0)             # <<<<<<<<<<<<<<
@@ -9365,7 +9440,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   gsl_vector_free(__pyx_v_vx0);
 
-  /* "lsqfit/_gsl.pyx":1077
+  /* "lsqfit/_gsl.pyx":1081
  *                 )
  *         gsl_vector_free(vx0)
  *         gsl_vector_free(ss)             # <<<<<<<<<<<<<<
@@ -9374,7 +9449,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   gsl_vector_free(__pyx_v_ss);
 
-  /* "lsqfit/_gsl.pyx":1078
+  /* "lsqfit/_gsl.pyx":1082
  *         gsl_vector_free(vx0)
  *         gsl_vector_free(ss)
  *         gsl_multimin_fminimizer_free(s)             # <<<<<<<<<<<<<<
@@ -9383,16 +9458,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
  */
   gsl_multimin_fminimizer_free(__pyx_v_s);
 
-  /* "lsqfit/_gsl.pyx":1079
+  /* "lsqfit/_gsl.pyx":1083
  *         gsl_vector_free(ss)
  *         gsl_multimin_fminimizer_free(s)
  *         _p_fs = old_p_fs             # <<<<<<<<<<<<<<
  * 
  *     def __getitem__(self, i):
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, __pyx_v_old_p_fs) < 0) __PYX_ERR(0, 1079, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, __pyx_v_old_p_fs) < 0) __PYX_ERR(0, 1083, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1009
+  /* "lsqfit/_gsl.pyx":1013
  *             message otherwise.
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):             # <<<<<<<<<<<<<<
@@ -9431,7 +9506,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex___init__(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":1081
+/* "lsqfit/_gsl.pyx":1085
  *         _p_fs = old_p_fs
  * 
  *     def __getitem__(self, i):             # <<<<<<<<<<<<<<
@@ -9471,11 +9546,11 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_3__getitem__(PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_i)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__getitem__", 1, 2, 2, 1); __PYX_ERR(0, 1081, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__getitem__", 1, 2, 2, 1); __PYX_ERR(0, 1085, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__getitem__") < 0)) __PYX_ERR(0, 1081, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__getitem__") < 0)) __PYX_ERR(0, 1085, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -9488,7 +9563,7 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_14gsl_multiminex_3__getitem__(PyObject *
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__getitem__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1081, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__getitem__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1085, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("lsqfit._gsl.gsl_multiminex.__getitem__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -9508,7 +9583,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_2__getitem__(CYTHON_UNU
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("__getitem__", 0);
 
-  /* "lsqfit/_gsl.pyx":1082
+  /* "lsqfit/_gsl.pyx":1086
  * 
  *     def __getitem__(self, i):
  *         return self.x[i]             # <<<<<<<<<<<<<<
@@ -9516,16 +9591,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_2__getitem__(CYTHON_UNU
  *     def __str__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1082, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1086, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1082, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetItem(__pyx_t_1, __pyx_v_i); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1086, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "lsqfit/_gsl.pyx":1081
+  /* "lsqfit/_gsl.pyx":1085
  *         _p_fs = old_p_fs
  * 
  *     def __getitem__(self, i):             # <<<<<<<<<<<<<<
@@ -9545,7 +9620,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_2__getitem__(CYTHON_UNU
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":1084
+/* "lsqfit/_gsl.pyx":1088
  *         return self.x[i]
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -9574,7 +9649,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_4__str__(CYTHON_UNUSED 
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("__str__", 0);
 
-  /* "lsqfit/_gsl.pyx":1085
+  /* "lsqfit/_gsl.pyx":1089
  * 
  *     def __str__(self):
  *         return str(self.x)             # <<<<<<<<<<<<<<
@@ -9582,16 +9657,16 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_4__str__(CYTHON_UNUSED 
  * # wrapper for multiminex's python function #
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1085, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_self, __pyx_n_s_x); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1089, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1085, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyString_Type)), __pyx_t_1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1089, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "lsqfit/_gsl.pyx":1084
+  /* "lsqfit/_gsl.pyx":1088
  *         return self.x[i]
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
@@ -9611,7 +9686,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_14gsl_multiminex_4__str__(CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":1088
+/* "lsqfit/_gsl.pyx":1092
  * 
  * # wrapper for multiminex's python function #
  * cdef double _c_fs(gsl_vector* vx, void* p):             # <<<<<<<<<<<<<<
@@ -9636,21 +9711,21 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
   PyObject *__pyx_t_12 = NULL;
   __Pyx_RefNannySetupContext("_c_fs", 0);
 
-  /* "lsqfit/_gsl.pyx":1090
+  /* "lsqfit/_gsl.pyx":1094
  * cdef double _c_fs(gsl_vector* vx, void* p):
  *     global _p_fs, _pyerr
  *     if _pyerr is not None:             # <<<<<<<<<<<<<<
  *         return GSL_NAN
  *     try:
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1090, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_pyerr); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1094, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_t_2 = (__pyx_t_1 != Py_None);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (__pyx_t_3) {
 
-    /* "lsqfit/_gsl.pyx":1091
+    /* "lsqfit/_gsl.pyx":1095
  *     global _p_fs, _pyerr
  *     if _pyerr is not None:
  *         return GSL_NAN             # <<<<<<<<<<<<<<
@@ -9660,7 +9735,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
     __pyx_r = GSL_NAN;
     goto __pyx_L0;
 
-    /* "lsqfit/_gsl.pyx":1090
+    /* "lsqfit/_gsl.pyx":1094
  * cdef double _c_fs(gsl_vector* vx, void* p):
  *     global _p_fs, _pyerr
  *     if _pyerr is not None:             # <<<<<<<<<<<<<<
@@ -9669,7 +9744,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
  */
   }
 
-  /* "lsqfit/_gsl.pyx":1092
+  /* "lsqfit/_gsl.pyx":1096
  *     if _pyerr is not None:
  *         return GSL_NAN
  *     try:             # <<<<<<<<<<<<<<
@@ -9685,16 +9760,16 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
     __Pyx_XGOTREF(__pyx_t_6);
     /*try:*/ {
 
-      /* "lsqfit/_gsl.pyx":1093
+      /* "lsqfit/_gsl.pyx":1097
  *         return GSL_NAN
  *     try:
  *         return _p_fs(vector2array(vx))             # <<<<<<<<<<<<<<
  *     except:
  *         _pyerr = sys.exc_info()
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_p_fs); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1093, __pyx_L4_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_p_fs); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1097, __pyx_L4_error)
       __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_8 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1093, __pyx_L4_error)
+      __pyx_t_8 = ((PyObject *)__pyx_f_6lsqfit_4_gsl_vector2array(__pyx_v_vx)); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 1097, __pyx_L4_error)
       __Pyx_GOTREF(__pyx_t_8);
       __pyx_t_9 = NULL;
       if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_7))) {
@@ -9709,15 +9784,15 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
       __pyx_t_1 = (__pyx_t_9) ? __Pyx_PyObject_Call2Args(__pyx_t_7, __pyx_t_9, __pyx_t_8) : __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8);
       __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
       __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1093, __pyx_L4_error)
+      if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1097, __pyx_L4_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1093, __pyx_L4_error)
+      __pyx_t_10 = __pyx_PyFloat_AsDouble(__pyx_t_1); if (unlikely((__pyx_t_10 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1097, __pyx_L4_error)
       __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
       __pyx_r = __pyx_t_10;
       goto __pyx_L8_try_return;
 
-      /* "lsqfit/_gsl.pyx":1092
+      /* "lsqfit/_gsl.pyx":1096
  *     if _pyerr is not None:
  *         return GSL_NAN
  *     try:             # <<<<<<<<<<<<<<
@@ -9731,7 +9806,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
     __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
     __Pyx_XDECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-    /* "lsqfit/_gsl.pyx":1094
+    /* "lsqfit/_gsl.pyx":1098
  *     try:
  *         return _p_fs(vector2array(vx))
  *     except:             # <<<<<<<<<<<<<<
@@ -9740,21 +9815,21 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
  */
     /*except:*/ {
       __Pyx_AddTraceback("lsqfit._gsl._c_fs", __pyx_clineno, __pyx_lineno, __pyx_filename);
-      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_7, &__pyx_t_8) < 0) __PYX_ERR(0, 1094, __pyx_L6_except_error)
+      if (__Pyx_GetException(&__pyx_t_1, &__pyx_t_7, &__pyx_t_8) < 0) __PYX_ERR(0, 1098, __pyx_L6_except_error)
       __Pyx_GOTREF(__pyx_t_1);
       __Pyx_GOTREF(__pyx_t_7);
       __Pyx_GOTREF(__pyx_t_8);
 
-      /* "lsqfit/_gsl.pyx":1095
+      /* "lsqfit/_gsl.pyx":1099
  *         return _p_fs(vector2array(vx))
  *     except:
  *         _pyerr = sys.exc_info()             # <<<<<<<<<<<<<<
  *         return GSL_NAN
  * 
  */
-      __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_n_s_sys); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 1095, __pyx_L6_except_error)
+      __Pyx_GetModuleGlobalName(__pyx_t_11, __pyx_n_s_sys); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 1099, __pyx_L6_except_error)
       __Pyx_GOTREF(__pyx_t_11);
-      __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_11, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 1095, __pyx_L6_except_error)
+      __pyx_t_12 = __Pyx_PyObject_GetAttrStr(__pyx_t_11, __pyx_n_s_exc_info); if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 1099, __pyx_L6_except_error)
       __Pyx_GOTREF(__pyx_t_12);
       __Pyx_DECREF(__pyx_t_11); __pyx_t_11 = 0;
       __pyx_t_11 = NULL;
@@ -9769,13 +9844,13 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
       }
       __pyx_t_9 = (__pyx_t_11) ? __Pyx_PyObject_CallOneArg(__pyx_t_12, __pyx_t_11) : __Pyx_PyObject_CallNoArg(__pyx_t_12);
       __Pyx_XDECREF(__pyx_t_11); __pyx_t_11 = 0;
-      if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1095, __pyx_L6_except_error)
+      if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 1099, __pyx_L6_except_error)
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_12); __pyx_t_12 = 0;
-      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_9) < 0) __PYX_ERR(0, 1095, __pyx_L6_except_error)
+      if (PyDict_SetItem(__pyx_d, __pyx_n_s_pyerr, __pyx_t_9) < 0) __PYX_ERR(0, 1099, __pyx_L6_except_error)
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "lsqfit/_gsl.pyx":1096
+      /* "lsqfit/_gsl.pyx":1100
  *     except:
  *         _pyerr = sys.exc_info()
  *         return GSL_NAN             # <<<<<<<<<<<<<<
@@ -9790,7 +9865,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
     }
     __pyx_L6_except_error:;
 
-    /* "lsqfit/_gsl.pyx":1092
+    /* "lsqfit/_gsl.pyx":1096
  *     if _pyerr is not None:
  *         return GSL_NAN
  *     try:             # <<<<<<<<<<<<<<
@@ -9816,7 +9891,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
     goto __pyx_L0;
   }
 
-  /* "lsqfit/_gsl.pyx":1088
+  /* "lsqfit/_gsl.pyx":1092
  * 
  * # wrapper for multiminex's python function #
  * cdef double _c_fs(gsl_vector* vx, void* p):             # <<<<<<<<<<<<<<
@@ -9839,7 +9914,7 @@ static double __pyx_f_6lsqfit_4_gsl__c_fs(gsl_vector *__pyx_v_vx, CYTHON_UNUSED 
   return __pyx_r;
 }
 
-/* "lsqfit/_gsl.pyx":1099
+/* "lsqfit/_gsl.pyx":1103
  * 
  * # miscellaneous functions
  * def gammaQ(double a, double x):             # <<<<<<<<<<<<<<
@@ -9880,11 +9955,11 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_1gammaQ(PyObject *__pyx_self, PyObject *
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_x)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("gammaQ", 1, 2, 2, 1); __PYX_ERR(0, 1099, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("gammaQ", 1, 2, 2, 1); __PYX_ERR(0, 1103, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "gammaQ") < 0)) __PYX_ERR(0, 1099, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "gammaQ") < 0)) __PYX_ERR(0, 1103, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -9892,12 +9967,12 @@ static PyObject *__pyx_pw_6lsqfit_4_gsl_1gammaQ(PyObject *__pyx_self, PyObject *
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_a = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_a == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1099, __pyx_L3_error)
-    __pyx_v_x = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_x == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1099, __pyx_L3_error)
+    __pyx_v_a = __pyx_PyFloat_AsDouble(values[0]); if (unlikely((__pyx_v_a == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1103, __pyx_L3_error)
+    __pyx_v_x = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_x == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 1103, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("gammaQ", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1099, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("gammaQ", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 1103, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("lsqfit._gsl.gammaQ", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -9919,7 +9994,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_gammaQ(CYTHON_UNUSED PyObject *__pyx_sel
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("gammaQ", 0);
 
-  /* "lsqfit/_gsl.pyx":1110
+  /* "lsqfit/_gsl.pyx":1114
  *     cdef gsl_sf_result_struct res
  *     cdef int status
  *     status = gsl_sf_gamma_inc_Q_e(a, x, &res)             # <<<<<<<<<<<<<<
@@ -9928,7 +10003,7 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_gammaQ(CYTHON_UNUSED PyObject *__pyx_sel
  */
   __pyx_v_status = gsl_sf_gamma_inc_Q_e(__pyx_v_a, __pyx_v_x, (&__pyx_v_res));
 
-  /* "lsqfit/_gsl.pyx":1111
+  /* "lsqfit/_gsl.pyx":1115
  *     cdef int status
  *     status = gsl_sf_gamma_inc_Q_e(a, x, &res)
  *     assert status==GSL_SUCCESS, status             # <<<<<<<<<<<<<<
@@ -9937,33 +10012,33 @@ static PyObject *__pyx_pf_6lsqfit_4_gsl_gammaQ(CYTHON_UNUSED PyObject *__pyx_sel
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
     if (unlikely(!((__pyx_v_status == GSL_SUCCESS) != 0))) {
-      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1111, __pyx_L1_error)
+      __pyx_t_1 = __Pyx_PyInt_From_int(__pyx_v_status); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1115, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_1);
-      __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1111, __pyx_L1_error)
+      __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1115, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_GIVEREF(__pyx_t_1);
       PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_1);
       __pyx_t_1 = 0;
       PyErr_SetObject(PyExc_AssertionError, __pyx_t_2);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __PYX_ERR(0, 1111, __pyx_L1_error)
+      __PYX_ERR(0, 1115, __pyx_L1_error)
     }
   }
   #endif
 
-  /* "lsqfit/_gsl.pyx":1112
+  /* "lsqfit/_gsl.pyx":1116
  *     status = gsl_sf_gamma_inc_Q_e(a, x, &res)
  *     assert status==GSL_SUCCESS, status
  *     return res.val             # <<<<<<<<<<<<<<
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_res.val); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1112, __pyx_L1_error)
+  __pyx_t_2 = PyFloat_FromDouble(__pyx_v_res.val); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 1116, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_r = __pyx_t_2;
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "lsqfit/_gsl.pyx":1099
+  /* "lsqfit/_gsl.pyx":1103
  * 
  * # miscellaneous functions
  * def gammaQ(double a, double x):             # <<<<<<<<<<<<<<
@@ -26163,8 +26238,8 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
   __pyx_builtin_object = __Pyx_GetBuiltinName(__pyx_n_s_object); if (!__pyx_builtin_object) __PYX_ERR(0, 415, __pyx_L1_error)
   __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 86, __pyx_L1_error)
-  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) __PYX_ERR(0, 587, __pyx_L1_error)
-  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 597, __pyx_L1_error)
+  __pyx_builtin_super = __Pyx_GetBuiltinName(__pyx_n_s_super); if (!__pyx_builtin_super) __PYX_ERR(0, 589, __pyx_L1_error)
+  __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(0, 599, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 856, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 1038, __pyx_L1_error)
   __pyx_builtin_MemoryError = __Pyx_GetBuiltinName(__pyx_n_s_MemoryError); if (!__pyx_builtin_MemoryError) __PYX_ERR(2, 148, __pyx_L1_error)
@@ -26182,58 +26257,58 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "lsqfit/_gsl.pyx":563
+  /* "lsqfit/_gsl.pyx":565
  *         size_t n,
  *         object f,
  *         object tol=(1e-5, 0.0, 0.0),             # <<<<<<<<<<<<<<
  *         unsigned int maxit=1000,
  *         object alg='lm',
  */
-  __pyx_tuple_ = PyTuple_Pack(3, __pyx_float_1eneg_5, __pyx_float_0_0, __pyx_float_0_0); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 563, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(3, __pyx_float_1eneg_5, __pyx_float_0_0, __pyx_float_0_0); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 565, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
 
-  /* "lsqfit/_gsl.pyx":592
+  /* "lsqfit/_gsl.pyx":594
  *         if numpy.shape(tol) == ():
  *             tol = (tol, 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (1,):             # <<<<<<<<<<<<<<
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):
  */
-  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 592, __pyx_L1_error)
+  __pyx_tuple__2 = PyTuple_Pack(1, __pyx_int_1); if (unlikely(!__pyx_tuple__2)) __PYX_ERR(0, 594, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "lsqfit/_gsl.pyx":594
+  /* "lsqfit/_gsl.pyx":596
  *         elif numpy.shape(tol) == (1,):
  *             tol = (tol[0], 1e-10, 1e-10)
  *         elif numpy.shape(tol) == (2,):             # <<<<<<<<<<<<<<
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 594, __pyx_L1_error)
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_int_2); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 596, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "lsqfit/_gsl.pyx":596
+  /* "lsqfit/_gsl.pyx":598
  *         elif numpy.shape(tol) == (2,):
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):             # <<<<<<<<<<<<<<
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")
  *         self.tol = tol
  */
-  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_3); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 596, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(1, __pyx_int_3); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 598, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
 
-  /* "lsqfit/_gsl.pyx":597
+  /* "lsqfit/_gsl.pyx":599
  *             tol = (tol[0], tol[1], 1e-10)
  *         elif numpy.shape(tol) != (3,):
  *             raise ValueError("tol must be number or a 1-, 2-, or 3-tuple")             # <<<<<<<<<<<<<<
  *         self.tol = tol
  *         self.maxit = maxit
  */
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_tol_must_be_number_or_a_1_2_or_3); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 597, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_kp_s_tol_must_be_number_or_a_1_2_or_3); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 599, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
@@ -26517,99 +26592,99 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__31);
   __Pyx_GIVEREF(__pyx_tuple__31);
 
-  /* "lsqfit/_gsl.pyx":558
+  /* "lsqfit/_gsl.pyx":560
  *             message otherwise.
  *     """
  *     def __init__(             # <<<<<<<<<<<<<<
  *         self,
  *         numpy.ndarray[numpy.float_t, ndim=1] x0,
  */
-  __pyx_tuple__32 = PyTuple_Pack(29, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_n, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_maxit, __pyx_n_s_alg, __pyx_n_s_solver, __pyx_n_s_scaler, __pyx_n_s_factor_up, __pyx_n_s_factor_down, __pyx_n_s_avmax, __pyx_n_s_T, __pyx_n_s_w, __pyx_n_s_fdf, __pyx_n_s_fdf_params, __pyx_n_s_covar, __pyx_n_s_J, __pyx_n_s_x0v, __pyx_n_s_alg_3, __pyx_n_s_scaler_2, __pyx_n_s_solver_2, __pyx_n_s_i, __pyx_n_s_it, __pyx_n_s_p, __pyx_n_s_status, __pyx_n_s_info, __pyx_n_s_old_p_f, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 558, __pyx_L1_error)
+  __pyx_tuple__32 = PyTuple_Pack(29, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_n, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_maxit, __pyx_n_s_alg, __pyx_n_s_solver, __pyx_n_s_scaler, __pyx_n_s_factor_up, __pyx_n_s_factor_down, __pyx_n_s_avmax, __pyx_n_s_T, __pyx_n_s_w, __pyx_n_s_fdf, __pyx_n_s_fdf_params, __pyx_n_s_covar, __pyx_n_s_J, __pyx_n_s_x0v, __pyx_n_s_alg_3, __pyx_n_s_scaler_2, __pyx_n_s_solver_2, __pyx_n_s_i, __pyx_n_s_it, __pyx_n_s_p, __pyx_n_s_status, __pyx_n_s_info, __pyx_n_s_old_p_f, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__32)) __PYX_ERR(0, 560, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__32);
   __Pyx_GIVEREF(__pyx_tuple__32);
-  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(12, 0, 29, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 558, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 558, __pyx_L1_error)
+  __pyx_codeobj__33 = (PyObject*)__Pyx_PyCode_New(12, 0, 29, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__32, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 560, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__33)) __PYX_ERR(0, 560, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":774
+  /* "lsqfit/_gsl.pyx":778
  *         return GSL_EBADFUNC
  * 
  * class gsl_v1_multifit(object):             # <<<<<<<<<<<<<<
  *     """ Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)
  * 
  */
-  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_builtin_object); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 774, __pyx_L1_error)
+  __pyx_tuple__34 = PyTuple_Pack(1, __pyx_builtin_object); if (unlikely(!__pyx_tuple__34)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__34);
   __Pyx_GIVEREF(__pyx_tuple__34);
 
-  /* "lsqfit/_gsl.pyx":856
+  /* "lsqfit/_gsl.pyx":860
  *     """
  * 
  *     def __init__(             # <<<<<<<<<<<<<<
  *         self, numpy.ndarray[numpy.float_t, ndim=1] x0, int n,
  *         object f,
  */
-  __pyx_tuple__35 = PyTuple_Pack(24, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_n, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_reltol, __pyx_n_s_abstol, __pyx_n_s_maxit, __pyx_n_s_alg, __pyx_n_s_analyzer, __pyx_n_s_T, __pyx_n_s_s, __pyx_n_s_status, __pyx_n_s_rval, __pyx_n_s_criterion, __pyx_n_s_i, __pyx_n_s_it, __pyx_n_s_p, __pyx_n_s_covar, __pyx_n_s_J, __pyx_n_s_x0v, __pyx_n_s_gf, __pyx_n_s_old_p_f, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(0, 856, __pyx_L1_error)
+  __pyx_tuple__35 = PyTuple_Pack(24, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_n, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_reltol, __pyx_n_s_abstol, __pyx_n_s_maxit, __pyx_n_s_alg, __pyx_n_s_analyzer, __pyx_n_s_T, __pyx_n_s_s, __pyx_n_s_status, __pyx_n_s_rval, __pyx_n_s_criterion, __pyx_n_s_i, __pyx_n_s_it, __pyx_n_s_p, __pyx_n_s_covar, __pyx_n_s_J, __pyx_n_s_x0v, __pyx_n_s_gf, __pyx_n_s_old_p_f, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__35)) __PYX_ERR(0, 860, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__35);
   __Pyx_GIVEREF(__pyx_tuple__35);
-  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(10, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__35, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 856, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(0, 856, __pyx_L1_error)
+  __pyx_codeobj__36 = (PyObject*)__Pyx_PyCode_New(10, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__35, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 860, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__36)) __PYX_ERR(0, 860, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":970
+  /* "lsqfit/_gsl.pyx":974
  * # Also uses _pyerr for exceptions --- see comment above (multifit)
  * 
  * class gsl_multiminex(object):             # <<<<<<<<<<<<<<
  *     """ Minimizer for multidimensional functions.
  * 
  */
-  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_builtin_object); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 970, __pyx_L1_error)
+  __pyx_tuple__37 = PyTuple_Pack(1, __pyx_builtin_object); if (unlikely(!__pyx_tuple__37)) __PYX_ERR(0, 974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__37);
   __Pyx_GIVEREF(__pyx_tuple__37);
 
-  /* "lsqfit/_gsl.pyx":1009
+  /* "lsqfit/_gsl.pyx":1013
  *             message otherwise.
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):             # <<<<<<<<<<<<<<
  *                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
  *                  analyzer=None):
  */
-  __pyx_tuple__38 = PyTuple_Pack(21, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_maxit, __pyx_n_s_step, __pyx_n_s_alg, __pyx_n_s_analyzer, __pyx_n_s_vx0, __pyx_n_s_dim, __pyx_n_s_ss, __pyx_n_s_fcn, __pyx_n_s_i, __pyx_n_s_status, __pyx_n_s_rval, __pyx_n_s_it, __pyx_n_s_s, __pyx_n_s_x, __pyx_n_s_fx, __pyx_n_s_old_p_fs, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 1009, __pyx_L1_error)
+  __pyx_tuple__38 = PyTuple_Pack(21, __pyx_n_s_self, __pyx_n_s_x0, __pyx_n_s_f, __pyx_n_s_tol, __pyx_n_s_maxit, __pyx_n_s_step, __pyx_n_s_alg, __pyx_n_s_analyzer, __pyx_n_s_vx0, __pyx_n_s_dim, __pyx_n_s_ss, __pyx_n_s_fcn, __pyx_n_s_i, __pyx_n_s_status, __pyx_n_s_rval, __pyx_n_s_it, __pyx_n_s_s, __pyx_n_s_x, __pyx_n_s_fx, __pyx_n_s_old_p_fs, __pyx_n_s_tmp); if (unlikely(!__pyx_tuple__38)) __PYX_ERR(0, 1013, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__38);
   __Pyx_GIVEREF(__pyx_tuple__38);
-  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(8, 0, 21, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 1009, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 1009, __pyx_L1_error)
+  __pyx_codeobj__39 = (PyObject*)__Pyx_PyCode_New(8, 0, 21, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__38, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_init, 1013, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__39)) __PYX_ERR(0, 1013, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1081
+  /* "lsqfit/_gsl.pyx":1085
  *         _p_fs = old_p_fs
  * 
  *     def __getitem__(self, i):             # <<<<<<<<<<<<<<
  *         return self.x[i]
  * 
  */
-  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_i); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(0, 1081, __pyx_L1_error)
+  __pyx_tuple__40 = PyTuple_Pack(2, __pyx_n_s_self, __pyx_n_s_i); if (unlikely(!__pyx_tuple__40)) __PYX_ERR(0, 1085, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__40);
   __Pyx_GIVEREF(__pyx_tuple__40);
-  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_getitem, 1081, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(0, 1081, __pyx_L1_error)
+  __pyx_codeobj__41 = (PyObject*)__Pyx_PyCode_New(2, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__40, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_getitem, 1085, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__41)) __PYX_ERR(0, 1085, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1084
+  /* "lsqfit/_gsl.pyx":1088
  *         return self.x[i]
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
  *         return str(self.x)
  * 
  */
-  __pyx_tuple__42 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 1084, __pyx_L1_error)
+  __pyx_tuple__42 = PyTuple_Pack(1, __pyx_n_s_self); if (unlikely(!__pyx_tuple__42)) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__42);
   __Pyx_GIVEREF(__pyx_tuple__42);
-  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_str, 1084, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 1084, __pyx_L1_error)
+  __pyx_codeobj__43 = (PyObject*)__Pyx_PyCode_New(1, 0, 1, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__42, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_str, 1088, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__43)) __PYX_ERR(0, 1088, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":1099
+  /* "lsqfit/_gsl.pyx":1103
  * 
  * # miscellaneous functions
  * def gammaQ(double a, double x):             # <<<<<<<<<<<<<<
  *     """ Return the normalized incomplete gamma function ``Q(a,x) = 1-P(a,x)``.
  * 
  */
-  __pyx_tuple__44 = PyTuple_Pack(4, __pyx_n_s_a, __pyx_n_s_x, __pyx_n_s_res, __pyx_n_s_status); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(0, 1099, __pyx_L1_error)
+  __pyx_tuple__44 = PyTuple_Pack(4, __pyx_n_s_a, __pyx_n_s_x, __pyx_n_s_res, __pyx_n_s_status); if (unlikely(!__pyx_tuple__44)) __PYX_ERR(0, 1103, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__44);
   __Pyx_GIVEREF(__pyx_tuple__44);
-  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_gammaQ, 1099, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) __PYX_ERR(0, 1099, __pyx_L1_error)
+  __pyx_codeobj__45 = (PyObject*)__Pyx_PyCode_New(2, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__44, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_gsl_pyx, __pyx_n_s_gammaQ, 1103, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__45)) __PYX_ERR(0, 1103, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -26692,6 +26767,7 @@ static CYTHON_SMALL_CODE int __Pyx_InitGlobals(void) {
   __pyx_int_1 = PyInt_FromLong(1); if (unlikely(!__pyx_int_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_3 = PyInt_FromLong(3); if (unlikely(!__pyx_int_3)) __PYX_ERR(0, 1, __pyx_L1_error)
+  __pyx_int_4 = PyInt_FromLong(4); if (unlikely(!__pyx_int_4)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_184977713 = PyInt_FromLong(184977713L); if (unlikely(!__pyx_int_184977713)) __PYX_ERR(0, 1, __pyx_L1_error)
   __pyx_int_neg_1 = PyInt_FromLong(-1); if (unlikely(!__pyx_int_neg_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   return 0;
@@ -26832,9 +26908,11 @@ static int __Pyx_modinit_type_import_code(void) {
   __pyx_ptype_4gvar_10_svec_smat_svec = __Pyx_ImportType(__pyx_t_1, "gvar._svec_smat", "svec", sizeof(struct __pyx_obj_4gvar_10_svec_smat_svec), __Pyx_ImportType_CheckSize_Warn);
    if (!__pyx_ptype_4gvar_10_svec_smat_svec) __PYX_ERR(4, 23, __pyx_L1_error)
   __pyx_vtabptr_4gvar_10_svec_smat_svec = (struct __pyx_vtabstruct_4gvar_10_svec_smat_svec*)__Pyx_GetVtable(__pyx_ptype_4gvar_10_svec_smat_svec->tp_dict); if (unlikely(!__pyx_vtabptr_4gvar_10_svec_smat_svec)) __PYX_ERR(4, 23, __pyx_L1_error)
+  __pyx_ptype_4gvar_10_svec_smat_smask = __Pyx_ImportType(__pyx_t_1, "gvar._svec_smat", "smask", sizeof(struct __pyx_obj_4gvar_10_svec_smat_smask), __Pyx_ImportType_CheckSize_Warn);
+   if (!__pyx_ptype_4gvar_10_svec_smat_smask) __PYX_ERR(4, 36, __pyx_L1_error)
   __pyx_ptype_4gvar_10_svec_smat_smat = __Pyx_ImportType(__pyx_t_1, "gvar._svec_smat", "smat", sizeof(struct __pyx_obj_4gvar_10_svec_smat_smat), __Pyx_ImportType_CheckSize_Warn);
-   if (!__pyx_ptype_4gvar_10_svec_smat_smat) __PYX_ERR(4, 37, __pyx_L1_error)
-  __pyx_vtabptr_4gvar_10_svec_smat_smat = (struct __pyx_vtabstruct_4gvar_10_svec_smat_smat*)__Pyx_GetVtable(__pyx_ptype_4gvar_10_svec_smat_smat->tp_dict); if (unlikely(!__pyx_vtabptr_4gvar_10_svec_smat_smat)) __PYX_ERR(4, 37, __pyx_L1_error)
+   if (!__pyx_ptype_4gvar_10_svec_smat_smat) __PYX_ERR(4, 41, __pyx_L1_error)
+  __pyx_vtabptr_4gvar_10_svec_smat_smat = (struct __pyx_vtabstruct_4gvar_10_svec_smat_smat*)__Pyx_GetVtable(__pyx_ptype_4gvar_10_svec_smat_smat->tp_dict); if (unlikely(!__pyx_vtabptr_4gvar_10_svec_smat_smat)) __PYX_ERR(4, 41, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = PyImport_ImportModule("gvar._gvarcore"); if (unlikely(!__pyx_t_1)) __PYX_ERR(5, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -27154,54 +27232,54 @@ if (!__Pyx_RefNanny) {
   __pyx_t_2 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_tuple__31, __pyx_n_s_gsl_multifit, __pyx_n_s_gsl_multifit, (PyObject *) NULL, __pyx_n_s_lsqfit__gsl, __pyx_kp_s_GSL_fitter_for_nonlinear_least); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 415, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "lsqfit/_gsl.pyx":564
+  /* "lsqfit/_gsl.pyx":566
  *         object f,
  *         object tol=(1e-5, 0.0, 0.0),
  *         unsigned int maxit=1000,             # <<<<<<<<<<<<<<
  *         object alg='lm',
  *         object solver='qr',
  */
-  __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(((unsigned int)0x3E8)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 564, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_unsigned_int(((unsigned int)0x3E8)); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 566, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
 
-  /* "lsqfit/_gsl.pyx":568
+  /* "lsqfit/_gsl.pyx":570
  *         object solver='qr',
  *         object scaler='more',
  *         double factor_up=3.0,             # <<<<<<<<<<<<<<
  *         double factor_down=2.0,
  *         double avmax=0.75,
  */
-  __pyx_t_4 = PyFloat_FromDouble(((double)3.0)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 568, __pyx_L1_error)
+  __pyx_t_4 = PyFloat_FromDouble(((double)3.0)); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 570, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
 
-  /* "lsqfit/_gsl.pyx":569
+  /* "lsqfit/_gsl.pyx":571
  *         object scaler='more',
  *         double factor_up=3.0,
  *         double factor_down=2.0,             # <<<<<<<<<<<<<<
  *         double avmax=0.75,
  *         ):
  */
-  __pyx_t_5 = PyFloat_FromDouble(((double)2.0)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 569, __pyx_L1_error)
+  __pyx_t_5 = PyFloat_FromDouble(((double)2.0)); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 571, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
 
-  /* "lsqfit/_gsl.pyx":570
+  /* "lsqfit/_gsl.pyx":572
  *         double factor_up=3.0,
  *         double factor_down=2.0,
  *         double avmax=0.75,             # <<<<<<<<<<<<<<
  *         ):
  *         global _valder, _p_f, _pyerr
  */
-  __pyx_t_6 = PyFloat_FromDouble(((double)0.75)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 570, __pyx_L1_error)
+  __pyx_t_6 = PyFloat_FromDouble(((double)0.75)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 572, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "lsqfit/_gsl.pyx":558
+  /* "lsqfit/_gsl.pyx":560
  *             message otherwise.
  *     """
  *     def __init__(             # <<<<<<<<<<<<<<
  *         self,
  *         numpy.ndarray[numpy.float_t, ndim=1] x0,
  */
-  __pyx_t_7 = PyTuple_New(8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 558, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 560, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(((PyObject*)__pyx_tuple_));
   __Pyx_GIVEREF(((PyObject*)__pyx_tuple_));
@@ -27227,11 +27305,11 @@ if (!__Pyx_RefNanny) {
   __pyx_t_4 = 0;
   __pyx_t_5 = 0;
   __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_12gsl_multifit_1__init__, 0, __pyx_n_s_gsl_multifit___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 558, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_12gsl_multifit_1__init__, 0, __pyx_n_s_gsl_multifit___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__33)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 560, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_t_7);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_6) < 0) __PYX_ERR(0, 558, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_6) < 0) __PYX_ERR(0, 560, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
   /* "lsqfit/_gsl.pyx":415
@@ -27248,36 +27326,36 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":774
+  /* "lsqfit/_gsl.pyx":778
  *         return GSL_EBADFUNC
  * 
  * class gsl_v1_multifit(object):             # <<<<<<<<<<<<<<
  *     """ Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)
  * 
  */
-  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_tuple__34); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 774, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_tuple__34); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_tuple__34, __pyx_n_s_gsl_v1_multifit, __pyx_n_s_gsl_v1_multifit, (PyObject *) NULL, __pyx_n_s_lsqfit__gsl, __pyx_kp_s_Fitter_for_nonlinear_least_squa); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 774, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_tuple__34, __pyx_n_s_gsl_v1_multifit, __pyx_n_s_gsl_v1_multifit, (PyObject *) NULL, __pyx_n_s_lsqfit__gsl, __pyx_kp_s_Fitter_for_nonlinear_least_squa); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "lsqfit/_gsl.pyx":862
+  /* "lsqfit/_gsl.pyx":866
  *         object reltol=None,
  *         object abstol=None,
  *         unsigned int maxit=1000,             # <<<<<<<<<<<<<<
  *         object alg='lmsder',
  *         object analyzer=None
  */
-  __pyx_t_6 = __Pyx_PyInt_From_unsigned_int(((unsigned int)0x3E8)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 862, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyInt_From_unsigned_int(((unsigned int)0x3E8)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 866, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
 
-  /* "lsqfit/_gsl.pyx":856
+  /* "lsqfit/_gsl.pyx":860
  *     """
  * 
  *     def __init__(             # <<<<<<<<<<<<<<
  *         self, numpy.ndarray[numpy.float_t, ndim=1] x0, int n,
  *         object f,
  */
-  __pyx_t_7 = PyTuple_New(6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 856, __pyx_L1_error)
+  __pyx_t_7 = PyTuple_New(6); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 860, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(((PyObject*)__pyx_float_1eneg_5));
   __Pyx_GIVEREF(((PyObject*)__pyx_float_1eneg_5));
@@ -27297,68 +27375,68 @@ if (!__Pyx_RefNanny) {
   __Pyx_GIVEREF(((PyObject *)Py_None));
   PyTuple_SET_ITEM(__pyx_t_7, 5, ((PyObject *)Py_None));
   __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__, 0, __pyx_n_s_gsl_v1_multifit___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 856, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_15gsl_v1_multifit_1__init__, 0, __pyx_n_s_gsl_v1_multifit___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__36)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 860, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_6, __pyx_t_7);
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_6) < 0) __PYX_ERR(0, 856, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_6) < 0) __PYX_ERR(0, 860, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
 
-  /* "lsqfit/_gsl.pyx":774
+  /* "lsqfit/_gsl.pyx":778
  *         return GSL_EBADFUNC
  * 
  * class gsl_v1_multifit(object):             # <<<<<<<<<<<<<<
  *     """ Fitter for nonlinear least-squares multidimensional fits. (GSL v1.)
  * 
  */
-  __pyx_t_6 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_gsl_v1_multifit, __pyx_tuple__34, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 774, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_gsl_v1_multifit, __pyx_tuple__34, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gsl_v1_multifit, __pyx_t_6) < 0) __PYX_ERR(0, 774, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gsl_v1_multifit, __pyx_t_6) < 0) __PYX_ERR(0, 778, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":966
+  /* "lsqfit/_gsl.pyx":970
  * 
  * # multiminex
  * _p_fs = None                # Python function to be minimized             # <<<<<<<<<<<<<<
  * 
  * # Also uses _pyerr for exceptions --- see comment above (multifit)
  */
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, Py_None) < 0) __PYX_ERR(0, 966, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_p_fs, Py_None) < 0) __PYX_ERR(0, 970, __pyx_L1_error)
 
-  /* "lsqfit/_gsl.pyx":970
+  /* "lsqfit/_gsl.pyx":974
  * # Also uses _pyerr for exceptions --- see comment above (multifit)
  * 
  * class gsl_multiminex(object):             # <<<<<<<<<<<<<<
  *     """ Minimizer for multidimensional functions.
  * 
  */
-  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_tuple__37); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 970, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_CalculateMetaclass(NULL, __pyx_tuple__37); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_tuple__37, __pyx_n_s_gsl_multiminex, __pyx_n_s_gsl_multiminex, (PyObject *) NULL, __pyx_n_s_lsqfit__gsl, __pyx_kp_s_Minimizer_for_multidimensional); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 970, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_Py3MetaclassPrepare(__pyx_t_1, __pyx_tuple__37, __pyx_n_s_gsl_multiminex, __pyx_n_s_gsl_multiminex, (PyObject *) NULL, __pyx_n_s_lsqfit__gsl, __pyx_kp_s_Minimizer_for_multidimensional); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
 
-  /* "lsqfit/_gsl.pyx":1010
+  /* "lsqfit/_gsl.pyx":1014
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):
  *                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",             # <<<<<<<<<<<<<<
  *                  analyzer=None):
  *         global _p_fs, _pyerr
  */
-  __pyx_t_6 = PyFloat_FromDouble(((double)1e-4)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1010, __pyx_L1_error)
+  __pyx_t_6 = PyFloat_FromDouble(((double)1e-4)); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 1014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyInt_From_int(((int)0x3E8)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1010, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_From_int(((int)0x3E8)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1014, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
 
-  /* "lsqfit/_gsl.pyx":1009
+  /* "lsqfit/_gsl.pyx":1013
  *             message otherwise.
  *     """
  *     def __init__(self, numpy.ndarray[numpy.float_t, ndim=1] x0, object f, #):             # <<<<<<<<<<<<<<
  *                  double tol=1e-4, int maxit=1000, step=1.0, alg="nmsimplex2",
  *                  analyzer=None):
  */
-  __pyx_t_5 = PyTuple_New(5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1009, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(5); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 1013, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_GIVEREF(__pyx_t_6);
   PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_6);
@@ -27375,61 +27453,61 @@ if (!__Pyx_RefNanny) {
   PyTuple_SET_ITEM(__pyx_t_5, 4, ((PyObject *)Py_None));
   __pyx_t_6 = 0;
   __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_1__init__, 0, __pyx_n_s_gsl_multiminex___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1009, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_1__init__, 0, __pyx_n_s_gsl_multiminex___init, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__39)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1013, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_CyFunction_SetDefaultsTuple(__pyx_t_7, __pyx_t_5);
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_7) < 0) __PYX_ERR(0, 1009, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_init, __pyx_t_7) < 0) __PYX_ERR(0, 1013, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "lsqfit/_gsl.pyx":1081
+  /* "lsqfit/_gsl.pyx":1085
  *         _p_fs = old_p_fs
  * 
  *     def __getitem__(self, i):             # <<<<<<<<<<<<<<
  *         return self.x[i]
  * 
  */
-  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_3__getitem__, 0, __pyx_n_s_gsl_multiminex___getitem, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__41)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1081, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_3__getitem__, 0, __pyx_n_s_gsl_multiminex___getitem, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__41)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1085, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_getitem, __pyx_t_7) < 0) __PYX_ERR(0, 1081, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_getitem, __pyx_t_7) < 0) __PYX_ERR(0, 1085, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "lsqfit/_gsl.pyx":1084
+  /* "lsqfit/_gsl.pyx":1088
  *         return self.x[i]
  * 
  *     def __str__(self):             # <<<<<<<<<<<<<<
  *         return str(self.x)
  * 
  */
-  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_5__str__, 0, __pyx_n_s_gsl_multiminex___str, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1084, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_CyFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_14gsl_multiminex_5__str__, 0, __pyx_n_s_gsl_multiminex___str, NULL, __pyx_n_s_lsqfit__gsl, __pyx_d, ((PyObject *)__pyx_codeobj__43)); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_str, __pyx_t_7) < 0) __PYX_ERR(0, 1084, __pyx_L1_error)
+  if (__Pyx_SetNameInClass(__pyx_t_2, __pyx_n_s_str, __pyx_t_7) < 0) __PYX_ERR(0, 1088, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "lsqfit/_gsl.pyx":970
+  /* "lsqfit/_gsl.pyx":974
  * # Also uses _pyerr for exceptions --- see comment above (multifit)
  * 
  * class gsl_multiminex(object):             # <<<<<<<<<<<<<<
  *     """ Minimizer for multidimensional functions.
  * 
  */
-  __pyx_t_7 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_gsl_multiminex, __pyx_tuple__37, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 970, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_Py3ClassCreate(__pyx_t_1, __pyx_n_s_gsl_multiminex, __pyx_tuple__37, __pyx_t_2, NULL, 0, 0); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 974, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gsl_multiminex, __pyx_t_7) < 0) __PYX_ERR(0, 970, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gsl_multiminex, __pyx_t_7) < 0) __PYX_ERR(0, 974, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "lsqfit/_gsl.pyx":1099
+  /* "lsqfit/_gsl.pyx":1103
  * 
  * # miscellaneous functions
  * def gammaQ(double a, double x):             # <<<<<<<<<<<<<<
  *     """ Return the normalized incomplete gamma function ``Q(a,x) = 1-P(a,x)``.
  * 
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_1gammaQ, NULL, __pyx_n_s_lsqfit__gsl); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1099, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_6lsqfit_4_gsl_1gammaQ, NULL, __pyx_n_s_lsqfit__gsl); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1103, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gammaQ, __pyx_t_1) < 0) __PYX_ERR(0, 1099, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_gammaQ, __pyx_t_1) < 0) __PYX_ERR(0, 1103, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "lsqfit/_gsl.pyx":1

@@ -137,7 +137,7 @@
 nonlinear_fit Objects
 ---------------------
 
-.. autoclass:: lsqfit.nonlinear_fit(data, fcn, prior=None, p0=None, svdcut=1e-12, add_svdnoise=False, add_priornoise=False, debug=False, tol=1e-8, maxit=1000, fitter='gsl_multifit', **fitterargs)
+.. autoclass:: lsqfit.nonlinear_fit(data, fcn, prior=None, p0=None, svdcut=1e-12, eps=None, noise=False, debug=False, tol=1e-8, maxit=1000, fitter='gsl_multifit', **fitterargs)
 
    Additional methods are provided for printing out detailed information
    about the fit, testing fits with simulated data,

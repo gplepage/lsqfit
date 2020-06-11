@@ -97,11 +97,11 @@ import gvar as _gvar
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
     tol=1e-8,
-    svdcut=1e-12,
+    svdcut=None,
+    eps=None,
     debug=False,
     maxit=1000,
-    add_svdnoise=False,
-    add_priornoise=False,
+    noise=(False, False)
     )
 
 # dictionary containing all fitters available to nonlinear_fit.
@@ -129,7 +129,7 @@ if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
 _FDATA = collections.namedtuple(
-    '_FDATA', 'mean inv_wgts svdcorrection logdet nblocks svdn nw niw'
+    '_FDATA', 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'
     )
 # Internal data type for _unpack_data()
 
@@ -251,33 +251,29 @@ class nonlinear_fit(object):
             in an array. Note that this feature is experimental; the
             interface may change in the future.
 
-        svdcut (float, dict, None): If ``svdcut`` is a nonzero number,
-            SVD cuts are applied to every block-diagonal sub-matrix of the
-            correlation matrix for the data ``y`` and ``prior`` (if there is a
-            prior). If ``svdcut > 0``, eigenvalues of the rescaled matrices
-            that are smaller than ``svdcut`` times the maximum eigenvalue are
-            replaced by ``svdcut`` times the maximum eigenvalue. This makes
-            the correlation matrix less singular and less susceptible to
-            roundoff error. When ``svdcut < 0``, eigenvalues smaller than
-            ``|svdcut|`` times the maximum eigenvalue are discarded and the
-            corresponding components in ``y`` and ``prior`` are zeroed out. No
-            SVD cut is applied if ``svdcut=None``. If ``svdcut`` is a
-            dictionary, its arguments are passed as keyword arguments to
-            ``gvar.svd``, which is used to apply the  SVD cut: eg,
-            ``svdcut=dict(svdcut=1e-4, add_offsets=True)``. Default is 1e-12.
+        eps (float): If positive, singularities in the correlation matrix 
+            for ``g`` are regulated using :func:`gvar.regulate` 
+            with cutoff ``eps``. This makes the correlation matrices 
+            less singular, which can improve the  stability and accuracy 
+            of a fit. Ignored if ``svdcut`` is specified (and 
+            not ``None``).
 
-        add_svdnoise (bool): If ``add_svdnoise=True``, noise is added to
-            the data means corresponding to the additional uncertainties
-            introduced when ``svdcut>0``. This is useful for testing the
-            quality of a fit (``chi2``) when large SVD cuts are
-            employed. Default is ``False``.
+        svdcut (float): If nonzero, singularities in the correlation
+            matrix are regulated using :func:`gvar.regulate`
+            with an SVD cutoff ``svdcut``. This makes the correlation 
+            matrices less singular, which can improve the  stability and 
+            accuracy of a fit. Default is ``svdcut=1e-12``.
 
-        add_priornoise (bool): If ``add_priornoise=True``, noise is added to
-            the prior means corresponding to the uncertainties
-            in the prior. This is useful for testing the
-            quality of a fit (``chi2``) when broad priors are
-            employed. Default is ``False``.
-
+        noise (tuple or bool): If ``noise[0]=True``, noise is 
+            added to the data and prior means corresponding to any 
+            additional uncertainties introduced by using ``eps>0`` 
+            or ``svdcut>0``. If ``noise[1]=True``, noise is added 
+            to the prior means corresponding to the uncertainties
+            in the prior. Noise is useful for testing the
+            quality of a fit (``chi2``). Setting ``noise=True`` 
+            is shorthand for ``noise=(True, True)``, and
+            ``noise=False`` means ``noise=(False, False)`` (the default).
+        
         udata (dict, array or tuple):
             Same as ``data`` but instructs the fitter to ignore  correlations
             between different pieces of data.  This speeds up the  fit,
@@ -310,9 +306,9 @@ class nonlinear_fit(object):
             definitions of these stopping conditions. Typically one sets
             ``xtol=1/10**d`` where ``d`` is the number of digits of precision
             desired in the result, while ``gtol<<1`` and ``ftol<<1``. Setting
-            ``tol=eps`` where ``eps`` is a number is equivalent to setting
-            ``tol=(eps,1e-10,1e-10)``. Setting ``tol=(eps1,eps2)`` is
-            equivalent to setting ``tol=(eps1,eps2,1e-10)``. Default is
+            ``tol=delta`` where ``delta`` is a number is equivalent to setting
+            ``tol=(delta,1e-10,1e-10)``. Setting ``tol=(delta1,delta2)`` is
+            equivalent to setting ``tol=(delta1,delta2,1e-10)``. Default is
             ``tol=1e-8``. (Note: the ``ftol`` option is disabled in some
             versions of the GSL library.)
 
@@ -386,7 +382,8 @@ class nonlinear_fit(object):
             ``fit.palt`` give the same means and normally give the same errors
             for each parameter. They differ only when the input data's
             covariance matrix is too singular to invert accurately (because of
-            roundoff error), in which case an SVD cut is advisable.
+            roundoff error), in which case refitting with a nonzero value 
+            for ``eps`` or ``svdcut`` is advisable.
 
         p0 (dict, array or float): The parameter values used to start the fit.
             This will differ from the input ``p0`` if the latter was
@@ -426,11 +423,13 @@ class nonlinear_fit(object):
 
                 3: ``ftol >=`` relative change in ``chi**2`` between iterations
 
-        svdcorrection (gvar.GVar): Sum of all SVD corrections, if any, added
-            to the fit data ``y`` or the prior ``prior``.
+                4: unable to improve fit further (e.g., already converged)
 
-        svdn (int): Number of eigenmodes modified (and/or deleted) by the
-            SVD cut.
+        correction (gvar.GVar): Sum of all corrections, if any, added
+            to the fit data and prior when ``eps>0`` or ``svdcut>0``.
+
+        svdn (int): Number of eigenmodes of the correlation matrix 
+            modified (and/or deleted) when ``svdcut>0``.
 
         time (float): *CPU* time (in secs) taken by fit.
 
@@ -454,10 +453,10 @@ class nonlinear_fit(object):
 
     The global defaults used by |nonlinear_fit| can be changed by
     changing entries in dictionary ``lsqfit.nonlinear_fit.DEFAULTS``
-    for keys ``'svdcut'``, ``'debug'``, ``'tol'``, ``'maxit'``, and
-    ``'fitter'``. Additional defaults can be added to that dictionary
-    to be are passed through |nonlinear_fit| to the underlying
-    fitter (via dictionary ``fitterargs``).
+    for keys ``'eps'``, ``'svdcut'``, ``'debug'``, ``'tol'``, ``'noise'``,
+    ``'maxit'``,  and ``'fitter'``. Additional defaults can be 
+    added to that dictionary to be are passed through |nonlinear_fit| 
+    to the underlying fitter (via dictionary ``fitterargs``).
     """
     # N.B. If _fdata is specified (set from a previous fit's
     # fit.fdata), then the data and prior correlation matrices are
@@ -473,9 +472,10 @@ class nonlinear_fit(object):
     FITTERS = _FITTERS
 
     def __init__(
-        self, data=None, fcn=None, prior=None, p0=None,
+        self, data=None, fcn=None, prior=None, p0=None, eps=False,
         svdcut=False, debug=None, tol=None, maxit=None, udata=None, _fdata=None,
-        add_svdnoise=None, add_priornoise=None, add_noise=None,
+        noise=None, 
+        add_svdnoise=None, add_priornoise=None, # legacy names
         linear=[], fitter=None, **fitterargs
         ):
 
@@ -488,6 +488,10 @@ class nonlinear_fit(object):
             raise ValueError('neither p0 nor prior is specified')
 
         # install defaults where needed
+        if eps is False:
+            eps = nonlinear_fit.DEFAULTS.get(
+                'eps', _FITTER_DEFAULTS['eps']
+                )
         if svdcut is False:
             svdcut = nonlinear_fit.DEFAULTS.get(
                 'svdcut', _FITTER_DEFAULTS['svdcut'],
@@ -504,29 +508,28 @@ class nonlinear_fit(object):
             maxit = nonlinear_fit.DEFAULTS.get(
                 'maxit', _FITTER_DEFAULTS['maxit'],
                 )
-        if add_noise is True and add_svdnoise is None and add_priornoise is None:
-        # add_noise (bool): Setting ``add_noise=True`` causes
-        #     ``add_svdnoise=add_priornoise=True`` (whether or not they
-        #     have been separately specified). Otherwise ``add_noise`` is
-        #     ignored.
-            add_svdnoise = True
-            add_priornoise = True
-        if add_svdnoise is None:
-            add_svdnoise = nonlinear_fit.DEFAULTS.get(
-                'add_svdnoise', _FITTER_DEFAULTS['add_svdnoise'],
+
+        noise_not_specified = noise is None
+        if noise is None:
+            noise = nonlinear_fit.DEFAULTS.get(
+                'noise', _FITTER_DEFAULTS['noise'],
                 )
-        if add_priornoise is None:
-            add_priornoise = nonlinear_fit.DEFAULTS.get(
-                'add_priornoise', _FITTER_DEFAULTS['add_priornoise'],
-                )
+        if isinstance(noise, bool):
+            noise = (noise, noise)
+        # legacy overwrites -- don't rely on these
+        if add_svdnoise is not None and noise_not_specified:
+            noise = (add_svdnoise, noise[1])
+        if add_priornoise is not None and noise_not_specified:
+            noise = (noise[0], add_priornoise)
+
         if fitter is None:
             fitter = nonlinear_fit.DEFAULTS.get(
                 'fitter',  _FITTER_DEFAULTS['fitter'],
                 )
         for k in nonlinear_fit.DEFAULTS:
             if k in [
-                'svdcut', 'debug', 'maxit', 'fitter', 'tol',
-                'add_svdnoise', 'add_priornoise',
+                'eps', 'svdcut', 'debug', 'maxit', 'fitter', 'tol',
+                'noise', 'add_svdnoise', 'add_priornoise',
                 ]:
                 continue
             if k not in fitterargs:
@@ -534,8 +537,7 @@ class nonlinear_fit(object):
 
         # capture arguments; initialize parameters
         self.fitterargs = fitterargs
-        self.svdcut = svdcut
-        self.add_svdnoise = add_svdnoise   # not needed externally
+        self.noise = noise
         if data is None:
             self.data = udata
             self.uncorrelated_data = True
@@ -554,15 +556,15 @@ class nonlinear_fit(object):
         clock = time.perf_counter if hasattr(time, 'perf_counter') else time.time
         cpu_time = clock()
 
-        if add_priornoise:
+        if noise[1]:
             prior = prior + (_gvar.sample(prior) - _gvar.mean(prior))
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
         if _fdata is None:
             x, y, prior, fdata = _unpack_data(
-                data=self.data, prior=prior, svdcut=self.svdcut,
+                data=self.data, prior=prior, svdcut=svdcut, eps=eps,
                 uncorrelated_data=self.uncorrelated_data,
-                add_svdnoise=add_svdnoise,
+                noise=noise, debug=debug
                 )
         else:
             x = data[0]
@@ -571,11 +573,14 @@ class nonlinear_fit(object):
             fdata.mean[:y.size] = _gvar.mean(y.flat)
             if prior is not None:
                 fdata.mean[y.size:] = _gvar.mean(prior.flat)
+        self.eps = fdata.eps 
+        self.svdcut = fdata.svdcut
         self.x = x
         self.y = y
         self.prior = prior
         self.fdata = fdata
-        self.svdcorrection = fdata.svdcorrection
+        self.correction = fdata.correction
+        self.svdcorrection = fdata.correction  # legacy name
         self.nblocks = fdata.nblocks
         self.svdn = fdata.svdn
         self.p0 = _unpack_p0(
@@ -739,6 +744,9 @@ class nonlinear_fit(object):
         self.time = clock() - cpu_time
         if self.debug:
             self.check_roundoff()
+        
+        # legacy 
+        self.svdcorrect = self.correction
 
     def _varpro_fit(self, p0, nf, tol, maxit):
         def lstsq(M, y):
@@ -824,7 +832,7 @@ class nonlinear_fit(object):
     def set(clear=False, **defaults):
         """ Set default parameters for :class:`lsqfit.nonlinear_fit`.
 
-        Use to set default values for parameters: ``svdcut``,
+        Use to set default values for parameters: ``eps``, ``svdcut``,
         ``debug``, ``tol``, ``maxit``, and ``fitter``. Can also set
         parameters specific to the fitter specified by the ``fitter``
         argument.
@@ -887,19 +895,21 @@ class nonlinear_fit(object):
         # buf = [y,prior]; D[a,i] = dp[a]/dbuf[i]
         pmean = _gvar.mean(self.palt).flat
         buf = (
-            self.y.flat if self.prior is None else
+            self.y.flat[:] if self.prior is None else
             numpy.concatenate((self.y.flat, self.prior.flat))
             )
         D = numpy.zeros((self.cov.shape[0], len(buf)), float)
         for i, chivw_i in enumerate(self._chivw(_gvar.valder(pmean))):
-            for a in range(D.shape[0]):
-                D[a, i] = chivw_i.dotder(self.cov[a])
+            # for a in range(D.shape[0]):
+                # D[a, i] = chivw_i.dotder(self.cov[a])
+            D[:, i] = chivw_i.mdotder(self.cov)
 
         # p[a].mean=pmean[a]; p[a].der[j] = sum_i D[a,i]*buf[i].der[j]
         p = []
         for a in range(D.shape[0]): # der[a] = sum_i D[a,i]*buf[i].der
-            p.append(_gvar.gvar(pmean[a], _gvar.wsum_der(D[a], buf),
-                     buf[0].cov))
+            p.append(
+                _gvar.gvar(pmean[a], _gvar.wsum_der(D[a], buf), buf[0].cov)
+                )
         self._p = _reformat(self.palt, p)
         return self._p
 
@@ -1234,15 +1244,24 @@ class nonlinear_fit(object):
 
         # settings
         settings = "\nSettings:"
-        if not self.add_svdnoise or self.svdcut is None or self.svdcut < 0:
-            settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}".format(
-                svdcut=self.svdcut if self.svdcut is not None else 0.0,
-                svdn=self.svdn
-                )
-        else:
-            settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}*".format(
+        if self.svdcut is not None:
+            if not self.noise[0] or self.svdcut < 0:
+                settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}".format(
                     svdcut=self.svdcut, svdn=self.svdn
                     )
+            else:
+                settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}*".format(
+                        svdcut=self.svdcut, svdn=self.svdn
+                        )
+        else:
+            if self.noise[0]:
+                settings += "\n  eps = {eps:.2g}*".format(
+                        eps=self.eps
+                        )
+            else:
+                settings += "\n  eps = {eps:.2g}".format(
+                        eps=self.eps
+                        )
         criterion = self.stopping_criterion
         try:
             fmtstr = [
@@ -1250,7 +1269,8 @@ class nonlinear_fit(object):
                 "    tol = ({:.2g}*,{:.2g},{:.2g})",
                 "    tol = ({:.2g},{:.2g}*,{:.2g})",
                 "    tol = ({:.2g},{:.2g},{:.2g}*)",
-                ][criterion if criterion is not None else 0]
+                "    tol = ({:.2g},{:.2g},{:.2g})",
+            ][criterion if criterion is not None else 0]
             settings += fmtstr.format(*self.tol)
         except:
             pass
@@ -1438,7 +1458,7 @@ class nonlinear_fit(object):
             add_priornoise = bootstrap
         # Note: don't need svdcut since these are built into the data_iter
         fargs = dict(
-            fcn=self.fcn, svdcut=None, p0=pexact, fitter=self.fitter,
+            fcn=self.fcn, svdcut=0.0, eps=None, p0=pexact, fitter=self.fitter,
             )
         fargs.update(self.fitterargs)
         fargs.update(kargs)
@@ -1650,7 +1670,7 @@ def _reformat(p, buf):
         ans = numpy.array(buf).reshape(numpy.shape(p))
     return ans
 
-def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
+def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
     """ Unpack data and prior into ``(x, y, prior, fdata)``.
 
     This routine unpacks ``data`` and ``prior`` into ``x, y, prior, fdata``
@@ -1658,7 +1678,7 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
     ``prior`` is the collection of priors for the fit, and ``fdata``
     contains the information about the data and prior needed for the
     fit function. Both ``y`` and ``prior`` are modified to account
-    for SVD cuts if ``svdcut>0``.
+    if ``svdcut>0`` or ``eps>0``.
 
     Allowed layouts for ``data`` are: ``x, y, ycov``, ``x, y, ysdev``,
     ``x, y``, and ``y``. In the last two case, ``y`` can be either an array
@@ -1669,7 +1689,7 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
 
     Output data in ``fdata`` is: ``fdata.mean`` containing the mean values of
     ``y.flat`` and ``prior.flat`` (if there is a prior);
-    ``fdata.svdcorrection``  containing the sum of the SVD corrections to
+    ``fdata.correction``  containing the sum of the SVD corrections to
     ``y.flat`` and ``prior.flat``; ``fdata.logdet`` containing  the logarithm
     of the  determinant of the covariance matrix of ``y.flat`` and
     ``prior.flat``; and ``fdata.inv_wgts`` containing a representation of the
@@ -1690,35 +1710,51 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
         y = _unpack_gvars(y)
     else:
         raise ValueError("data tuple wrong length: "+str(len(data)))
+    if debug:
+        if numpy.any(_gvar.sdev(y.flat) == 0):
+            raise ValueError('some input data have zero standard deviations')
+        if numpy.any(numpy.isnan(_gvar.mean(y.flat))):
+            raise ValueError("some input data means are nan's")
+        if numpy.any(numpy.isnan(_gvar.sdev(y.flat))):
+            raise ValueError("some input data std devs are nan's")
 
     # clean up
     if prior is not None:
         prior = _unpack_gvars(prior)
+        if debug:
+            if numpy.any(_gvar.sdev(prior.flat) == 0):
+                raise ValueError('some priors have zero standard deviations')
+            if numpy.any(numpy.isnan(_gvar.mean(prior.flat))):
+                raise ValueError("some prior means are nan's")
+            if numpy.any(numpy.isnan(_gvar.sdev(prior.flat))):
+                raise ValueError("some prior std devs are nan's")
 
-    def _apply_svd(data, svdcut=svdcut):
-        ans, inv_wgts = _gvar.svd(
-            data, wgts=-1, svdcut=svdcut, add_svdnoise=add_svdnoise,
+    def _apply_svd(data, svdcut=svdcut, eps=eps):
+        ans, inv_wgts = _gvar.regulate(
+            data, wgts=-1, eps=eps, svdcut=svdcut, noise=noise[0],
             )
         fdata = _FDATA(
             mean=_gvar.mean(ans.flat),
             inv_wgts=inv_wgts,
-            svdcorrection=numpy.sum(ans.svdcorrection.flat),
+            correction=numpy.sum(ans.correction.flat),
             logdet=ans.logdet,
             nblocks=ans.nblocks,
             svdn=ans.nmod,
+            svdcut=ans.svdcut,
+            eps=ans.eps,
             nw=sum(len(wgts) for iw, wgts in inv_wgts),
             niw=sum(len(iw) for iw, wgts in inv_wgts),
             )
         del ans.nblocks
-        # del ans.svdcorrection
+        # del ans.correction
         return ans, fdata
 
     if uncorrelated_data:
         ysdev = _gvar.sdev(y.flat)
         if prior is None:
             pfdata = _FDATA(
-                mean=[], inv_wgts=[([],[])], svdcorrection=_gvar.gvar(0,0),
-                logdet=0.0, nblocks={1:0}, svdn=0, nw=0, niw=0,
+                mean=[], inv_wgts=[([],[])], correction=_gvar.gvar(0,0),
+                logdet=0.0, nblocks={1:0}, svdn=0, svdcut=0, eps=0, nw=0, niw=0,
                 )
         else:
             prior, pfdata = _apply_svd(prior)
@@ -1737,10 +1773,12 @@ def _unpack_data(data, prior, svdcut, uncorrelated_data, add_svdnoise):
         fdata = _FDATA(
             mean=numpy.concatenate((_gvar.mean(y.flat), pfdata.mean)),
             inv_wgts=inv_wgts,
-            svdcorrection=pfdata.svdcorrection,
+            correction=pfdata.correction,
             logdet=2 * numpy.sum(numpy.log(ysdev)) + pfdata.logdet,
             nblocks=pfdata.nblocks,
             svdn=pfdata.svdn,
+            svdcut=pfdata.svdcut,
+            eps=pfdata.svdcut,
             nw=sum(len(wgts) for iw, wgts in inv_wgts),
             niw=sum(len(iw) for iw, wgts in inv_wgts),
             )

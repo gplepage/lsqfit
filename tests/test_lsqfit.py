@@ -26,7 +26,6 @@ import numpy as np
 import gvar as gv
 from lsqfit import *
 import lsqfit
-
 PY3 = (sys.version_info.major == 3)
 
 ## test_lsqfit should work for any of the fitters. Use DEFAULTS to choose:
@@ -217,6 +216,42 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             prior = dict(p=gv.gvar(0, 1))
             def fcn(p):
                 return dict(a=p['p'])
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1,1))
+            prior = dict(p=gv.gvar(0, 0))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1,1))
+            prior = dict(p=gv.gvar(np.nan, 1))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1,1))
+            prior = dict(p=gv.gvar(0, np.nan))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1, np.nan))
+            prior = dict(p=gv.gvar(10, 1))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(np.nan, 1))
+            prior = dict(p=gv.gvar(10, 1))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
+            fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
+        with self.assertRaises(ValueError):
+            y = dict(a=gv.gvar(1, 1), b=gv.gvar(1,0))
+            prior = dict(p=gv.gvar(10, 1))
+            def fcn(p):
+                return dict(a=p['p'], b=p['p'] ** 2)
             fit = nonlinear_fit(data=y, prior=prior, fcn=fcn, debug=True)
 
     def test_format(self):
@@ -728,7 +763,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             self.assert_gvclose(target_ans, fit_ans, rtol=rtol)
             s2 = max(fit_ans[0].sdev*sig2/sig1,svdcut**0.5*fit_ans[0].sdev)
             self.assertAlmostEqual(fit_ans[1].sdev/s2, 1., places=2)
-            if np.sum(fit.svdcorrection).sdev == 0:
+            if np.sum(fit.correction).sdev == 0:
                 self.assertEqual(fit.svdn, 0)
             else:
                 self.assertEqual(fit.svdn, 2)
@@ -791,14 +826,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         def fitargs(z):
             prior = gv.gvar(25 * ['0 +- %g' % np.exp(z[0])])
             return dict(data=(x, y), prior=prior, fcn=f)
-        if PRINT_FIT:
-            def analyzer(z,f,it):
-                print("%3d  %.8f  ->  %.8f" % (it, np.exp(z[0]), f))
-
-        else:
-            analyzer = None
         z0 = np.log([0.7]) # [5.])
-        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        fit,z = empbayes_fit(z0,fitargs,tol=1e-3)
         self.assertAlmostEqual(np.exp(z[0]), 0.6012, places=1)
         # know correct answer from the process for creating the data
 
@@ -807,7 +836,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             prior = gv.gvar(25 * ['0 +- %g' % np.exp(z)])
             return dict(data=(x, y), prior=prior, fcn=f)
         z0 = np.log(0.7) # 5.)
-        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        fit,z = empbayes_fit(z0, fitargs, tol=1e-3)
         self.assertAlmostEqual(np.exp(z), 0.6012, places=1)
 
         # variation: use a dictionary
@@ -815,7 +844,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             prior = gv.gvar(25 * ['0 +- %g' % np.exp(z['z'])])
             return dict(data=(x, y), prior=prior, fcn=f)
         z0 = dict(z=np.log(0.7))
-        fit,z = empbayes_fit(z0,fitargs,analyzer=analyzer,tol=1e-3)
+        fit,z = empbayes_fit(z0, fitargs, tol=1e-3)
         # self.assertAlmostEqual(np.exp(z['z']), 0.6012, places=1)
 
     def test_unpack_data(self):
@@ -842,14 +871,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                     np.log(np.linalg.det(gv.evalcov(y.flat))),
                     )
 
-        noiseargs = dict(add_svdnoise=False)
+        noiseargs = dict(noise=(False, False))
         # case 1 - (x,y) and prior
         yo = dict(y=[gv.gvar(1, 2), gv.gvar(10,4)])
         p = gv.gvar(2,4)
         po = lsqfit._unpack_gvars({'log(p)':gv.log(p)})
         xo = 20
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=(xo,yo), prior=po, svdcut=None,
+            data=(xo,yo), prior=po, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x, xo)
@@ -860,14 +889,14 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10., gv.log(2.)])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.5])
-        sumsvd = fdata.svdcorrection
+        sumsvd = fdata.correction
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
 
         # case 2 - no x
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=po, svdcut=None,
+            data=yo, prior=po, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
@@ -876,13 +905,13 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10., 2.])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
-        sumsvd = fdata.svdcorrection
+        sumsvd = fdata.correction
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
 
         # case 3 - no prior, x
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=None, svdcut=None,
+            data=yo, prior=None, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
@@ -891,7 +920,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_arraysequal(fdata.mean, [1., 10.])
         self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1])
         self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25])
-        sumsvd = fdata.svdcorrection
+        sumsvd = fdata.correction
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
         test_logdet(fdata, prior, y)
 
@@ -901,7 +930,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         yo['y'][0] *= one
         po['p'] *= one
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=po, svdcut=None,
+            data=yo, prior=po, svdcut=0.0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
@@ -921,7 +950,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=pvo, svdcut=None,
+            data=yo, prior=pvo, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
@@ -938,7 +967,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         yo['y'][0] *= one
         pvo[0] *= one
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=pvo, svdcut=None,
+            data=yo, prior=pvo, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
@@ -964,8 +993,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         xo = 20
         svdcut = None
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=(xo,yo_mean,yo_cov), prior=po, svdcut=svdcut,
-            uncorrelated_data=False, **noiseargs
+            data=(xo,yo_mean,yo_cov), prior=po, svdcut=svdcut,eps=None,
+            debug=True, uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,xo)
         self.assert_gvclose(y,yo['y'])
@@ -989,7 +1018,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         da_svd = gv.gvar(0,sc**0.5)
         for svdcut in [0.0, sc]:
             x, y, prior, fdata = lsqfit._unpack_data(
-                data=yo, prior=po, svdcut=svdcut,
+                data=yo, prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                 )
             self.assertEqual(x,False)
@@ -1026,13 +1055,13 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         sc = 0.01
         da_svd = gv.gvar(0, sc**0.5)
         x, y_ref, prior_ref, fdata_ref = lsqfit._unpack_data(
-            data=yo, prior=po, svdcut=sc,
+            data=yo, prior=po, svdcut=sc, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         # 9a - check that it runs (all need do here)
-        noiseargs['add_svdnoise'] = True
+        noiseargs['noise'] = (True, False)
         x, y, prior, fdata = lsqfit._unpack_data(
-            data=yo, prior=po, svdcut=sc,
+            data=yo, prior=po, svdcut=sc, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
 
@@ -1040,12 +1069,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         # case ?? - wrong length data tuple
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(
-                data=(xo,yo,yo,yo), prior=po, svdcut=svdcut,
+                data=(xo,yo,yo,yo), prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                     )
         with self.assertRaises(ValueError):
             x, y, prior, fdata = lsqfit._unpack_data(
-                data=(xo,), prior=po, svdcut=svdcut,
+                data=(xo,), prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                     )
 

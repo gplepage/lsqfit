@@ -13,6 +13,8 @@ class test_multifitter(unittest.TestCase):
         gv.ranseed(1)
         a = gv.gvar('1.000(1)')
         b = gv.gvar('0.500(1)')
+        a = gv.gvar('1.0(1)')
+        b = gv.gvar('0.5(1)')
         self.x = np.array([0.1, 0.2, 0.3, 0.4])
         def fcn(p, x=self.x):
             ans = gv.BufferDict()
@@ -29,6 +31,15 @@ class test_multifitter(unittest.TestCase):
             )
         # these data should be ignored
         self.data['dummy'] = gv.gvar(['1(1)', '2(2)'])
+
+    def agree_ref(self, p):
+        r = self.ref_fit.p 
+        for k in ['a', 'b']:
+            if abs(r[k].mean - p[k].mean) > r[k].sdev:
+                return False 
+            if abs(r[k].sdev - p[k].sdev) > r[k].sdev:
+                return False 
+        return True
 
     def make_models(self, ncg):
         return [
@@ -208,15 +219,18 @@ class test_multifitter(unittest.TestCase):
         fitter = MultiFitter(models=self.make_models(ncg=1))
         p0 = {'a': 0.9992476083689589,'b': 0.4996757090188109}
         fit2 = fitter.lsqfit(data=self.data, prior=self.prior, p0=p0)
-        self.assertEqual(self.ref_fit.format()[:-20], fit2.format()[:-20])
+        self.assertEqual(self.ref_fit.format()[:-22], fit2.format()[:-22])
         self.assertEqual(p0, fit2.p0)
         fit2 = fitter.lsqfit(data=self.data, prior=self.prior, p0=3 * [p0])
         self.assertEqual(self.ref_fit.format()[:-20], fit2.format()[:-20])
         self.assertEqual(p0, fit2.p0)
         fn = 'test_multifitter.p'
         fit1 = fitter.lsqfit(data=self.data, prior=self.prior, p0=fn)
+        fit1 = fitter.lsqfit(data=self.data, prior=self.prior, p0=fn)
+        # should be converged
         fit2 = fitter.lsqfit(data=self.data, prior=self.prior, p0=fn)
-        self.assertEqual(self.ref_fit.format()[:-20], fit2.format()[:-20])
+        self.assertTrue(self.agree_ref(fit2.p))
+        self.assertEqual(fit1.format()[:-70], fit2.format()[:len(fit1.format())-70])
         self.assertEqual(fit1.pmean, fit2.p0)
         os.unlink(fn)
 
@@ -227,20 +241,20 @@ class test_multifitter(unittest.TestCase):
         dfit = gv.loads(gv.dumps(
             fitter.lsqfit(data=self.data, prior=self.prior)
             ))
-        self.assertEqual(self.ref_fit.format(True), dfit.format(True))
+        self.assertEqual(self.ref_fit.format(True)[:-2], dfit.format(True)[:-2])
 
     def test_lsqfit_coarse_grain(self):
         " MultiFitter.lsqfit(..., ncg=2) "
         fitter = MultiFitter(models=self.make_models(ncg=2))
         fit3 = fitter.lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit3.p), "{'a': 0.99925(60),'b': 0.49965(87)}") # "{'a': 0.99937(46),'b': 0.49994(78)}")
+        self.assertTrue(self.agree_ref(fit3.p))
 
     def test_lsqfit_pdata_coarse_grain(self):
         " MultiFitter.lsqfit(pdata=..., ..., ncg=2) "
         fitter = MultiFitter(models=self.make_models(ncg=2))
         pdata = MultiFitter.process_data(data=self.data, models=fitter.models)
         fit3 = fitter.lsqfit(pdata=pdata, prior=self.prior)
-        self.assertEqual(str(fit3.p), "{'a': 0.99925(60),'b': 0.49965(87)}") # "{'a': 0.99937(46),'b': 0.49994(78)}")
+        self.assertTrue(self.agree_ref(fit3.p))
 
     def test_marginalization(self):
         " MultiFitter.lsqfit(..., mopt=...) "
@@ -257,8 +271,8 @@ class test_multifitter(unittest.TestCase):
             ('log(a)', gv.log(self.prior['a'])), ('b', self.prior['b'])
             ])
         fit5 = fitter.lsqfit(data=self.data, prior=prior)
-        self.assertEqual(str(fit5.p['a']), '0.99925(59)') # str(self.ref_fit.p['a']))
-        self.assertEqual(gv.fmt_chi2(fit5), gv.fmt_chi2(self.ref_fit))
+        self.assertTrue(self.agree_ref(fit5.p))
+        self.assertTrue(abs(fit5.chi2 - self.ref_fit.chi2) / 0.1 /self.ref_fit.chi2)
         self.assertTrue('log(a)' in fit5.p)
 
     def test_fast(self):
@@ -267,26 +281,22 @@ class test_multifitter(unittest.TestCase):
         self.prior['aa'] = self.prior['a'] + gv.gvar('0(1)') * 1e-6
         fitter = MultiFitter(models=self.make_models(ncg=1))
         fit6 = fitter.lsqfit(data=self.data, prior=self.prior, fast=False)
-        self.assertEqual(
-            str(fit6.p),
-            "{'a': 0.99925(60),'b': 0.49968(87),'aa': 0.99925(60)}"
-            # "{'a': 0.99938(46),'b': 0.49985(78),'aa': 0.99938(46)}",
-            )
+        self.assertTrue(self.agree_ref(fit6.p))
+        self.assertEqual((fit6.p['a']/fit6.p['aa']).fmt(ndecimal=5), '1.00000(0)')
 
         # with fast=True (default)
         self.prior['aa'] = self.prior['a'] + gv.gvar('0(1)') * 1e-6
         fitter = MultiFitter(models=self.make_models(ncg=1))
         fit7 = fitter.lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(
-            str(fit7.p), "{'a': 0.99925(60),'b': 0.49968(87)}" # "{'a': 0.99938(46),'b': 0.49985(78)}",
-            )
+        self.assertTrue(self.agree_ref(fit7.p))
+        self.assertTrue('aa' not in fit7.p)
 
     def test_chained_lsqfit(self):
         " MultiFitter.chained_lsqfit(...) "
         # sequential fit
         fitter = MultiFitter(models=self.make_models(ncg=1))
         fit1 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit1.p))
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
 
         # with coarse grain, marginalization and extend, and with fast=False
@@ -298,11 +308,7 @@ class test_multifitter(unittest.TestCase):
         fit2 = fitter.chained_lsqfit(
             data=self.data, prior=prior, mopt=True
             )
-        self.assertEqual(
-            str(fit2.p),
-            "{'log(a)': -0.00083(62),'b': 0.49977(90),'log(aa)': -0.00083(62)}"
-            # "{'log(a)': -0.00073(48),'b': 0.50015(82),'log(aa)': -0.00073(48)}"
-            )
+        self.assertTrue(self.agree_ref(fit2.p))
 
     def test_chained_lsqfit_p0(self):
         " MultiFitter.chained_lsqfit(...) "
@@ -311,17 +317,17 @@ class test_multifitter(unittest.TestCase):
         p0 = gv.BufferDict({'a': 0.9991638707908023,'b': 0.4995927960301173})
         p0list = [p0, gv.BufferDict(a=0.9991638707908023), gv.BufferDict(a=0.9991638707908023)]
         fit1 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=p0)
-        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit1.p))
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
         self.assertEqual(fit1.p0, p0list)
         fit1 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=3 * [p0])
-        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit1.p))
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
         self.assertEqual(fit1.p0, p0list)
         fn = 'test_multifitter.p'
         fit1 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=fn)
         fit2 = fitter.chained_lsqfit(data=self.data, prior=self.prior, p0=fn)
-        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit1.p))
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
         self.assertEqual([f.pmean for f in fit1.chained_fits.values()], fit2.p0)
         os.unlink(fn)
@@ -331,7 +337,7 @@ class test_multifitter(unittest.TestCase):
         # sequential fit
         fitter = MultiFitter(models=self.make_models(ncg=1))
         fit1 = gv.loads(gv.dumps(fitter.chained_lsqfit(data=self.data, prior=self.prior)))
-        self.assertEqual(str(fit1.p), "{'a': 0.99916(62),'b': 0.49959(94)}") # "{'a': 0.99929(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit1.p))
         self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
 
     def test_chained_fit_simul(self):
@@ -340,7 +346,7 @@ class test_multifitter(unittest.TestCase):
         models = [models[0], tuple(models[1:])]
         fitter = MultiFitter(models=models)
         fit3 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit3.p), "{'a': 0.99916(61),'b': 0.49959(94)}") # "{'a': 0.99931(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit3.p))
         self.assertEqual(list(fit3.chained_fits.keys()), ['l', '(c1,c2)'])
 
         # with coarse grain, marginalization and extend
@@ -353,7 +359,7 @@ class test_multifitter(unittest.TestCase):
         fit4 = fitter.chained_lsqfit(
             data=self.data, prior=prior, mopt=True
             )
-        self.assertEqual(str(fit4.p), "{'log(a)': -0.00083(62),'b': 0.5000(10)}") #"{'log(a)': -0.00073(48),'b': 0.5000(10)}")
+        self.assertTrue(self.agree_ref(fit4.p))
 
     def test_chained_fit_kargs(self):
         " MultiFitter(models=[m1, dict(...), m2, ...]) "
@@ -373,7 +379,7 @@ class test_multifitter(unittest.TestCase):
         models = [models[0], models[1:]]
         fitter = MultiFitter(models=models)
         fit5 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit5.p))
         self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
 
         # degenerate parallel fit (nfit=1)
@@ -381,7 +387,7 @@ class test_multifitter(unittest.TestCase):
         models = [[models[0]], models[1:]]
         fitter = MultiFitter(models=models)
         fit5 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit5.p))
         self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
 
         # dictionaries in parallel fits
@@ -389,7 +395,7 @@ class test_multifitter(unittest.TestCase):
         models = [[dict(svdcut=1e-12), models[0]], [dict(svdcut=1e-12)] + models[1:]]
         fitter = MultiFitter(models=models)
         fit5 = fitter.chained_lsqfit(data=self.data, prior=self.prior)
-        self.assertEqual(str(fit5.p),  "{'a': 0.99918(61),'b': 0.49959(94)}") # "{'a': 0.99932(48),'b': 0.49986(91)}")
+        self.assertTrue(self.agree_ref(fit5.p))
         self.assertEqual(list(fit5.chained_fits.keys()), ['l', 'c1', 'c2', 'wavg(c1,c2)'])
 
         # with coarse grain, marginalization
@@ -402,7 +408,8 @@ class test_multifitter(unittest.TestCase):
         fit6 = fitter.chained_lsqfit(
             data=self.data, prior=prior, mopt=True
             )
-        self.assertEqual(str(fit6.p), "{'log(a)': -0.00083(62),'b': 0.5000(10)}") #"{'log(a)': -0.00073(48),'b': 0.5000(10)}")
+        self.assertTrue(self.agree_ref(fit6.p))
+        # self.assertEqual(str(fit6.p), "{'log(a)': -0.081(64),'b': 0.50(10)}") # "{'log(a)': -0.00083(62),'b': 0.5000(10)}") #"{'log(a)': -0.00073(48),'b': 0.5000(10)}")
 
     def test_bootstrap_lsqfit(self):
         fitter = MultiFitter(models=self.make_models(ncg=1))

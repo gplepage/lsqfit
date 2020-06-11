@@ -51,7 +51,7 @@ def main():
     #     }
     # inputs = {
     #     'E prior':prior['E'], 'a prior':prior['a'],
-    #     'svd cut':fit.svdcorrection,
+    #     'svd cut':fit.correction,
     #     }
     outputs = gv.BufferDict()
     outputs['E2/E0'] = E[2] / E[0]
@@ -60,7 +60,7 @@ def main():
     outputs['a1/a0'] = a[1] / a[0]
     inputs = gv.BufferDict()
     inputs['E prior'] = prior['E']
-    inputs['svd cut'] = fit.svdcorrection
+    inputs['svd cut'] = fit.correction
     inputs['a prior'] = prior['a']
     print(gv.fmt_values(outputs))
     print(gv.fmt_errorbudget(outputs, inputs))

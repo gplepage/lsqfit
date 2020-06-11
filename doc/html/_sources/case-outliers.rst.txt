@@ -160,7 +160,7 @@ as follows::
 
         # evaluate expectation value of g(p)
         def g(p):
-            w = 0.5 + 0.5 * p['2w-1']
+            w = p['w']
             c = p['c']
             return dict(w=[w, w**2], mean=c, outer=np.outer(c,c))
 
@@ -180,9 +180,12 @@ as follows::
 
         # parameter w
         wmean, w2mean = results['w']
-        wsdev = gv.mean(results['w'][1] - wmean ** 2) ** 0.5
+        wsdev = gv.mean(w2mean - wmean ** 2) ** 0.5
         w = wmean + gv.gvar(np.zeros(np.shape(wmean)), wsdev)
-        print('w =', w)
+        print('w =', w, '\n')
+
+        # Bayes Factor
+        print('logBF =', np.log(results.norm))
 
         # add new fit to plot
         yline = fitfcn(xline, dict(c=c))
@@ -201,7 +204,7 @@ as follows::
             self.prior = prior
 
         def __call__(self, p):
-            w = 0.5 + 0.5 * p['2w-1']
+            w = p['w']
             y_fx = self.y - self.fcn(self.x, p)
             data_pdf1 = self.gaussian_pdf(y_fx, 1.)
             data_pdf2 = self.gaussian_pdf(y_fx, 10.)
@@ -222,7 +225,7 @@ as follows::
 
     def make_prior():
         prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
-        prior['erfinv(2w-1)'] = gv.gvar('0(1)') / 2 ** 0.5
+        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1.)
         return prior
 
     if __name__ == '__main__':
@@ -242,11 +245,10 @@ fit variables. Normally it would use the standard PDF from the least-squares
 fit, but we replace that PDF here with an instance (``mod_pdf``) of class
 ``ModifiedPDF``.
 
-We have modified ``make_prior()`` to introduce ``2w-1`` as a new fit
-parameter. The inverse error function of this parameter has a Gaussian prior
-(0±1)/sqrt(2), which makes ``2w-1`` uniformly distributed across the interval
-from -1 to 1 (and therefore ``w`` uniformly distributed between 0 and 1). This
-parameter has no role in the initial least-squares fit.
+We have modified ``make_prior()`` to introduce ``w`` as a new fit
+parameter. The prior for this parameter is uniformly distributed
+across the interval from 0 |~| to |~| 1. Parameter ``w`` plays 
+no role in the initial fit.
 
 We first call ``expval`` with no function, to allow the integrator to adapt
 to the modified PDF. We then use the integrator, now with adaptation
@@ -284,15 +286,15 @@ A Variation
 Vanderplas in his version of this problem assigns a separate ``w`` to
 each data point. This is a slightly different model for the failure that
 leads to outliers. It is easily implemented here by changing the prior
-so that ``2w-1`` (and its inverse error function) is an array::
+so that ``w`` is an array::
 
     def make_prior():
         prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
-        prior['erfinv(2w-1)'] = gv.gvar(19 * ['0(1)']) / 2 ** 0.5
+        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1., shape=19)
         return prior
 
 The Bayesian integral then has 21 parameters, rather than the 3 parameters
-before. The code still takes only 5--6 |~| secs to run (on a 2014 laptop).
+before. The code still takes only 4 |~| secs to run (on a 2020 laptop).
 
 The final results are quite similar to the other model:
 

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 11.5.3 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 11.6 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -788,7 +788,7 @@ becomes unreliable.</p>
 As discussed in <a class="reference internal" href="overview.html#svd-cuts-statistics"><span class="std std-ref">SVD Cuts and Inadequate Statistics</span></a>, an SVD cut increases
 the uncertainties
 in the data without increasing the random fluctuations in the
-data means (unless <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>). As a result contributions
+data means. As a result contributions
 from the parts of the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function affected by the SVD cut
 tend to be much smaller than naively expected, artificially
 pulling <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code> down.</p>
@@ -803,17 +803,17 @@ frequently the case. Again contributions to <code class="docutils literal notran
 associated with such priors tend to be much smaller than naively expected,
 pulling <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> down.</p>
 <p>These complications can conspire to make <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code>
-signficantly less than 1 when the fit is good. Of greater concern,
+significantly less than 1 when the fit is good. Of greater concern,
 they can mask evidence of a bad fit:  <code class="docutils literal notranslate"><span class="pre">chi**2/N</span> <span class="pre">≈</span> <span class="pre">1</span></code> is <em>not</em>
 necessarily evidence of a good fit in such situations.</p>
 <p>A simple way to address these situations is to redo the fit with
-keyword parameters <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code> and
-<code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code>. These cause <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to
+keyword parameter <code class="docutils literal notranslate"><span class="pre">noise=True</span></code>.
+This causes <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to
 add extra fluctuations to the means in the prior and the data
 that are characteristic of the probability distributions associated
 with the priors and the SVD cut, respectively:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=&gt;</span>  <span class="n">prior</span> <span class="o">+</span> <span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span> <span class="o">-</span> <span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">prior</span><span class="p">))</span>
-    <span class="n">y</span> <span class="o">=&gt;</span>  <span class="n">y</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">svdcorrection</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=&gt;</span>  <span class="n">y</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">correction</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>These fluctuations
@@ -843,8 +843,7 @@ code to include a second fit at the end:</p>
 
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">================ Add noise to prior, SVD&#39;</span><span class="p">)</span>
     <span class="n">noisyfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">0.0028</span><span class="p">,</span>
-        <span class="n">add_svdnoise</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">add_priornoise</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">0.0028</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="n">noisyfit</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">True</span><span class="p">))</span>
 
@@ -1021,7 +1020,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

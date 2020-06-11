@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview and Tutorial &#8212; lsqfit 11.5.3 documentation</title>
+    <title>Overview and Tutorial &#8212; lsqfit 11.6 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -1663,7 +1663,7 @@ the parameters left in <code class="docutils literal notranslate"><span class="p
         <span class="p">}</span>
     <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;E prior&#39;</span><span class="p">:</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;E&#39;</span><span class="p">],</span> <span class="s1">&#39;a prior&#39;</span><span class="p">:</span><span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">],</span>
-        <span class="s1">&#39;svd cut&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">svdcorrection</span><span class="p">,</span>
+        <span class="s1">&#39;svd cut&#39;</span><span class="p">:</span><span class="n">fit</span><span class="o">.</span><span class="n">correction</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_values</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">fmt_errorbudget</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
@@ -1998,7 +1998,7 @@ values of <code class="docutils literal notranslate"><span class="pre">svdcut</s
 in the final results.</p>
 <p>The results shown in the previous section include an error budget, and it
 has an entry for the error introduced by the (default) SVD cut (obtained
-from <code class="docutils literal notranslate"><span class="pre">fit.svdcorrection</span></code>).
+from <code class="docutils literal notranslate"><span class="pre">fit.correction</span></code>).
 The contribution is negligible. It is zero when <code class="docutils literal notranslate"><span class="pre">svdcut=1e-19</span></code>, of course,
 but the instability caused by the ill-conditioned covariance matrix in
 that case makes it unacceptable.</p>
@@ -2024,10 +2024,10 @@ problems it is a good choice. Roundoff errors become more accute, however,
 when there are strong correlations between different parts of the fit
 data or prior.  Then much larger <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>s may be needed.</p>
 <p>The SVD cut is applied to both the data and the prior. It is possible to
-apply SVD cuts to either of these separately using <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.svd()</span></code> before
+apply SVD cuts to either of these separately using <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.regulate()</span></code> before
 the fit: for example,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">ymod</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
-<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">regulate</span><span class="p">(</span><span class="n">ymod</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-10</span><span class="p">)</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">regulate</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="mf">1e-12</span><span class="p">)</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">svdcut</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2128,7 +2128,7 @@ are many more samples than data points — 10 or 100 times as many.</p>
 analysis of this example.</p>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> will apply an SVD cut if keyword parameter
 <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is set. Another way to implement SVD cuts is using
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.svd()</span></code> to modify the fit data before it is fit.</p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.regulate()</span></code> to modify the fit data before it is fit.</p>
 </div>
 <div class="section" id="y-has-unknown-errors">
 <h2><code class="docutils literal notranslate"><span class="pre">y</span></code> has Unknown Errors<a class="headerlink" href="#y-has-unknown-errors" title="Permalink to this headline">¶</a></h2>
@@ -2669,11 +2669,32 @@ more specialized applications.</p>
 </div>
 <div class="section" id="debugging-and-troubleshooting">
 <h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
-<p>It is a very good idea to set parameter <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>, at
-least in the early stages of a project. This causes the code to look for
-common mistakes and report on them with  more intelligible error messages. The
-code also then checks for significant roundoff errors in the matrix inversion
-of the covariance matrix.</p>
+<p>When a fit refuses to work, the first thing to check is that the data, prior, and fit
+function are properly constructed. Setting parameter <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> in
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> causes the code to look for common mistakes and report on
+them with more intelligible error messages. The code also then checks for
+significant roundoff errors in the matrix inversion of the covariance matrix.
+It is a good idea to set this parameter in the early stages of any project.</p>
+<p>Sometimes the optimization algorithm has trouble finding the true
+minimum of the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function, leading to unexpectedly poor fits.
+Trying a different algorithm
+(see <a class="reference internal" href="#faster-fitters"><span class="std std-ref">Faster Fitters</span></a>) will sometimes help. Another option is
+to replace <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> with <code class="docutils literal notranslate"><span class="pre">eps</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>, which changes
+the underlying fit functions from which <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> is constructed.
+A third option is to try different starting points <code class="docutils literal notranslate"><span class="pre">p0</span></code>. The
+following code, for example, tries 5 starting points drawn at
+random from the prior:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="kn">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+<span class="o">...</span>
+<span class="n">gv</span><span class="o">.</span><span class="n">ranseed</span><span class="p">(</span><span class="mi">12345</span><span class="p">)</span>     <span class="c1"># gives same results if run script again</span>
+<span class="k">for</span> <span class="n">p0</span> <span class="ow">in</span> <span class="n">gv</span><span class="o">.</span><span class="n">raniter</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Alternatively, simply set parameter <code class="docutils literal notranslate"><span class="pre">p0=True</span></code> to generate a random starting
+point for each fit.</p>
 <p>A common mistake is a mismatch between the format of the data and the
 format of what comes back from the fit function. Another mistake is when  a
 fit function <code class="docutils literal notranslate"><span class="pre">fcn(p)</span></code> returns results containing <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s  when the
@@ -2682,7 +2703,7 @@ parameters <code class="docutils literal notranslate"><span class="pre">p</span>
 function requires an extra <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>, that <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> should be turned into a
 parameter by adding it to the prior.</p>
 <p>Error messages that come from inside the GSL routines used by
-<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> are sometimes less than useful. They are usually due to errors
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> are usually due to errors
 in one of the inputs to the fit  (that is, the fit data, the prior, or the fit
 function). Again setting <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> may catch the errors before they
 land in GSL.</p>
@@ -2690,11 +2711,11 @@ land in GSL.</p>
 <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>s (<em>e.g.</em>, <code class="docutils literal notranslate"><span class="pre">1e78</span></code>). This could be because there is a genuine
 zero-eigenvalue mode in the covariance matrix of the data or prior. Such a
 zero mode makes it impossible to invert the covariance matrix when evaluating
-<code class="docutils literal notranslate"><span class="pre">chi**2</span></code>. One fix is to include SVD cuts in the fit by setting, for
-example, <code class="docutils literal notranslate"><span class="pre">svdcut=1e-8</span></code> in the call to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.
-These cuts will exclude exact or nearly exact zero modes, while leaving
-important modes mostly unaffected.</p>
-<p>Even if the SVD cuts work in such a case, the question remains as to why one
+<code class="docutils literal notranslate"><span class="pre">chi**2</span></code>. One fix is to regulate the covariance matrix used in the fit by setting,
+for example, <code class="docutils literal notranslate"><span class="pre">svdcut=1e-8</span></code> (or <code class="docutils literal notranslate"><span class="pre">eps=1e-8</span></code>) in the call
+to <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. Such cuts regulate exact or nearly
+exact zero modes, while leaving important modes mostly unaffected.</p>
+<p>Even if regulation works in such a case, the question remains as to why one
 of the covariance matrices has a zero mode. A common cause is if the same
 <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> was used for more than one prior. For example, one might
 think that</p>
@@ -2738,17 +2759,6 @@ This line can be rewritten</p>
 </pre></div>
 </div>
 <p>which is slighlty more succinct.</p>
-<p>Your code is fully debugged and it still gives a poor fit.
-Before discarding your model and/or data, it
-is worth trying different fitters, as discussed
-in <a class="reference internal" href="#faster-fitters"><span class="std std-ref">Faster Fitters</span></a> above. Also some fits are quite
-sensitive to the starting point (<code class="docutils literal notranslate"><span class="pre">p0</span></code>) used by the fitting
-algorithm in its search for the best fit. In such
-cases it is worth trying different starting points.
-When using a prior, set <code class="docutils literal notranslate"><span class="pre">p0=True</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
-to generate random starting points from
-the prior; run the fit multiple times to sample
-a variety of starting points.</p>
 </div>
 </div>
 
@@ -2821,7 +2831,7 @@ a variety of starting points.</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

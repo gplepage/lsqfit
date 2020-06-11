@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.5.3 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.6 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -121,7 +121,7 @@ module for fits and, especially, error budgets.</p>
 <h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="lsqfit.nonlinear_fit">
-<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">nonlinear_fit</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fcn</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">svdcut=1e-12</em>, <em class="sig-param">add_svdnoise=False</em>, <em class="sig-param">add_priornoise=False</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">tol=1e-8</em>, <em class="sig-param">maxit=1000</em>, <em class="sig-param">fitter='gsl_multifit'</em>, <em class="sig-param">**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">nonlinear_fit</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">fcn</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">svdcut=1e-12</em>, <em class="sig-param">eps=None</em>, <em class="sig-param">noise=False</em>, <em class="sig-param">debug=False</em>, <em class="sig-param">tol=1e-8</em>, <em class="sig-param">maxit=1000</em>, <em class="sig-param">fitter='gsl_multifit'</em>, <em class="sig-param">**fitterargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fits a (nonlinear) function <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code>
 to data <code class="docutils literal notranslate"><span class="pre">y</span></code> by varying parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>, and stores the results: for
@@ -232,30 +232,26 @@ parameters are stored in a dictionary (see <code class="docutils literal notrans
 of indices corresponding to these parameters when they are stored
 in an array. Note that this feature is experimental; the
 interface may change in the future.</p></li>
-<li><p><strong>svdcut</strong> (<em>float</em><em>, </em><em>dict</em><em>, </em><em>None</em>) – If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a nonzero number,
-SVD cuts are applied to every block-diagonal sub-matrix of the
-correlation matrix for the data <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code> (if there is a
-prior). If <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, eigenvalues of the rescaled matrices
-that are smaller than <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue are
-replaced by <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue. This makes
-the correlation matrix less singular and less susceptible to
-roundoff error. When <code class="docutils literal notranslate"><span class="pre">svdcut</span> <span class="pre">&lt;</span> <span class="pre">0</span></code>, eigenvalues smaller than
-<code class="docutils literal notranslate"><span class="pre">|svdcut|</span></code> times the maximum eigenvalue are discarded and the
-corresponding components in <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">prior</span></code> are zeroed out. No
-SVD cut is applied if <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code>. If <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is a
-dictionary, its arguments are passed as keyword arguments to
-<code class="docutils literal notranslate"><span class="pre">gvar.svd</span></code>, which is used to apply the  SVD cut: eg,
-<code class="docutils literal notranslate"><span class="pre">svdcut=dict(svdcut=1e-4,</span> <span class="pre">add_offsets=True)</span></code>. Default is 1e-12.</p></li>
-<li><p><strong>add_svdnoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_svdnoise=True</span></code>, noise is added to
-the data means corresponding to the additional uncertainties
-introduced when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>. This is useful for testing the
-quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when large SVD cuts are
-employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>add_priornoise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">add_priornoise=True</span></code>, noise is added to
-the prior means corresponding to the uncertainties
-in the prior. This is useful for testing the
-quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>) when broad priors are
-employed. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>eps</strong> (<em>float</em>) – If positive, singularities in the correlation matrix
+for <code class="docutils literal notranslate"><span class="pre">g</span></code> are regulated using <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.regulate()</span></code>
+with cutoff <code class="docutils literal notranslate"><span class="pre">eps</span></code>. This makes the correlation matrices
+less singular, which can improve the  stability and accuracy
+of a fit. Ignored if <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is specified (and
+not <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
+<li><p><strong>svdcut</strong> (<em>float</em>) – If nonzero, singularities in the correlation
+matrix are regulated using <code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.regulate()</span></code>
+with an SVD cutoff <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>. This makes the correlation
+matrices less singular, which can improve the  stability and
+accuracy of a fit. Default is <code class="docutils literal notranslate"><span class="pre">svdcut=1e-12</span></code>.</p></li>
+<li><p><strong>noise</strong> (<em>tuple</em><em> or </em><em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">noise[0]=True</span></code>, noise is
+added to the data and prior means corresponding to any
+additional uncertainties introduced by using <code class="docutils literal notranslate"><span class="pre">eps&gt;0</span></code>
+or <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>. If <code class="docutils literal notranslate"><span class="pre">noise[1]=True</span></code>, noise is added
+to the prior means corresponding to the uncertainties
+in the prior. Noise is useful for testing the
+quality of a fit (<code class="docutils literal notranslate"><span class="pre">chi2</span></code>). Setting <code class="docutils literal notranslate"><span class="pre">noise=True</span></code>
+is shorthand for <code class="docutils literal notranslate"><span class="pre">noise=(True,</span> <span class="pre">True)</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">noise=False</span></code> means <code class="docutils literal notranslate"><span class="pre">noise=(False,</span> <span class="pre">False)</span></code> (the default).</p></li>
 <li><p><strong>udata</strong> (<em>dict</em><em>, </em><em>array</em><em> or </em><em>tuple</em>) – Same as <code class="docutils literal notranslate"><span class="pre">data</span></code> but instructs the fitter to ignore  correlations
 between different pieces of data.  This speeds up the  fit,
 particularly for large amounts of data, but ignores potentially
@@ -284,9 +280,9 @@ fit to stop searching for a minimum when any of</p>
 definitions of these stopping conditions. Typically one sets
 <code class="docutils literal notranslate"><span class="pre">xtol=1/10**d</span></code> where <code class="docutils literal notranslate"><span class="pre">d</span></code> is the number of digits of precision
 desired in the result, while <code class="docutils literal notranslate"><span class="pre">gtol&lt;&lt;1</span></code> and <code class="docutils literal notranslate"><span class="pre">ftol&lt;&lt;1</span></code>. Setting
-<code class="docutils literal notranslate"><span class="pre">tol=eps</span></code> where <code class="docutils literal notranslate"><span class="pre">eps</span></code> is a number is equivalent to setting
-<code class="docutils literal notranslate"><span class="pre">tol=(eps,1e-10,1e-10)</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2)</span></code> is
-equivalent to setting <code class="docutils literal notranslate"><span class="pre">tol=(eps1,eps2,1e-10)</span></code>. Default is
+<code class="docutils literal notranslate"><span class="pre">tol=delta</span></code> where <code class="docutils literal notranslate"><span class="pre">delta</span></code> is a number is equivalent to setting
+<code class="docutils literal notranslate"><span class="pre">tol=(delta,1e-10,1e-10)</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">tol=(delta1,delta2)</span></code> is
+equivalent to setting <code class="docutils literal notranslate"><span class="pre">tol=(delta1,delta2,1e-10)</span></code>. Default is
 <code class="docutils literal notranslate"><span class="pre">tol=1e-8</span></code>. (Note: the <code class="docutils literal notranslate"><span class="pre">ftol</span></code> option is disabled in some
 versions of the GSL library.)</p>
 </p></li>
@@ -436,7 +432,8 @@ cannot be used to generate error budgets. <code class="docutils literal notransl
 <code class="docutils literal notranslate"><span class="pre">fit.palt</span></code> give the same means and normally give the same errors
 for each parameter. They differ only when the input data’s
 covariance matrix is too singular to invert accurately (because of
-roundoff error), in which case an SVD cut is advisable.</p>
+roundoff error), in which case refitting with a nonzero value
+for <code class="docutils literal notranslate"><span class="pre">eps</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is advisable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>dict, array or gvar.GVar</p>
@@ -521,10 +518,10 @@ stop fit:</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="lsqfit.nonlinear_fit.svdcorrection">
-<code class="sig-name descname">svdcorrection</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdcorrection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sum of all SVD corrections, if any, added
-to the fit data <code class="docutils literal notranslate"><span class="pre">y</span></code> or the prior <code class="docutils literal notranslate"><span class="pre">prior</span></code>.</p>
+<dt id="lsqfit.nonlinear_fit.correction">
+<code class="sig-name descname">correction</code><a class="headerlink" href="#lsqfit.nonlinear_fit.correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum of all corrections, if any, added
+to the fit data and prior when <code class="docutils literal notranslate"><span class="pre">eps&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>gvar.GVar</p>
@@ -535,8 +532,8 @@ to the fit data <code class="docutils literal notranslate"><span class="pre">y</
 <dl class="attribute">
 <dt id="lsqfit.nonlinear_fit.svdn">
 <code class="sig-name descname">svdn</code><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Number of eigenmodes modified (and/or deleted) by the
-SVD cut.</p>
+<dd><p>Number of eigenmodes of the correlation matrix
+modified (and/or deleted) when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int</p>
@@ -611,10 +608,10 @@ size <code class="docutils literal notranslate"><span class="pre">s</span></code
 
 <p>The global defaults used by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be changed by
 changing entries in dictionary <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.DEFAULTS</span></code>
-for keys <code class="docutils literal notranslate"><span class="pre">'svdcut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'debug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tol'</span></code>, <code class="docutils literal notranslate"><span class="pre">'maxit'</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">'fitter'</span></code>. Additional defaults can be added to that dictionary
-to be are passed through <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> to the underlying
-fitter (via dictionary <code class="docutils literal notranslate"><span class="pre">fitterargs</span></code>).</p>
+for keys <code class="docutils literal notranslate"><span class="pre">'eps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svdcut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'debug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tol'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'maxit'</span></code>,  and <code class="docutils literal notranslate"><span class="pre">'fitter'</span></code>. Additional defaults can be
+added to that dictionary to be are passed through <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+to the underlying fitter (via dictionary <code class="docutils literal notranslate"><span class="pre">fitterargs</span></code>).</p>
 <p>Additional methods are provided for printing out detailed information
 about the fit, testing fits with simulated data,
 doing bootstrap analyses of the fit errors,
@@ -911,7 +908,7 @@ uses <code class="docutils literal notranslate"><span class="pre">matplotlib.pyp
 <dt id="lsqfit.nonlinear_fit.set">
 <em class="property">static </em><code class="sig-name descname">set</code><span class="sig-paren">(</span><em class="sig-param">clear=False</em>, <em class="sig-param">**defaults</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
-<p>Use to set default values for parameters: <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
+<p>Use to set default values for parameters: <code class="docutils literal notranslate"><span class="pre">eps</span></code>, <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
 <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code>, <code class="docutils literal notranslate"><span class="pre">maxit</span></code>, and <code class="docutils literal notranslate"><span class="pre">fitter</span></code>. Can also set
 parameters specific to the fitter specified by the <code class="docutils literal notranslate"><span class="pre">fitter</span></code>
 argument.</p>
@@ -1011,7 +1008,7 @@ gives the following output:</p>
         <span class="mi">4</span>    <span class="mf">0.1725</span> <span class="p">(</span><span class="mi">27</span><span class="p">)</span>    <span class="mf">0.1744</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+  <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-12</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We have, in effect, used the variation in the data relative to the best
@@ -1096,8 +1093,9 @@ same dimension.</p></li>
 sequentially. This can be much faster when averaging a large
 number of sampes but is only approximate if the different
 elements of <code class="docutils literal notranslate"><span class="pre">datalist</span></code> are correlated. Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>) for the
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fitter used to do the averaging.</p></li>
+<li><p><strong>fitterargs</strong> (<em>dict</em>) – Additional arguments (e.g., <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> or <code class="docutils literal notranslate"><span class="pre">eps</span></code>)
+for the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fitter used to do the
+averaging.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1116,7 +1114,7 @@ called the <em>p-value</em>.</p>
 </dl>
 <p><strong>time</strong> - Time required to do average.</p>
 <dl class="simple">
-<dt><strong>svdcorrection</strong> - The <em>svd</em> corrections made to the data</dt><dd><p>when <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dt><strong>correction</strong> - The corrections made to the data</dt><dd><p>when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">eps&gt;0</span></code>.</p>
 </dd>
 </dl>
 <p><strong>fit</strong> - Fit returned by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
@@ -1660,7 +1658,7 @@ fitter.</p></li>
 
 <dl class="method">
 <dt id="lsqfit.MultiFitter.chained_lsqfit">
-<code class="sig-name descname">chained_lsqfit</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">pdata=None</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">add_priornoise=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">chained_lsqfit</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">pdata=None</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute chained least-squares fit of models to data.</p>
 <p>In a chained fit to models <code class="docutils literal notranslate"><span class="pre">[s1,</span> <span class="pre">s2,</span> <span class="pre">...]</span></code>, the models are fit one
 at a time, with the fit output from one being fed into the prior for
@@ -2054,7 +2052,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.5.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

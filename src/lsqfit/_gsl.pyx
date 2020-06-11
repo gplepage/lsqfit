@@ -552,6 +552,8 @@ class gsl_multifit(object):
 
                 3. ``ftol >=`` relative change in ``chi**2`` between iterations
 
+                4. stopped for other reason (eg, already converged)
+
         error (str or None): ``None`` if fit successful; an error
             message otherwise.
     """
@@ -682,12 +684,14 @@ class gsl_multifit(object):
         # identify stopping criterion
         if info >= 0 and info <= 3:
             self.stopping_criterion = info
-        elif info == 30:
+        elif info == 30:        # GSL_ETOLX - dx too small
             self.stopping_criterion = 1
-        elif info == 31:
+        elif info == 31:        # GSL_ETOLG - gradient too small
             self.stopping_criterion = 2
-        elif info == 29:
+        elif info == 29:        # GSL_ETOLF - df too small
             self.stopping_criterion = 3
+        elif info == 27:        # GSL_ENOPROG - can't get started
+            self.stopping_criterion = 4
         else:
             self.stopping_criterion = 0
 

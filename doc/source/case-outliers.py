@@ -4,8 +4,8 @@ import sys
 STDOUT = sys.stdout
 
 # NB: Need to run cases (True, False), (False, False) and (False, True)
-LSQFIT_ONLY = True
-MULTI_W = False
+LSQFIT_ONLY = False
+MULTI_W = True
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -62,7 +62,7 @@ def main():
 
     # evaluate expectation value of g(p)
     def g(p):
-        w = 0.5 + 0.5 * p['2w-1']
+        w = p['w']
         c = p['c']
         return dict(w=[w, w**2], mean=c, outer=np.outer(c,c))
 
@@ -91,7 +91,7 @@ def main():
     print('w =', w, '\n')
 
     # Bayes Factor
-    print('logBF =', np.log(expval.norm))
+    print('logBF =', np.log(results.norm))
     sys.stdout = STDOUT
 
     if MULTI_W:
@@ -115,7 +115,7 @@ class ModifiedPDF:
         self.prior = prior
 
     def __call__(self, p):
-        w = 0.5 + 0.5 * p['2w-1']
+        w = p['w']
         y_fx = self.y - self.fcn(self.x, p)
         data_pdf1 = self.gaussian_pdf(y_fx, 1.)
         data_pdf2 = self.gaussian_pdf(y_fx, 10.)
@@ -140,9 +140,9 @@ def make_prior():
     if LSQFIT_ONLY:
         return prior
     if MULTI_W:
-        prior['erfinv(2w-1)'] = gv.gvar(19 * ['0(1)']) / 2 ** 0.5
+        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1., shape=19)
     else:
-        prior['erfinv(2w-1)'] = gv.gvar('0(1)') / 2 ** 0.5
+        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1.)
     return prior
 
 
