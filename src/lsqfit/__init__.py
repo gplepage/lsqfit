@@ -704,12 +704,19 @@ class nonlinear_fit(object):
             self.pmean = _gvar.mean(self.palt)
             self.psdev = _gvar.sdev(self.palt)
         else:
-            self.palt = self.prior
+            if self.prior is None:
+                pmean = _gvar.mean(self.p0)
+                psdev = _gvar.mean(self.p0)
+                psdev.flat[:] = numpy.inf
+            else:
+                pmean = _gvar.mean(self.prior)
+                psdev = _gvar.sdev(self.prior)
+            self.palt = _gvar.gvar(pmean, psdev)
             self.pmean = _gvar.mean(self.palt)
             self.psdev = _gvar.sdev(self.palt)
             self.error = None
             self.cov = _gvar.evalcov(self.palt.flat)
-            self.residuals = self._chiv(self.pmean.flat)
+            self.residuals = self._chiv(self.pmean.flat[:])
             self.chi2 = numpy.sum(self.residuals ** 2)
             self.Q = gammaQ(self.dof/2., self.chi2/2.)
             self.nit = 0
@@ -717,7 +724,7 @@ class nonlinear_fit(object):
             self.stopping_criterion = 0
             self.description = ''
             self.fitter_results = None
-            self._p = None          # lazy evaluation
+            self._p = self.palt
 
         # compute logGBF
         if self.prior is None:
@@ -920,6 +927,22 @@ class nonlinear_fit(object):
     # fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
     # fmt_errorbudget = _gvar.fmt_errorbudget
     # fmt_values = _gvar.fmt_values
+
+    def evalchi2(self, p):
+        """ Evaluate ``chi**2`` for arbitrary parameters ``p``.
+
+            Args:
+                p: Array or dictionary containing values for fit parameters,
+                    using the same layout as in the fit function.
+
+            Returns:
+                ``chi**2`` for ``p``.
+        """
+        if hasattr(p, "keys"):
+            p = _gvar.asbufferdict(p)
+        else:
+            p = numpy.asarray(p)
+        return numpy.sum(self._chiv(p.flat[:]) ** 2)
 
     def qqplot_residuals(self, plot=None):
         """ QQ plot normalized fit residuals.

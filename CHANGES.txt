@@ -1,3 +1,12 @@
+Version 11.7 2020-09-18
+=========================
+Minor update responding to a feature request.
+
+- fit.evalchi2(p) evaluates the chi**2 for the fit at an 
+  arbitrary value p for the fit parameters.
+
+- Bug fix so maxit=0 works again.
+
 Version 11.6 2020-06-11
 ========================
 - Additional sanity checks added for debug=True in nonlinear_fit.

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.6 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.7 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.7 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -509,7 +509,7 @@ stop fit:</p>
 <p>1: <code class="docutils literal notranslate"><span class="pre">xtol</span> <span class="pre">&gt;=</span></code> relative change in parameters between iterations</p>
 <p>2: <code class="docutils literal notranslate"><span class="pre">gtol</span> <span class="pre">&gt;=</span></code> relative size of gradient of <code class="docutils literal notranslate"><span class="pre">chi**2</span></code></p>
 <p>3: <code class="docutils literal notranslate"><span class="pre">ftol</span> <span class="pre">&gt;=</span></code> relative change in <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> between iterations</p>
-<p>4: stopped for some other reason (e.g., already converged)</p>
+<p>4: unable to improve fit further (e.g., already converged)</p>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -609,12 +609,12 @@ size <code class="docutils literal notranslate"><span class="pre">s</span></code
 
 <p>The global defaults used by <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> can be changed by
 changing entries in dictionary <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.DEFAULTS</span></code>
-for keys <code class="docutils literal notranslate"><span class="pre">'eps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svdcut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'debug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tol'</span></code>,
+for keys <code class="docutils literal notranslate"><span class="pre">'eps'</span></code>, <code class="docutils literal notranslate"><span class="pre">'svdcut'</span></code>, <code class="docutils literal notranslate"><span class="pre">'debug'</span></code>, <code class="docutils literal notranslate"><span class="pre">'tol'</span></code>, <code class="docutils literal notranslate"><span class="pre">'noise'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'maxit'</span></code>,  and <code class="docutils literal notranslate"><span class="pre">'fitter'</span></code>. Additional defaults can be
 added to that dictionary to be are passed through <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
 to the underlying fitter (via dictionary <code class="docutils literal notranslate"><span class="pre">fitterargs</span></code>).</p>
 <p>Additional methods are provided for printing out detailed information
-about the fit, testing fits with simulated data,
+about the fit, evaluating <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>, testing fits with simulated data,
 doing bootstrap analyses of the fit errors,
 dumping (for later use) and loading parameter values, and checking for roundoff
 errors in the final error  estimates:</p>
@@ -667,6 +667,21 @@ for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</sp
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>String containing detailed information about fit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.evalchi2">
+<code class="sig-name descname">evalchi2</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.evalchi2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for arbitrary parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> – Array or dictionary containing values for fit parameters,
+using the same layout as in the fit function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2053,7 +2068,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.6 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.7 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -400,6 +400,33 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             ][:-1]
         self.assertEqual(out, fit.format(True).split('\n')[:len(out)])
 
+    def test_maxit0(self):
+        " maxit=0 "
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
+        prior = gv.BufferDict(p=gv.gvar(0,2))
+        def f(p):
+            return dict(a=p['p'], b=p['p'])
+        fit = nonlinear_fit(data=y, prior=prior, fcn=f, maxit=0)
+        np.testing.assert_allclose(gv.mean(fit.p.buf), gv.mean(prior.buf))
+        np.testing.assert_allclose(gv.sdev(fit.p.buf), gv.sdev(prior.buf))
+        fit = nonlinear_fit(data=y, p0=gv.mean(prior), fcn=f, maxit=0)
+        np.testing.assert_allclose(gv.mean(fit.p.buf), gv.mean(prior.buf))
+
+    def test_evalchi2(self):
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
+        prior = gv.BufferDict(p=gv.gvar(0,2))
+        def f(p):
+            return dict(a=p['p'], b=p['p'])
+        fit = nonlinear_fit(data=y, prior=prior, fcn=f)
+        self.assertAlmostEqual(fit.evalchi2(fit.pmean), fit.chi2)
+        
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
+        prior = [gv.gvar(0,2)]
+        def f(p):
+            return dict(a=p[0], b=p[0])
+        fit = nonlinear_fit(data=y, prior=prior, fcn=f)
+        self.assertAlmostEqual(fit.evalchi2(fit.pmean), fit.chi2)
+
     def test_unusual_cases(self):
         """ unusual cases """
         # case 1 - y and prior are scalars
@@ -417,6 +444,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
 
         fit = nonlinear_fit(data=y,prior=prior,fcn=f, tol=1e-8)
         self.assertEqual(str(fit.p), str(wavg(y.tolist()+[prior])))
+
 
     @staticmethod
     def fcn(p):

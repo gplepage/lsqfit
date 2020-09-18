@@ -140,12 +140,14 @@ nonlinear_fit Objects
 .. autoclass:: lsqfit.nonlinear_fit(data, fcn, prior=None, p0=None, svdcut=1e-12, eps=None, noise=False, debug=False, tol=1e-8, maxit=1000, fitter='gsl_multifit', **fitterargs)
 
    Additional methods are provided for printing out detailed information
-   about the fit, testing fits with simulated data,
+   about the fit, evaluating ``chi**2``, testing fits with simulated data,
    doing bootstrap analyses of the fit errors,
    dumping (for later use) and loading parameter values, and checking for roundoff
    errors in the final error  estimates:
 
    .. automethod:: format(maxline=0, pstyle='v')
+
+   .. automethod:: evalchi2(p)
 
    .. automethod:: simulated_fit_iter(n=None, pexact=None, add_priornoise=False, **kargs)
 
