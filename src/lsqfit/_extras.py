@@ -31,9 +31,12 @@ except ImportError:
     from ._scipy import scipy_multiminex as _multiminex
     from ._scipy import gammaQ as _gammaQ
 
-def empbayes_fit(z0, fitargs, **minargs):
-    """ Return fit and ``z`` corresponding to the fit
-    ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``logGBF``.
+def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
+    """ Return fit and ``z`` corresponding to the fit that maximizes
+     ``logGBF``. When ```models``` is specified, this perform a 
+     simultaneous fit using the Multifitter class and returns 
+
+     Else, returns ``lsqfit.nonlinear_fit(**fitargs(z))`` 
 
     This function maximizes the logarithm of the Bayes Factor from
     fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` by varying ``z``,
@@ -123,6 +126,10 @@ def empbayes_fit(z0, fitargs, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
+    if models is None:
+        fitter = None
+    else:
+        fitter = MultiFitter(models=models)
     save = dict(lastz=None, lastp0=None)
     if hasattr(z0, 'keys'):
         # z is a dictionary
@@ -143,6 +150,7 @@ def empbayes_fit(z0, fitargs, **minargs):
         def convert(zbuf):
             return zbuf
     def minfcn(zbuf, save=save, convert=convert):
+        nonlocal fitter
         z = convert(zbuf)
         args = fitargs(z)
         if not hasattr(args, 'keys'):
@@ -151,7 +159,12 @@ def empbayes_fit(z0, fitargs, **minargs):
             plausibility = 0.0
         if save['lastp0'] is not None:
             args['p0'] = save['lastp0']
-        fit = lsqfit.nonlinear_fit(**args)
+        if models is None:
+            fit = lsqfit.nonlinear_fit(**args)
+        elif chained:
+            fit = fitter.lsqfit(**args)
+        else:
+            fit = fitter.lsqfit(**args)
         if numpy.isnan(fit.logGBF):
             raise ValueError
         else:
@@ -168,7 +181,10 @@ def empbayes_fit(z0, fitargs, **minargs):
         args, plausibility = args
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
-    return lsqfit.nonlinear_fit(**args), z
+    if models is None:
+        return lsqfit.nonlinear_fit(**args), z
+    else:
+        return fitter.lsqfit(**args), z
 
 
 class GVarWAvg(gvar.GVar):
