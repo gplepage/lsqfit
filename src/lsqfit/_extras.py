@@ -162,7 +162,7 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
         if models is None:
             fit = lsqfit.nonlinear_fit(**args)
         elif chained:
-            fit = fitter.lsqfit(**args)
+            fit = fitter.chained_lsqfit(**args)
         else:
             fit = fitter.lsqfit(**args)
         if numpy.isnan(fit.logGBF):
@@ -183,6 +183,8 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
         args['p0'] = save['lastp0']
     if models is None:
         return lsqfit.nonlinear_fit(**args), z
+    elif chained:
+        return fitter.chained_lsqfit(**args), z
     else:
         return fitter.lsqfit(**args), z
 
