@@ -109,12 +109,14 @@ def empbayes_fit(z0, fitargs, multifitter=None, chained=False, **minargs):
     Args:
         z0 (number, array or dict): Starting point for search.
         fitargs (callable): Function of ``z`` that returns a
-            dictionary ``args`` containing the :class:`lsqfit.nonlinear_fit`
+            dictionary ``args`` containing the :class:`lsqfit.nonlinear_fit`,
+            :class:`MultiFitter.lsqfit`, or :class:`MultiFitter.chained_lsqfit`
             arguments corresponding to ``z``. ``z`` should have
             the same layout (number, array or dictionary) as ``z0``.
             ``fitargs(z)`` can instead return a tuple ``(args, plausibility)``,
             where ``args`` is again the dictionary for
-            :class:`lsqfit.nonlinear_fit`. ``plausibility`` is the logarithm
+            :class:`lsqfit.nonlinear_fit`,  :class:`MultiFitter.lsqfit`, 
+            or :class:`MultiFitter.chained_lsqfit`. ``plausibility`` is the logarithm
             of the *a priori* probabilitiy that ``z`` is sensible. When
             ``plausibility`` is provided, :func:`lsqfit.empbayes_fit`
             maximizes the sum ``logGBF + plausibility``. Specifying
@@ -126,7 +128,8 @@ def empbayes_fit(z0, fitargs, multifitter=None, chained=False, **minargs):
 
     Returns:
         A tuple containing the best fit (object of type
-        :class:`lsqfit.nonlinear_fit`) and the
+        :class:`lsqfit.nonlinear_fit`, :class:`MultiFitter.lsqfit`, 
+        or :class:`MultiFitter.chained_lsqfit`) and the
         optimal value for parameter ``z``.
     """
     save = dict(lastz=None, lastp0=None)
@@ -134,17 +137,17 @@ def empbayes_fit(z0, fitargs, multifitter=None, chained=False, **minargs):
         # z is a dictionary
         if not isinstance(z0, gvar.BufferDict):
             z0 = gvar.BufferDict(z0)
-        z0buf = z0.buf
+        z0buf = numpy.array(z0.buf, dtype=float)
         def convert(zbuf):
             return gvar.BufferDict(z0, buf=zbuf)
     elif numpy.shape(z0) == ():
         # z is a number
-        z0buf = numpy.array([z0])
+        z0buf = numpy.array([z0], dtype=float)
         def convert(zbuf):
             return zbuf[0]
     else:
         # z is an array
-        z0 = numpy.asarray(z0)
+        z0 = numpy.asarray(z0, dtype=float)
         z0buf = z0
         def convert(zbuf):
             return zbuf
