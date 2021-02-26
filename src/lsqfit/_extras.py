@@ -1426,6 +1426,9 @@ class MultiFitter(object):
         self.set(**oldargs)
         return self.fit
 
+    def empbayes_fit(self, z0, fitargs, chained=False, **minargs):
+        return empbayes_fit(z0=z0, fitargs=fitargs, multifitter=self, chained=chained, **minargs)
+
     @staticmethod
     def _compile_models(models):
         """ Convert ``models`` into a list of tasks.
