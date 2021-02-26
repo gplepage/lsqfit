@@ -31,17 +31,20 @@ except ImportError:
     from ._scipy import scipy_multiminex as _multiminex
     from ._scipy import gammaQ as _gammaQ
 
-def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
+def empbayes_fit(z0, fitargs, multifitter=None, chained=False, **minargs):
     """ Return fit and ``z`` corresponding to the fit that maximizes
-     ``logGBF``. When ```models``` is specified, this perform a 
-     simultaneous fit using the Multifitter class and returns 
-
-     Else, returns ``lsqfit.nonlinear_fit(**fitargs(z))`` 
+    ``logGBF``. When ``models`` is specified, this perform a 
+    simultaneous fit using the MultiFitter class and returns the result
+    of either ``MultiFitter(models=models).chained_lsqfit(**args)``
+    (when ``chained=True``) or ``MultiFitter(models=models).lsqfit(**args)``
+    (``chained=False``). If no models are specified, returns
+    ``lsqfit.nonlinear_fit(**fitargs(z))`` 
 
     This function maximizes the logarithm of the Bayes Factor from
-    fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` by varying ``z``,
+    fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` 
+    (or the :class:``MultiFitter`` equivalent) by varying ``z``,
     starting at ``z0``. The fit is redone for each value of ``z``
-    that is tried, in order to determine ``logGBF``.
+    that is tried in order to determine ``logGBF``.
 
     The Bayes Factor is proportional to the probability that the data
     came from the model (fit function and priors) used in the fit.
@@ -126,10 +129,6 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
-    if models is None:
-        fitter = None
-    else:
-        fitter = MultiFitter(models=models)
     save = dict(lastz=None, lastp0=None)
     if hasattr(z0, 'keys'):
         # z is a dictionary
@@ -150,7 +149,7 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
         def convert(zbuf):
             return zbuf
     def minfcn(zbuf, save=save, convert=convert):
-        nonlocal fitter
+        nonlocal multifitter
         z = convert(zbuf)
         args = fitargs(z)
         if not hasattr(args, 'keys'):
@@ -159,12 +158,12 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
             plausibility = 0.0
         if save['lastp0'] is not None:
             args['p0'] = save['lastp0']
-        if models is None:
+        if multifitter is None:
             fit = lsqfit.nonlinear_fit(**args)
         elif chained:
-            fit = fitter.chained_lsqfit(**args)
+            fit = multifitter.chained_lsqfit(**args)
         else:
-            fit = fitter.lsqfit(**args)
+            fit = multifitter.lsqfit(**args)
         if numpy.isnan(fit.logGBF):
             raise ValueError
         else:
@@ -181,12 +180,12 @@ def empbayes_fit(z0, fitargs, models=None, chained=False, **minargs):
         args, plausibility = args
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
-    if models is None:
+    if multifitter is None:
         return lsqfit.nonlinear_fit(**args), z
     elif chained:
-        return fitter.chained_lsqfit(**args), z
+        return multifitter.chained_lsqfit(**args), z
     else:
-        return fitter.lsqfit(**args), z
+        return multifitter.lsqfit(**args), z
 
 
 class GVarWAvg(gvar.GVar):
