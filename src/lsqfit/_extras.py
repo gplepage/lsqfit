@@ -33,11 +33,11 @@ except ImportError:
 
 def empbayes_fit(z0, fitargs, multifitter=None, chained=False, **minargs):
     """ Return fit and ``z`` corresponding to the fit that maximizes
-    ``logGBF``. When ``models`` is specified, this perform a 
-    simultaneous fit using the MultiFitter class and returns the result
+    ``logGBF``. When ``multifitter`` is specified, this perform a 
+    simultaneous/chained fit using the MultiFitter class and returns the result
     of either ``MultiFitter(models=models).chained_lsqfit(**args)``
     (when ``chained=True``) or ``MultiFitter(models=models).lsqfit(**args)``
-    (``chained=False``). If no models are specified, returns
+    (when ``chained=False``). If no models are specified, returns
     ``lsqfit.nonlinear_fit(**fitargs(z))`` 
 
     This function maximizes the logarithm of the Bayes Factor from
@@ -1430,6 +1430,41 @@ class MultiFitter(object):
         return self.fit
 
     def empbayes_fit(self, z0, fitargs, chained=False, **minargs):
+        """ Return fit and ``z`` corresponding to the fit that maximizes
+        ``logGBF``, performing either a simultaneous (``chained=False``) 
+        or chained fit (``chained=True``).
+
+        This function maximizes the logarithm of the Bayes Factor from
+        fit  ``MultiFitter.lsqfit(**fitargs(z))``  or 
+        ``MultiFitter.chained_lsqfit(**fitargs(z))`` by varying ``z``,
+        starting at ``z0``. The fit is redone for each value of ``z``
+        that is tried in order to determine ``logGBF``.
+
+        Args:
+            z0 (number, array or dict): Starting point for search.
+            fitargs (callable): Function of ``z`` that returns a
+                dictionary ``args`` containing the 
+                :class:`MultiFitter.lsqfit` or :class:`MultiFitter.chained_lsqfit`
+                arguments corresponding to ``z``. ``z`` should have
+                the same layout (number, array or dictionary) as ``z0``.
+                ``fitargs(z)`` can instead return a tuple ``(args, plausibility)``,
+                where ``args`` is again the dictionary for
+                :class:`MultiFitter.lsqfit`, or :class:`MultiFitter.chained_lsqfit`.
+                ``plausibility`` is the logarithm of the *a priori* 
+                probabilitiy that ``z`` is sensible. When
+                ``plausibility`` is provided, :func:`lsqfit.empbayes_fit`
+                maximizes the sum ``logGBF + plausibility``. Specifying
+                ``plausibility`` is a way of steering selections away from
+                completely implausible values for ``z``.
+            minargs (dict): Optional argument dictionary, passed on to
+                :class:`lsqfit.gsl_multiminex` (or
+                :class:`lsqfit.scipy_multiminex`), which finds the minimum.
+
+        Returns:
+            A tuple containing the best fit (object of type
+            :class:`MultiFitter.lsqfit` or :class:`MultiFitter.chained_lsqfit`) 
+            and the optimal value for parameter ``z``.
+        """
         return empbayes_fit(z0=z0, fitargs=fitargs, multifitter=self, chained=chained, **minargs)
 
     @staticmethod
