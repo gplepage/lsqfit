@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.7 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 11.8 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.8 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -1024,12 +1024,13 @@ gives the following output:</p>
         <span class="mi">4</span>    <span class="mf">0.1725</span> <span class="p">(</span><span class="mi">27</span><span class="p">)</span>    <span class="mf">0.1744</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>
 
 <span class="n">Settings</span><span class="p">:</span>
-  <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-12</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">3</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We have, in effect, used the variation in the data relative to the best
 fit curve to estimate that the uncertainty in each data point is
 of order 1.6%.</p>
+<p>See also <a class="reference internal" href="#lsqfit.MultiFitter.empbayes_fit" title="lsqfit.MultiFitter.empbayes_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.empbayes_fit()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1628,7 +1629,7 @@ separate arguments (e.g., <code class="docutils literal notranslate"><span class
 </dl>
 <dl class="method">
 <dt id="lsqfit.MultiFitter.lsqfit">
-<code class="sig-name descname">lsqfit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">lsqfit</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">pdata=None</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">chained=False</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute least-squares fit of models to data.</p>
 <p><a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a> fits all of the models together, in
 a single fit. It returns the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object from the fit.</p>
@@ -1663,6 +1664,9 @@ prior. Setting <code class="docutils literal notranslate"><span class="pre">p0=&
 the file with name <code class="docutils literal notranslate"><span class="pre">&quot;filename&quot;</span></code> for initial values and to
 write out best-fit parameter values after the fit (for the
 next call to <code class="docutils literal notranslate"><span class="pre">self.lsqfit()</span></code>).</p></li>
+<li><p><strong>chained</strong> (<em>bool</em>) – Use <a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit" title="lsqfit.MultiFitter.chained_lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a>
+instead of <a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a> if <code class="docutils literal notranslate"><span class="pre">chained=True</span></code>.
+Ignored otherwise. Default is <code class="docutils literal notranslate"><span class="pre">chained=False</span></code>.</p></li>
 <li><p><strong>kargs</strong> – Arguments that (temporarily) override parameters specified
 when the <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiFitter</span></code></a> was created. Can also include
 additional arguments to be passed through to the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a>
@@ -1770,6 +1774,50 @@ the <a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.Multi
 additional arguments to be passed through to
 the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> fitter.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.MultiFitter.empbayes_fit">
+<code class="sig-name descname">empbayes_fit</code><span class="sig-paren">(</span><em class="sig-param">z0</em>, <em class="sig-param">fitargs</em>, <em class="sig-param">**minargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return fit and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
+<code class="docutils literal notranslate"><span class="pre">self.lsqfit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
+<p>This function maximizes the logarithm of the Bayes Factor from
+fit  <code class="docutils literal notranslate"><span class="pre">self.lsqfit(**fitargs(z))</span></code> by varying <code class="docutils literal notranslate"><span class="pre">z</span></code>,
+starting at <code class="docutils literal notranslate"><span class="pre">z0</span></code>. The fit is redone for each value of <code class="docutils literal notranslate"><span class="pre">z</span></code>
+that is tried, in order to determine <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
+<p>The Bayes Factor is proportional to the probability that the data
+came from the model (fit function and priors) used in the fit.
+<a class="reference internal" href="#lsqfit.MultiFitter.empbayes_fit" title="lsqfit.MultiFitter.empbayes_fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.empbayes_fit()</span></code></a> finds the model or data that maximizes this
+probability. See <a class="reference internal" href="#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsqfit.empbayes_fit()</span></code></a> for more information.</p>
+<p>Include <code class="docutils literal notranslate"><span class="pre">chained=True</span></code> in the dictionary returned by <code class="docutils literal notranslate"><span class="pre">fitargs(z)</span></code>
+if chained fits are desired. See documentation
+for <a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z0</strong> (<em>number</em><em>, </em><em>array</em><em> or </em><em>dict</em>) – Starting point for search.</p></li>
+<li><p><strong>fitargs</strong> (<em>callable</em>) – Function of <code class="docutils literal notranslate"><span class="pre">z</span></code> that returns a
+dictionary <code class="docutils literal notranslate"><span class="pre">args</span></code> containing the <a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a>
+arguments corresponding to <code class="docutils literal notranslate"><span class="pre">z</span></code>. <code class="docutils literal notranslate"><span class="pre">z</span></code> should have
+the same layout (number, array or dictionary) as <code class="docutils literal notranslate"><span class="pre">z0</span></code>.
+<code class="docutils literal notranslate"><span class="pre">fitargs(z)</span></code> can instead return a tuple <code class="docutils literal notranslate"><span class="pre">(args,</span> <span class="pre">plausibility)</span></code>,
+where <code class="docutils literal notranslate"><span class="pre">args</span></code> is again the dictionary for
+<a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is the logarithm
+of the <em>a priori</em> probabilitiy that <code class="docutils literal notranslate"><span class="pre">z</span></code> is sensible. When
+<code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is provided, <a class="reference internal" href="#lsqfit.MultiFitter.empbayes_fit" title="lsqfit.MultiFitter.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">MultiFitter.empbayes_fit()</span></code></a>
+maximizes the sum <code class="docutils literal notranslate"><span class="pre">logGBF</span> <span class="pre">+</span> <span class="pre">plausibility</span></code>. Specifying
+<code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is a way of steering selections away from
+completely implausible values for <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p></li>
+<li><p><strong>minargs</strong> (<em>dict</em>) – Optional argument dictionary, passed on to
+<a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
+<a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple containing the best fit (a fit object) and the
+optimal value for parameter <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2081,7 +2129,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.7 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.8 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

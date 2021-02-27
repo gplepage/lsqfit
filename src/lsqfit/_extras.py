@@ -93,12 +93,14 @@ def empbayes_fit(z0, fitargs, **minargs):
                 4    0.1725 (27)    0.1744 (23)
 
         Settings:
-          eps = 1e-12    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
 
 
     We have, in effect, used the variation in the data relative to the best
     fit curve to estimate that the uncertainty in each data point is
     of order 1.6%.
+
+    See also :meth:`MultiFitter.empbayes_fit`.
 
     Args:
         z0 (number, array or dict): Starting point for search.
@@ -1125,8 +1127,9 @@ class MultiFitter(object):
                 the file with name ``"filename"`` for initial values and to
                 write out best-fit parameter values after the fit (for the
                 next call to ``self.lsqfit()``).
-            chained (bool): If ``True`` uses :meth:`MultiFitter.chained_lsqfit`
-                instead of :meth:`MultiFitter.lsqfit`. Ignored otherwise.
+            chained (bool): Use :meth:`MultiFitter.chained_lsqfit`
+                instead of :meth:`MultiFitter.lsqfit` if ``chained=True``. 
+                Ignored otherwise. Default is ``chained=False``.
             kargs: Arguments that (temporarily) override parameters specified
                 when the :class:`MultiFitter` was created. Can also include
                 additional arguments to be passed through to the :mod:`lsqfit`

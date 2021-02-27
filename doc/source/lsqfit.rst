@@ -397,9 +397,11 @@ organizing the chain of fits; these are discussed in the
 
 .. autoclass:: lsqfit.MultiFitter(models, mopt=None, ratio=False, fast=True, **fitterargs)
 
-   .. automethod:: MultiFitter.lsqfit()
+   .. automethod:: MultiFitter.lsqfit
 
    .. automethod:: MultiFitter.chained_lsqfit
+
+   .. automethod:: MultiFitter.empbayes_fit
 
    .. automethod:: MultiFitter.set
 
