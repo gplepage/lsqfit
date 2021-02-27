@@ -1459,9 +1459,7 @@ class MultiFitter(object):
             A tuple containing the best fit (a fit object) and the
             optimal value for parameter ``z``.
         """
-        def nlinear_fit(**args):
-            return self.lsqfit(**args)
-        return _empbayes_fit(z0, fitargs, nonlinear_fit=nlinear_fit, **minargs)
+        return _empbayes_fit(z0, fitargs, nonlinear_fit=self.lsqfit, **minargs)
 
     @staticmethod
     def _compile_models(models):
