@@ -123,23 +123,25 @@ def empbayes_fit(z0, fitargs, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
+    return _empbayes_fit(z0, fitargs, nonlinear_fit=lsqfit.nonlinear_fit, **minargs)
+
+def _empbayes_fit(z0, fitargs, nonlinear_fit, **minargs):
+    " For use by lsqfit.empbayes_fit and lsqfit.MultiFitter.empbayes_fit "
     save = dict(lastz=None, lastp0=None)
     if hasattr(z0, 'keys'):
         # z is a dictionary
-        if not isinstance(z0, gvar.BufferDict):
-            z0 = gvar.BufferDict(z0)
+        z0 = gvar.BufferDict(z0, dtype=float)
         z0buf = z0.buf
         def convert(zbuf):
             return gvar.BufferDict(z0, buf=zbuf)
     elif numpy.shape(z0) == ():
         # z is a number
-        z0buf = numpy.array([z0])
+        z0buf = numpy.array([z0], dtype=float)
         def convert(zbuf):
             return zbuf[0]
     else:
         # z is an array
-        z0 = numpy.asarray(z0)
-        z0buf = z0
+        z0buf = numpy.asarray(z0, dtype=float)
         def convert(zbuf):
             return zbuf
     def minfcn(zbuf, save=save, convert=convert):
@@ -151,7 +153,7 @@ def empbayes_fit(z0, fitargs, **minargs):
             plausibility = 0.0
         if save['lastp0'] is not None:
             args['p0'] = save['lastp0']
-        fit = lsqfit.nonlinear_fit(**args)
+        fit = nonlinear_fit(**args)
         if numpy.isnan(fit.logGBF):
             raise ValueError
         else:
@@ -168,7 +170,7 @@ def empbayes_fit(z0, fitargs, **minargs):
         args, plausibility = args
     if save['lastp0'] is not None:
         args['p0'] = save['lastp0']
-    return lsqfit.nonlinear_fit(**args), z
+    return nonlinear_fit(**args), z
 
 
 class GVarWAvg(gvar.GVar):
@@ -1086,7 +1088,7 @@ class MultiFitter(object):
             ans = MultiFitter._flatten_models(tasklist)
         return ans
 
-    def lsqfit(self, data=None, pdata=None, prior=None, p0=None, **kargs):
+    def lsqfit(self, data=None, pdata=None, prior=None, p0=None, chained=False, **kargs):
         """ Compute least-squares fit of models to data.
 
         :meth:`MultiFitter.lsqfit` fits all of the models together, in
@@ -1123,11 +1125,16 @@ class MultiFitter(object):
                 the file with name ``"filename"`` for initial values and to
                 write out best-fit parameter values after the fit (for the
                 next call to ``self.lsqfit()``).
+            chained (bool): If ``True`` uses :meth:`MultiFitter.chained_lsqfit`
+                instead of :meth:`MultiFitter.lsqfit`. Ignored otherwise.
             kargs: Arguments that (temporarily) override parameters specified
                 when the :class:`MultiFitter` was created. Can also include
                 additional arguments to be passed through to the :mod:`lsqfit`
                 fitter.
         """
+        # chained?
+        if chained:
+            return self.chained_lsqfit(data=data, pdata=pdata, prior=prior, p0=p0, **kargs)
         # gather parameters
         if prior is None:
             raise ValueError('no prior')
@@ -1408,6 +1415,50 @@ class MultiFitter(object):
         # restore default keywords
         self.set(**oldargs)
         return self.fit
+
+    def empbayes_fit(self, z0, fitargs, **minargs):
+        """ Return fit and ``z`` corresponding to the fit
+        ``self.lsqfit(**fitargs(z))`` that maximizes ``logGBF``.
+
+        This function maximizes the logarithm of the Bayes Factor from
+        fit  ``self.lsqfit(**fitargs(z))`` by varying ``z``,
+        starting at ``z0``. The fit is redone for each value of ``z``
+        that is tried, in order to determine ``logGBF``.
+
+        The Bayes Factor is proportional to the probability that the data
+        came from the model (fit function and priors) used in the fit.
+        :meth:`MultiFitter.empbayes_fit` finds the model or data that maximizes this
+        probability. See :func:`lsqfit.empbayes_fit` for more information.
+
+        Include ``chained=True`` in the dictionary returned by ``fitargs(z)``
+        if chained fits are desired. See documentation 
+        for :meth:`MultiFitter.lsqfit`.
+
+        Args:
+            z0 (number, array or dict): Starting point for search.
+            fitargs (callable): Function of ``z`` that returns a
+                dictionary ``args`` containing the :meth:`MultiFitter.lsqfit`
+                arguments corresponding to ``z``. ``z`` should have
+                the same layout (number, array or dictionary) as ``z0``.
+                ``fitargs(z)`` can instead return a tuple ``(args, plausibility)``,
+                where ``args`` is again the dictionary for
+                :meth:`MultiFitter.lsqfit`. ``plausibility`` is the logarithm
+                of the *a priori* probabilitiy that ``z`` is sensible. When
+                ``plausibility`` is provided, :func:`MultiFitter.empbayes_fit`
+                maximizes the sum ``logGBF + plausibility``. Specifying
+                ``plausibility`` is a way of steering selections away from
+                completely implausible values for ``z``.
+            minargs (dict): Optional argument dictionary, passed on to
+                :class:`lsqfit.gsl_multiminex` (or
+                :class:`lsqfit.scipy_multiminex`), which finds the minimum.
+
+        Returns:
+            A tuple containing the best fit (a fit object) and the
+            optimal value for parameter ``z``.
+        """
+        def nlinear_fit(**args):
+            return self.lsqfit(**args)
+        return _empbayes_fit(z0, fitargs, nonlinear_fit=nlinear_fit, **minargs)
 
     @staticmethod
     def _compile_models(models):

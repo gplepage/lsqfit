@@ -1,3 +1,17 @@
+Version 11.8 2021-02-27
+=======================
+Small update to fix a bug and add a feature. Thanks to Nolan Miller 
+for both.
+
+- Fixes bug in empbayes_fit(z0, ...) when z0 is or contains integers
+  instead of floats.
+
+- MultiFitter.lsqfit has a new keyword, chained. If chained=True 
+  chained_lsqfit is used in place of lsqfit. 
+
+- MultiFitter objects have a new method MultiFitter.empbayes_fit that 
+  is analogous to lsqfit.empbayes but for MultiFitters.
+
 Version 11.7 2020-09-18
 =========================
 Minor update responding to a feature request.

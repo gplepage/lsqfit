@@ -561,12 +561,12 @@ pulling ``chi**2/N`` down.
 
 The second situation that compromises ``chi**2`` is when some or all of
 the priors used in a fit are broad --- that is, when a fit result for
-a paramter has a much
+a parameter has a much
 smaller uncertainty than the corresponding prior, but a mean that
 is artificially
-close close to the prior's mean. This often arises when the means
-used in the priors are not random samples (unlike the fit data), which is
-frequently the case. Again contributions to ``chi**2``
+close to the prior's mean. This often arises when the means
+used in the priors are not random samples, which is
+frequently the case  (unlike for the fit data). Again contributions to ``chi**2``
 associated with such priors tend to be much smaller than naively expected,
 pulling ``chi**2`` down.
 

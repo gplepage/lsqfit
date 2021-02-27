@@ -11,8 +11,8 @@ from lsqfit import MultiFitter, MultiFitterModel
 class test_multifitter(unittest.TestCase):
     def setUp(self):
         gv.ranseed(1)
-        a = gv.gvar('1.000(1)')
-        b = gv.gvar('0.500(1)')
+        # a = gv.gvar('1.000(1)')
+        # b = gv.gvar('0.500(1)')
         a = gv.gvar('1.0(1)')
         b = gv.gvar('0.5(1)')
         self.x = np.array([0.1, 0.2, 0.3, 0.4])
@@ -310,6 +310,14 @@ class test_multifitter(unittest.TestCase):
             )
         self.assertTrue(self.agree_ref(fit2.p))
 
+    def test_chained_lsqfit_keyword(self):
+        " MultiFitter.chained_lsqfit(...) "
+        # sequential fit
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        fit1 = fitter.lsqfit(data=self.data, prior=self.prior, chained=True)
+        self.assertTrue(self.agree_ref(fit1.p))
+        self.assertEqual(list(fit1.chained_fits.keys()), ['l', 'c1', 'c2'])
+
     def test_chained_lsqfit_p0(self):
         " MultiFitter.chained_lsqfit(...) "
         # sequential fit
@@ -509,6 +517,15 @@ class test_multifitter(unittest.TestCase):
                 ]],
             ['log(a)', 'b', 'log(a)']
             )
+
+    def test_empbayes_fit(self):
+        fitter = MultiFitter(models=self.make_models(ncg=1))
+        def fitargs(z):
+            prior = dict(a=gv.gvar(1.0, z), b=gv.gvar(0.5, z))
+            return dict(prior=prior, data=self.data, chained=False)
+        fit,z = fitter.empbayes_fit(0.1, fitargs, step=0.01)
+        self.assertNotAlmostEqual(z, 0.1)
+        self.assertGreater(fit.logGBF, self.ref_fit.logGBF)
 
 class Linear(MultiFitterModel):
     def __init__(self, datatag, a, b, x, ncg):
