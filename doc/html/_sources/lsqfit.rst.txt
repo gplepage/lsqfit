@@ -334,14 +334,14 @@ the Bayes Factor (``logGBF``)::
 
    def fitargs(z):
        prior = gv.gvar(dict(s1='0(1)', s2='0(1)', s3='0(1)', s4='0(1)'))
-       prior['a'] = gv.gvar(0, z)
+       prior['a'] = gv.gvar(0, np.exp(z))       # np.exp => positive std dev
        return dict(prior=prior, data=data, mopt=True)
-    fit,z = fitter.empbayes_fit(1, fitargs, step=0.1)
+    fit,z = fitter.empbayes_fit(0, fitargs)
     print(fit)  
     print('intercept =', fit.p['a'])
 
 The output shows that the data prefer a prior of ``0.0(2)`` for the 
-intercept::
+intercept (not surprisingly)::
 
    Least Square Fit:
      chi2/dof [dof] = 0.55 [16]    Q = 0.92    logGBF = 19.917
