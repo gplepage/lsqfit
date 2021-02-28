@@ -364,7 +364,8 @@ results are fed into the next fit through that fit's prior. Replacing the
 fit code by ::
 
    fitter = lsqfit.MultiFitter(models=models)
-   fit = fitter.chained_lsqfit(data=data, prior=prior)
+   fit = fitter.chained_lsqfit(data=data, prior=prior)  
+   # same as fit = fitter.lsqfit(data=data, prior=prior, chained=True)
    print(fit.formatall())
    print('intercept =', fit.p['a'])
 

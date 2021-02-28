@@ -1548,6 +1548,7 @@ results are fed into the next fit through that fit’s prior. Replacing the
 fit code by</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fitter</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">MultiFitter</span><span class="p">(</span><span class="n">models</span><span class="o">=</span><span class="n">models</span><span class="p">)</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">chained_lsqfit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">)</span>
+<span class="c1"># same as fit = fitter.lsqfit(data=data, prior=prior, chained=True)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">formatall</span><span class="p">())</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;intercept =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 </pre></div>
