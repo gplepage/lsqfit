@@ -1215,7 +1215,9 @@ class MultiFitter(object):
         self, data=None, pdata=None, prior=None, p0=None,
         **kargs
         ):
-        """ Compute chained least-squares fit of models to data.
+        """ Compute chained least-squares fit of models to data. Equivalent to::
+        
+            self.lsqfit(data, pdata, prior, p0, chained=True, **kargs).
 
         In a chained fit to models ``[s1, s2, ...]``, the models are fit one
         at a time, with the fit output from one being fed into the prior for

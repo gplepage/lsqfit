@@ -277,8 +277,7 @@ data::
 
 This says that ``data['d3']``, for example, should be fit with  function
 ``p['a'] + p['s3'] * np.array([1,2,3,4])`` where ``p`` is  a dictionary of fit
-parameters.  The models here all share the same intercept, but have different
-slopes. Assume that we know *a priori* that the intercept and slopes are all
+parameters.  Assume that we know *a priori* that the intercept and slopes are all
 order one::
 
    prior = gv.gvar(dict(a='0(1)', s1='0(1)', s2='0(1)', s3='0(1)', s4='0(1)'))
@@ -327,6 +326,37 @@ intercept::
 
 Marginalization can be useful when fitting large data sets since it
 reduces the number of fit parameters and simplifies the fit.
+
+Empirical Bayes tuning can be used with a :mod:`MultiFitter` (see :ref:`empirical-bayes`). 
+Continuing from the example just above, we may be uncertain about the prior for the 
+intercept. The following code varies the width of that prior to maximize 
+the Bayes Factor (``logGBF``)::
+
+   def fitargs(z):
+       prior = gv.gvar(dict(s1='0(1)', s2='0(1)', s3='0(1)', s4='0(1)'))
+       prior['a'] = gv.gvar(0, z)
+       return dict(prior=prior, data=data, mopt=True)
+    fit,z = fitter.empbayes_fit(1, fitargs, step=0.1)
+    print(fit)  
+    print('intercept =', fit.p['a'])
+
+The output shows that the data prefer a prior of ``0.0(2)`` for the 
+intercept::
+
+   Least Square Fit:
+     chi2/dof [dof] = 0.55 [16]    Q = 0.92    logGBF = 19.917
+
+   Parameters:
+               a   0.2009 (78)     [  0.00 (20) ]  
+
+   Settings:
+     svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 1/0.0)
+
+   intercept = 0.2009(78)
+
+The increase in the Bayes Factor, however, is not significant, and the 
+result is almost unchanged. This confirms that the original choice was 
+reasonable.
 
 Another variation is to replace the simultaneous fit of the four models
 by a chained fit, where one model is fit at a time and its

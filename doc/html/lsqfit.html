@@ -1463,8 +1463,7 @@ data:</p>
 </div>
 <p>This says that <code class="docutils literal notranslate"><span class="pre">data['d3']</span></code>, for example, should be fit with  function
 <code class="docutils literal notranslate"><span class="pre">p['a']</span> <span class="pre">+</span> <span class="pre">p['s3']</span> <span class="pre">*</span> <span class="pre">np.array([1,2,3,4])</span></code> where <code class="docutils literal notranslate"><span class="pre">p</span></code> is  a dictionary of fit
-parameters.  The models here all share the same intercept, but have different
-slopes. Assume that we know <em>a priori</em> that the intercept and slopes are all
+parameters.  Assume that we know <em>a priori</em> that the intercept and slopes are all
 order one:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s1</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s4</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">))</span>
 </pre></div>
@@ -1513,6 +1512,36 @@ intercept:</p>
 </div>
 <p>Marginalization can be useful when fitting large data sets since it
 reduces the number of fit parameters and simplifies the fit.</p>
+<p>Empirical Bayes tuning can be used with a <code class="xref py py-mod docutils literal notranslate"><span class="pre">MultiFitter</span></code> (see <a class="reference internal" href="overview.html#empirical-bayes"><span class="std std-ref">Tuning Priors with the Empirical Bayes Criterion</span></a>).
+Continuing from the example just above, we may be uncertain about the prior for the
+intercept. The following code varies the width of that prior to maximize
+the Bayes Factor (<code class="docutils literal notranslate"><span class="pre">logGBF</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fitargs</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">s1</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s2</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s3</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="n">s4</span><span class="o">=</span><span class="s1">&#39;0(1)&#39;</span><span class="p">))</span>
+    <span class="n">prior</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">mopt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+ <span class="n">fit</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="n">fitter</span><span class="o">.</span><span class="n">empbayes_fit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">fitargs</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+ <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;intercept =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The output shows that the data prefer a prior of <code class="docutils literal notranslate"><span class="pre">0.0(2)</span></code> for the
+intercept:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.55</span> <span class="p">[</span><span class="mi">16</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.92</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.917</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+            <span class="n">a</span>   <span class="mf">0.2009</span> <span class="p">(</span><span class="mi">78</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.00</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="n">Settings</span><span class="p">:</span>
+  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">intercept</span> <span class="o">=</span> <span class="mf">0.2009</span><span class="p">(</span><span class="mi">78</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The increase in the Bayes Factor, however, is not significant, and the
+result is almost unchanged. This confirms that the original choice was
+reasonable.</p>
 <p>Another variation is to replace the simultaneous fit of the four models
 by a chained fit, where one model is fit at a time and its
 results are fed into the next fit through that fit’s prior. Replacing the
@@ -1679,7 +1708,10 @@ fitter.</p></li>
 <dl class="method">
 <dt id="lsqfit.MultiFitter.chained_lsqfit">
 <code class="sig-name descname">chained_lsqfit</code><span class="sig-paren">(</span><em class="sig-param">data=None</em>, <em class="sig-param">pdata=None</em>, <em class="sig-param">prior=None</em>, <em class="sig-param">p0=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute chained least-squares fit of models to data.</p>
+<dd><p>Compute chained least-squares fit of models to data. Equivalent to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">lsqfit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdata</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">chained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
 <p>In a chained fit to models <code class="docutils literal notranslate"><span class="pre">[s1,</span> <span class="pre">s2,</span> <span class="pre">...]</span></code>, the models are fit one
 at a time, with the fit output from one being fed into the prior for
 the next. This can be much faster than  fitting the models together,
