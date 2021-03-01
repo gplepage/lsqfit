@@ -4,7 +4,7 @@
 test-lsqfit.py
 
 """
-# Copyright (c) 2012-2018 G. Peter Lepage.
+# Copyright (c) 2012-2021 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

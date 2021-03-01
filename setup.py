@@ -1,6 +1,6 @@
 """
 Created by G. Peter Lepage (Cornell University) on 9/2011.
-Copyright (c) 2011-20 G. Peter Lepage.
+Copyright (c) 2011-21 G. Peter Lepage.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
