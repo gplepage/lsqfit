@@ -170,8 +170,15 @@ Functions
 
 .. autofunction:: lsqfit.wavg
 
-.. autofunction:: lsqfit.gammaQ
+.. function:: lsqfit.gammaQ(a, x)
 
+      Return the normalized incomplete gamma function ``Q(a,x) = 1-P(a,x)``.
+
+      ``Q(a, x) = 1/Gamma(a) * \int_x^\infty dt exp(-t) t ** (a-1) = 1 - P(a, x)``
+
+      Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
+      get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees
+      of freedom even if the model used to construct ``chi2`` is correct.
 
 Classes for Bayesian Integrals
 -------------------------------
