@@ -16,6 +16,7 @@ to fit the data while also modeling the outliers.
 
 This case study is adapted from an example by Jake Vanderplas
 on his `Python blog <http://jakevdp.github.io/blog/2014/06/06/frequentism-and-bayesianism-2-when-results-differ>`_.
+It is also discussed in the documentation for the :mod:`vegas` module.
 
 The Problem
 ------------------

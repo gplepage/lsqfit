@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 11.8 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 12.0 documentation</title>
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.8 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -332,7 +332,7 @@ their probability histograms, using a Bayesian integral:</p>
     <span class="c1"># create GVars from results</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pmean</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Bayesian Parameters:&#39;</span><span class="p">)</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">n&#39;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;logBF =&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">pdfnorm</span><span class="p">))</span>
 
     <span class="c1"># show histograms</span>
@@ -1029,7 +1029,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 11.8 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -271,7 +271,7 @@ their probability histograms, using a Bayesian integral::
         # create GVars from results
         p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
         print('\nBayesian Parameters:')
-        print(gv.tabulate(p))
+        print(gv.tabulate(p), '\\n')
         print('logBF =', np.log(results.pdfnorm))
 
         # show histograms
