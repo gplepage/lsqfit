@@ -1,3 +1,14 @@
+Version 12 2021-08-14
+======================
+- Removes BayesIntegrator (and BayesPDF). It is replaced by 
+  the more capable PDFIntegrator in the vegas Python module.
+
+- Adds two new methods to nonlinear_fit: logpdf(p) and pdf(p).
+
+- Fixed minor bug when GSL not installed and maxit=0.
+
+- Fixed bug involving noise parameter when no prior used.
+
 Version 11.8 2021-02-27
 =======================
 Small update to fix a bug and add a feature. Thanks to Nolan Miller 

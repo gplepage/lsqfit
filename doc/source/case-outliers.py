@@ -1,17 +1,18 @@
 from __future__ import print_function
-import tee
+from outputsplitter import log_stdout
 import sys
 STDOUT = sys.stdout
 
 # NB: Need to run cases (True, False), (False, False) and (False, True)
 LSQFIT_ONLY = False
-MULTI_W = True
+MULTI_W = False
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 import gvar as gv
 import lsqfit
+import vegas
 
 def main():
     ### 1) least-squares fit to the data
@@ -30,9 +31,9 @@ def main():
     prior = make_prior()
     fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fitfcn)
     if LSQFIT_ONLY:
-        sys.stdout = tee.tee(STDOUT, open('case-outliers-lsq.out', 'w'))
+        log_stdout('case-outliers-lsq.out')
     elif not MULTI_W:
-        sys.stdout = tee.tee(STDOUT, open('case-outliers.out', 'w'))
+        log_stdout('case-outliers.out')
     print(fit)
 
     # plot data
@@ -42,9 +43,9 @@ def main():
     xline = np.linspace(x[0], x[-1], 100)
     yline = fitfcn(xline, fit.p)
     plt.plot(xline, gv.mean(yline), 'k:')
-    yp = gv.mean(yline) + gv.sdev(yline)
-    ym = gv.mean(yline) - gv.sdev(yline)
-    plt.fill_between(xline, yp, ym, color='0.8')
+    # yp = gv.mean(yline) + gv.sdev(yline)
+    # ym = gv.mean(yline) - gv.sdev(yline)
+    # plt.fill_between(xline, yp, ym, color='0.8')
     plt.xlabel('x')
     plt.ylabel('y')
     plt.savefig('case-outliers1.png', bbox_inches='tight')
@@ -55,7 +56,7 @@ def main():
     pdf = ModifiedPDF(data=(x, y), fcn=fitfcn, prior=prior)
 
     # integrator for expectation values with modified PDF
-    expval = lsqfit.BayesIntegrator(fit, pdf=pdf)
+    expval = vegas.PDFIntegrator(fit.p, pdf=pdf)
 
     # adapt integrator to pdf
     expval(neval=1000, nitn=15)
@@ -71,7 +72,7 @@ def main():
     # expval.map.show_grid(15)
 
     if MULTI_W:
-        sys.stdout = tee.tee(STDOUT, open('case-outliers-multi.out', 'w'))
+        log_stdout('case-outliers-multi.out')
 
     # parameters c[i]
     mean = results['mean']
@@ -91,7 +92,7 @@ def main():
     print('w =', w, '\n')
 
     # Bayes Factor
-    print('logBF =', np.log(results.norm))
+    print('logBF =', np.log(results.pdfnorm))
     sys.stdout = STDOUT
 
     if MULTI_W:
@@ -140,9 +141,9 @@ def make_prior():
     if LSQFIT_ONLY:
         return prior
     if MULTI_W:
-        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1., shape=19)
+        prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1., shape=19)
     else:
-        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1.)
+        prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1.)
     return prior
 
 

@@ -207,14 +207,13 @@ by the Gaussian distribution in the parameters
 specified by their best-fit means and covariance matrix (from ``fit.p``).
 
 Here we use
-:class:`lsqfit.BayesIntegrator` to evaluate Bayesian expectation values.
-:class:`lsqfit.BayesIntegrator` uses the :mod:`vegas` module for adaptive
+:class:`vegas.PDFIntegrator` to evaluate Bayesian expectation values.
+:class:`vegas.PDFIntegrator` uses the :mod:`vegas` module for adaptive
 multi-dimensional integration to evaluate expectation values. It integrates
 arbitrary functions of the parameters, multiplied by the probability
-density function, over the entire parameter space. (Module :mod:`vegas`
-must be installed for :class:`lsqfit.BayesIntegrator`.)
+density function, over the entire parameter space. 
 
-To illustrate :class:`lsqfit.BayesIntegrator`,
+To illustrate how :class:`vegas.PDFIntegrator` works with :mod:`lsqfit`,
 we again revisit the analysis in the section
 on :ref:`correlated-parameters`. We modify the end of the ``main()`` function
 of our original code
@@ -223,8 +222,10 @@ their probability histograms, using a Bayesian integral::
 
     import matplotlib.pyplot as plt
     import numpy as np
+    
     import gvar as gv
     import lsqfit
+    import vegas
 
     def main():
         x, y = make_data()
@@ -232,8 +233,8 @@ their probability histograms, using a Bayesian integral::
         fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
         print(fit)
 
-        # Bayesian integrator
-        expval = lsqfit.BayesIntegrator(fit)
+        # Bayesian integrator with PDF from the fit
+        expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf)
 
         # adapt integrator expval to PDF from fit
         neval = 1000
@@ -271,6 +272,7 @@ their probability histograms, using a Bayesian integral::
         p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
         print('\nBayesian Parameters:')
         print(gv.tabulate(p))
+        print('logBF =', np.log(results.pdfnorm))
 
         # show histograms
         print('\nHistogram Statistics:')
@@ -313,12 +315,12 @@ their probability histograms, using a Bayesian integral::
 
 Here ``expval`` is an integrator that is used to evaluate expectation
 values of arbitrary functions of the fit parameters.
-:class:`BayesIntegrator` uses output (``fit``) from a least-squares fit to
+:class:`PDFIntegrator` uses output (``fit.p``) from the least-squares fit to
 design a :mod:`vegas` integrator
 optimized for calculating expectation values.
 The integrator uses an
 iterative Monte Carlo algorithm that adapts to the
-probability density function after each iteration.
+probability density function (``fit.pdf(p)``) after each iteration.
 See the :mod:`vegas` documentation for much more information.
 
 We first call the integrator without a function. This allows it
@@ -329,7 +331,8 @@ uses ``nitn=10`` iterations of the :mod:`vegas` algorithm, with at most
 iteration.
 
 We then use the optimized integrator to evaluate the expectation value
-of function ``g(p)`` (turning adaptation off with ``adapt=False``).
+of function ``g(p)``, turning adaptation off with ``adapt=False`` (since 
+it is unneeded).
 The expectation value of ``g(p)`` is returned
 in dictionary ``results``.
 
@@ -360,7 +363,14 @@ for each parameter:
     :width: 85%
 
 The means are shifted slightly from the fit results and there
-is modest skewing, but the differences are not great.
+is modest skewing, but the differences are not great. The 
+logarithm of the Bayes Factor (``logBF``), calculated from 
+the integral of ``fit.pdf(p)``, agrees well with 
+``fit.logGBF`` which is the Bayes Factor evaluated 
+in the Gaussian approximation (implicit in 
+least-squares fitting). This is further evidence
+that the Gaussian approximation is reasonable 
+for this problem.
 
 As a second example of Bayesian integration, we return briefly to
 the problem described in :ref:`positive-parameters`: we want the
@@ -373,6 +383,7 @@ a fit that uses a flat prior (between 0 and |~| 0.04)::
 
     import gvar as gv
     import lsqfit
+    import vegas
 
     # data, prior, and fit function
     y = gv.gvar([
@@ -383,26 +394,25 @@ a fit that uses a flat prior (between 0 and |~| 0.04)::
        ])
 
     prior = {}
-    prior['erfinv(50*a-1)'] = gv.gvar('0(1)') / gv.sqrt(2)
+    prior['ga(a)'] = gv.BufferDict.uniform('ga', 0., 0.04)
 
     def fcn(p, N=len(y)):
-       a = (1 + p['50*a-1']) / 50.
-       return N * [a]
+       return N * [p['a']]
 
     # least-squares fit
     fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
     print(fit)
-    a = (1 + fit.p['50*a-1']) / 50
+    a = fit.p['a']
     print('a =', a)
 
     # Bayesian analysis: histogram for a
     hist = gv.PDFHistogram(a, nbin=16, binwidth=0.5)
 
     def g(p):
-        a = (1 + p['50*a-1']) / 50
+        a = p['a']
         return hist.count(a)
 
-    expval = lsqfit.BayesIntegrator(fit)
+    expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf) 
     expval(neval=1009, nitn=10)
     count = expval(g, neval=1000, nitn=10, adapt=False)
 
@@ -423,8 +433,8 @@ and the probability distribution for ``a`` looks like
 
 This distribution is distorted between ``a=0`` and the mean
 value, but otherwise is fairly similar to the Gaussian result
-0.11±0.13 (dashed line). A more accurate summary of the result
-for ``a`` would be 0.12 with an error of +0.14 and -0.09, though
+0.011±0.013 (dashed line). A more accurate summary of the result
+for ``a`` would be 0.012 with an error of +0.014 and -0.009, though
 again the Gaussian result is not terribly misleading even in this
 case.
 
@@ -432,11 +442,11 @@ The Bayesian integrals are relatively simple in these example. More
 complicated problems can require much more computer time to evaluate
 the integrals, with hundreds of thousands or millions of integrand
 evaluations per iteration (``neval``). This is particularly true
-as the number of parameters increases. :class:`BayesIntegrator` uses
+as the number of parameters increases. :class:`PDFIntegrator` uses
 information from the least-squares fit to simplify the integration
 for :mod:`vegas` by optimizing the integration variables used, but
 integrals over tens of variables are intrinsically challenging.
-:class:`BayesIntegrator` can be used with MPI to run such integrals
+:class:`PDFIntegrator` can be used with MPI to run such integrals
 on multiple processors, for a considerable speed-up.
 
 We used Bayesian integrals here to deal with non-Gaussian behavior in

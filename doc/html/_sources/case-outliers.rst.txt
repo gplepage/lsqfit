@@ -22,7 +22,6 @@ The Problem
 We want to extrapolate a set of data values ``y`` to ``x=0`` fitting
 a linear fit function (``fitfcn(x,p)``) to the data::
 
-    import matplotlib.pyplot as plt
     import numpy as np
 
     import gvar as gv
@@ -45,20 +44,6 @@ a linear fit function (``fitfcn(x,p)``) to the data::
         fit = lsqfit.nonlinear_fit(data=(x, y), prior=make_prior(), fcn=fitfcn)
         print(fit)
 
-        # plot data
-        plt.errorbar(x, gv.mean(y), gv.sdev(y), fmt='o', c='b')
-
-        # plot fit function +- 1 sigma
-        xline = np.linspace(x[0], x[-1], 100)
-        yline = fitfcn(xline, fit.p)
-        plt.plot(xline, gv.mean(yline), 'k--')
-        yp = gv.mean(yline) + gv.sdev(yline)
-        ym = gv.mean(yline) - gv.sdev(yline)
-        plt.fill_between(xline,yp,ym,color='0.8')
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.show()
-
     def fitfcn(x, p):
         c = p['c']
         return c[0] + c[1] * x
@@ -80,12 +65,11 @@ slope:
 The problem is evident if we plot the data:
 
 .. image:: case-outliers1.png
-   :width: 80%
+   :width: 60%
 
 At least three of the data points are outliers: they disagree with other
 nearby points by several standard deviations. These outliers have a big
-impact on the fit (dashed line, with the gray band showing the ±1-sigma
-region). In particular they pull the ``x=0`` intercept (``fit.p['c'][0]``)
+impact on the fit (dashed line). In particular they pull the ``x=0`` intercept (``fit.p['c'][0]``)
 up above one, while the rest of the data suggest an intercept of 0.5
 or less.
 
@@ -105,15 +89,15 @@ and ``w``, respectively.
 A modified data prior of this sort is incompatible with the least-squares
 code in :mod:`lsqfit`. Here we will incorporate it by replacing the
 least-squares analysis with a Bayesian integral, where the normal PDF is
-replaced a modified PDF of the sort described above.
+replaced by a modified PDF of the sort described above.
 The complete code for this analysis is
 as follows::
 
-    import matplotlib.pyplot as plt
     import numpy as np
 
     import gvar as gv
     import lsqfit
+    import vegas
 
     def main():
         ### 1) least-squares fit to the data
@@ -133,27 +117,12 @@ as follows::
         fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fitfcn)
         print(fit)
 
-        # plot data
-        plt.errorbar(x, gv.mean(y), gv.sdev(y), fmt='o', c='b')
-
-        # plot fit function
-        xline = np.linspace(x[0], x[-1], 100)
-        yline = fitfcn(xline, fit.p)
-        plt.plot(xline, gv.mean(yline), 'k:')
-        yp = gv.mean(yline) + gv.sdev(yline)
-        ym = gv.mean(yline) - gv.sdev(yline)
-        plt.fill_between(xline, yp, ym, color='0.8')
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.savefig('case-outliers1.png', bbox_inches='tight')
-        # plt.show()
-
         ### 2) Bayesian integral with modified PDF
         # modified probability density function
         mod_pdf = ModifiedPDF(data=(x, y), fcn=fitfcn, prior=prior)
 
         # integrator for expectation values with modified PDF
-        expval = lsqfit.BayesIntegrator(fit, pdf=mod_pdf)
+        expval = vegas.PDFIntegrator(fit.p, pdf=mod_pdf)
 
         # adapt integrator to pdf
         expval(neval=1000, nitn=15)
@@ -185,15 +154,16 @@ as follows::
         print('w =', w, '\n')
 
         # Bayes Factor
-        print('logBF =', np.log(results.norm))
+        print('logBF =', np.log(results.pdfnorm))
 
-        # add new fit to plot
-        yline = fitfcn(xline, dict(c=c))
-        plt.plot(xline, gv.mean(yline), 'r--')
-        yp = gv.mean(yline) + gv.sdev(yline)
-        ym = gv.mean(yline) - gv.sdev(yline)
-        plt.fill_between(xline, yp, ym, color='r', alpha=0.2)
-        plt.show()
+    def fitfcn(x, p):
+        c = p['c']
+        return c[0] + c[1] * x
+
+    def make_prior():
+        prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
+        prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1.)
+        return prior
 
     class ModifiedPDF:
         """ Modified PDF to account for measurement failure. """
@@ -219,15 +189,6 @@ as follows::
             xvar = gv.var(x) * f ** 2
             return gv.exp(-xmean ** 2 / 2. /xvar) / gv.sqrt(2 * np.pi * xvar)
 
-    def fitfcn(x, p):
-        c = p['c']
-        return c[0] + c[1] * x
-
-    def make_prior():
-        prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
-        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1.)
-        return prior
-
     if __name__ == '__main__':
         main()
 
@@ -238,7 +199,7 @@ it consists of two Gaussian distributions: one, ``data_pdf1``, with the
 nominal data errors, and the other, ``data_pdf2``, with errors that are ten
 times larger. Parameter ``w`` determines the relative weight of each data PDF.
 
-The Bayesian integrals are estimated using :class:`lsqfit.BayesIntegrator`
+The Bayesian integrals are estimated using :class:`vegas.PDFIntegrator`
 ``expval``, which is created from the least-squares fit output (``fit``).
 It is used to evaluate expectation values of arbitrary functions of the
 fit variables. Normally it would use the standard PDF from the least-squares
@@ -248,7 +209,11 @@ fit, but we replace that PDF here with an instance (``mod_pdf``) of class
 We have modified ``make_prior()`` to introduce ``w`` as a new fit
 parameter. The prior for this parameter is uniformly distributed
 across the interval from 0 |~| to |~| 1. Parameter ``w`` plays 
-no role in the initial fit.
+no role in the initial fit. (The uniform distribution is implemented
+by introducing a function ``gw(w)`` that maps it onto a Gaussian 
+distribution 0 |~| ± |~| 1. The integration parameter in the 
+Bayesian integrals is ``gw(w)`` but the ``BufferDict`` dictionary 
+makes the corresponding value of ``w`` available automatically.)
 
 We first call ``expval`` with no function, to allow the integrator to adapt
 to the modified PDF. We then use the integrator, now with adaptation
@@ -271,10 +236,11 @@ modified prior (by a factor of ``exp(-23.4 + 117.4)`` or about 10\ :sup:`41`.).
 
 The new fit parameters are much more reasonable. In particular the
 intercept is 0.28(14) rather than the 1.15(10) from the least-squares fit.
-This is much better suited to the data (see the dashed line in red):
+This is much better suited to the data (see the dashed line in red, with 
+the red band showing the 1-sigma region about the best fit):
 
 .. image:: case-outliers2.png
-   :width: 80%
+   :width: 60%
 
 Note, from the correlation matrix, that the intercept and slope are
 anti-correlated, as one might guess for this fit.
@@ -283,14 +249,14 @@ of our detectors --- they fail about a quarter of the time.
 
 A Variation
 ------------------
-Vanderplas in his version of this problem assigns a separate ``w`` to
-each data point. This is a slightly different model for the failure that
-leads to outliers. It is easily implemented here by changing the prior
+A slightly different model for the failure that
+leads to outliers assigns a different ``w`` to each data point. 
+It is easily implemented here by changing the prior
 so that ``w`` is an array::
 
     def make_prior():
         prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
-        prior['unif(w)'] = gv.BufferDict.uniform('unif', 0., 1., shape=19)
+        prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1., shape=19)
         return prior
 
 The Bayesian integral then has 21 parameters, rather than the 3 parameters

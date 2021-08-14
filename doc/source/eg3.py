@@ -3,8 +3,8 @@
 """
 eg3.py - Code for "Correlated Parameters"
 
-Created by Peter Lepage in 2016-12.
-Copyright (c) 2016 Cornell University. All rights reserved.
+Created by Peter Lepage in 2016.
+Copyright (c) 2016-2021 Cornell University. All rights reserved.
 """
 DO_PLOT = True
 DO_BOOTSTRAP = True
@@ -19,6 +19,7 @@ import numpy as np
 import gvar as gv
 import lsqfit
 import matplotlib.pyplot as plt
+import vegas
 
 # lsqfit.nonlinear_fit.set_defaults(alg='subspace2D', solver='cholesky')
 
@@ -31,9 +32,9 @@ def main():
     x, y = make_data()
     prior = make_prior()
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
-    print fit
-    print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
-    print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
+    print(fit)
+    print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+    print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
 
     if DO_PLOT:
         plt.semilogx()
@@ -54,9 +55,9 @@ def main():
     if DO_BOOTSTRAP:
         gv.ranseed(123)
         sys.stdout = tee.tee(sys_stdout, open('eg3c.out', 'w'))
-        print fit
-        print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
-        print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
+        print(fit)
+        print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+        print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
         Nbs = 40
         outputs = {'p':[], 'p1/p0':[], 'p3/p2':[]}
         for bsfit in fit.bootstrap_iter(n=Nbs):
@@ -64,16 +65,16 @@ def main():
             outputs['p'].append(p)
             outputs['p1/p0'].append(p[1] / p[0])
             outputs['p3/p2'].append(p[3] / p[2])
-        print '\nBootstrap Averages:'
+        print('\nBootstrap Averages:')
         outputs = gv.dataset.avg_data(outputs, bstrap=True)
-        print gv.tabulate(outputs)
-        print 'corr(p0,p1) =', gv.evalcorr(outputs['p'][:2])[1,0]
+        print(gv.tabulate(outputs))
+        print('corr(p0,p1) =', gv.evalcorr(outputs['p'][:2])[1,0])
 
         # make histograms of p1/p0 and p3/p2
         sys.stdout = sys_stdout
         print
         sys.stdout = tee.tee(sys_stdout, open('eg3d.out', 'w'))
-        print 'Histogram Analysis:'
+        print('Histogram Analysis:')
         count = {'p1/p0':[], 'p3/p2':[]}
         hist = {
             'p1/p0':gv.PDFHistogram(fit.p[1] / fit.p[0]),
@@ -87,8 +88,8 @@ def main():
         plt.rcParams['figure.figsize'] = [6.4, 2.4]
         pltnum = 1
         for k in count:
-            print k + ':'
-            print hist[k].analyze(count[k]).stats
+            print(k + ':')
+            print(hist[k].analyze(count[k]).stats)
             plt.subplot(1, 2, pltnum)
             plt.xlabel(k)
             hist[k].make_plot(count[k], plot=plt)
@@ -102,8 +103,8 @@ def main():
     if DO_BAYESIAN:
         gv.ranseed(123)
         sys.stdout = tee.tee(sys_stdout, open('eg3e.out', 'w'))
-        print fit
-        expval = lsqfit.BayesIntegrator(fit)
+        print(fit)
+        expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf)
 
         # adapt integrator to PDF from fit
         neval = 1000
@@ -134,13 +135,15 @@ def main():
         print('Integration Results:')
         pmean = results['mean']
         pcov =  results['outer'] - np.outer(pmean, pmean)
-        print '    mean(p) =', pmean
-        print '    cov(p) =\n', pcov
+        print('    mean(p) =', pmean)
+        print('    cov(p) =\n', pcov)
 
         # create GVars from results
         p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
         print('\nBayesian Parameters:')
         print(gv.tabulate(p))
+        print('\nlogBF =', np.log(results.pdfnorm))
+
 
         # show histograms
         print('\nHistogram Statistics:')
@@ -168,7 +171,7 @@ def main():
             print(40 * '=' + ' simulation')
             print(sfit.format(True))
             diff = sfit.p - sfit.pexact
-            print '\nsfit.p - pexact =', diff
+            print('\nsfit.p - pexact =', diff)
             print(gv.fmt_chi2(gv.chi2(diff)))
             print
 
@@ -177,9 +180,9 @@ def main():
     prior = gv.gvar(4 * ['0(1)'])
     prior[1] = gv.gvar('0(20)')
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
-    print fit
-    print 'p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2]
-    print 'corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0]
+    print(fit)
+    print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+    print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
 
 
 def make_data():

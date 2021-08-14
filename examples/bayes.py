@@ -16,6 +16,7 @@ from __future__ import print_function
 import numpy as np
 import gvar as gv
 import lsqfit
+import vegas
 
 gv.ranseed(1)
 
@@ -30,14 +31,10 @@ def main():
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
     print(fit)
     # Bayesian integrator
-    expval = lsqfit.BayesIntegrator(fit, sync_ran=False)
+    expval = vegas.PDFIntegrator(fit.p, sync_ran=False)
 
-    # adapt integrator expval to PDF from fit
-    neval = 1000
-    nitn = 10
-    expval(neval=neval, nitn=nitn)
 
-    # <g(p)> gives mean and covariance matrix, and counts for histograms
+    # mean and covariance matrix, and counts for histograms
     hist = [
         gv.PDFHistogram(fit.p[0]), gv.PDFHistogram(fit.p[1]),
         gv.PDFHistogram(fit.p[2]), gv.PDFHistogram(fit.p[3]),
@@ -50,14 +47,20 @@ def main():
                 hist[0].count(p[0]), hist[1].count(p[1]),
                 hist[2].count(p[2]), hist[3].count(p[3]),
                 ],
+            pdf = np.exp(fit.logpdf(p))
             )
 
+    # adapt integrator expval to PDF from fit
+    neval = 1000
+    nitn = 10
+    expval(g, pdfkey='pdf', neval=neval, nitn=nitn)
+
     # evaluate expectation value of g(p)
-    results = expval(g, neval=neval, nitn=nitn, adapt=False)
+    results = expval(g, pdfkey='pdf', neval=neval, nitn=nitn, adapt=False)
 
     # analyze results
-    # print('\nIterations:')
-    # print(results.summary())
+    print('\nIterations:')
+    print(results.summary())
     print('Integration Results:')
     pmean = results['mean']
     pcov =  results['outer'] - np.outer(pmean, pmean)
@@ -68,6 +71,7 @@ def main():
     p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
     print('\nBayesian Parameters:')
     print(gv.tabulate(p))
+    print('\nlog(Bayes Factor) =', np.log(results.norm))
 
     # show histograms
     print('\nHistogram Statistics:')

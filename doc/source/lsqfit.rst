@@ -150,6 +150,10 @@ nonlinear_fit Objects
 
    .. automethod:: evalchi2(p)
 
+   .. automethod:: logpdf(p)
+
+   .. automethod:: pdf(p)
+
    .. automethod:: simulated_fit_iter(n=None, pexact=None, add_priornoise=False, **kargs)
 
    .. automethod:: simulated_data_iter(n=None, pexact=None, add_priornoise=False)
@@ -179,28 +183,6 @@ Functions
       Note that ``gammaQ(ndof/2., chi2/2.)`` is the probabilty that one could
       get a ``chi**2`` larger than ``chi2`` with ``ndof`` degrees
       of freedom even if the model used to construct ``chi2`` is correct.
-
-Classes for Bayesian Integrals
--------------------------------
-:mod:`lsqfit` provides support for doing Bayesian integrals, using results
-from a least-squares fit to optimize the multi-dimensional integral. This
-is useful for severely non-Gaussian situations. Module :mod:`vegas` is
-used to do the integrals, using an adaptive Monte Carlo algorithm.
-
-The integrator class is:
-
-.. autoclass:: lsqfit.BayesIntegrator(fit, limit=1e15, scale=1, pdf=None, adapt_to_pdf=True, svdcut=1e-15)
-
-   .. automethod:: __call__(f=None, pdf=None, adapt_to_pdf=None, **kargs)
-
-A class that describes the Bayesian probability distribution associated
-with a fit is:
-
-.. autoclass:: lsqfit.BayesPDF(fit, svdcut=1e-15)
-
-   .. automethod:: __call__(p)
-
-   .. automethod:: logpdf(p)
 
 
 :class:`lsqfit.MultiFitter` Classes

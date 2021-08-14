@@ -24,7 +24,7 @@ Fit:
    0.0625    0.044 (16)    0.0418 (72)  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 20/0.1)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 19/0.0)
 
 ======================================== simulation
 Least Square Fit:
@@ -52,12 +52,11 @@ Fit:
    0.0625    0.060 (16)    0.0389 (70)  *
 
 Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 7/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 7/0.0)
 
 
 sfit.p - pexact = [-0.015(14) -0.29(29) -0.54(47) -0.05(12)]
 chi2/dof = 0.34 [4]    Q = 0.85
-
 ======================================== simulation
 Least Square Fit:
   chi2/dof [dof] = 1.1 [11]    Q = 0.38    logGBF = 17.048
@@ -84,12 +83,11 @@ Fit:
    0.0625    0.031 (16)    0.0362 (68)  
 
 Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 23/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 23/0.0)
 
 
 sfit.p - pexact = [0.008(18) 0.15(36) 0.13(66) 0.18(20)]
 chi2/dof = 0.22 [4]    Q = 0.93
-
 ======================================== simulation
 Least Square Fit:
   chi2/dof [dof] = 0.76 [11]    Q = 0.68    logGBF = 17.709
@@ -116,9 +114,8 @@ Fit:
    0.0625    0.059 (16)    0.0420 (70)  *
 
 Settings:
-  svdcut/n = None/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 10/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 10/0.0)
 
 
 sfit.p - pexact = [-0.010(14) -0.21(29) -0.51(46) -0.06(11)]
 chi2/dof = 0.77 [4]    Q = 0.54
-

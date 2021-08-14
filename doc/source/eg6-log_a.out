@@ -10,3 +10,43 @@ Settings:
   svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 25/0.0)
 
 a = 0.012(11)
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.66    logGBF = 5.2858
+
+Parameters:
+        sqrt(a)   0.099 (67)     [ 0.141 (71) ]  
+-----------------------------------------------
+              a   0.010 (13)     [ 0.020 (20) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 19/0.0)
+
+a = 0.010(13)
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
+
+Parameters:
+          ga(a)   -0.59 (96)     [  0.0 (1.0) ]  
+-----------------------------------------------
+              a   0.011 (13)     [ 0.020 (16) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0)
+
+a = 0.011(13)
+Least Square Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
+
+Parameters:
+          ga(a)   -0.59 (96)     [  0.0 (1.0) ]  
+-----------------------------------------------
+              a   0.011 (13)     [ 0.020 (16) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0)
+
+a = 0.011(13)
+
+Histogram Analysis:
+   mean = 0.014054(22)   sdev = 0.010659(21)   skew = 0.6181(26)   ex_kurt = -0.5593(50)
+   median = 0.011867(19)   plus = 0.014385(31)   minus = 0.008761(18)

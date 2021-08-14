@@ -10,14 +10,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-import scipy.optimize
-from scipy.optimize import least_squares as scipy_optimize_least_squares
-import scipy.linalg
-import scipy.special
 import numpy
 import gvar as _gvar
 
-gammaQ = scipy.special.gammaincc
+def gammaQ(x):
+    from scipy.special import gammaincc
+    return gammaincc(x)
 
 class scipy_least_squares(object):
     """ :mod:`scipy` fitter for nonlinear least-squares multidimensional fits.
@@ -119,6 +117,8 @@ class scipy_least_squares(object):
         maxit=1000, **extra_args
         ):
         super(scipy_least_squares, self).__init__()
+        from scipy.optimize import least_squares 
+        from scipy.linalg import svd
 
         # standardize tol
         if numpy.shape(tol) == ():
@@ -153,7 +153,7 @@ class scipy_least_squares(object):
                 ans[i, :] = fx[i].der
             return ans
 
-        fit = scipy_optimize_least_squares(
+        fit = least_squares(
             fun=func, jac=Dfun, x0=x0,
             xtol=tol[0], gtol=tol[1], ftol=tol[2],
             max_nfev=maxit,
@@ -168,7 +168,7 @@ class scipy_least_squares(object):
         self.results = fit
 
         # compute covariance (from scipy's curve_fit)
-        _, _s, _VT = scipy.linalg.svd(fit.jac, full_matrices=False)
+        _, _s, _VT = svd(fit.jac, full_matrices=False)
         _threshold = numpy.finfo(float).eps * max(fit.jac.shape) * _s[0]
         _s = _s[_s > _threshold]
         _VT = _VT[:_s.size]
@@ -202,6 +202,8 @@ class scipy_multiminex(object):
         analyzer (function): Optional function of the current ``x``.
             This can be used to inspect intermediate steps in the
             minimization, if needed.
+        step (bool): Included for consistency with GSL routines but ignored
+            in :mod:`scipy` routine.
 
     :class:`lsqfit.scipy_multiminex` objects have the following attributes.
 
@@ -212,13 +214,14 @@ class scipy_multiminex(object):
         error (Noe or str): ``None`` if fit successful; an error
             message otherwise.
     """
-    def __init__(self, x0, f, tol=1e-4, maxit=1000, analyzer=None):
+    def __init__(self, x0, f, tol=1e-4, maxit=1000, analyzer=None, step=None):
         super(scipy_multiminex, self).__init__()
+        from scipy.optimize import minimize
         # preserve inputs
         self.x0 = x0
         self.tol = tol
         self.maxit = maxit
-        res = scipy.optimize.minimize(
+        res = minimize(
             fun=f, x0=x0, tol=tol, options=dict(maxiter=maxit),
             callback=analyzer, method='Nelder-Mead',
             )

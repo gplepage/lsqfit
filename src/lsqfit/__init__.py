@@ -556,7 +556,7 @@ class nonlinear_fit(object):
         clock = time.perf_counter if hasattr(time, 'perf_counter') else time.time
         cpu_time = clock()
 
-        if noise[1]:
+        if noise[1] and prior is not None:
             prior = prior + (_gvar.sample(prior) - _gvar.mean(prior))
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
@@ -679,13 +679,13 @@ class nonlinear_fit(object):
             self.fitterargs['bounds'] = (larray, uarray)
 
         # do the fit and save results
-        if linear is not None and len(linear) > 0:
-            fit = self._varpro_fit(p0=p0, nf=nf, tol=tol, maxit=maxit)
-        else:
-            fit = nonlinear_fit.FITTERS[self.fitter](
-                p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
-                )
         if maxit > 0:
+            if linear is not None and len(linear) > 0:
+                fit = self._varpro_fit(p0=p0, nf=nf, tol=tol, maxit=maxit)
+            else:
+                fit = nonlinear_fit.FITTERS[self.fitter](
+                    p0, nf, self._chiv, tol=tol, maxit=maxit, **self.fitterargs
+                )
             self.error = fit.error
             self.cov = fit.cov
             self.chi2 = numpy.sum(fit.f**2)
@@ -943,6 +943,141 @@ class nonlinear_fit(object):
         else:
             p = numpy.asarray(p)
         return numpy.sum(self._chiv(p.flat[:]) ** 2)
+
+    def logpdf(self, p):
+        """ Logarithm of the fit's probability density function at ``p``.
+
+        The fit's probability density function (PDF) is the product of the 
+        Gaussian PDF for the data times the Gaussian PDF for the prior.
+        It is proportional to ``exp(-fit.evalchi2(p))``.
+
+        Args:
+            p: Array or dictionary containing values for fit parameters,
+                using the same layout as in the fit function.
+
+        Returns:
+            ``-chi**2(p)/2 - log(norm)`` for ``p``.
+    
+        """
+        if not hasattr(self, '_logpdfnorm'):
+            self._logpdfnorm = 0.5 * (
+                self.fdata.logdet
+                + numpy.log(2*numpy.pi) * (self.dof + numpy.size(self.palt))
+                )
+        return - self.evalchi2(p) / 2 - self._logpdfnorm
+
+    def pdf(self, p):
+        """Fit's probability density function at point ``p``.
+
+        The fit's probability density function (PDF) is the product of the 
+        Gaussian PDF for the data times the Gaussian PDF for the prior.
+        It is proportional to ``exp(-fit.evalchi2(p))``. The 
+        integral over all ``p`` of the fit's PDF is the 
+        Bayes Factor (or Evidence), which is proportional to 
+        the probability that the data come from the underlying 
+        model.
+
+        ``fit.pdf(p)`` is useful when checking a least squares fit 
+        against the corresponding Bayesian integrals. In the following 
+        example, :class:`vegas.PDFIntegrator` from the :mod:`vegas` module
+        is used to evaluate Bayesian expectation values of ``s*g`` 
+        and its standard deviation where ``s`` and ``g`` are fit 
+        parameters::
+
+            import gvar as gv
+            import lsqfit
+            import numpy as np
+            import vegas
+
+            # least-squares fit
+            x = np.array([0.1, 1.2, 1.9, 3.5])
+            y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
+            prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
+            def f(x, p):
+                return p['a'] + p['s'] * x ** p['g']
+            fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=f, debug=True)
+            print(fit)
+
+            # create integrator and adapt it to PDF (warmup)
+            expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf, limit=20.)
+            warmup = expval(neval=1000, nitn=10)
+
+            # calculate expectation value of g(p)
+            def g(p):
+                sg = p['s'] * p['g']
+                return dict(sg=[sg, sg**2])
+            results = expval(g, neval=1000, nitn=10, adapt=False)
+            print(results.summary(True))
+            print('results =', results, '\\n')
+
+            sg, sg2 = results['sg']
+            sg_sdev = (sg2 - sg**2) ** 0.5
+            print('s*g from Bayes integral:  mean =', sg, '  sdev =', sg_sdev)
+            print('s*g from fit:', fit.p['s'] * fit.p['g'])
+            print('\\nlogBF =', np.log(results.pdfnorm))
+
+        Here the probability density function used for the expectation values 
+        is ``fit.pdf(p)``, and the expectation values are returned 
+        in dictionary ``results``. :mod:`vegas` uses adaptive Monte 
+        Carlo integration. The  ``warmup`` calls to the integrator are 
+        used to adapt it to the probability density function, and 
+        then the adapted integrator is  called again to evaluate the 
+        expectation value. Parameter ``neval`` is the (approximate)
+        number of function calls per iteration of the :mod:`vegas` algorithm
+        and ``nitn`` is the number of iterations. We use the integrator to
+        calculated the expectation value of ``s*g`` and ``(s*g)**2`` so we can
+        compute a mean and standard deviation.
+
+        The output from this code shows that the Gaussian approximation
+        for ``s*g`` (0.76(66)) is somewhat different from the result
+        obtained from a Bayesian integral (0.49(54))::
+
+            Least Square Fit:
+            chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
+
+            Parameters:
+                        a    1.61 (90)     [  0.0 (5.0) ]  
+                        s    0.62 (81)     [  0.0 (2.0) ]  
+                        g    1.2 (1.1)     [  2.0 (2.0) ]  
+
+            Settings:
+            svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0)
+
+            itn   integral        average         chi2/dof       Q
+            -------------------------------------------------------
+              1   0.0001048(79)   0.0001048(79)       0.00     1.00
+              2   0.0001013(55)   0.0001030(48)       0.66     0.58
+              3   0.0000997(58)   0.0001019(37)       0.39     0.88
+              4   0.0001062(60)   0.0001030(32)       0.40     0.94
+              5   0.0001052(59)   0.0001034(28)       0.58     0.86
+              6   0.0001036(53)   0.0001035(25)       0.51     0.94
+              7   0.0001067(54)   0.0001039(23)       0.48     0.97
+              8   0.0001007(53)   0.0001035(21)       0.46     0.98
+              9   0.0001000(49)   0.0001031(19)       0.60     0.94
+             10   0.0000983(50)   0.0001027(18)       0.60     0.95
+
+            results = {'sg': array([0.4870(92), 0.536(13)], dtype=object)} 
+
+            s*g from Bayes integral:  mean = 0.4870(92)   sdev = 0.5466(72)
+            s*g from fit: 0.78(66)
+
+            logBF = -9.184(18)
+
+        The result ``logBF`` for the logarithm of the Bayes Factor from the 
+        integral agrees well with ``fit.logGBF``, the Bayes Factor
+        in the Gaussian approximation. This is evidence that the Gaussian
+        approximation implicit in the least squares fit is reliable.
+
+        Args:
+            p: Array or dictionary containing values for fit parameters,
+                using the same layout as in the fit function.
+
+        Returns:
+            ``exp(-chi**2(p)/2) / norm`` which is the product of the 
+            fit's data PDF times its prior PDF.
+            
+        """
+        return numpy.exp(self.logpdf(p))
 
     def qqplot_residuals(self, plot=None):
         """ QQ plot normalized fit residuals.
@@ -1954,7 +2089,6 @@ def flatfcn_dd(p, x, fcn, po, yo):
         yo[k] = fxp[k]
     return yo.flat
 
-
 def _y_fcn_match(y, f):
     if hasattr(f,'keys'):
         f = _gvar.BufferDict(f)
@@ -1981,422 +2115,6 @@ def _y_fcn_match(y, f):
                 _y_fcn_match.msg = "key mismatch: " + str(k)
                 return False
     return True
-
-
-# Additional classes:
-
-class BayesPDF(_gvar.PDF):
-    """ Bayesian probability density function corresponding to :class:`nonlinear_fit` ``fit``.
-
-    The probability density function is the exponential of
-    ``-1/2`` times the ``chi**2`` function (data and priors) used
-    in ``fit`` divided by ``norm``.
-
-    Args:
-        fit: Fit from :class:`nonlinear_fit`.
-
-        svdcut (non-negative float or None): If not ``None``, replace
-            covariance matrix of ``g`` with a new matrix whose
-            small eigenvalues are modified: eigenvalues smaller than
-            ``svdcut`` times the maximum eigenvalue ``eig_max`` are
-            replaced by ``svdcut*eig_max``. This can ameliorate
-            problems caused by roundoff errors when inverting the
-            covariance matrix. It increases the uncertainty associated
-            with the modified eigenvalues and so is conservative.
-            Setting ``svdcut=None`` or ``svdcut=0`` leaves the
-            covariance matrix unchanged. Default is ``1e-12``.
-    """
-    def __init__(self, fit, svdcut=1e-12, norm=1.0):
-        super(BayesPDF, self).__init__(fit.p, svdcut=svdcut)
-        self.chiv = fit._chiv
-        self.chi2 = fit.chi2
-        self.log_norm = numpy.log(norm)
-
-    def logpdf(self, p, lognorm=None):
-        """ Logarithm of the probability density function evaluated at ``p``. """
-        if lognorm is None:
-            lognorm = self.log_norm
-        if hasattr(p, 'keys'):
-            if isinstance(p, _gvar.BufferDict):
-                p = p.buf
-            else:
-                p = _gvar.BufferDict(p).buf
-        else:
-            p = numpy.asarray(p).reshape(-1)
-        return (
-            -0.5 * (numpy.sum(self.chiv(p) ** 2) - self.chi2)
-            - self.log_gnorm - self.log_norm
-            )
-
-
-try:
-    import vegas
-    if vegas.__version__ < '3.3':
-        raise ImportError
-
-    class BayesIntegrator(vegas.PDFIntegrator):
-        """ :mod:`vegas` integrator for Bayesian fit integrals.
-
-        Args:
-            fit: Fit from :class:`nonlinear_fit`.
-
-            limit (positive float): Limits the integrations to a finite
-                region of size ``limit`` times the standard deviation on
-                either side of the mean. This can be useful if the
-                functions being integrated misbehave for large parameter
-                values (e.g., ``numpy.exp`` overflows for a large range of
-                arguments). Default is ``1e15``.
-
-            scale (positive float): The integration variables are
-                rescaled to emphasize parameter values of order
-                ``scale`` times the corresponding standard deviations.
-                The rescaling does not change the value of the integral but it
-                can reduce uncertainties in the :mod:`vegas` estimates.
-                Default is ``1.0``.
-
-            pdf (callable): Probability density function ``pdf(p)`` of the
-                fit parameters to use in place of the normal PDF associated
-                with the least-squares fit used to create the integrator.
-
-            adapt_to_pdf (bool): :mod:`vegas` adapts to the PDF if
-                ``True`` (default); otherwise it adapts to ``f(p)``
-                times the PDF.
-
-            svdcut (non-negative float or None): If not ``None``, replace
-                covariance matrix of ``g`` with a new matrix whose
-                small eigenvalues are modified: eigenvalues smaller than
-                ``svdcut`` times the maximum eigenvalue ``eig_max`` are
-                replaced by ``svdcut*eig_max``. This can ameliorate
-                problems caused by roundoff errors when inverting the
-                covariance matrix. It increases the uncertainty associated
-                with the modified eigenvalues and so is conservative.
-                Setting ``svdcut=None`` or ``svdcut=0`` leaves the
-                covariance matrix unchanged. Default is ``1e-12``.
-
-
-        ``BayesIntegrator(fit)`` is a :mod:`vegas` integrator that evaluates
-        expectation values for the multi-dimensional Bayesian distribution
-        associated with :class:`nonlinear_fit` ``fit``: the probability
-        density function is the exponential of the ``chi**2`` function
-        (times ``-1/2``), for data and priors, used in the fit.
-        For linear fits, it is equivalent to ``vegas.PDFIntegrator(fit.p)``,
-        since the ``chi**2`` function is  quadratic in the fit parameters;
-        but they can differ significantly for nonlinear fits.
-
-        ``BayesIntegrator`` integrates over the entire parameter space but
-        first re-expresses the integrals in terms of variables that
-        diagonalize the covariance matrix of the best-fit parameters
-        ``fit.p`` from :class:`nonlinear_fit` and are centered at the
-        best-fit values. This greatly facilitates the integration using
-        :mod:`vegas`, making integrals over 10s or more of parameters feasible.
-        (The :mod:`vegas` module must be installed separately in order
-        to use ``BayesIntegrator``.)
-
-        A simple illustration of ``BayesIntegrator`` is given by the following
-        code, which we use to evaluate the mean and standard deviation for
-        ``s*g`` where ``s`` and ``g`` are fit parameters::
-
-            import lsqfit
-            import gvar as gv
-            import numpy as np
-
-            # least-squares fit
-            x = np.array([0.1, 1.2, 1.9, 3.5])
-            y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
-            prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
-            def f(x, p):
-                return p['a'] + p['s'] * x ** p['g']
-            fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=f, debug=True)
-            print(fit)
-
-            # Bayesian integral to evaluate expectation value of s*g
-            def g(p):
-                sg = p['s'] * p['g']
-                return [sg, sg**2]
-
-            expval = lsqfit.BayesIntegrator(fit, limit=20.)
-            warmup = expval(neval=4000, nitn=10)
-            results = expval(g, neval=4000, nitn=15, adapt=False)
-            print(results.summary())
-            print('results =', results, '\\n')
-            sg, sg2 = results
-            sg_sdev = (sg2 - sg**2) ** 0.5
-            print('s*g from Bayes integral:  mean =', sg, '  sdev =', sg_sdev)
-            print('s*g from fit:', fit.p['s'] * fit.p['g'])
-
-        where the ``warmup`` calls to the integrator are used to adapt it to
-        probability density function from the fit, and then the integrator
-        is used to evaluate the expectation value of ``g(p)``, which is
-        returned in array ``results``.  Here ``neval`` is the (approximate)
-        number of function calls per iteration of the :mod:`vegas` algorithm
-        and ``nitn`` is the number of iterations. We use the integrator to
-        calculated the expectation value of ``s*g`` and ``(s*g)**2`` so we can
-        compute a mean and standard deviation.
-
-        The output from this code shows that the Gaussian approximation
-        for ``s*g`` (0.76(66)) is somewhat different from the result
-        obtained from a Bayesian integral (0.48(54))::
-
-            Least Square Fit:
-              chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
-
-            Parameters:
-                          a    1.61 (90)     [  0.0 (5.0) ]
-                          s    0.62 (81)     [  0.0 (2.0) ]
-                          g    1.2 (1.1)     [  2.0 (2.0) ]
-
-            Settings:
-              svdcut/n = 1e-12/0    reltol/abstol = 0.0001/0*    (itns/time = 10/0.0)
-
-            itn   integral        average         chi2/dof        Q
-            -------------------------------------------------------
-              1   1.034(21)       1.034(21)           0.00     1.00
-              2   1.034(21)       1.034(15)           0.56     0.64
-              3   1.024(18)       1.030(12)           0.37     0.90
-              4   1.010(18)       1.0254(98)          0.47     0.89
-              5   1.005(17)       1.0213(85)          0.55     0.88
-              6   1.013(19)       1.0199(78)          0.69     0.80
-              7   0.987(16)       1.0152(70)          0.78     0.72
-              8   1.002(18)       1.0135(66)          0.90     0.59
-              9   1.036(20)       1.0160(62)          0.86     0.66
-             10   1.060(20)       1.0204(60)          0.94     0.55
-
-            results = [0.4837(32) 0.5259(47)]
-
-            s*g from Bayes integral:  mean = 0.4837(32)   sdev = 0.5403(25)
-            s*g from fit: 0.78(66)
-
-        The table shows estimates of the probability density function's
-        normalization from each of the :mod:`vegas` iterations used
-        by the integrator to estimate the final results.
-
-        In general functions being integrated can return a number, or an array
-        of numbers, or a dictionary whose values are numbers or arrays of
-        numbers. This allows multiple expectation values to be evaluated
-        simultaneously.
-
-        See the documentation with the :mod:`vegas` module for more details on
-        its use, and on the attributes and methods associated with
-        integrators. The example above sets ``adapt=False`` when  computing
-        final results. This gives more reliable error estimates  when
-        ``neval`` is small. Note that ``neval`` may need to be much larger
-        (tens or hundreds of thousands) for more difficult high-dimension
-        integrals.
-        """
-        def __init__(
-            self, fit, limit=1e15, scale=1.0, pdf=None,
-            adapt_to_pdf=True, svdcut=1e-12, **kargs
-            ):
-            super(BayesIntegrator, self).__init__(
-                BayesPDF(fit, svdcut=svdcut),
-                scale=scale, svdcut=svdcut, limit=limit, **kargs
-                )
-            self.pdf_function = pdf
-            self.adapt_to_pdf = adapt_to_pdf
-
-        def __call__(self, f=None, pdf=None, adapt_to_pdf=None, **kargs):
-            """ Estimate expectation value of function ``f(p)``.
-
-            Uses multi-dimensional integration modules :mod:`vegas`  to
-            estimate the expectation value of ``f(p)`` with  respect to
-            the probability density function  associated with
-            :class:`nonlinear_fit` ``fit``.
-
-            Args:
-                f (callable): Function ``f(p)`` to integrate. Integral is
-                    the expectation value of the function with respect
-                    to the distribution. The function can return a number,
-                    an array of numbers, or a dictionary whose values are
-                    numbers or arrays of numbers. Its argument ``p``
-                    has the same format as ``self.fit.pmean`` (that is,
-                    either a number, an array, or a dictionary).
-                    Omitting ``f`` (or setting it to ``None``) implies that
-                    only the PDF is integrated.
-
-                pdf (callable): Probability density function ``pdf(p)`` of the
-                    fit parameters to use in place of the normal PDF associated
-                    with the least-squares fit used to create the integrator.
-                    The PDF need not be normalized; vegas will normalize it.
-                    Ignored if ``pdf=None`` (the default).
-
-                adapt_to_pdf (bool): :mod:`vegas` adapts to the PDF if
-                    ``True`` (default); otherwise it adapts to ``f(p)``
-                    times the PDF.
-
-            All other keyword arguments are passed on to a :mod:`vegas`
-            integrator; see the :mod:`vegas` documentation for further
-            information.
-
-            The results returned are similar to what :mod:`vegas` returns
-            but with an extra attribute: ``results.norm``, which contains
-            the :mod:`vegas` estimate for the norm of the PDF. This should
-            equal 1 within errors if the PDF is normalized (and so can serve
-            as a check on the integration in those cases).
-            """
-
-            if pdf is None:
-                pdf = self.pdf_function
-            if adapt_to_pdf is None:
-                adapt_to_pdf = self.adapt_to_pdf
-            self._buffer = None
-            def fstd(p, pdf=pdf):
-                """ convert output to an array, with extra slot for the pdf """
-                fp = [] if f is None else f(p)
-                if pdf is None:
-                    pdf = numpy.exp(self.pdf.logpdf(p))
-                else:
-                    pdf = pdf(p)
-                if self._buffer is None:
-                    # setup --- only on first call
-                    self._is_dict = hasattr(fp, 'keys')
-                    if self._is_dict:
-                        self._fp = _gvar.BufferDict(fp)
-                        self._is_bdict = isinstance(fp, _gvar.BufferDict)
-                        bufsize = self._fp.buf.size + 1
-                    else:
-                        self._is_bdict = False
-                        self._fp = numpy.asarray(fp)
-                        bufsize = self._fp.size + 1
-                    self._buffer = numpy.empty(bufsize, float)
-                    if adapt_to_pdf:
-                        self._buffer[0] = 1.
-                        self._slice = slice(1,None)
-                    else:
-                        self._buffer[-1] = 1.
-                        self._slice = slice(0, -1)
-                if self._is_bdict:
-                    self._buffer[self._slice] = fp.buf
-                elif self._is_dict:
-                    self._buffer[self._slice] = BufferDict(fp).buf
-                else:
-                    self._buffer[self._slice] = numpy.asarray(fp).flat[:]
-                return self._buffer * pdf
-            results = super(BayesIntegrator, self).__call__(
-                fstd, nopdf=True, **kargs
-                )
-            # reformat output
-            if adapt_to_pdf:
-                norm = results[0] # if adapt_to_pdf else -1]
-                buf = results[1:] / results[0]
-            else:
-                norm = results[-1]
-                buf = results[:-1] / results[-1]
-            if self._fp.shape is None:
-                return _RAvgDictWrapper(self._fp, results, norm, buf)
-            elif self._fp.shape != ():
-                return _RAvgArrayWrapper(self._fp.shape, results, norm,buf)
-            else:
-                return _RAvgWrapper(results, norm, buf)
-
-    class _RAvgWrapper(_gvar.GVar):
-        """ Wrapper for BayesIntegrator GVar result. """
-        def __init__(self, results, norm, buf):
-            self.results = results
-            self.norm = norm
-            super(_RAvgWrapper, self).__init__(*buf[0].internaldata)
-
-        def _dof(self):
-            return self.results.dof
-
-        dof = property(
-            _dof,
-            None,
-            None,
-            "Number of degrees of freedom in weighted average."
-            )
-
-        def _Q(self):
-            return self.results.Q
-
-        Q = property(
-            _Q,
-            None,
-            None,
-            "*Q* or *p-value* of weighted average's *chi**2*.",
-            )
-
-        def summary(self, extended=False, weighted=None):
-            return self.results.summary(extended=extended, weighted=weighted)
-
-    class _RAvgDictWrapper(_gvar.BufferDict):
-        """ Wrapper for BayesIntegrator dictionary result """
-        def __init__(self, fp, results, norm, buf):
-            super(_RAvgDictWrapper, self).__init__(fp)
-            self.results = results
-            self.buf = buf
-            self.norm = norm
-
-        def _dof(self):
-            return self.results.dof
-
-        dof = property(
-            _dof,
-            None,
-            None,
-            "Number of degrees of freedom in weighted average."
-            )
-
-        def _Q(self):
-            return self.results.Q
-
-        Q = property(
-            _Q,
-            None,
-            None,
-            "*Q* or *p-value* of weighted average's *chi**2*.",
-            )
-
-        def summary(self, extended=False, weighted=None):
-            return self.results.summary(extended=extended, weighted=weighted)
-
-    class _RAvgArrayWrapper(numpy.ndarray):
-        """ Wrapper for BayesIntegrator array result. """
-        def __new__(
-            subtype, shape, results, norm, buf,
-            dtype=object, buffer=None, offset=0, strides=None, order=None
-            ):
-            obj = numpy.ndarray.__new__(
-                subtype, shape=shape, dtype=object, buffer=buffer, offset=offset,
-                strides=strides, order=order
-                )
-            if buffer is None:
-                obj.flat = numpy.array(obj.size * [_gvar.gvar(0,0)])
-            obj.results = results
-            obj.norm = norm
-            obj.flat = buf
-            return obj
-
-        def __array_finalize__(self, obj):
-            if obj is None:
-                return
-            self.results = getattr(obj, 'results', None)
-            self.norm = getattr(obj, 'norm', None)
-
-        def _dof(self):
-            return self.results.dof
-
-        dof = property(
-            _dof,
-            None,
-            None,
-            "Number of degrees of freedom in weighted average."
-            )
-
-        def _Q(self):
-            return self.results.Q
-
-        Q = property(
-            _Q,
-            None,
-            None,
-            "*Q* or *p-value* of weighted average's *chi**2*.",
-            )
-
-        def summary(self, extended=False, weighted=None):
-            return self.results.summary(extended=extended, weighted=weighted)
-
-except ImportError:
-    pass
 
 # add extras and utilities to lsqfit
 from ._extras import empbayes_fit, wavg

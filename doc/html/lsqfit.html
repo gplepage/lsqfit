@@ -687,6 +687,136 @@ using the same layout as in the fit function.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="lsqfit.nonlinear_fit.logpdf">
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.logpdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Logarithm of the fit’s probability density function at <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+<p>The fit’s probability density function (PDF) is the product of the
+Gaussian PDF for the data times the Gaussian PDF for the prior.
+It is proportional to <code class="docutils literal notranslate"><span class="pre">exp(-fit.evalchi2(p))</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> – Array or dictionary containing values for fit parameters,
+using the same layout as in the fit function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">-chi**2(p)/2</span> <span class="pre">-</span> <span class="pre">log(norm)</span></code> for <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="lsqfit.nonlinear_fit.pdf">
+<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit’s probability density function at point <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
+<p>The fit’s probability density function (PDF) is the product of the
+Gaussian PDF for the data times the Gaussian PDF for the prior.
+It is proportional to <code class="docutils literal notranslate"><span class="pre">exp(-fit.evalchi2(p))</span></code>. The
+integral over all <code class="docutils literal notranslate"><span class="pre">p</span></code> of the fit’s PDF is the
+Bayes Factor (or Evidence), which is proportional to
+the probability that the data come from the underlying
+model.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fit.pdf(p)</span></code> is useful when checking a least squares fit
+against the corresponding Bayesian integrals. In the following
+example, <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module
+is used to evaluate Bayesian expectation values of <code class="docutils literal notranslate"><span class="pre">s*g</span></code>
+and its standard deviation where <code class="docutils literal notranslate"><span class="pre">s</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> are fit
+parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">vegas</span>
+
+<span class="c1"># least-squares fit</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;1.2(1.0)&#39;</span><span class="p">,</span> <span class="s1">&#39;2.4(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;2.0(1.2)&#39;</span><span class="p">,</span> <span class="s1">&#39;5.2(3.2)&#39;</span><span class="p">])</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;0(5)&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s1">&#39;0(2)&#39;</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="s1">&#39;2(2)&#39;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+
+<span class="c1"># create integrator and adapt it to PDF (warmup)</span>
+<span class="n">expval</span> <span class="o">=</span> <span class="n">vegas</span><span class="o">.</span><span class="n">PDFIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">pdf</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">20.</span><span class="p">)</span>
+<span class="n">warmup</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># calculate expectation value of g(p)</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">sg</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">sg</span><span class="o">=</span><span class="p">[</span><span class="n">sg</span><span class="p">,</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;results =&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">sg</span><span class="p">,</span> <span class="n">sg2</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;sg&#39;</span><span class="p">]</span>
+<span class="n">sg_sdev</span> <span class="o">=</span> <span class="p">(</span><span class="n">sg2</span> <span class="o">-</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s*g from Bayes integral:  mean =&#39;</span><span class="p">,</span> <span class="n">sg</span><span class="p">,</span> <span class="s1">&#39;  sdev =&#39;</span><span class="p">,</span> <span class="n">sg_sdev</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s*g from fit:&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">logBF =&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">pdfnorm</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Here the probability density function used for the expectation values
+is <code class="docutils literal notranslate"><span class="pre">fit.pdf(p)</span></code>, and the expectation values are returned
+in dictionary <code class="docutils literal notranslate"><span class="pre">results</span></code>. <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> uses adaptive Monte
+Carlo integration. The  <code class="docutils literal notranslate"><span class="pre">warmup</span></code> calls to the integrator are
+used to adapt it to the probability density function, and
+then the adapted integrator is  called again to evaluate the
+expectation value. Parameter <code class="docutils literal notranslate"><span class="pre">neval</span></code> is the (approximate)
+number of function calls per iteration of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> algorithm
+and <code class="docutils literal notranslate"><span class="pre">nitn</span></code> is the number of iterations. We use the integrator to
+calculated the expectation value of <code class="docutils literal notranslate"><span class="pre">s*g</span></code> and <code class="docutils literal notranslate"><span class="pre">(s*g)**2</span></code> so we can
+compute a mean and standard deviation.</p>
+<p>The output from this code shows that the Gaussian approximation
+for <code class="docutils literal notranslate"><span class="pre">s*g</span></code> (0.76(66)) is somewhat different from the result
+obtained from a Bayesian integral (0.49(54)):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
+<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.87</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.2027</span>
+
+<span class="n">Parameters</span><span class="p">:</span>
+            <span class="n">a</span>    <span class="mf">1.61</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">)</span> <span class="p">]</span>
+            <span class="n">s</span>    <span class="mf">0.62</span> <span class="p">(</span><span class="mi">81</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">]</span>
+            <span class="n">g</span>    <span class="mf">1.2</span> <span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">2.0</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">]</span>
+
+<span class="n">Settings</span><span class="p">:</span>
+<span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">18</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">itn</span>   <span class="n">integral</span>        <span class="n">average</span>         <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span>       <span class="n">Q</span>
+<span class="o">-------------------------------------------------------</span>
+  <span class="mi">1</span>   <span class="mf">0.0001048</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>   <span class="mf">0.0001048</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>       <span class="mf">0.00</span>     <span class="mf">1.00</span>
+  <span class="mi">2</span>   <span class="mf">0.0001013</span><span class="p">(</span><span class="mi">55</span><span class="p">)</span>   <span class="mf">0.0001030</span><span class="p">(</span><span class="mi">48</span><span class="p">)</span>       <span class="mf">0.66</span>     <span class="mf">0.58</span>
+  <span class="mi">3</span>   <span class="mf">0.0000997</span><span class="p">(</span><span class="mi">58</span><span class="p">)</span>   <span class="mf">0.0001019</span><span class="p">(</span><span class="mi">37</span><span class="p">)</span>       <span class="mf">0.39</span>     <span class="mf">0.88</span>
+  <span class="mi">4</span>   <span class="mf">0.0001062</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>   <span class="mf">0.0001030</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>       <span class="mf">0.40</span>     <span class="mf">0.94</span>
+  <span class="mi">5</span>   <span class="mf">0.0001052</span><span class="p">(</span><span class="mi">59</span><span class="p">)</span>   <span class="mf">0.0001034</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>       <span class="mf">0.58</span>     <span class="mf">0.86</span>
+  <span class="mi">6</span>   <span class="mf">0.0001036</span><span class="p">(</span><span class="mi">53</span><span class="p">)</span>   <span class="mf">0.0001035</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>       <span class="mf">0.51</span>     <span class="mf">0.94</span>
+  <span class="mi">7</span>   <span class="mf">0.0001067</span><span class="p">(</span><span class="mi">54</span><span class="p">)</span>   <span class="mf">0.0001039</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>       <span class="mf">0.48</span>     <span class="mf">0.97</span>
+  <span class="mi">8</span>   <span class="mf">0.0001007</span><span class="p">(</span><span class="mi">53</span><span class="p">)</span>   <span class="mf">0.0001035</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>       <span class="mf">0.46</span>     <span class="mf">0.98</span>
+  <span class="mi">9</span>   <span class="mf">0.0001000</span><span class="p">(</span><span class="mi">49</span><span class="p">)</span>   <span class="mf">0.0001031</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>       <span class="mf">0.60</span>     <span class="mf">0.94</span>
+ <span class="mi">10</span>   <span class="mf">0.0000983</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>   <span class="mf">0.0001027</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>       <span class="mf">0.60</span>     <span class="mf">0.95</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;sg&#39;</span><span class="p">:</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.4870</span><span class="p">(</span><span class="mi">92</span><span class="p">),</span> <span class="mf">0.536</span><span class="p">(</span><span class="mi">13</span><span class="p">)],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)}</span>
+
+<span class="n">s</span><span class="o">*</span><span class="n">g</span> <span class="kn">from</span> <span class="nn">Bayes</span> <span class="n">integral</span><span class="p">:</span>  <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.4870</span><span class="p">(</span><span class="mi">92</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.5466</span><span class="p">(</span><span class="mi">72</span><span class="p">)</span>
+<span class="n">s</span><span class="o">*</span><span class="n">g</span> <span class="kn">from</span> <span class="nn">fit</span><span class="p">:</span> <span class="mf">0.78</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span>
+
+<span class="n">logBF</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.184</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result <code class="docutils literal notranslate"><span class="pre">logBF</span></code> for the logarithm of the Bayes Factor from the
+integral agrees well with <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>, the Bayes Factor
+in the Gaussian approximation. This is evidence that the Gaussian
+approximation implicit in the least squares fit is reliable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> – Array or dictionary containing values for fit parameters,
+using the same layout as in the fit function.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">exp(-chi**2(p)/2)</span> <span class="pre">/</span> <span class="pre">norm</span></code> which is the product of the
+fit’s data PDF times its prior PDF.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="lsqfit.nonlinear_fit.simulated_fit_iter">
 <code class="sig-name descname">simulated_fit_iter</code><span class="sig-paren">(</span><em class="sig-param">n=None</em>, <em class="sig-param">pexact=None</em>, <em class="sig-param">add_priornoise=False</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulation copies of a fit.</p>
@@ -1148,239 +1278,6 @@ called the <em>p-value</em>.</p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">gammaQ(ndof/2.,</span> <span class="pre">chi2/2.)</span></code> is the probabilty that one could
 get a <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> larger than <code class="docutils literal notranslate"><span class="pre">chi2</span></code> with <code class="docutils literal notranslate"><span class="pre">ndof</span></code> degrees
 of freedom even if the model used to construct <code class="docutils literal notranslate"><span class="pre">chi2</span></code> is correct.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="classes-for-bayesian-integrals">
-<h2>Classes for Bayesian Integrals<a class="headerlink" href="#classes-for-bayesian-integrals" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> provides support for doing Bayesian integrals, using results
-from a least-squares fit to optimize the multi-dimensional integral. This
-is useful for severely non-Gaussian situations. Module <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> is
-used to do the integrals, using an adaptive Monte Carlo algorithm.</p>
-<p>The integrator class is:</p>
-<dl class="class">
-<dt id="lsqfit.BayesIntegrator">
-<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">BayesIntegrator</code><span class="sig-paren">(</span><em class="sig-param">fit</em>, <em class="sig-param">limit=1e15</em>, <em class="sig-param">scale=1</em>, <em class="sig-param">pdf=None</em>, <em class="sig-param">adapt_to_pdf=True</em>, <em class="sig-param">svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator for Bayesian fit integrals.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</p></li>
-<li><p><strong>limit</strong> (<em>positive float</em>) – Limits the integrations to a finite
-region of size <code class="docutils literal notranslate"><span class="pre">limit</span></code> times the standard deviation on
-either side of the mean. This can be useful if the
-functions being integrated misbehave for large parameter
-values (e.g., <code class="docutils literal notranslate"><span class="pre">numpy.exp</span></code> overflows for a large range of
-arguments). Default is <code class="docutils literal notranslate"><span class="pre">1e15</span></code>.</p></li>
-<li><p><strong>scale</strong> (<em>positive float</em>) – The integration variables are
-rescaled to emphasize parameter values of order
-<code class="docutils literal notranslate"><span class="pre">scale</span></code> times the corresponding standard deviations.
-The rescaling does not change the value of the integral but it
-can reduce uncertainties in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> estimates.
-Default is <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p></li>
-<li><p><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
-fit parameters to use in place of the normal PDF associated
-with the least-squares fit used to create the integrator.</p></li>
-<li><p><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
-<code class="docutils literal notranslate"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>
-times the PDF.</p></li>
-<li><p><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
-covariance matrix of <code class="docutils literal notranslate"><span class="pre">g</span></code> with a new matrix whose
-small eigenvalues are modified: eigenvalues smaller than
-<code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal notranslate"><span class="pre">eig_max</span></code> are
-replaced by <code class="docutils literal notranslate"><span class="pre">svdcut*eig_max</span></code>. This can ameliorate
-problems caused by roundoff errors when inverting the
-covariance matrix. It increases the uncertainty associated
-with the modified eigenvalues and so is conservative.
-Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<p><code class="docutils literal notranslate"><span class="pre">BayesIntegrator(fit)</span></code> is a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator that evaluates
-expectation values for the multi-dimensional Bayesian distribution
-associated with <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>: the probability
-density function is the exponential of the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function
-(times <code class="docutils literal notranslate"><span class="pre">-1/2</span></code>), for data and priors, used in the fit.
-For linear fits, it is equivalent to <code class="docutils literal notranslate"><span class="pre">vegas.PDFIntegrator(fit.p)</span></code>,
-since the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function is  quadratic in the fit parameters;
-but they can differ significantly for nonlinear fits.</p>
-<p><code class="docutils literal notranslate"><span class="pre">BayesIntegrator</span></code> integrates over the entire parameter space but
-first re-expresses the integrals in terms of variables that
-diagonalize the covariance matrix of the best-fit parameters
-<code class="docutils literal notranslate"><span class="pre">fit.p</span></code> from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> and are centered at the
-best-fit values. This greatly facilitates the integration using
-<code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>, making integrals over 10s or more of parameters feasible.
-(The <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module must be installed separately in order
-to use <code class="docutils literal notranslate"><span class="pre">BayesIntegrator</span></code>.)</p>
-<p>A simple illustration of <code class="docutils literal notranslate"><span class="pre">BayesIntegrator</span></code> is given by the following
-code, which we use to evaluate the mean and standard deviation for
-<code class="docutils literal notranslate"><span class="pre">s*g</span></code> where <code class="docutils literal notranslate"><span class="pre">s</span></code> and <code class="docutils literal notranslate"><span class="pre">g</span></code> are fit parameters:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="c1"># least-squares fit</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.9</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;1.2(1.0)&#39;</span><span class="p">,</span> <span class="s1">&#39;2.4(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;2.0(1.2)&#39;</span><span class="p">,</span> <span class="s1">&#39;5.2(3.2)&#39;</span><span class="p">])</span>
-<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="s1">&#39;0(5)&#39;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s1">&#39;0(2)&#39;</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="s1">&#39;2(2)&#39;</span><span class="p">))</span>
-<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
-<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-
-<span class="c1"># Bayesian integral to evaluate expectation value of s*g</span>
-<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="n">sg</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">sg</span><span class="p">,</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
-
-<span class="n">expval</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">BayesIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">20.</span><span class="p">)</span>
-<span class="n">warmup</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="mi">4000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;results =&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-<span class="n">sg</span><span class="p">,</span> <span class="n">sg2</span> <span class="o">=</span> <span class="n">results</span>
-<span class="n">sg_sdev</span> <span class="o">=</span> <span class="p">(</span><span class="n">sg2</span> <span class="o">-</span> <span class="n">sg</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s*g from Bayes integral:  mean =&#39;</span><span class="p">,</span> <span class="n">sg</span><span class="p">,</span> <span class="s1">&#39;  sdev =&#39;</span><span class="p">,</span> <span class="n">sg_sdev</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;s*g from fit:&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;g&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>where the <code class="docutils literal notranslate"><span class="pre">warmup</span></code> calls to the integrator are used to adapt it to
-probability density function from the fit, and then the integrator
-is used to evaluate the expectation value of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code>, which is
-returned in array <code class="docutils literal notranslate"><span class="pre">results</span></code>.  Here <code class="docutils literal notranslate"><span class="pre">neval</span></code> is the (approximate)
-number of function calls per iteration of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> algorithm
-and <code class="docutils literal notranslate"><span class="pre">nitn</span></code> is the number of iterations. We use the integrator to
-calculated the expectation value of <code class="docutils literal notranslate"><span class="pre">s*g</span></code> and <code class="docutils literal notranslate"><span class="pre">(s*g)**2</span></code> so we can
-compute a mean and standard deviation.</p>
-<p>The output from this code shows that the Gaussian approximation
-for <code class="docutils literal notranslate"><span class="pre">s*g</span></code> (0.76(66)) is somewhat different from the result
-obtained from a Bayesian integral (0.48(54)):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.32</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.87</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="o">-</span><span class="mf">9.2027</span>
-
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">1.61</span> <span class="p">(</span><span class="mi">90</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">)</span> <span class="p">]</span>
-              <span class="n">s</span>    <span class="mf">0.62</span> <span class="p">(</span><span class="mi">81</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">]</span>
-              <span class="n">g</span>    <span class="mf">1.2</span> <span class="p">(</span><span class="mf">1.1</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">2.0</span> <span class="p">(</span><span class="mf">2.0</span><span class="p">)</span> <span class="p">]</span>
-
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">reltol</span><span class="o">/</span><span class="n">abstol</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="o">/</span><span class="mi">0</span><span class="o">*</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
-
-<span class="n">itn</span>   <span class="n">integral</span>        <span class="n">average</span>         <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span>        <span class="n">Q</span>
-<span class="o">-------------------------------------------------------</span>
-  <span class="mi">1</span>   <span class="mf">1.034</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>       <span class="mf">1.034</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>           <span class="mf">0.00</span>     <span class="mf">1.00</span>
-  <span class="mi">2</span>   <span class="mf">1.034</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>       <span class="mf">1.034</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>           <span class="mf">0.56</span>     <span class="mf">0.64</span>
-  <span class="mi">3</span>   <span class="mf">1.024</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>       <span class="mf">1.030</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>           <span class="mf">0.37</span>     <span class="mf">0.90</span>
-  <span class="mi">4</span>   <span class="mf">1.010</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>       <span class="mf">1.0254</span><span class="p">(</span><span class="mi">98</span><span class="p">)</span>          <span class="mf">0.47</span>     <span class="mf">0.89</span>
-  <span class="mi">5</span>   <span class="mf">1.005</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>       <span class="mf">1.0213</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span>          <span class="mf">0.55</span>     <span class="mf">0.88</span>
-  <span class="mi">6</span>   <span class="mf">1.013</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>       <span class="mf">1.0199</span><span class="p">(</span><span class="mi">78</span><span class="p">)</span>          <span class="mf">0.69</span>     <span class="mf">0.80</span>
-  <span class="mi">7</span>   <span class="mf">0.987</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>       <span class="mf">1.0152</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>          <span class="mf">0.78</span>     <span class="mf">0.72</span>
-  <span class="mi">8</span>   <span class="mf">1.002</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>       <span class="mf">1.0135</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span>          <span class="mf">0.90</span>     <span class="mf">0.59</span>
-  <span class="mi">9</span>   <span class="mf">1.036</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>       <span class="mf">1.0160</span><span class="p">(</span><span class="mi">62</span><span class="p">)</span>          <span class="mf">0.86</span>     <span class="mf">0.66</span>
- <span class="mi">10</span>   <span class="mf">1.060</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>       <span class="mf">1.0204</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>          <span class="mf">0.94</span>     <span class="mf">0.55</span>
-
-<span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4837</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="mf">0.5259</span><span class="p">(</span><span class="mi">47</span><span class="p">)]</span>
-
-<span class="n">s</span><span class="o">*</span><span class="n">g</span> <span class="kn">from</span> <span class="nn">Bayes</span> <span class="n">integral</span><span class="p">:</span>  <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.4837</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.5403</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
-<span class="n">s</span><span class="o">*</span><span class="n">g</span> <span class="kn">from</span> <span class="nn">fit</span><span class="p">:</span> <span class="mf">0.78</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The table shows estimates of the probability density function’s
-normalization from each of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> iterations used
-by the integrator to estimate the final results.</p>
-<p>In general functions being integrated can return a number, or an array
-of numbers, or a dictionary whose values are numbers or arrays of
-numbers. This allows multiple expectation values to be evaluated
-simultaneously.</p>
-<p>See the documentation with the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module for more details on
-its use, and on the attributes and methods associated with
-integrators. The example above sets <code class="docutils literal notranslate"><span class="pre">adapt=False</span></code> when  computing
-final results. This gives more reliable error estimates  when
-<code class="docutils literal notranslate"><span class="pre">neval</span></code> is small. Note that <code class="docutils literal notranslate"><span class="pre">neval</span></code> may need to be much larger
-(tens or hundreds of thousands) for more difficult high-dimension
-integrals.</p>
-<dl class="method">
-<dt id="lsqfit.BayesIntegrator.__call__">
-<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">f=None</em>, <em class="sig-param">pdf=None</em>, <em class="sig-param">adapt_to_pdf=None</em>, <em class="sig-param">**kargs</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesIntegrator.__call__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Estimate expectation value of function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>.</p>
-<p>Uses multi-dimensional integration modules <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>  to
-estimate the expectation value of <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> with  respect to
-the probability density function  associated with
-<a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<em>callable</em>) – Function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code> to integrate. Integral is
-the expectation value of the function with respect
-to the distribution. The function can return a number,
-an array of numbers, or a dictionary whose values are
-numbers or arrays of numbers. Its argument <code class="docutils literal notranslate"><span class="pre">p</span></code>
-has the same format as <code class="docutils literal notranslate"><span class="pre">self.fit.pmean</span></code> (that is,
-either a number, an array, or a dictionary).
-Omitting <code class="docutils literal notranslate"><span class="pre">f</span></code> (or setting it to <code class="docutils literal notranslate"><span class="pre">None</span></code>) implies that
-only the PDF is integrated.</p></li>
-<li><p><strong>pdf</strong> (<em>callable</em>) – Probability density function <code class="docutils literal notranslate"><span class="pre">pdf(p)</span></code> of the
-fit parameters to use in place of the normal PDF associated
-with the least-squares fit used to create the integrator.
-The PDF need not be normalized; vegas will normalize it.
-Ignored if <code class="docutils literal notranslate"><span class="pre">pdf=None</span></code> (the default).</p></li>
-<li><p><strong>adapt_to_pdf</strong> (<em>bool</em>) – <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> adapts to the PDF if
-<code class="docutils literal notranslate"><span class="pre">True</span></code> (default); otherwise it adapts to <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>
-times the PDF.</p></li>
-</ul>
-</dd>
-</dl>
-<p>All other keyword arguments are passed on to a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>
-integrator; see the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> documentation for further
-information.</p>
-<p>The results returned are similar to what <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> returns
-but with an extra attribute: <code class="docutils literal notranslate"><span class="pre">results.norm</span></code>, which contains
-the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> estimate for the norm of the PDF. This should
-equal 1 within errors if the PDF is normalized (and so can serve
-as a check on the integration in those cases).</p>
-</dd></dl>
-
-</dd></dl>
-
-<p>A class that describes the Bayesian probability distribution associated
-with a fit is:</p>
-<dl class="class">
-<dt id="lsqfit.BayesPDF">
-<em class="property">class </em><code class="sig-prename descclassname">lsqfit.</code><code class="sig-name descname">BayesPDF</code><span class="sig-paren">(</span><em class="sig-param">fit</em>, <em class="sig-param">svdcut=1e-15</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bayesian probability density function corresponding to <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a> <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
-<p>The probability density function is the exponential of
-<code class="docutils literal notranslate"><span class="pre">-1/2</span></code> times the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function (data and priors) used
-in <code class="docutils literal notranslate"><span class="pre">fit</span></code> divided by <code class="docutils literal notranslate"><span class="pre">norm</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fit</strong> – Fit from <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a>.</p></li>
-<li><p><strong>svdcut</strong> (<em>non-negative float</em><em> or </em><em>None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, replace
-covariance matrix of <code class="docutils literal notranslate"><span class="pre">g</span></code> with a new matrix whose
-small eigenvalues are modified: eigenvalues smaller than
-<code class="docutils literal notranslate"><span class="pre">svdcut</span></code> times the maximum eigenvalue <code class="docutils literal notranslate"><span class="pre">eig_max</span></code> are
-replaced by <code class="docutils literal notranslate"><span class="pre">svdcut*eig_max</span></code>. This can ameliorate
-problems caused by roundoff errors when inverting the
-covariance matrix. It increases the uncertainty associated
-with the modified eigenvalues and so is conservative.
-Setting <code class="docutils literal notranslate"><span class="pre">svdcut=None</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut=0</span></code> leaves the
-covariance matrix unchanged. Default is <code class="docutils literal notranslate"><span class="pre">1e-12</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="lsqfit.BayesPDF.__call__">
-<code class="sig-name descname">__call__</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.__call__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Probability density function evaluated at <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="lsqfit.BayesPDF.logpdf">
-<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.BayesPDF.logpdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>Logarithm of the probability density function evaluated at <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -2112,7 +2009,6 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
 <li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#classes-for-bayesian-integrals">Classes for Bayesian Integrals</a></li>
 <li><a class="reference internal" href="#lsqfit-multifitter-classes"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
 <li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
