@@ -1822,6 +1822,11 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         for a, x, gax, gxa in cases:
             np.testing.assert_allclose(gax, gammaQ(a, x), rtol=0.01)
             np.testing.assert_allclose(gxa, gammaQ(x, a), rtol=0.01)
+        from lsqfit._scipy import gammaQ as scipy_gammaQ
+        for a, x, gax, gxa in cases:
+            np.testing.assert_allclose(gax, scipy_gammaQ(a, x), rtol=0.01)
+            np.testing.assert_allclose(gxa, scipy_gammaQ(x, a), rtol=0.01)
+
 
 def partialerrors(outputs,inputs):
     err = {}

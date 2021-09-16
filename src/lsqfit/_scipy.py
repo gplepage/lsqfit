@@ -13,9 +13,9 @@
 import numpy
 import gvar as _gvar
 
-def gammaQ(x):
+def gammaQ(a, x):
     from scipy.special import gammaincc
-    return gammaincc(x)
+    return gammaincc(a, x)
 
 class scipy_least_squares(object):
     """ :mod:`scipy` fitter for nonlinear least-squares multidimensional fits.
