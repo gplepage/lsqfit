@@ -629,7 +629,7 @@ If saving is unnecessary, :class:`gvar.BufferDict` can be replaced by
 With fit data, a fit function, and a prior for the fit parameters, we are
 finally ready to do the fit, which is now easy::
 
-  fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior)
+  fit = lsqfit.nonlinear_fit(data=(x, y), fcn=fcn, prior=prior)
 
 Our complete Python program is, therefore::
 
@@ -661,8 +661,8 @@ Our complete Python program is, therefore::
             }
         inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
         print('================= Error Budget Analysis')
-        print(fit.fmt_values(outputs))
-        print(fit.fmt_errorbudget(outputs,inputs))
+        print(gv.fmt_values(outputs))
+        print(gv.fmt_errorbudget(outputs,inputs))
 
     def fcn(x, p):                      # function used to fit x, y data
         a = p['a']                      # array of a[i]s
