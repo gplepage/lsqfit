@@ -661,8 +661,8 @@ Our complete Python program is, therefore::
             }
         inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
         print('================= Error Budget Analysis')
-        print(fit.fmt_values(outputs))
-        print(fit.fmt_errorbudget(outputs,inputs))
+        print(gv.fmt_values(outputs))
+        print(gv.fmt_errorbudget(outputs,inputs))
 
     def fcn(x, p):                      # function used to fit x, y data
         a = p['a']                      # array of a[i]s
@@ -1403,8 +1403,8 @@ Our complete code, therefore, is::
             'E prior':prior['E'], 'a prior':prior['a'],
             'svd cut':fit.correction,
             }
-        print(fit.fmt_values(outputs))
-        print(fit.fmt_errorbudget(outputs, inputs))
+        print(gv.fmt_values(outputs))
+        print(gv.fmt_errorbudget(outputs, inputs))
 
     def fcn(x,p):
         a = p['a']       # array of a[i]s
