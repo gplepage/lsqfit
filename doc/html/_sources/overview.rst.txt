@@ -482,7 +482,7 @@ A fit analysis typically requires three types of input:
 #.  fit data ``x,y`` (or possibly just ``y``);
 
 #.  a function ``y = f(x,p)`` relating
-    values of ``y`` to to values of ``x`` and a set of fit parameters ``p``;
+    values of ``y`` to values of ``x`` and a set of fit parameters ``p``;
     if there is no ``x``, then ``y = f(p)``;
 
 #.  some *a priori* idea about the fit parameters' values (possibly
@@ -573,15 +573,15 @@ Python function::
 
    import numpy as np
 
-   def fcn(x, p):       # function used to fit x, y data
+   def f(x, p):         # function used to fit x, y data
        a = p['a']       # array of a[i]s
        E = p['E']       # array of E[i]s
        return sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E))
 
 The fit parameters, ``a[i]`` and ``E[i]``, are stored as arrays in a
 dictionary, using labels ``a`` and ``E`` to access them. These parameters
-are varied in the fit to find the best-fit values ``p=fitp`` for which
-``fcn(x,fitp)`` most closely approximates the ``y``\s in our fit data. The
+are varied in the fit to find the best-fit values ``p=fit.p`` for which
+``f(x,fit.p)`` most closely approximates the ``y``\s in our fit data. The
 number of exponentials included in the sum is specified implicitly in this
 function, by the lengths of the ``p['a']`` and ``p['E']`` arrays. In
 principle there are infinitely many exponentials; in practice, given the
@@ -621,10 +621,9 @@ for example, we have::
 
 We habitually
 use dictionary-like class :class:`gvar.BufferDict` for the prior because it
-allows us to save the prior in a file if we wish (using Python's :mod:`pickle`
-module).
-If saving is unnecessary, :class:`gvar.BufferDict` can be replaced by
-``dict()`` or most any other Python dictionary class.
+allows for a variety of non-Gaussian priors (see :ref:`positive-parameters`).
+If non-Gaussian priors are unnecessary, :class:`gvar.BufferDict` can be replaced by
+``dict()`` or most any other Python dictionary class. 
 
 With fit data, a fit function, and a prior for the fit parameters, we are
 finally ready to do the fit, which is now easy::
@@ -643,7 +642,7 @@ Our complete Python program is, therefore::
         for nexp in range(1, 7):
             print('************************************* nexp =', nexp)
             prior = make_prior(nexp)
-            fit = lsqfit.nonlinear_fit(data=(x, y), fcn=fcn, prior=prior, p0=p0)
+            fit = lsqfit.nonlinear_fit(data=(x, y), fcn=f, prior=prior, p0=p0)
             print(fit)                  # print the fit results
             if nexp > 2:
                 E = fit.p['E']          # best-fit parameters
@@ -661,10 +660,10 @@ Our complete Python program is, therefore::
             }
         inputs = {'E':fit.prior['E'], 'a':fit.prior['a'], 'y':y}
         print('================= Error Budget Analysis')
-        print(fit.fmt_values(outputs))
-        print(fit.fmt_errorbudget(outputs,inputs))
+        print(gv.fmt_values(outputs))
+        print(gv.fmt_errorbudget(outputs,inputs))
 
-    def fcn(x, p):                      # function used to fit x, y data
+    def f(x, p):                        # function used to fit x, y data
         a = p['a']                      # array of a[i]s
         E = p['E']                      # array of E[i]s
         return sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E))
@@ -787,28 +786,30 @@ There are several things to notice here:
      for example, we actually have 20 pieces of data to fit: the 8 |~| ``y``\s
      plus the 12 |~| prior values for the 12 |~| parameters.
 
-     The function of priors as fit data becomes obvious if we rewrite
+     That priors are additional fit data becomes obvious if we rewrite
      our fit function as ::
 
-           import numpy as np
-
-           def fcn(x, p):       # function used to fit x, y data
+           def g(x, p):         # function used to fit x, y data
                a = p['a']       # array of a[i]s
                E = p['E']       # array of E[i]s
                return dict(
                   y=sum(ai * np.exp(-Ei * x) for ai, Ei in zip(a, E)),
-                  a=p['a'],
-                  b=p['b'],
+                  a=a,
+                  E=E,
                   )
 
-     and make the following change to the ``main()`` function::
+     and add the following right after the loop in the ``main()`` function::
 
-            prior = make_prior(nexp)
-            data = (x, dict(y=y, a=prior['a'], b=prior['b']))
-            fit = lsqfit.nonlinear_fit(data=data, fcn=fcn, prior=None, p0=p0)
+        print('************************************* nexp =', nexp, '(fit g(x,p))')
+        data = (x, dict(y=y, a=prior['a'], E=prior['E']))
+        gfit = lsqfit.nonlinear_fit(data=data, fcn=g, prior=None, p0=p0)
+        print(gfit)
+        print()
 
-     This gives exactly the same results, but now with the prior
-     explicitly built into the fit function and data.
+     This gives exactly the same results as the last fit from the loop, 
+     but now with the prior explicitly built into the fit function and data.
+     This way of implementing priors, although equivalent, is generally less 
+     convenient.
 
      The effective number of degrees of freedom (``dof`` in the output
      above) is the number of pieces of data minus the number of fit
@@ -820,11 +821,11 @@ There are several things to notice here:
      ``logGBF`` in the output) is a measure of the likelihood that the actual
      data being fit could have come from a theory with the prior and
      fit function used in the
-     fit. The larger this number, the more likely it is that prior/fit-function
+     fit. The larger this number, the more likely it is that the prior/fit-function
      and data
      could be related. Here it grows dramatically from the first fit
      (``nexp=1``) but then stops changing after ``nexp=3``. The
-     implication is that this data is much more likely to have come from a
+     implication is that these data are much more likely to have come from a
      theory with ``nexp>=3`` than one with ``nexp=1``.
 
    * In the code, results for each fit are captured in a Python object
@@ -1403,8 +1404,8 @@ Our complete code, therefore, is::
             'E prior':prior['E'], 'a prior':prior['a'],
             'svd cut':fit.correction,
             }
-        print(fit.fmt_values(outputs))
-        print(fit.fmt_errorbudget(outputs, inputs))
+        print(gv.fmt_values(outputs))
+        print(gv.fmt_errorbudget(outputs, inputs))
 
     def fcn(x,p):
         a = p['a']       # array of a[i]s
@@ -1480,8 +1481,8 @@ to notice:
     can greatly reduce the number of parameters varied by the fit,
     thereby speeding up the fit. Here we are in effect doing a
     100-exponential fit to our data, but actually fitting with only
-    a handful of parameters (only |~| 2 for ``nexp=1``). Removing
-    parameters in this way is called *marginalization*.
+    a handful of parameters (only |~| 2 for ``nexp=1``). The parameters 
+    removed in this way are said to be *marginalized*.
 
 SVD Cuts and Roundoff Error
 -----------------------------

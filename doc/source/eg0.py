@@ -53,8 +53,8 @@ p = fit.p                  # best-fit values for parameters
 outputs = dict(a=p['a'],b=p['b'])
 outputs['b/a'] = p['b']/p['a']
 inputs = dict(y=y,prior=prior)
-print(fit.fmt_values(outputs))             # tabulate outputs
-print(fit.fmt_errorbudget(outputs,inputs)) # print error budget for outputs
+print(gv.fmt_values(outputs))             # tabulate outputs
+print(gv.fmt_errorbudget(outputs,inputs)) # print error budget for outputs
 
 # save best-fit values in file "outputfile.p" for later use
 import pickle

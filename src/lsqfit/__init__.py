@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2020 G. Peter Lepage.
+# Copyright (c) 2008-2021 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1238,7 +1238,10 @@ class nonlinear_fit(object):
                 if sdev == 0:
                     nstar = 5
                 else:
-                    nstar = int(abs(v1.mean - v2.mean) / sdev)
+                    try:
+                        nstar = int(abs(v1.mean - v2.mean) / sdev)
+                    except:
+                        nstar = 5
                 if nstar > 5:
                     nstar = 5
                 elif nstar < 1:
@@ -2120,6 +2123,7 @@ def _y_fcn_match(y, f):
 from ._extras import empbayes_fit, wavg
 from ._extras import MultiFitterModel, MultiFitter
 from ._utilities import _build_chiv_chivw
+from ._version import __version__
 
 # legacy definitions (obsolete)
 class _legacy_constructor:

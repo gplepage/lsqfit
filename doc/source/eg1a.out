@@ -13,11 +13,10 @@ Parameters:
               3      4.00 (40)      [  4.00 (40) ]  
 
 Settings:
-  svdcut/n = 1e-12/1    tol = (1e-08*,1e-10,1e-10)    (itns/time = 3/0.0)
+  svdcut/n = 1e-12/1    tol = (1e-08*,1e-10,1e-10)    (itns/time = 4/0.0)
 
 E1/E0 = 2.0020(86)   E2/E0 = 3.14(21)
 a1/a0 = 1.011(32)   a2/a0 = 1.52(89)
-
 
 --------------------- new fit to extra information
 Least Square Fit:

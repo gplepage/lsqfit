@@ -4,7 +4,7 @@
 eg1.py - Code for "Basic Fits"
 
 Created by Peter Lepage on 2016-12.
-Copyright (c) 2016 Cornell University. All rights reserved.
+Copyright (c) 2016-2021 Cornell University. All rights reserved.
 """
 DO_PLOT = True
 DO_BAYES = False        # should be False
@@ -79,13 +79,13 @@ def main():
         fit = lsqfit.nonlinear_fit(data=(x,y), fcn=fcn, prior=prior, p0=p0)
         if fit.chi2/fit.dof<1.:
             p0 = fit.pmean          # starting point for next fit (opt.)
-        print '************************************* nexp =',nexp
-        print fit.format()                   # print the fit results
+        print('************************************* nexp =',nexp)
+        print(fit.format())                   # print the fit results)
         E = fit.p['E']              # best-fit parameters
         a = fit.p['a']
         if nexp > 2:
-            print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
-            print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+            print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
+            print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
             print
 
     # error budget
@@ -98,9 +98,9 @@ def main():
     inputs['a'] = fit.prior['a']
     inputs['E'] = fit.prior['E']
     inputs['y'] = fit.data[1]
-    print '================= Error Budget Analysis'
-    print fit.fmt_values(outputs)
-    print fit.fmt_errorbudget(outputs,inputs)
+    print('================= Error Budget Analysis')
+    print(gv.fmt_values(outputs))
+    print(gv.fmt_errorbudget(outputs,inputs))
 
 
     sys.stdout = sys_stdout
@@ -112,23 +112,23 @@ def main():
     prior = make_prior(4)
     fit = lsqfit.nonlinear_fit(data=(x,y), fcn=fcn, prior=prior, p0=fit.pmean)
     sys.stdout = tee.tee(sys_stdout, open("eg1a.out", "w"))
-    print '--------------------- original fit'
-    print fit.format()
+    print('--------------------- original fit')
+    print(fit.format())
     E = fit.p['E']              # best-fit parameters
     a = fit.p['a']
-    print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
-    print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+    print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
+    print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
     print
     # extra data 1
-    print '\n--------------------- new fit to extra information'
+    print('\n--------------------- new fit to extra information')
     def ratio(p):
         return p['a'][1] / p['a'][0]
     newfit = lsqfit.nonlinear_fit(data=gv.gvar(1,1e-5), fcn=ratio, prior=fit.p)
-    print (newfit.format())
+    print((newfit.format()))
     E = newfit.p['E']
     a = newfit.p['a']
-    print 'E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0]
-    print 'a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0]
+    print('E1/E0 =',E[1]/E[0],'  E2/E0 =',E[2]/E[0])
+    print('a1/a0 =',a[1]/a[0],'  a2/a0 =',a[2]/a[0])
 
     if DO_PLOT:
         import matplotlib.pyplot as plt
@@ -149,10 +149,10 @@ def main():
     fit.p['a1/a0'] = fit.p['a'][1] / fit.p['a'][0]
     new_data = {'a1/a0' : gv.gvar(1,1e-5)}
     new_p = lsqfit.wavg([fit.p, new_data])
-    print 'chi2/dof = %.2f\n' % (new_p.chi2 / new_p.dof)
-    print 'E:', new_p['E'][:4]
-    print 'a:', new_p['a'][:4]
-    print 'a1/a0:', new_p['a1/a0']
+    print('chi2/dof = %.2f\n' % (new_p.chi2 / new_p.dof))
+    print('E:', new_p['E'][:4])
+    print('a:', new_p['a'][:4])
+    print('a1/a0:', new_p['a1/a0'])
 
     if DO_BAYES:
         # Bayesian Fit
@@ -160,7 +160,7 @@ def main():
         prior = make_prior(4)
         fit = lsqfit.nonlinear_fit(data=(x,y), fcn=f, prior=prior, p0=fit.pmean)
         sys.stdout = tee.tee(sys_stdout, open("eg1c.out", "w"))
-        # print fit
+        # print(fit)
 
         expval = lsqfit.BayesIntegrator(fit, limit=10.)
         # adapt integrator to PDF
@@ -177,20 +177,20 @@ def main():
                 )
         r = expval(g, neval=40000, nitn=10, adapt=False)
 
-        # print results
-        print r.summary()
+        # print(results)
+        print(r.summary())
         means = r['mean']
         cov = r['outer'] - np.outer(r['mean'], r['mean'])
-        print 'Results from Bayesian Integration:'
-        print 'a0: mean =', means[0], '  sdev =', cov[0,0]**0.5
-        print 'E0: mean =', means[1], '  sdev =', cov[1,1]**0.5
-        print 'covariance from Bayesian integral =', np.array2string(cov, prefix=36 * ' ')
+        print('Results from Bayesian Integration:')
+        print('a0: mean =', means[0], '  sdev =', cov[0,0]**0.5)
+        print('E0: mean =', means[1], '  sdev =', cov[1,1]**0.5)
+        print('covariance from Bayesian integral =', np.array2string(cov, prefix=36 * ' '))
         print
 
-        print 'Results from Least-Squares Fit:'
-        print 'a0: mean =', fit.p['a'][0].mean, '  sdev =', fit.p['a'][0].sdev
-        print 'E0: mean =', fit.p['E'][0].mean, '  sdev =', fit.p['E'][0].sdev
-        print 'covariance from least-squares fit =', np.array2string(gv.evalcov([fit.p['a'][0], fit.p['E'][0]]), prefix=36*' ',precision=3)
+        print('Results from Least-Squares Fit:')
+        print('a0: mean =', fit.p['a'][0].mean, '  sdev =', fit.p['a'][0].sdev)
+        print('E0: mean =', fit.p['E'][0].mean, '  sdev =', fit.p['E'][0].sdev)
+        print('covariance from least-squares fit =', np.array2string(gv.evalcov([fit.p['a'][0], fit.p['E'][0]]), prefix=36*' ',precision=3))
         sys.stdout = sys_stdout
 
         # make histogram of E[0] probabilty
@@ -214,17 +214,17 @@ def main():
             outputs['a2/a0'].append(a[2]/a[0])
             outputs['E1'].append(E[1])
             outputs['a1'].append(a[1])
-            # print E[:2]
-            # print a[:2]
-            # print bsfit.chi2/bsfit.dof
+            # print(E[:2])
+            # print(a[:2])
+            # print(bsfit.chi2/bsfit.dof)
 
         # extract means and standard deviations from the bootstrap output
         for k in outputs:
             outputs[k] = gv.gvar(np.mean(outputs[k]),np.std(outputs[k]))
-        print 'Bootstrap results:'
-        print 'E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0']
-        print 'a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0']
-        print 'E1 =',outputs['E1'],'  a1 =',outputs['a1']
+        print('Bootstrap results:')
+        print('E1/E0 =',outputs['E1/E0'],'  E2/E1 =',outputs['E2/E0'])
+        print('a1/a0 =',outputs['a1/a0'],'  a2/a0 =',outputs['a2/a0'])
+        print('E1 =',outputs['E1'],'  a1 =',outputs['a1'])
 
 if __name__ == '__main__':
     main()

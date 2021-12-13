@@ -81,8 +81,8 @@ def do_fit(svdcut=None, do_plot=False):
         'E prior':prior['E'], 'a prior':prior['a'],
         'svd cut':fit.svdcorrection,
         }
-    print(fit.fmt_values(outputs))
-    print(fit.fmt_errorbudget(outputs, inputs))
+    print(gv.fmt_values(outputs))
+    print(gv.fmt_errorbudget(outputs, inputs))
     sys.stdout = sys_stdout
 
 def fcn(x,p):
