@@ -173,7 +173,7 @@ nonlinear_fit Objects
       used in the fit (i.e., the fit function and prior). The product of PDFs
       is ``P(data,p|M)`` by Bayes' Theorem; integrating over fit parameters
       p gives the Bayes Factor or Evidence ``P(data|M)``, which is proportional
-      to the probability that the data come from fit model ``M``. The logarithm 
+      to the probability that the fit data come from fit model ``M``. The logarithm 
       of the Bayes Factor should agree with ``fit.logGBF`` when the Gaussian 
       approximation assumed in the fit is accurate.
 
@@ -239,8 +239,8 @@ nonlinear_fit Objects
       compute a mean and standard deviation.
 
       The output from this code shows that the Gaussian approximation
-      for ``s*g`` (0.76(66)) is somewhat different from the result
-      obtained from a Bayesian integral (0.49(54))::
+      for ``s*g`` (0.78(66)) is somewhat different from the result
+      obtained from a Bayesian integral (0.49(53))::
 
           Least Square Fit:
           chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
@@ -269,7 +269,7 @@ nonlinear_fit Objects
                       key/index          value
           ------------------------------------
                           pdf    0.9584 (37)
-          ('f(p)*pdf', 'sg')    0.4652 (23)
+           ('f(p)*pdf', 'sg')    0.4652 (23)
           ('f(p)*pdf', 'sg2')    0.5073 (33)
 
           results = {'sg': 0.4854(20), 'sg2': 0.5293(33)} 
@@ -280,7 +280,7 @@ nonlinear_fit Objects
           logBF = -9.1505(39)
 
       The result ``logBF`` for the logarithm of the Bayes Factor from the 
-      integral agrees well with ``fit.logGBF``, the Bayes Factor
+      integral agrees well with ``fit.logGBF``, the log Bayes Factor
       in the Gaussian approximation. This is evidence that the Gaussian
       approximation implicit in the least squares fit is reliable; the product
       of ``s*g``, however, is not so Gaussian because of the large uncertainties

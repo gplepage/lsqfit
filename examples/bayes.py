@@ -53,7 +53,7 @@ def main():
     # adapt integrator expval to PDF from fit
     neval = 1000
     nitn = 10
-    expval(g, pdfkey='pdf', neval=neval, nitn=nitn)
+    expval(pdfkey='pdf', neval=neval, nitn=nitn)
 
     # evaluate expectation value of g(p)
     results = expval(g, pdfkey='pdf', neval=neval, nitn=nitn, adapt=False)

@@ -142,11 +142,8 @@ as follows::
         cov = results['outer'] - np.outer(mean, mean)
         c = mean + gv.gvar(np.zeros(mean.shape), gv.mean(cov))
         print('c =', c)
-        print(
-            'corr(c) =',
-            np.array2string(gv.evalcorr(c), prefix=10 * ' '),
-            '\n',
-            )
+        print('corr(c) =', str(gv.evalcorr(c)).replace('\n', '\n' + 10*' '))
+        print()
 
         # parameter w
         wmean, w2mean = results['w']
