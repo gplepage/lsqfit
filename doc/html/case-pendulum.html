@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Case Study: Numerical Analysis inside a Fit &#8212; lsqfit 12.0.3 documentation</title>
-    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Case Study: Fitting a Spline" href="case-spline.html" />
@@ -39,7 +40,8 @@
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Numerical Analysis inside a Fit</a></li> 
       </ul>
     </div>  
 
@@ -48,13 +50,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="case-study-numerical-analysis-inside-a-fit">
+  <section id="case-study-numerical-analysis-inside-a-fit">
 <h1>Case Study: Numerical Analysis inside a Fit<a class="headerlink" href="#case-study-numerical-analysis-inside-a-fit" title="Permalink to this headline">¶</a></h1>
 <p>This case study shows how to fit a differential equation,
 using <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar.ode</span></code>, and how to deal with uncertainty in
 the independent variable of a fit (that is, the <code class="docutils literal notranslate"><span class="pre">x</span></code> in
 a <code class="docutils literal notranslate"><span class="pre">y</span></code> versus <code class="docutils literal notranslate"><span class="pre">x</span></code> fit).</p>
-<div class="section" id="the-problem">
+<section id="the-problem">
 <h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
 <p>A pendulum is released at time 0 from angle 1.571(50) (radians). It’s
 angular position is measured at intervals of approximately a tenth of
@@ -81,8 +83,8 @@ second:</p>
 <p>where <code class="docutils literal notranslate"><span class="pre">g</span></code> is the acceleration due to gravity and <code class="docutils literal notranslate"><span class="pre">l</span></code> is
 the pendulum’s length. The challenge is to use the data to improve
 our very approximate <em>a priori</em> estimate 40±20 for <code class="docutils literal notranslate"><span class="pre">g/l</span></code>.</p>
-</div>
-<div class="section" id="pendulum-dynamics">
+</section>
+<section id="pendulum-dynamics">
 <h2>Pendulum Dynamics<a class="headerlink" href="#pendulum-dynamics" title="Permalink to this headline">¶</a></h2>
 <p>We start by designing a data type that solves the differential
 equation for <code class="docutils literal notranslate"><span class="pre">theta(t)</span></code>:</p>
@@ -96,11 +98,11 @@ equation for <code class="docutils literal notranslate"><span class="pre">theta(
 <span class="sd">        g/l .... where g is acceleration due to gravity and l the length</span>
 <span class="sd">        tol .... precision of numerical integration of ODE</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_l</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">g_l</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">g_l</span> <span class="o">=</span> <span class="n">g_l</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">odeint</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">ode</span><span class="o">.</span><span class="n">Integrator</span><span class="p">(</span><span class="n">deriv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta0</span><span class="p">,</span> <span class="n">t_array</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta0</span><span class="p">,</span> <span class="n">t_array</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Calculate pendulum angle theta for every t in t_array.</span>
 
 <span class="sd">        Assumes that the pendulum is released at time t=0</span>
@@ -127,8 +129,8 @@ Evaluating the object for a given value of <code class="docutils literal notrans
 calculates <code class="docutils literal notranslate"><span class="pre">theta(t)</span></code>; <code class="docutils literal notranslate"><span class="pre">t</span></code> is an array. We use <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar.ode</span></code> here,
 rather than some other integrator, because it works with <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s,
 allowing errors to propagate through the integration.</p>
-</div>
-<div class="section" id="two-types-of-input-data">
+</section>
+<section id="two-types-of-input-data">
 <h2>Two Types of Input Data<a class="headerlink" href="#two-types-of-input-data" title="Permalink to this headline">¶</a></h2>
 <p>There are two ways to include data in a fit: either as
 regular data, or as fit parameters with priors. In general dependent
@@ -140,7 +142,7 @@ values as fit parameters whose priors equal the initial values <code class="docu
 The value of <code class="docutils literal notranslate"><span class="pre">theta(t=0)</span></code> is also independent data, and so becomes
 a fit parameter since it is uncertain. Our fit code therefore
 is:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>   <span class="c1"># makes this work for python2 and 3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>   <span class="c1"># makes this work for python2 and 3</span>
 
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -226,10 +228,11 @@ error bars on the fit. The output from this fit is:</p>
 <p>The final result for <code class="docutils literal notranslate"><span class="pre">g/l</span></code> is 39.8(9), which is accurate to about 2%.
 Note that the fit generates (slightly) improved estimates for several of
 the <code class="docutils literal notranslate"><span class="pre">t</span></code> values and for <code class="docutils literal notranslate"><span class="pre">theta(0)</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -262,12 +265,12 @@ the <code class="docutils literal notranslate"><span class="pre">t</span></code>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -287,12 +290,13 @@ the <code class="docutils literal notranslate"><span class="pre">t</span></code>
         <li class="right" >
           <a href="case-extrapolation.html" title="Case Study: Simple Extrapolation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Numerical Analysis inside a Fit</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>

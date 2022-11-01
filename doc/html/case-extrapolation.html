@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Case Study: Simple Extrapolation &#8212; lsqfit 12.0.3 documentation</title>
-    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Case Study: Numerical Analysis inside a Fit" href="case-pendulum.html" />
@@ -39,7 +40,8 @@
         <li class="right" >
           <a href="testing.html" title="Non-Gaussian Behavior; Testing Fits"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Simple Extrapolation</a></li> 
       </ul>
     </div>  
 
@@ -48,13 +50,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="case-study-simple-extrapolation">
+  <section id="case-study-simple-extrapolation">
 <h1>Case Study: Simple Extrapolation<a class="headerlink" href="#case-study-simple-extrapolation" title="Permalink to this headline">¶</a></h1>
 <p>In this case study, we examine a simple extrapolation problem. We show first
 how <em>not</em> to solve this problem. A better solution follows, together with
 a discussion of priors and Bayes factors. Finally a very simple,
 alternative solution, using marginalization, is described.</p>
-<div class="section" id="the-problem">
+<section id="the-problem">
 <h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
 <p>Consider a problem where we have five pieces of uncorrelated data for a
 function <code class="docutils literal notranslate"><span class="pre">y(x)</span></code>:</p>
@@ -74,8 +76,8 @@ function <code class="docutils literal notranslate"><span class="pre">y(x)</span
 <p>The challenge is to extract a reliable estimate for <code class="docutils literal notranslate"><span class="pre">y(0)=p[0]</span></code> from the
 data — that is, the challenge is to fit the data and use
 the fit to extrapolate the data to <code class="docutils literal notranslate"><span class="pre">x=0</span></code>.</p>
-</div>
-<div class="section" id="a-bad-solution">
+</section>
+<section id="a-bad-solution">
 <h2>A Bad Solution<a class="headerlink" href="#a-bad-solution" title="Permalink to this headline">¶</a></h2>
 <p>One approach that is certainly wrong is to fit the data with
 a power series expansion for
@@ -138,8 +140,8 @@ gives a fairly precise answer for <code class="docutils literal notranslate"><sp
 (<code class="docutils literal notranslate"><span class="pre">0.74(4)</span></code>), but the curve looks oddly stiff. Also some of the
 best-fit values for the coefficients are quite
 large (<em>e.g.</em>, <code class="docutils literal notranslate"><span class="pre">p[3]=</span> <span class="pre">-39(4)</span></code>), perhaps unreasonably large.</p>
-</div>
-<div class="section" id="a-better-solution-priors">
+</section>
+<section id="a-better-solution-priors">
 <h2>A Better Solution — Priors<a class="headerlink" href="#a-better-solution-priors" title="Permalink to this headline">¶</a></h2>
 <p>The problem with a 5-parameter fit is that there is no reason to neglect
 terms in the expansion of <code class="docutils literal notranslate"><span class="pre">y(x)</span></code> with <code class="docutils literal notranslate"><span class="pre">n&gt;4</span></code>. Whether or not
@@ -311,8 +313,8 @@ result.  Increasing the number of terms further would have no effect since the
 last terms added are having no impact, and so end up equal to the prior value
 —  the fit data are not sufficiently precise to add new information about
 these parameters.</p>
-</div>
-<div class="section" id="bayes-factors">
+</section>
+<section id="bayes-factors">
 <h2>Bayes Factors<a class="headerlink" href="#bayes-factors" title="Permalink to this headline">¶</a></h2>
 <p>We can test our priors for this fit by re-doing the fit with broader and
 narrower priors. Setting <code class="docutils literal notranslate"><span class="pre">prior</span> <span class="pre">=</span> <span class="pre">gv.gvar(91</span> <span class="pre">*</span> <span class="pre">['0(3)'])</span></code> gives an excellent
@@ -597,8 +599,8 @@ using the code</p>
 <p>The table shows that the final 3.5% error comes from a 2.7% error due
 to uncertainties in <code class="docutils literal notranslate"><span class="pre">y</span></code> and a 2.2% error from uncertainties in the
 prior (added in quadrature).</p>
-</div>
-<div class="section" id="another-solution-marginalization">
+</section>
+<section id="another-solution-marginalization">
 <h2>Another Solution — Marginalization<a class="headerlink" href="#another-solution-marginalization" title="Permalink to this headline">¶</a></h2>
 <p>There is a second, equivalent way of fitting this data that illustrates the
 idea of <em>marginalization.</em> We really only care about parameter <code class="docutils literal notranslate"><span class="pre">p[0]</span></code> in
@@ -686,10 +688,11 @@ positive correlations introduced into <code class="docutils literal notranslate"
 and are essential — removing the correlations between different
 <code class="docutils literal notranslate"><span class="pre">ymod</span></code>s results in a final answer, <code class="docutils literal notranslate"><span class="pre">0.564(97)</span></code>, which has a much
 larger error.</p>
-</div>
-</div>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -724,12 +727,12 @@ larger error.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -749,12 +752,13 @@ larger error.</p>
         <li class="right" >
           <a href="testing.html" title="Non-Gaussian Behavior; Testing Fits"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Simple Extrapolation</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>

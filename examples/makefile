@@ -37,9 +37,9 @@ run:
 	$(PYTHON) bayes.py > bayes.tmp
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 	# mpi tests
-	- mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py > mpi-bayes.tmp
-	- diff -w -I svdcut -I fitter bayes.out mpi-bayes/1/rank.0/stdout
-	- diff -w -I svdcut -I fitter bayes.out mpi-bayes/1/rank.1/stdout
+	- mpirun -np 2 -outfile-pattern=bayes.tmp.%r $(PYTHON) bayes.py
+	- diff -w -I svdcut -I fitter bayes.out bayes.tmp.0
+	- diff -w -I svdcut -I fitter bayes.out bayes.tmp.1
 
 time:
 	time $(MAKE) _time
@@ -68,8 +68,6 @@ update-all:
 	$(PYTHON) nist.py > nist.out
 	$(PYTHON) uncorrelated.py > uncorrelated.out
 	$(PYTHON) bayes.py > bayes.out
-	mpirun -np 2 -output-filename mpi-bayes $(PYTHON) bayes.py
-	cp mpi-bayes.1.0 mpi-bayes.out
 
 clean:
 	rm -f *.pyc *.tmp *.p *.prof *.1.0 *.1.1

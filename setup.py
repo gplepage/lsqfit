@@ -21,7 +21,11 @@ from distutils.command.build_ext import build_ext as _build_ext
 from distutils.command.build_py import build_py # as _build_py
 
 # compile from existing .c files if USE_CYTHON is False
-USE_CYTHON = False
+from sys import version_info
+if version_info[0] == 3 and version_info[1] >= 11:
+    USE_CYTHON = True
+else:
+    USE_CYTHON = False
 
 class build_ext(_build_ext):
     # delays using numpy and cython until they are installed;

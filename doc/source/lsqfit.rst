@@ -6,6 +6,7 @@
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
 .. |MultiFitter| replace:: :class:`lsqfit.MultiFitter`
 .. |~| unicode:: U+00A0
+.. |,| unicode:: U+2009 
 
 .. moduleauthor:: G.P. Lepage <g.p.lepage@cornell.edu>
 
@@ -148,11 +149,151 @@ nonlinear_fit Objects
 
    .. automethod:: format(maxline=0, pstyle='v')
 
-   .. automethod:: evalchi2(p)
+   ..  method:: dchi2(p)
+      
+      ``chi**2(p) - fit.chi2`` for fit parameters ``p``.
 
-   .. automethod:: logpdf(p)
+      **Paramters:**
+          **p:** Array or dictionary containing values for fit parameters, using
+              the same layout as in the fit function.
 
-   .. automethod:: pdf(p)
+      **Returns:**
+          ``chi**2(p) - fit.chi2`` where ``chi**2(p)`` is the fit's
+          ``chi**2`` for fit parameters ``p`` and ``fit.chi2`` is the ``chi**2``
+          value for the best fit.
+
+   .. method:: pdf(p)
+  
+      ``exp(-(chi**2(p) - fit.chi2)/2)`` for fit parameters ``p``.
+
+      ``fit.pdf(p)`` is proportional to the probability density
+      function (PDF) used in the fit: ``fit.pdf(p)/exp(fit.pdf.lognorm)``
+      is the product of the Gaussian PDF for the data ``P(data|p,M)`` 
+      times the Gaussian PDF for the prior ``P(p|M)`` where ``M`` is the model 
+      used in the fit (i.e., the fit function and prior). The product of PDFs
+      is ``P(data,p|M)`` by Bayes' Theorem; integrating over fit parameters
+      p gives the Bayes Factor or Evidence ``P(data|M)``, which is proportional
+      to the probability that the fit data come from fit model ``M``. The logarithm 
+      of the Bayes Factor should agree with ``fit.logGBF`` when the Gaussian 
+      approximation assumed in the fit is accurate.
+
+      ``fit.pdf(p)`` is useful for checking a least-squares fit 
+      against the corresponding Bayesian integrals. In the following 
+      example, :class:`vegas.PDFIntegrator` from the :mod:`vegas` module
+      is used to evaluate Bayesian expectation values of ``s*g`` 
+      and its standard deviation where ``s`` and ``g`` are fit 
+      parameters::
+
+          import gvar as gv
+          import lsqfit
+          import numpy as np
+          import vegas
+
+          def main():
+              # least-squares fit
+              x = np.array([0.1, 1.2, 1.9, 3.5])
+              y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
+              prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
+              fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=fitfcn, debug=True)
+              print(fit)
+
+              # create integrator and adapt it to PDF (warmup)
+              neval = 10_000 
+              nitn = 10     
+              expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf, nproc=4)
+              warmup = expval(neval=neval, nitn=nitn)
+
+              # calculate expectation value of g(p)
+              results = expval(g, neval=neval, nitn=nitn, adapt=False)
+              print(results.summary(True))
+              print('results =', results, '\n')
+
+              sg = results['sg']
+              sg2 = results['sg2']
+              sg_sdev = (sg2 - sg**2) ** 0.5
+              print('s*g from Bayes integral:  mean =', sg, '  sdev =', sg_sdev)
+              print('s*g from fit:', fit.p['s'] * fit.p['g'])
+              print()
+              print('logBF =', np.log(results.pdfnorm) - fit.pdf.lognorm)
+
+          def fitfcn(x, p):
+              return p['a'] + p['s'] * x ** p['g']
+
+          def g(p):
+              sg = p['s'] * p['g']
+              return dict(sg=sg, sg2=sg**2)
+
+          if __name__ == '__main__':
+              main()
+
+      Here the probability density function used for the expectation values 
+      is ``fit.pdf(p)``, and the expectation values are returned 
+      in dictionary ``results``. :mod:`vegas` uses adaptive Monte 
+      Carlo integration. The  ``warmup`` calls to the integrator are 
+      used to adapt it to the probability density function, and 
+      then the adapted integrator is  called again to evaluate the 
+      expectation value. Parameter ``neval`` is the (approximate)
+      number of function calls per iteration of the :mod:`vegas` algorithm
+      and ``nitn`` is the number of iterations. We use the integrator to
+      calculated the expectation value of ``s*g`` and ``(s*g)**2`` so we can
+      compute a mean and standard deviation.
+
+      The output from this code shows that the Gaussian approximation
+      for ``s*g`` (0.78(66)) is somewhat different from the result
+      obtained from a Bayesian integral (0.49(53))::
+
+          Least Square Fit:
+          chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
+
+          Parameters:
+                      a    1.61 (90)     [  0.0 (5.0) ]  
+                      s    0.62 (81)     [  0.0 (2.0) ]  
+                      g    1.2 (1.1)     [  2.0 (2.0) ]  
+
+          Settings:
+          svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0)
+
+          itn   integral        average         chi2/dof        Q
+          -------------------------------------------------------
+           1   0.954(11)       0.954(11)           0.00     1.00
+           2   0.9708(99)      0.9622(74)          0.74     0.53
+           3   0.964(12)       0.9627(63)          0.93     0.47
+           4   0.9620(93)      0.9626(52)          0.86     0.56
+           5   0.964(14)       0.9629(50)          0.71     0.74
+           6   0.957(17)       0.9619(50)          0.65     0.84
+           7   0.964(12)       0.9622(46)          0.61     0.90
+           8   0.9367(86)      0.9590(42)          0.80     0.73
+           9   0.9592(94)      0.9591(39)          0.75     0.80
+          10   0.952(13)       0.9584(37)          0.72     0.85
+
+                      key/index          value
+          ------------------------------------
+                          pdf    0.9584 (37)
+           ('f(p)*pdf', 'sg')    0.4652 (23)
+          ('f(p)*pdf', 'sg2')    0.5073 (33)
+
+          results = {'sg': 0.4854(20), 'sg2': 0.5293(33)} 
+
+          s*g from Bayes integral:  mean = 0.4854(20)   sdev = 0.5420(17)
+          s*g from fit: 0.78(66)
+
+          logBF = -9.1505(39)
+
+      The result ``logBF`` for the logarithm of the Bayes Factor from the 
+      integral agrees well with ``fit.logGBF``, the log Bayes Factor
+      in the Gaussian approximation. This is evidence that the Gaussian
+      approximation implicit in the least squares fit is reliable; the product
+      of ``s*g``, however, is not so Gaussian because of the large uncertainties
+      (compared to the means) in ``s`` and ``g`` separately.
+
+      **Paramters:**
+          **p**: Array or dictionary containing values for fit parameters, using 
+            the same layout as in the fit function.
+
+      **Returns:**
+          ``exp(-(chi**2(p) - fit.chi2)/2)`` where ``chi**2(p)`` is the fit's
+          ``chi**2`` for fit parameters ``p`` and ``fit.chi2`` is the ``chi**2``
+          value for the best fit.
 
    .. automethod:: simulated_fit_iter(n=None, pexact=None, add_priornoise=False, **kargs)
 

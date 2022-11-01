@@ -4,6 +4,8 @@ build/
 __pycache__/
 examples/*.p
 examples/*.tmp
+examples/*.tmp.0
+examples/*.tmp.1
 examples/mpi-*/
 MANIFEST
 dist/

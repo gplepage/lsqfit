@@ -289,6 +289,7 @@ cdef extern from "gsl/gsl_multifit_nlinear.h":
     const gsl_multifit_nlinear_trs * gsl_multifit_nlinear_trs_dogleg
     const gsl_multifit_nlinear_trs * gsl_multifit_nlinear_trs_ddogleg
     const gsl_multifit_nlinear_trs * gsl_multifit_nlinear_trs_subspace2D
+    # const gsl_multifit_nlinear_trs * gsl_multifit_nlinear_trs_cgst
 
     # /* scaling matrix strategies */
     const gsl_multifit_nlinear_scale * gsl_multifit_nlinear_scale_levenberg
@@ -477,6 +478,9 @@ class gsl_multifit(object):
                 ``'ddogleg'``
                     double dogleg algorithm.
 
+                ``'cgst'``
+                    dogleg using Steihaug-Toint conjugate gradient.
+
         scaler (str): Scaling method used in minimization. The following
             options are supported (see GSL documentation for more
             information):
@@ -626,6 +630,8 @@ class gsl_multifit(object):
             fdf_params.trs = gsl_multifit_nlinear_trs_ddogleg
         elif self.alg == 'subspace2D':
             fdf_params.trs = gsl_multifit_nlinear_trs_subspace2D
+        # elif self.alg == 'cgst':
+        #     fdf_params.trs = gsl_multifit_nlinear_trs_cgst
         else:
             raise ValueError('unkown algorithm ' + str(alg))
 

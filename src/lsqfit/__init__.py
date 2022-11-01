@@ -128,9 +128,23 @@ except:
 if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
-_FDATA = collections.namedtuple(
-    '_FDATA', 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'
-    )
+_FDATA_attr = 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'.split()
+
+class _FDATA(object):
+    __slots__ = _FDATA_attr
+    def __init__(self, **kargs):
+        for k in kargs:
+            setattr(self, k, kargs[k])
+
+    def _remove_gvars(self, gvlist):
+        newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
+        newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
+        return newfdata 
+
+    def _distribute_gvars(self, gvlist):
+        self.correction = _gvar.distribute_gvars(self.correction, gvlist)
+
+
 # Internal data type for _unpack_data()
 
 class nonlinear_fit(object):
@@ -726,7 +740,9 @@ class nonlinear_fit(object):
             self.fitter_results = None
             self._p = self.palt
 
-        # compute logGBF
+        # compute logGBF, etc
+        self.dchi2 = _fit_dchi2(self)
+        self.pdf = _fit_pdf(self)
         if self.prior is None:
             self.logGBF = None
         else:
@@ -747,7 +763,6 @@ class nonlinear_fit(object):
             with open(self.p0file, "wb") as ofile:
                 pickle.dump(self.pmean, ofile)
 
-        # self.fcn_p = self.fcn(self.palt) if self.x is False else self.fcn(self.x, self.palt)
         self.time = clock() - cpu_time
         if self.debug:
             self.check_roundoff()
@@ -813,11 +828,16 @@ class nonlinear_fit(object):
         fit = copy.copy(self)
         try:
             # if can pickle fcn then keep everything
-            fit.pickled_fcn = pickle.dumps((self.fcn, self._chiv, self._chivw))
+            fit.pickled_fcn = _gvar.dumps((self.fcn, self._chiv, self._chivw, self.pdf, self.dchi2))
         except:
             if self.debug:
                 warnings.warn('unable to pickle fit function; it is omitted')
-        for k in ['_chiv', '_chivw', 'fcn']:
+            # fit.fcn = None 
+            # fit._chiv = None 
+            # fit._chivw = None
+            # fit.pdf = None 
+            # fit.dchi2 = None
+        for k in ['_chiv', '_chivw', 'fcn', 'pdf', 'dchi2']:
             del fit.__dict__[k]
         fit.__dict__ = _gvar.remove_gvars(fit.__dict__, gvlist)
         return fit
@@ -826,10 +846,13 @@ class nonlinear_fit(object):
         self.__dict__ = _gvar.distribute_gvars(self.__dict__, gvlist)
         try:
             # try restoring fit function
-            fcn,chiv,chivw = pickle.loads(self.pickled_fcn)
+            fcn, chiv, chivw, pdf, dchi2 = _gvar.loads(self.pickled_fcn)
             self.fcn = fcn
             self._chiv = chiv 
             self._chivw = chivw
+            self.pdf = pdf 
+            self.dchi2 = dchi2
+            del self.__dict__['pickled_fcn']
         except:
             if self.debug:
                 warnings.warn('unable to unpickle fit function; it is omitted')
@@ -931,6 +954,8 @@ class nonlinear_fit(object):
     def evalchi2(self, p):
         """ Evaluate ``chi**2`` for arbitrary parameters ``p``.
 
+            *Deprecated* Use ``fit.dchi2(p)`` instead.
+
             Args:
                 p: Array or dictionary containing values for fit parameters,
                     using the same layout as in the fit function.
@@ -944,8 +969,10 @@ class nonlinear_fit(object):
             p = numpy.asarray(p)
         return numpy.sum(self._chiv(p.flat[:]) ** 2)
 
-    def logpdf(self, p):
+    def logpdf(self, p, normalize=False):
         """ Logarithm of the fit's probability density function at ``p``.
+
+        *Deprecated* Use ``fit.dchi2(p)`` instead.
 
         The fit's probability density function (PDF) is the product of the 
         Gaussian PDF for the data times the Gaussian PDF for the prior.
@@ -954,6 +981,10 @@ class nonlinear_fit(object):
         Args:
             p: Array or dictionary containing values for fit parameters,
                 using the same layout as in the fit function.
+
+            normalize (bool): If ``True`` the PDF is normalized; otherwise 
+                the result is ``log(fit.pdf(p))`` which is unnormalized.
+                (See discussion of ``fit.pdf``). Default is ``False``.
 
         Returns:
             ``-chi**2(p)/2 - log(norm)`` for ``p``.
@@ -964,120 +995,8 @@ class nonlinear_fit(object):
                 self.fdata.logdet
                 + numpy.log(2*numpy.pi) * (self.dof + numpy.size(self.palt))
                 )
+        # return (self.dchi2(p) + self.chi2) / 2 + self._logpdfnorm
         return - self.evalchi2(p) / 2 - self._logpdfnorm
-
-    def pdf(self, p):
-        """Fit's probability density function at point ``p``.
-
-        The fit's probability density function (PDF) is the product of the 
-        Gaussian PDF for the data times the Gaussian PDF for the prior.
-        It is proportional to ``exp(-fit.evalchi2(p))``. The 
-        integral over all ``p`` of the fit's PDF is the 
-        Bayes Factor (or Evidence), which is proportional to 
-        the probability that the data come from the underlying 
-        model.
-
-        ``fit.pdf(p)`` is useful when checking a least squares fit 
-        against the corresponding Bayesian integrals. In the following 
-        example, :class:`vegas.PDFIntegrator` from the :mod:`vegas` module
-        is used to evaluate Bayesian expectation values of ``s*g`` 
-        and its standard deviation where ``s`` and ``g`` are fit 
-        parameters::
-
-            import gvar as gv
-            import lsqfit
-            import numpy as np
-            import vegas
-
-            # least-squares fit
-            x = np.array([0.1, 1.2, 1.9, 3.5])
-            y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
-            prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
-            def f(x, p):
-                return p['a'] + p['s'] * x ** p['g']
-            fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=f, debug=True)
-            print(fit)
-
-            # create integrator and adapt it to PDF (warmup)
-            expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf, limit=20.)
-            warmup = expval(neval=1000, nitn=10)
-
-            # calculate expectation value of g(p)
-            def g(p):
-                sg = p['s'] * p['g']
-                return dict(sg=[sg, sg**2])
-            results = expval(g, neval=1000, nitn=10, adapt=False)
-            print(results.summary(True))
-            print('results =', results, '\\n')
-
-            sg, sg2 = results['sg']
-            sg_sdev = (sg2 - sg**2) ** 0.5
-            print('s*g from Bayes integral:  mean =', sg, '  sdev =', sg_sdev)
-            print('s*g from fit:', fit.p['s'] * fit.p['g'])
-            print('\\nlogBF =', np.log(results.pdfnorm))
-
-        Here the probability density function used for the expectation values 
-        is ``fit.pdf(p)``, and the expectation values are returned 
-        in dictionary ``results``. :mod:`vegas` uses adaptive Monte 
-        Carlo integration. The  ``warmup`` calls to the integrator are 
-        used to adapt it to the probability density function, and 
-        then the adapted integrator is  called again to evaluate the 
-        expectation value. Parameter ``neval`` is the (approximate)
-        number of function calls per iteration of the :mod:`vegas` algorithm
-        and ``nitn`` is the number of iterations. We use the integrator to
-        calculated the expectation value of ``s*g`` and ``(s*g)**2`` so we can
-        compute a mean and standard deviation.
-
-        The output from this code shows that the Gaussian approximation
-        for ``s*g`` (0.76(66)) is somewhat different from the result
-        obtained from a Bayesian integral (0.49(54))::
-
-            Least Square Fit:
-            chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
-
-            Parameters:
-                        a    1.61 (90)     [  0.0 (5.0) ]  
-                        s    0.62 (81)     [  0.0 (2.0) ]  
-                        g    1.2 (1.1)     [  2.0 (2.0) ]  
-
-            Settings:
-            svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0)
-
-            itn   integral        average         chi2/dof       Q
-            -------------------------------------------------------
-              1   0.0001048(79)   0.0001048(79)       0.00     1.00
-              2   0.0001013(55)   0.0001030(48)       0.66     0.58
-              3   0.0000997(58)   0.0001019(37)       0.39     0.88
-              4   0.0001062(60)   0.0001030(32)       0.40     0.94
-              5   0.0001052(59)   0.0001034(28)       0.58     0.86
-              6   0.0001036(53)   0.0001035(25)       0.51     0.94
-              7   0.0001067(54)   0.0001039(23)       0.48     0.97
-              8   0.0001007(53)   0.0001035(21)       0.46     0.98
-              9   0.0001000(49)   0.0001031(19)       0.60     0.94
-             10   0.0000983(50)   0.0001027(18)       0.60     0.95
-
-            results = {'sg': array([0.4870(92), 0.536(13)], dtype=object)} 
-
-            s*g from Bayes integral:  mean = 0.4870(92)   sdev = 0.5466(72)
-            s*g from fit: 0.78(66)
-
-            logBF = -9.184(18)
-
-        The result ``logBF`` for the logarithm of the Bayes Factor from the 
-        integral agrees well with ``fit.logGBF``, the Bayes Factor
-        in the Gaussian approximation. This is evidence that the Gaussian
-        approximation implicit in the least squares fit is reliable.
-
-        Args:
-            p: Array or dictionary containing values for fit parameters,
-                using the same layout as in the fit function.
-
-        Returns:
-            ``exp(-chi**2(p)/2) / norm`` which is the product of the 
-            fit's data PDF times its prior PDF.
-            
-        """
-        return numpy.exp(self.logpdf(p))
 
     def qqplot_residuals(self, plot=None):
         """ QQ plot normalized fit residuals.
@@ -1809,9 +1728,180 @@ class nonlinear_fit(object):
     # legacy name
     bootstrap_iter = bootstrapped_fit_iter # legacy
 
+# implement as classes so pickling works
+class _fit_dchi2(object):
+    """``chi**2(p) - fit.chi2`` for fit parameters ``p``.
+
+    **Paramters:**
+        **p:** Array or dictionary containing values for fit parameters, using
+            the same layout as in the fit function.
+
+    **Returns:**
+        ``chi**2(p) - fit.chi2`` where ``chi**2(p)`` is the fit's
+        ``chi**2`` for fit parameters ``p`` and ``fit.chi2`` is the ``chi**2``
+        value for the best fit.
+    """
+    def __init__(self, fit):
+        self._chiv = fit._chiv 
+        self.chi2 = fit.chi2
+
+    def __call__(self, p):
+        if hasattr(p, "keys"):
+            p = _gvar.asbufferdict(p)
+        else:
+            p = numpy.asarray(p)
+        return numpy.sum(self._chiv(p.flat[:]) ** 2) - self.chi2
+
+class _fit_pdf(object):
+    """ ``exp(-(chi**2(p) - fit.chi2)/2)`` for fit parameters ``p``.
+
+    ``fit.pdf(p)`` is proportional to the probability density
+    function (PDF) used in the fit: ``fit.pdf(p)/exp(fit.pdf.lognorm)``
+    is the product of the Gaussian PDF for the data ``P(data|p,M)`` 
+    times the Gaussian PDF for the prior ``P(p|M)`` where ``M`` is the model 
+    used in the fit (i.e., the fit function and prior). The product of PDFs
+    is ``P(data,p|M)`` by Bayes' Theorem; integrating over fit parameters
+    p gives the Bayes Factor or Evidence ``P(data|M)``, which is proportional
+    to the probability that the fit data come from fit model ``M``. The logarithm 
+    of the Bayes Factor should agree with ``fit.logGBF`` when the Gaussian 
+    approximation assumed in the fit is accurate.
+
+    ``fit.pdf(p)`` is useful for checking a least-squares fit 
+    against the corresponding Bayesian integrals. In the following 
+    example, :class:`vegas.PDFIntegrator` from the :mod:`vegas` module
+    is used to evaluate Bayesian expectation values of ``s*g`` 
+    and its standard deviation where ``s`` and ``g`` are fit 
+    parameters::
+
+        import gvar as gv
+        import lsqfit
+        import numpy as np
+        import vegas
+
+        def main():
+            # least-squares fit
+            x = np.array([0.1, 1.2, 1.9, 3.5])
+            y = gv.gvar(['1.2(1.0)', '2.4(1)', '2.0(1.2)', '5.2(3.2)'])
+            prior = gv.gvar(dict(a='0(5)', s='0(2)', g='2(2)'))
+            fit = lsqfit.nonlinear_fit(data=(x,y), prior=prior, fcn=fitfcn, debug=True)
+            print(fit)
+
+            # create integrator and adapt it to PDF (warmup)
+            neval = 10_000 
+            nitn = 10     
+            expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf, nproc=4)
+            warmup = expval(neval=neval, nitn=nitn)
+
+            # calculate expectation value of g(p)
+            results = expval(g, neval=neval, nitn=nitn, adapt=False)
+            print(results.summary(True))
+            print('results =', results, '\n')
+
+            sg = results['sg']
+            sg2 = results['sg2']
+            sg_sdev = (sg2 - sg**2) ** 0.5
+            print('s*g from Bayes integral:  mean =', sg, '  sdev =', sg_sdev)
+            print('s*g from fit:', fit.p['s'] * fit.p['g'])
+            print()
+            print('logBF =', np.log(results.pdfnorm) - fit.pdf.lognorm)
+
+        def fitfcn(x, p):
+            return p['a'] + p['s'] * x ** p['g']
+
+        def g(p):
+            sg = p['s'] * p['g']
+            return dict(sg=sg, sg2=sg**2)
+
+        if __name__ == '__main__':
+            main()
+
+    Here the probability density function used for the expectation values 
+    is ``fit.pdf(p)``, and the expectation values are returned 
+    in dictionary ``results``. :mod:`vegas` uses adaptive Monte 
+    Carlo integration. The  ``warmup`` calls to the integrator are 
+    used to adapt it to the probability density function, and 
+    then the adapted integrator is  called again to evaluate the 
+    expectation value. Parameter ``neval`` is the (approximate)
+    number of function calls per iteration of the :mod:`vegas` algorithm
+    and ``nitn`` is the number of iterations. We use the integrator to
+    calculated the expectation value of ``s*g`` and ``(s*g)**2`` so we can
+    compute a mean and standard deviation.
+
+    The output from this code shows that the Gaussian approximation
+    for ``s*g`` (0.78(66)) is somewhat different from the result
+    obtained from a Bayesian integral (0.49(53))::
+
+        Least Square Fit:
+        chi2/dof [dof] = 0.32 [4]    Q = 0.87    logGBF = -9.2027
+
+        Parameters:
+                    a    1.61 (90)     [  0.0 (5.0) ]  
+                    s    0.62 (81)     [  0.0 (2.0) ]  
+                    g    1.2 (1.1)     [  2.0 (2.0) ]  
+
+        Settings:
+        svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0)
+
+        itn   integral        average         chi2/dof        Q
+        -------------------------------------------------------
+         1   0.954(11)       0.954(11)           0.00     1.00
+         2   0.9708(99)      0.9622(74)          0.74     0.53
+         3   0.964(12)       0.9627(63)          0.93     0.47
+         4   0.9620(93)      0.9626(52)          0.86     0.56
+         5   0.964(14)       0.9629(50)          0.71     0.74
+         6   0.957(17)       0.9619(50)          0.65     0.84
+         7   0.964(12)       0.9622(46)          0.61     0.90
+         8   0.9367(86)      0.9590(42)          0.80     0.73
+         9   0.9592(94)      0.9591(39)          0.75     0.80
+        10   0.952(13)       0.9584(37)          0.72     0.85
+
+                    key/index          value
+        ------------------------------------
+                        pdf    0.9584 (37)
+         ('f(p)*pdf', 'sg')    0.4652 (23)
+        ('f(p)*pdf', 'sg2')    0.5073 (33)
+
+        results = {'sg': 0.4854(20), 'sg2': 0.5293(33)} 
+
+        s*g from Bayes integral:  mean = 0.4854(20)   sdev = 0.5420(17)
+        s*g from fit: 0.78(66)
+
+        logBF = -9.1505(39)
+
+    The result ``logBF`` for the logarithm of the Bayes Factor from the 
+    integral agrees well with ``fit.logGBF``, the log Bayes Factor
+    in the Gaussian approximation. This is evidence that the Gaussian
+    approximation implicit in the least squares fit is reliable; the product
+    of ``s*g``, however, is not so Gaussian because of the large uncertainties
+    (compared to the means) in ``s`` and ``g`` separately.
+
+    **Paramters:**
+        **p**: Array or dictionary containing values for fit parameters, using 
+        the same layout as in the fit function.
+
+    **Returns:**
+        ``exp(-(chi**2(p) - fit.chi2)/2)`` where ``chi**2(p)`` is the fit's
+        ``chi**2`` for fit parameters ``p`` and ``fit.chi2`` is the ``chi**2``
+        value for the best fit.
+    """
+    def __init__(self, fit):
+        self._chiv = fit._chiv 
+        self.chi2 = fit.chi2
+        self.lognorm = 0.5 * (
+            fit.fdata.logdet
+            + numpy.log(2*numpy.pi) * (fit.dof + numpy.size(fit.palt))
+            ) + fit.chi2 / 2
+
+    def __call__(self, p):
+        if hasattr(p, "keys"):
+            p = _gvar.asbufferdict(p)
+        else:
+            p = numpy.asarray(p)
+        return numpy.exp(-(numpy.sum(self._chiv(p.flat[:]) ** 2) - self.chi2) / 2)
+
 nonlinear_fit.set(**_FITTER_DEFAULTS)
 
-
+#####################################################################3
 # background methods used by nonlinear_fit:
 
 def _reformat(p, buf):

@@ -1007,15 +1007,15 @@ class MultiFitter(object):
 
     def buildfitfcn(self):
         """ Create fit function to fit models in list ``models``. """
-        def _fitfcn(p, flatmodels=self.flatmodels):
-            ans = gvar.BufferDict()
-            for m in flatmodels:
-                ans[m.datatag] = (
-                    m.fitfcn(p) if m.ncg <= 1 else
-                    MultiFitter.coarse_grain(m.fitfcn(p), m.ncg)
-                    )
-            return ans
-        return _fitfcn
+        # def _fitfcn(p, flatmodels=self.flatmodels):
+        #     ans = gvar.BufferDict()
+        #     for m in flatmodels:
+        #         ans[m.datatag] = (
+        #             m.fitfcn(p) if m.ncg <= 1 else
+        #             MultiFitter.coarse_grain(m.fitfcn(p), m.ncg)
+        #             )
+        #     return ans
+        return _multifitfcn(self.flatmodels)
 
     def builddata(self, mopt=None, data=None, pdata=None, prior=None):
         """ Rebuild pdata to account for marginalization. """
@@ -1723,9 +1723,9 @@ class MultiFitter(object):
             plotview = viewlist[onpress.view]
             if plotview in ['std', 'log', 'loglog']:
                 if plotview in ['log', 'loglog']:
-                    plt.yscale('log', nonposy='clip')
+                    plt.yscale('log', nonpositive='clip')
                 if plotview == 'loglog':
-                    plt.xscale('log', nonposx='clip')
+                    plt.xscale('log', nonpositive='clip')
                 plt.ylabel(str(k) + '   [%s]' % plotview)
                 if len(x) > 0:
                     if len(x) > 1:
@@ -1800,6 +1800,20 @@ class MultiFitter(object):
         plt.show()
 
 
+class _multifitfcn(object):
+    " MultiFitter fit function. "
+    def __init__(self, flatmodels):
+        self.flatmodels = flatmodels 
+    
+    def __call__(self, p):
+        # def _fitfcn(p, flatmodels=self.flatmodels):
+        ans = gvar.BufferDict()
+        for m in self.flatmodels:
+            ans[m.datatag] = (
+                m.fitfcn(p) if m.ncg <= 1 else
+                MultiFitter.coarse_grain(m.fitfcn(p), m.ncg)
+                )
+        return ans
 
 
 

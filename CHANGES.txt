@@ -1,3 +1,24 @@
+Version 13 2022-11-01
+======================
+Minor changes except that pickling works better now so. This 
+means that multiple processors can be used when doing 
+Bayesian integrals using the vegas module's PDFIntegrator
+(ie, with nproc>1) and the fits PDF fit.pdf(p). This is useful 
+because fit.pdf(p) can be quite costly to evaluate when fits 
+are complicated.
+
+- fit.pdf(p) is now normalized so that fit.pdf(fit.pmean)=1. 
+  This differs from previous versions. To get the old 
+  normalization use fit.pdf(p)/exp(fit.pdf.lognorm). This 
+  change was made because exp(fit.pdf.lognorm) can easily 
+  cause overflows when fits are complicated and involve lots 
+  of parameters.
+
+- New function fit.dchi2(p) replaces fit.evalchi2(p) and 
+  fit.logpdf(p) which are deprecated.
+
+- Fix to show_plots() to accommodate a change in Matplotlib.
+
 Version 12.0.2 2021-12-13
 ==========================
 - Fixes installation issue with Python 3.10.

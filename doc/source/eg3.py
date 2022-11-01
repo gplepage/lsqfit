@@ -142,7 +142,7 @@ def main():
         p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
         print('\nBayesian Parameters:')
         print(gv.tabulate(p))
-        print('\nlogBF =', np.log(results.pdfnorm))
+        print('\nlogBF =', np.log(results.pdfnorm) - fit.pdf.lognorm)
 
 
         # show histograms

@@ -412,33 +412,46 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         fit = nonlinear_fit(data=y, p0=gv.mean(prior), fcn=f, maxit=0)
         np.testing.assert_allclose(gv.mean(fit.p.buf), gv.mean(prior.buf))
 
-    def test_evalchi2(self):
-        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
-        prior = gv.BufferDict(p=gv.gvar(0,2))
+    def test_pdf_dchi2(self):
+        " fit.pdf(p)  fit.dchi2(p) "
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5)), ('c',gv.gvar(12.,13.))])
+        prior = gv.BufferDict(p=gv.gvar(0,2), q=gvar(0,5))
         def f(p):
-            return dict(a=p['p'], b=p['p'])
+            return dict(a=p['p'], b=p['p'], c=p['p'])
         fit = nonlinear_fit(data=y, prior=prior, fcn=f)
-        self.assertAlmostEqual(fit.evalchi2(fit.pmean), fit.chi2)
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), -fit.chi2/2 - 1.5 * np.log(2*np.pi) - np.log(1))
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), np.log(fit.pdf(fit.pmean)))
+        self.assertAlmostEqual(fit.pdf(fit.pmean), 1.)
+        self.assertAlmostEqual(fit.dchi2(fit.pmean), 0.)
+        p = fit.pmean + fit.psdev 
+        self.assertAlmostEqual(fit.dchi2(p), fit.prior.size)
+        self.assertAlmostEqual(fit.pdf(p), np.exp(-fit.dchi2(p)/2))
+        p['p'] = fit.p['p'].mean
+        self.assertAlmostEqual(fit.dchi2(p), fit.prior.size - 1)
+        self.assertAlmostEqual(fit.pdf(p), np.exp(-fit.dchi2(p)/2))
 
-        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5))])
-        prior = [gv.gvar(0,2)]
+        y = gv.BufferDict([('a',gv.gvar(1.5,1.0)), ('b',gv.gvar(0.8,0.5)), ('c',gv.gvar(12.,13.))])
+        prior = [gv.gvar(0,2), gv.gvar(0,5)]
         def f(p):
-            return dict(a=p[0], b=p[0])
+            return dict(a=p[0], b=p[0], c=p[0])
         fit = nonlinear_fit(data=y, prior=prior, fcn=f)
-        self.assertAlmostEqual(fit.evalchi2(fit.pmean), fit.chi2)
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), -fit.chi2/2 - 1.5 * np.log(2*np.pi) - np.log(1))
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), np.log(fit.pdf(fit.pmean)))
+        self.assertAlmostEqual(fit.pdf(fit.pmean), 1.)
+        self.assertAlmostEqual(fit.dchi2(fit.pmean), 0.)
+        p = fit.pmean + fit.psdev 
+        self.assertAlmostEqual(fit.dchi2(p), fit.prior.size)
+        self.assertAlmostEqual(fit.pdf(p), np.exp(-fit.dchi2(p)/2))
+        p[0] = fit.p[0].mean
+        self.assertAlmostEqual(fit.dchi2(p), fit.prior.size - 1)
+        self.assertAlmostEqual(fit.pdf(p), np.exp(-fit.dchi2(p)/2))
 
-        y = [gv.gvar(1.5,1.0), gv.gvar(0.8,0.5)]
+        y = gv.gvar([gv.gvar(1.5,1.0), gv.gvar(0.8,0.5), gv.gvar(12.,13.)])
         prior = gv.gvar(0,2)
         def f(p):
-            return [p, p]
+            return 3 * [p]
         fit = nonlinear_fit(data=y, prior=prior, fcn=f)
-        self.assertAlmostEqual(fit.evalchi2(fit.pmean), fit.chi2)
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), -fit.chi2/2 - 1.5 * np.log(2*np.pi) - np.log(1))
-        self.assertAlmostEqual(fit.logpdf(fit.pmean), np.log(fit.pdf(fit.pmean)))
+        self.assertAlmostEqual(fit.pdf(fit.pmean), 1.)
+        self.assertAlmostEqual(fit.dchi2(fit.pmean), 0.)
+        p = fit.pmean + fit.psdev 
+        self.assertAlmostEqual(fit.dchi2(p), 1)
+        self.assertAlmostEqual(fit.pdf(p), np.exp(-fit.dchi2(p)/2))
 
     def test_unusual_cases(self):
         """ unusual cases """
@@ -485,6 +498,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             gv.fmt_errorbudget(outputs=dict(a=fit.p['a']), inputs=dict(prior=fit.prior, data=fit.data)),
             gv.fmt_errorbudget(outputs=dict(a=dfit.p['a']), inputs=dict(prior=dfit.prior, data=dfit.data)),
             )
+
         # redo with lambda function -- can't be pickled
         fit = nonlinear_fit(prior=prior, data=data, fcn=lambda p: 10 * [p['a']], debug=True)
         with warnings.catch_warnings(record=True) as w:

@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
     <title>Case Study: Fitting a Spline &#8212; lsqfit 12.0.3 documentation</title>
-    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Case Study: Outliers and Bayesian Integrals" href="case-outliers.html" />
@@ -39,7 +40,8 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Fitting a Spline</a></li> 
       </ul>
     </div>  
 
@@ -48,12 +50,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="case-study-fitting-a-spline">
+  <section id="case-study-fitting-a-spline">
 <h1>Case Study: Fitting a Spline<a class="headerlink" href="#case-study-fitting-a-spline" title="Permalink to this headline">¶</a></h1>
 <p>This study shows how to fit noisy data when
 the underlying functional form is unknown. The
 function is modeled with a spline.</p>
-<div class="section" id="the-problem">
+<section id="the-problem">
 <h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
 <p>Our goal is to determine a function <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> from data for a
 different function <code class="docutils literal notranslate"><span class="pre">F(m,a)</span></code> where</p>
@@ -98,8 +100,8 @@ the function smooth from one interval to the next.</p>
 <p>This kind of problem arises in analyses of
 numerical simulations of QCD, where parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>
 is the grid spacing.</p>
-</div>
-<div class="section" id="spline-fit">
+</section>
+<section id="spline-fit">
 <h2>Spline Fit<a class="headerlink" href="#spline-fit" title="Permalink to this headline">¶</a></h2>
 <p>The following code reads the fit data from file <code class="docutils literal notranslate"><span class="pre">'spline.p'</span></code>,
 and fits it using a cubic spline (<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.cspline.CSpline()</span></code>):</p>
@@ -252,10 +254,11 @@ know what the real <code class="docutils literal notranslate"><span class="pre">
 It is plotted in the figure as a black
 dashed line. The fit result for <code class="docutils literal notranslate"><span class="pre">f(m)</span></code>
 agrees well with the exact result for all <code class="docutils literal notranslate"><span class="pre">m</span></code>.</p>
-</div>
-</div>
+</section>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -287,12 +290,12 @@ agrees well with the exact result for all <code class="docutils literal notransl
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -312,12 +315,13 @@ agrees well with the exact result for all <code class="docutils literal notransl
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 12.0.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Case Study: Fitting a Spline</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
     </div>
   </body>
 </html>
