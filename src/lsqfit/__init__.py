@@ -130,19 +130,41 @@ if _no_scipy and _no_gsl:
 
 _FDATA_attr = 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'.split()
 
-class _FDATA(object):
-    __slots__ = _FDATA_attr
-    def __init__(self, **kargs):
-        for k in kargs:
-            setattr(self, k, kargs[k])
+if sys.version_info.major == 2:
+    class _FDATA(object):
+        __slots__ = _FDATA_attr
+        def __init__(self, **kargs):
+            for k in kargs:
+                setattr(self, k, kargs[k])
 
-    def _remove_gvars(self, gvlist):
-        newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
-        newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
-        return newfdata 
+        def __getstate__(self):
+            return {k:getattr(self, k) for k in self.__slots__}
+        
+        def __setstate__(self, state):
+            for k in state:
+                setattr(self, k, state[k])
 
-    def _distribute_gvars(self, gvlist):
-        self.correction = _gvar.distribute_gvars(self.correction, gvlist)
+        def _remove_gvars(self, gvlist):
+            newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
+            newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
+            return newfdata 
+
+        def _distribute_gvars(self, gvlist):
+            self.correction = _gvar.distribute_gvars(self.correction, gvlist)
+else:
+    class _FDATA(object):
+        __slots__ = _FDATA_attr
+        def __init__(self, **kargs):
+            for k in kargs:
+                setattr(self, k, kargs[k])
+
+        def _remove_gvars(self, gvlist):
+            newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
+            newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
+            return newfdata 
+
+        def _distribute_gvars(self, gvlist):
+            self.correction = _gvar.distribute_gvars(self.correction, gvlist)
 
 
 # Internal data type for _unpack_data()

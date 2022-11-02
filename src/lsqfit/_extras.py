@@ -31,7 +31,7 @@ except ImportError:
     from ._scipy import scipy_multiminex as _multiminex
     from ._scipy import gammaQ as _gammaQ
 
-def empbayes_fit(z0, fitargs, **minargs):
+def empbayes_fit(z0, fitargs, p0=None, **minargs):
     """ Return fit and ``z`` corresponding to the fit
     ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``logGBF``.
 
@@ -116,6 +116,9 @@ def empbayes_fit(z0, fitargs, **minargs):
             maximizes the sum ``logGBF + plausibility``. Specifying
             ``plausibility`` is a way of steering selections away from
             completely implausible values for ``z``.
+        p0: Fit-parameter starting values for the first fit. ``p0``
+            for subsequent fits is set automatically to optimize fitting
+            unless a value is specified by ``fitargs``.
         minargs (dict): Optional argument dictionary, passed on to
             :class:`lsqfit.gsl_multiminex` (or
             :class:`lsqfit.scipy_multiminex`), which finds the minimum.
@@ -125,11 +128,11 @@ def empbayes_fit(z0, fitargs, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
-    return _empbayes_fit(z0, fitargs, nonlinear_fit=lsqfit.nonlinear_fit, **minargs)
+    return _empbayes_fit(z0, fitargs, p0=p0, nonlinear_fit=lsqfit.nonlinear_fit, **minargs)
 
-def _empbayes_fit(z0, fitargs, nonlinear_fit, **minargs):
+def _empbayes_fit(z0, fitargs, p0, nonlinear_fit, **minargs):
     " For use by lsqfit.empbayes_fit and lsqfit.MultiFitter.empbayes_fit "
-    save = dict(lastz=None, lastp0=None)
+    save = dict(lastz=None, lastp0=p0)
     if hasattr(z0, 'keys'):
         # z is a dictionary
         z0 = gvar.BufferDict(z0, dtype=float)
@@ -153,7 +156,7 @@ def _empbayes_fit(z0, fitargs, nonlinear_fit, **minargs):
             args, plausibility = args
         else:
             plausibility = 0.0
-        if save['lastp0'] is not None:
+        if save['lastp0'] is not None and 'p0' not in args:
             args['p0'] = save['lastp0']
         fit = nonlinear_fit(**args)
         if numpy.isnan(fit.logGBF):
@@ -170,7 +173,7 @@ def _empbayes_fit(z0, fitargs, nonlinear_fit, **minargs):
     args = fitargs(z)
     if not hasattr(args, 'keys'):
         args, plausibility = args
-    if save['lastp0'] is not None:
+    if save['lastp0'] is not None and 'p0' not in args:
         args['p0'] = save['lastp0']
     return nonlinear_fit(**args), z
 
@@ -1421,7 +1424,7 @@ class MultiFitter(object):
         self.set(**oldargs)
         return self.fit
 
-    def empbayes_fit(self, z0, fitargs, **minargs):
+    def empbayes_fit(self, z0, fitargs, p0=None, **minargs):
         """ Return fit and ``z`` corresponding to the fit
         ``self.lsqfit(**fitargs(z))`` that maximizes ``logGBF``.
 
@@ -1453,15 +1456,18 @@ class MultiFitter(object):
                 maximizes the sum ``logGBF + plausibility``. Specifying
                 ``plausibility`` is a way of steering selections away from
                 completely implausible values for ``z``.
+            p0: Fit-parameter starting values for the first fit. ``p0``
+                for subsequent fits is set automatically to optimize fitting
+                unless a value is specified by ``fitargs``.
             minargs (dict): Optional argument dictionary, passed on to
-                :class:`lsqfit.gsl_multiminex` (or
+                    :class:`lsqfit.gsl_multiminex` (or
                 :class:`lsqfit.scipy_multiminex`), which finds the minimum.
 
         Returns:
             A tuple containing the best fit (a fit object) and the
             optimal value for parameter ``z``.
         """
-        return _empbayes_fit(z0, fitargs, nonlinear_fit=self.lsqfit, **minargs)
+        return _empbayes_fit(z0, fitargs, p0=p0, nonlinear_fit=self.lsqfit, **minargs)
 
     @staticmethod
     def _compile_models(models):

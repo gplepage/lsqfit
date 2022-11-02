@@ -900,7 +900,23 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             return dict(data=(x, y), prior=prior, fcn=f)
         z0 = dict(z=np.log(0.7))
         fit,z = empbayes_fit(z0, fitargs, tol=1e-3)
-        # self.assertAlmostEqual(np.exp(z['z']), 0.6012, places=1)
+        self.assertAlmostEqual(np.exp(z['z']), 0.6012, places=1)
+
+        # p0
+        def fcn(p):
+            return 3 * [p**2]
+        data = gv.gvar(['12(5)', '3(4)', '20(9)'])
+        def fitargs1(z):
+            prior = gv.gvar('10 +- {}'.format(0.01 + z**2))
+            return dict(data=data, prior=prior, fcn=fcn, p0=10)
+        fit1,z1 = empbayes_fit(5., fitargs1, tol=1e-3)
+        def fitargs2(z):
+            prior = gv.gvar('10 +- {}'.format(0.01 + z**2))
+            return dict(data=data, prior=prior, fcn=fcn)
+        fit2,z2 = empbayes_fit(5., fitargs2, p0=10, tol=1e-3)
+        self.assertAlmostEqual(z1, z2)
+        self.assertEqual(str(fit1.p), str(fit2.p))
+        self.assertGreater(fit1.nit, fit2.nit)
 
     def test_unpack_data(self):
         """ lsqfit._unpack_data """

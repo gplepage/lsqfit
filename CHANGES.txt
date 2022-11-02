@@ -1,6 +1,6 @@
 Version 13 2022-11-01
 ======================
-Minor changes except that pickling works better now so. This 
+Minor changes except that pickling works better now. This 
 means that multiple processors can be used when doing 
 Bayesian integrals using the vegas module's PDFIntegrator
 (ie, with nproc>1) and the fits PDF fit.pdf(p). This is useful 
@@ -11,13 +11,21 @@ are complicated.
   This differs from previous versions. To get the old 
   normalization use fit.pdf(p)/exp(fit.pdf.lognorm). This 
   change was made because exp(fit.pdf.lognorm) can easily 
-  cause overflows when fits are complicated and involve lots 
-  of parameters.
+  overflow when fits involve lots of parameters.
 
 - New function fit.dchi2(p) replaces fit.evalchi2(p) and 
-  fit.logpdf(p) which are deprecated.
+  fit.logpdf(p), which are deprecated.
+
+- empbayes_fit has a new keyword p0 which specifies the 
+  fit-parameter starting point for the first fit; p0 
+  is set automatically in subsequent fits to optimize 
+  fitting (unless it is specified by fitargs(z)). 
 
 - Fix to show_plots() to accommodate a change in Matplotlib.
+
+- Forces Cython to regenerate *.c files when using Python 3.11 or later (deals
+  with incompatibilities introduced by 3.11).
+
 
 Version 12.0.2 2021-12-13
 ==========================
