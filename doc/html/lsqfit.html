@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>  
@@ -1104,7 +1104,7 @@ is the dictionary containint the old defaults.</p>
 <h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="lsqfit.empbayes_fit">
-<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return fit and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
 <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <p>This function maximizes the logarithm of the Bayes Factor from
@@ -1185,6 +1185,9 @@ of the <em>a priori</em> probabilitiy that <code class="docutils literal notrans
 maximizes the sum <code class="docutils literal notranslate"><span class="pre">logGBF</span> <span class="pre">+</span> <span class="pre">plausibility</span></code>. Specifying
 <code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is a way of steering selections away from
 completely implausible values for <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p></li>
+<li><p><strong>p0</strong> – Fit-parameter starting values for the first fit. <code class="docutils literal notranslate"><span class="pre">p0</span></code>
+for subsequent fits is set automatically to optimize fitting
+unless a value is specified by <code class="docutils literal notranslate"><span class="pre">fitargs</span></code>.</p></li>
 <li><p><strong>minargs</strong> (<em>dict</em>) – Optional argument dictionary, passed on to
 <a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
 <a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</p></li>
@@ -1718,7 +1721,7 @@ the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.empbayes_fit">
-<span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.empbayes_fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return fit and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
 <code class="docutils literal notranslate"><span class="pre">self.lsqfit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <p>This function maximizes the logarithm of the Bayes Factor from
@@ -1748,6 +1751,9 @@ of the <em>a priori</em> probabilitiy that <code class="docutils literal notrans
 maximizes the sum <code class="docutils literal notranslate"><span class="pre">logGBF</span> <span class="pre">+</span> <span class="pre">plausibility</span></code>. Specifying
 <code class="docutils literal notranslate"><span class="pre">plausibility</span></code> is a way of steering selections away from
 completely implausible values for <code class="docutils literal notranslate"><span class="pre">z</span></code>.</p></li>
+<li><p><strong>p0</strong> – Fit-parameter starting values for the first fit. <code class="docutils literal notranslate"><span class="pre">p0</span></code>
+for subsequent fits is set automatically to optimize fitting
+unless a value is specified by <code class="docutils literal notranslate"><span class="pre">fitargs</span></code>.</p></li>
 <li><p><strong>minargs</strong> (<em>dict</em>) – Optional argument dictionary, passed on to
 <a class="reference internal" href="gsl.html#lsqfit.gsl_multiminex" title="lsqfit.gsl_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.gsl_multiminex</span></code></a> (or
 <a class="reference internal" href="scipy.html#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a>), which finds the minimum.</p></li>
@@ -2067,7 +2073,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>

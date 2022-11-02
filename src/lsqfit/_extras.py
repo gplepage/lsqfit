@@ -1460,7 +1460,7 @@ class MultiFitter(object):
                 for subsequent fits is set automatically to optimize fitting
                 unless a value is specified by ``fitargs``.
             minargs (dict): Optional argument dictionary, passed on to
-                    :class:`lsqfit.gsl_multiminex` (or
+                :class:`lsqfit.gsl_multiminex` (or
                 :class:`lsqfit.scipy_multiminex`), which finds the minimum.
 
         Returns:
