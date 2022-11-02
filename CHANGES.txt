@@ -3,7 +3,7 @@ Version 13 2022-11-01
 Minor changes except that pickling works better now. This 
 means that multiple processors can be used when doing 
 Bayesian integrals using the vegas module's PDFIntegrator
-(ie, with nproc>1) and the fits PDF fit.pdf(p). This is useful 
+(ie, with nproc>1) and the fit's PDF fit.pdf(p). This is useful 
 because fit.pdf(p) can be quite costly to evaluate when fits 
 are complicated.
 
