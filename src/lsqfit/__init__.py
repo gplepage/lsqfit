@@ -1783,7 +1783,7 @@ class _fit_pdf(object):
     times the Gaussian PDF for the prior ``P(p|M)`` where ``M`` is the model 
     used in the fit (i.e., the fit function and prior). The product of PDFs
     is ``P(data,p|M)`` by Bayes' Theorem; integrating over fit parameters
-    p gives the Bayes Factor or Evidence ``P(data|M)``, which is proportional
+    p gives the Bayes Factor or model evidence ``P(data|M)``, which is proportional
     to the probability that the fit data come from fit model ``M``. The logarithm 
     of the Bayes Factor should agree with ``fit.logGBF`` when the Gaussian 
     approximation assumed in the fit is accurate.
