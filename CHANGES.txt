@@ -1,3 +1,9 @@
+Version 13.0.1
+=================
+- New installation code so that it works on Python3.11 even when numpy
+  is not installed.
+
+
 Version 13 2022-11-01
 ======================
 Minor changes except that pickling works better now. This 

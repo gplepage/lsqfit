@@ -1,6 +1,7 @@
 *.pyc
 .vscode
 build/
+old/
 __pycache__/
 examples/*.p
 examples/*.tmp

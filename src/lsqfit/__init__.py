@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2021 G. Peter Lepage.
+# Copyright (c) 2008-2023 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -88,7 +88,7 @@ import collections
 import functools
 import sys
 import warnings
-import math, pickle, time, copy
+import pickle, time, copy
 
 import numpy
 
@@ -2235,7 +2235,18 @@ def _y_fcn_match(y, f):
 from ._extras import empbayes_fit, wavg
 from ._extras import MultiFitterModel, MultiFitter
 from ._utilities import _build_chiv_chivw
-from ._version import __version__
+
+try:
+    if sys.version_info >= (3, 8):
+        from importlib import metadata
+    else:
+        import importlib_metadata as metadata
+    __version__ = metadata.version('lsqfit')
+except:
+    # less precise default if fail
+    __version__ = '>=13.0.1'
+
+
 
 # legacy definitions (obsolete)
 class _legacy_constructor:
