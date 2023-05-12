@@ -1,5 +1,5 @@
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2018 G. Peter Lepage.
+# Copyright (c) 2008-2023 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,25 +14,17 @@
 PIP = python -m pip
 PYTHON = python
 PYTHONVERSION = python`python -c 'import platform; print(platform.python_version())'`
-VERSION = `python -c 'import lsqfit; print (lsqfit.__version__)'`
+VERSION = `python -c 'import lsqfit; print(lsqfit.__version__)'`
 
 DOCFILES :=  $(shell ls doc/source/conf.py doc/source/*.{rst,out,png} 2>/dev/null)
 SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
 CYTHONFILES := src/lsqfit/_gsl.c src/lsqfit/_utilities.c
 
-install-user : $(CYTHONFILES)
-	$(PIP) install . --user
+install-user : 
+	$(PIP) install . --user --no-cache-dir
 
-install install-sys : $(CYTHONFILES)
-	$(PIP) install .
-
-src/lsqfit/_gsl.c : src/lsqfit/_gsl.pyx
-	cd src/lsqfit; cython _gsl.pyx
-
-src/lsqfit/_utilities.c : src/lsqfit/_utilities.pyx
-	cd src/lsqfit; cython _utilities.pyx
-
-# $(PYTHON) setup.py install --record files-lsqfit.$(PYTHONVERSION)
+install install-sys : 
+	$(PIP) install . --no-cache-dir
 
 update:
 	make uninstall install
@@ -43,26 +35,17 @@ rebuild:
 
 uninstall :			# mostly works (may leave some empty directories)
 	- $(PIP) uninstall lsqfit
+	
+.PHONY : doc
 
-try:
-	$(PYTHON) setup.py install --user --record files-lsqfit.$(PYTHONVERSION)
-
-untry:
-	- cat files-lsqfit.$(PYTHONVERSION) | xargs rm -rf
-
-doc-html:
+doc-html doc:
 	make doc/html/index.html
 
-doc/html/index.html : $(SRCFILES) $(DOCFILES)
-	rm -rf doc/html; sphinx-build -b html doc/source doc/html
+doc/html/index.html : $(SRCFILES) $(DOCFILES) setup.cfg
+	sphinx-build -b html doc/source doc/html
 
-# doc-pdf:
-# 	make doc/lsqfit.pdf
-
-doc/lsqfit.pdf : $(SRCFILES) $(DOCFILES)
-	rm -rf doc/lsqfit.pdf
-	sphinx-build -b latex doc/source doc/latex
-	cd doc/latex; make lsqfit.pdf; mv lsqfit.pdf ..
+clear-doc:
+	rm -rf doc/html
 
 doc-zip doc.zip:
 	cd doc/html; zip -r doc *; mv doc.zip ../..
@@ -70,7 +53,7 @@ doc-zip doc.zip:
 # doc-all: doc-html # doc-pdf
 
 sdist:	$(CYTHONFILES)		# source distribution
-	$(PYTHON) setup.py sdist
+	$(PYTHON) -m build --sdist
 
 .PHONY: tests
 
@@ -87,16 +70,10 @@ time:
 run run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
-register-pypi:
-	python setup.py register # use only once, first time
-
-# upload-pypi:
-# 	python setup.py sdist upload
-
-upload-twine: $(CYTHONFILES)
+upload-twine: 
 	twine upload dist/lsqfit-$(VERSION).tar.gz
 
-upload-git: $(CYTHONFILES)
+upload-git: 
 	echo  "version $(VERSION)"
 	make doc-html # doc-pdf
 	git diff --exit-code

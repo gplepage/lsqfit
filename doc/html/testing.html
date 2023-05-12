@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.0 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -40,7 +41,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>  
@@ -51,9 +52,9 @@
           <div class="body" role="main">
             
   <section id="non-gaussian-behavior-testing-fits">
-<span id="non-gaussian-behavior"></span><h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Permalink to this headline">¶</a></h1>
+<span id="non-gaussian-behavior"></span><h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Permalink to this heading">¶</a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
 <p>The various analyses in the Tutorial assume implicitly that every
 probability distribution relevant to a fit is Gaussian. The input
 data and priors are assumed Gaussian. The <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function is
@@ -69,7 +70,7 @@ Bayesian integration, can also be used to analyze non-Gaussian
 results.</p>
 </section>
 <section id="bootstrap-error-analysis-non-gaussian-output">
-<h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Permalink to this headline">¶</a></h2>
+<h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Permalink to this heading">¶</a></h2>
 <p>The bootstrap provides an efficient way to check on a fit’s
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:</p>
@@ -255,7 +256,7 @@ surprising given the ±50% uncertainty in the
 denominator <code class="docutils literal notranslate"><span class="pre">p2</span></code>.</p>
 </section>
 <section id="bayesian-integrals">
-<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this headline">¶</a></h2>
+<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this heading">¶</a></h2>
 <p>Bayesian expectation values provide an alternative to least-squares fits.
 These expectation values are integrals over the fit parameters that are
 weighted by the probability density function (PDF for the parameters)
@@ -576,7 +577,7 @@ fit outputs. The case study <a class="reference internal" href="case-outliers.ht
 when the input data is not quite Gaussian.</p>
 </section>
 <section id="testing-fits-with-simulated-data">
-<span id="testing-fits"></span><h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this headline">¶</a></h2>
+<span id="testing-fits"></span><h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this heading">¶</a></h2>
 <p>Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method</p>
@@ -783,7 +784,7 @@ each case; good <code class="docutils literal notranslate"><span class="pre">chi
 deviations, and correlations.</p>
 </section>
 <section id="goodness-of-fit">
-<span id="id1"></span><h2>Goodness of Fit<a class="headerlink" href="#goodness-of-fit" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Goodness of Fit<a class="headerlink" href="#goodness-of-fit" title="Permalink to this heading">¶</a></h2>
 <p>The quality of a fit is often judged by the value of
 <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
 number of degrees of freedom.
@@ -907,7 +908,7 @@ if adding noise makes <code class="docutils literal notranslate"><span class="pr
 or changes the best-fit values of the parameters significantly.</p>
 </section>
 <section id="fit-residuals-and-q-q-plots">
-<span id="fit-residuals"></span><h2>Fit Residuals and Q-Q Plots<a class="headerlink" href="#fit-residuals-and-q-q-plots" title="Permalink to this headline">¶</a></h2>
+<span id="fit-residuals"></span><h2>Fit Residuals and Q-Q Plots<a class="headerlink" href="#fit-residuals-and-q-q-plots" title="Permalink to this heading">¶</a></h2>
 <p>It can be useful to examine the normalized residuals from a fit (in array
 <code class="docutils literal notranslate"><span class="pre">fit.residuals</span></code>). These are the differences between
 the data and the corresponding values from the fit function using the best-fit
@@ -977,8 +978,9 @@ come from a lattice QCD analysis with 383 residuals:</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Non-Gaussian Behavior; Testing Fits</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#bootstrap-error-analysis-non-gaussian-output">Bootstrap Error Analysis; Non-Gaussian Output</a></li>
@@ -990,12 +992,17 @@ come from a lattice QCD analysis with 383 residuals:</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="overview.html"
-                        title="previous chapter">Overview and Tutorial</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="case-extrapolation.html"
-                        title="next chapter">Case Study: Simple Extrapolation</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="overview.html"
+                          title="previous chapter">Overview and Tutorial</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="case-extrapolation.html"
+                          title="next chapter">Case Study: Simple Extrapolation</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -1012,7 +1019,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -1032,13 +1039,13 @@ come from a lattice QCD analysis with 383 residuals:</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

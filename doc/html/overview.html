@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Overview and Tutorial &#8212; lsqfit 13.0 documentation</title>
+    <title>Overview and Tutorial &#8212; lsqfit 13.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -40,7 +41,7 @@
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Overview and Tutorial</a></li> 
       </ul>
     </div>  
@@ -51,9 +52,9 @@
           <div class="body" role="main">
             
   <section id="overview-and-tutorial">
-<h1>Overview and Tutorial<a class="headerlink" href="#overview-and-tutorial" title="Permalink to this headline">¶</a></h1>
+<h1>Overview and Tutorial<a class="headerlink" href="#overview-and-tutorial" title="Permalink to this heading">¶</a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
 <p>The  <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> module is designed to facilitate least-squares fitting of
 noisy data by multi-dimensional, nonlinear functions of arbitrarily many
 parameters, each with a (Bayesian) prior.  <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> makes heavy use of
@@ -295,7 +296,7 @@ statement if using Python 2; or add</p>
 <p>at the start of your file.</p>
 </section>
 <section id="gaussian-random-variables-and-error-propagation">
-<h2>Gaussian Random Variables and Error Propagation<a class="headerlink" href="#gaussian-random-variables-and-error-propagation" title="Permalink to this headline">¶</a></h2>
+<h2>Gaussian Random Variables and Error Propagation<a class="headerlink" href="#gaussian-random-variables-and-error-propagation" title="Permalink to this heading">¶</a></h2>
 <p>The inputs and outputs of a nonlinear least squares analysis are probability
 distributions, and these distributions will be Gaussian provided the input
 data are sufficiently accurate. <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> assumes this to be the case.
@@ -528,7 +529,7 @@ example,</p>
 for module <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar</span></code>.</p>
 </section>
 <section id="basic-fits">
-<span id="id1"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Basic Fits<a class="headerlink" href="#basic-fits" title="Permalink to this heading">¶</a></h2>
 <p>A fit analysis typically requires three types of input:</p>
 <ol class="arabic simple">
 <li><p>fit data <code class="docutils literal notranslate"><span class="pre">x,y</span></code> (or possibly just <code class="docutils literal notranslate"><span class="pre">y</span></code>);</p></li>
@@ -1057,7 +1058,7 @@ following code added to the end of <code class="docutils literal notranslate"><s
 </div>
 </section>
 <section id="chained-fits-large-data-sets">
-<h2>Chained Fits; Large Data Sets<a class="headerlink" href="#chained-fits-large-data-sets" title="Permalink to this headline">¶</a></h2>
+<h2>Chained Fits; Large Data Sets<a class="headerlink" href="#chained-fits-large-data-sets" title="Permalink to this heading">¶</a></h2>
 <p>The priors in a fit represent knowledge that we have about the parameters
 before we do the fit. This knowledge might come from theoretical
 considerations or experiment. Or it might come from another fit. Here we
@@ -1314,7 +1315,7 @@ possible to fit much more data
 (e.g., 1,000,000 or more <code class="docutils literal notranslate"><span class="pre">y[i]</span></code>s is straightforward on a laptop).</p>
 </section>
 <section id="x-has-errors">
-<h2><code class="docutils literal notranslate"><span class="pre">x</span></code> has Errors<a class="headerlink" href="#x-has-errors" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">x</span></code> has Errors<a class="headerlink" href="#x-has-errors" title="Permalink to this heading">¶</a></h2>
 <p>We now consider variations on our basic fit analysis (described in
 <a class="reference internal" href="#basic-fits"><span class="std std-ref">Basic Fits</span></a>).
 The first variation concerns what to do when the independent variables, the
@@ -1415,7 +1416,7 @@ plot shows the fit (dashed line) compared with the input data for <code class="
 <a class="reference internal image-reference" href="_images/eg2.png"><img alt="_images/eg2.png" src="_images/eg2.png" style="width: 70%;" /></a>
 </section>
 <section id="correlated-parameters-gaussian-bayes-factor">
-<span id="correlated-parameters"></span><h2>Correlated Parameters; Gaussian Bayes Factor<a class="headerlink" href="#correlated-parameters-gaussian-bayes-factor" title="Permalink to this headline">¶</a></h2>
+<span id="correlated-parameters"></span><h2>Correlated Parameters; Gaussian Bayes Factor<a class="headerlink" href="#correlated-parameters-gaussian-bayes-factor" title="Permalink to this heading">¶</a></h2>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> objects allow for complicated priors, including
 priors that correlate different fit parameters.
 The following fit analysis code illustrates
@@ -1537,7 +1538,7 @@ from the models, as opposed to the probabilities for the models given
 the data. See the discussion below.)</p>
 </section>
 <section id="y-has-no-error-marginalization">
-<h2><code class="docutils literal notranslate"><span class="pre">y</span></code> has No Error; Marginalization<a class="headerlink" href="#y-has-no-error-marginalization" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">y</span></code> has No Error; Marginalization<a class="headerlink" href="#y-has-no-error-marginalization" title="Permalink to this heading">¶</a></h2>
 <p>Occasionally there are fit problems where values for the dependent
 variable <code class="docutils literal notranslate"><span class="pre">y</span></code> are known exactly (to machine precision). This poses a
 problem for least-squares fitting since the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function is
@@ -1898,7 +1899,7 @@ removed in this way are said to be <em>marginalized</em>.</p></li>
 </div></blockquote>
 </section>
 <section id="svd-cuts-and-roundoff-error">
-<h2>SVD Cuts and Roundoff Error<a class="headerlink" href="#svd-cuts-and-roundoff-error" title="Permalink to this headline">¶</a></h2>
+<h2>SVD Cuts and Roundoff Error<a class="headerlink" href="#svd-cuts-and-roundoff-error" title="Permalink to this heading">¶</a></h2>
 <p>All of the fits discussed above have (default) SVD cuts of 1e-12. This
 has little impact in most of the problems, but makes a big difference
 in the problem discussed in the previous section. Had we run that fit,
@@ -2045,7 +2046,7 @@ is done automatically if <code class="docutils literal notranslate"><span class=
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 </section>
 <section id="svd-cuts-and-inadequate-statistics">
-<span id="svd-cuts-statistics"></span><h2>SVD Cuts and Inadequate Statistics<a class="headerlink" href="#svd-cuts-and-inadequate-statistics" title="Permalink to this headline">¶</a></h2>
+<span id="svd-cuts-statistics"></span><h2>SVD Cuts and Inadequate Statistics<a class="headerlink" href="#svd-cuts-and-inadequate-statistics" title="Permalink to this heading">¶</a></h2>
 <p>Roundoff error is one reason to use SVD cuts. Another is inadequate
 statistics. Consider the following example, which seeks to fit
 data obtained by averaging <code class="docutils literal notranslate"><span class="pre">N=5</span></code> random samples (a very small
@@ -2129,7 +2130,7 @@ analysis of this example.</p>
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">gvar.regulate()</span></code> to modify the fit data before it is fit.</p>
 </section>
 <section id="y-has-unknown-errors">
-<h2><code class="docutils literal notranslate"><span class="pre">y</span></code> has Unknown Errors<a class="headerlink" href="#y-has-unknown-errors" title="Permalink to this headline">¶</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">y</span></code> has Unknown Errors<a class="headerlink" href="#y-has-unknown-errors" title="Permalink to this heading">¶</a></h2>
 <p>There are situations where the input data <code class="docutils literal notranslate"><span class="pre">y</span></code> is known to have
 uncertainties, but where we do not know how big those uncertainties are.
 A common approach is to infer these uncertainties from the fluctuations
@@ -2264,7 +2265,7 @@ assumption is implicit in many fit routines that fit
 data without errors (and without priors).</p>
 </section>
 <section id="tuning-priors-with-the-empirical-bayes-criterion">
-<span id="empirical-bayes"></span><h2>Tuning Priors with the Empirical Bayes Criterion<a class="headerlink" href="#tuning-priors-with-the-empirical-bayes-criterion" title="Permalink to this headline">¶</a></h2>
+<span id="empirical-bayes"></span><h2>Tuning Priors with the Empirical Bayes Criterion<a class="headerlink" href="#tuning-priors-with-the-empirical-bayes-criterion" title="Permalink to this heading">¶</a></h2>
 <p>Given two choices of prior for a parameter, the one that results in a larger
 Gaussian Bayes Factor after fitting (see <code class="docutils literal notranslate"><span class="pre">logGBF</span></code> in fit output or
 <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>) is the one preferred by the data. We can use this fact to tune
@@ -2420,7 +2421,7 @@ prior or set of priors for a fit, by comparing the optimal choice (according
 to the data) with choice actually used.</p>
 </section>
 <section id="positive-parameters-non-gaussian-priors">
-<span id="positive-parameters"></span><h2>Positive Parameters; Non-Gaussian Priors<a class="headerlink" href="#positive-parameters-non-gaussian-priors" title="Permalink to this headline">¶</a></h2>
+<span id="positive-parameters"></span><h2>Positive Parameters; Non-Gaussian Priors<a class="headerlink" href="#positive-parameters-non-gaussian-priors" title="Permalink to this heading">¶</a></h2>
 <p>The priors for <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> are all Gaussian. There are situations,
 however, where other distributions would be desirable. One such case is where
 a parameter is known to be positive, but is close to zero in value (“close”
@@ -2682,7 +2683,7 @@ distribution for parameter <code class="docutils literal notranslate"><span clas
 across most (80%) of the interval 0.02±0.02.</p>
 </section>
 <section id="faster-fitters">
-<span id="id2"></span><h2>Faster Fitters<a class="headerlink" href="#faster-fitters" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Faster Fitters<a class="headerlink" href="#faster-fitters" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> uses fitters from the Gnu Scientific Library (GSL) and/or
 from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Python module to do the actual fitting, depending
 upon which of these is installed. It is worth trying a different fitter
@@ -2758,7 +2759,7 @@ underlying fitters are available from <a class="reference internal" href="lsqfit
 more specialized applications.</p>
 </section>
 <section id="debugging-and-troubleshooting">
-<h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this headline">¶</a></h2>
+<h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this heading">¶</a></h2>
 <p>When a fit refuses to work, the first thing to check is that the data, prior, and fit
 function are properly constructed. Setting parameter <code class="docutils literal notranslate"><span class="pre">debug=True</span></code> in
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> causes the code to look for common mistakes and report on
@@ -2859,8 +2860,9 @@ This line can be rewritten</p>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Overview and Tutorial</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
 <li><a class="reference internal" href="#gaussian-random-variables-and-error-propagation">Gaussian Random Variables and Error Propagation</a></li>
@@ -2880,12 +2882,17 @@ This line can be rewritten</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">lsqfit Documentation</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="testing.html"
-                        title="next chapter">Non-Gaussian Behavior; Testing Fits</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">lsqfit Documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="testing.html"
+                          title="next chapter">Non-Gaussian Behavior; Testing Fits</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -2902,7 +2909,7 @@ This line can be rewritten</p>
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -2922,13 +2929,13 @@ This line can be rewritten</p>
         <li class="right" >
           <a href="index.html" title="lsqfit Documentation"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Overview and Tutorial</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

@@ -1,42 +1,21 @@
 To install:
 
-1. If not already installed, download and install the following packages:
-
-	a. (Optional) The Gnu Scientific Library (GSL v2.2.1 or greater) - provides
-		underlying fitters, written in C. Should the build process for lsqfit
-		have difficulty finding the GSL libraries or headers, modify the build
-		script (setup.py) to point to the directories containing the gsl
-		headers and compiled libraries: add explicit addresses to the
-		include_dirs, library_dirs, and runtime_library_dirs lists in setup.py
-		(see dictionary ext_args_gsl). lsqfit can be built without GSL, using
-		scipy instead, but more options are available if both
-		are included.
-		(http://www.gnu.org/software/gsl/)
-
-	b. (Optional) The vegas Python package is optional for almost all lsqfit
-		applications, but is needed in order to use vegas.BayesIntegrator.
-		Use version 3.3 or greater. vegas does adaptive multi-dimensional
-		integration.
-
- 	The numpy, scipy, and gvar Python packages are also required but these are
+1. The numpy, scipy, and gvar Python packages are also required but these are
 	installed automatically if not present.
 
-	The cython package is used to convert .pyx files to .c files. The .c files
-	are included in the distribution so cython is not required to install
-	lsqfit. To force regeneration of the .c files set USE_CYTHON=True in
-	setup.py. Note that there can be issues compiling cython modules on
-	Windows: for tips on how to deal with them, see
+	(Optional) Install the Gnu Scientific Library (GSL v2.2.1 or greater) 
+	which provides underlying fitters, written in C. Should the build process 
+	for lsqfit have difficulty finding the GSL libraries or headers, modify the 
+	build script (setup.py) to point to the directories containing the gsl
+	headers and compiled libraries: add explicit addresses to the
+	include_dirs, library_dirs, and runtime_library_dirs lists in setup.py
+	(see dictionary ext_args_gsl). lsqfit can be built without GSL, using
+	scipy instead, but more options are available if both
+	are included.
+	(http://www.gnu.org/software/gsl/)
 
-		https://github.com/cython/cython/wiki/CythonExtensionsOnWindows
-
-	pip is used to install and uninstall lsqfit. pip accompanies
-	python in most installations.
-
-	lsqfit works for Python 2.7, and Python 3.2-3.6. It does not work
-	for Python versions 2.5.X or earlier. It has not been tested for Python
-	3.0 and 3.1, but likely works at least with the latter. Some of the tests
-	don't work with Python 2.6. It has not been tested with 3.5 but probably
-	works.
+	lsqfit works for Python 2.7, and Python 3, but support for Python 2.7  
+	will disappear eventually.
 
 2. Use 'make install' to install gvar into the system's standard library
 	(as opposed to the user's library; use 'make install-user' to install
@@ -49,11 +28,7 @@ To install:
 
 	N.B. If you have previously installed older versions of lsqfit,
 	consider removing the earlier modules to make sure that the new ones are
-	used by Python. This will not be a problem if the new modules overwrite
-	the older ones, but could cause trouble if the new modules are written
-	to a different place. Find out where the older modules are stored by
-	using 'pydoc lsqfit' before installing the new software
-	(pydoc lists the location of the module under "FILE").
+	used by Python.
 
 	N.B. Adjust the entries for variables include_dirs, library_dirs, and
 	runtime_library_dirs in setup.py if 'make install' generates complaints
@@ -91,7 +66,7 @@ Problems:
 	Contact Peter Lepage: g.p.lepage@cornell.edu
 
 
-# Copyright (c) 2008-2018 G. Peter Lepage.
+# Copyright (c) 2008-2023 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

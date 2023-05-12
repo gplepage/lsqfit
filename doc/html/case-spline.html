@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Case Study: Fitting a Spline &#8212; lsqfit 13.0 documentation</title>
+    <title>Case Study: Fitting a Spline &#8212; lsqfit 13.0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -40,7 +41,7 @@
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Case Study: Fitting a Spline</a></li> 
       </ul>
     </div>  
@@ -51,12 +52,12 @@
           <div class="body" role="main">
             
   <section id="case-study-fitting-a-spline">
-<h1>Case Study: Fitting a Spline<a class="headerlink" href="#case-study-fitting-a-spline" title="Permalink to this headline">¶</a></h1>
+<h1>Case Study: Fitting a Spline<a class="headerlink" href="#case-study-fitting-a-spline" title="Permalink to this heading">¶</a></h1>
 <p>This study shows how to fit noisy data when
 the underlying functional form is unknown. The
 function is modeled with a spline.</p>
 <section id="the-problem">
-<h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this headline">¶</a></h2>
+<h2>The Problem<a class="headerlink" href="#the-problem" title="Permalink to this heading">¶</a></h2>
 <p>Our goal is to determine a function <code class="docutils literal notranslate"><span class="pre">f(m)</span></code> from data for a
 different function <code class="docutils literal notranslate"><span class="pre">F(m,a)</span></code> where</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">F</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">a</span><span class="p">)</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">+</span> <span class="n">sum_n</span> <span class="n">c_n</span> <span class="o">*</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">)</span>
@@ -102,7 +103,7 @@ numerical simulations of QCD, where parameter <code class="docutils literal notr
 is the grid spacing.</p>
 </section>
 <section id="spline-fit">
-<h2>Spline Fit<a class="headerlink" href="#spline-fit" title="Permalink to this headline">¶</a></h2>
+<h2>Spline Fit<a class="headerlink" href="#spline-fit" title="Permalink to this heading">¶</a></h2>
 <p>The following code reads the fit data from file <code class="docutils literal notranslate"><span class="pre">'spline.p'</span></code>,
 and fits it using a cubic spline (<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.cspline.CSpline()</span></code>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
@@ -264,8 +265,9 @@ agrees well with the exact result for all <code class="docutils literal notransl
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
 <li><a class="reference internal" href="#">Case Study: Fitting a Spline</a><ul>
 <li><a class="reference internal" href="#the-problem">The Problem</a></li>
 <li><a class="reference internal" href="#spline-fit">Spline Fit</a></li>
@@ -273,12 +275,17 @@ agrees well with the exact result for all <code class="docutils literal notransl
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="case-pendulum.html"
-                        title="previous chapter">Case Study: Numerical Analysis inside a Fit</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="case-outliers.html"
-                        title="next chapter">Case Study: Outliers and Bayesian Integrals</a></p>
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="case-pendulum.html"
+                          title="previous chapter">Case Study: Numerical Analysis inside a Fit</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="case-outliers.html"
+                          title="next chapter">Case Study: Outliers and Bayesian Integrals</a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -295,7 +302,7 @@ agrees well with the exact result for all <code class="docutils literal notransl
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
@@ -315,13 +322,13 @@ agrees well with the exact result for all <code class="docutils literal notransl
         <li class="right" >
           <a href="case-pendulum.html" title="Case Study: Numerical Analysis inside a Fit"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Case Study: Fitting a Spline</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2009-2019, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.2.0.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>
 </html>

@@ -36,7 +36,6 @@ if sys.version_info >= (3, 7):
             raise FileNotFoundError('bad return code from gsl-config')
         libs = p.stdout.decode('utf-8').split(' ')[0][2:]
         ext_args_gsl['library_dirs'].append(libs)
-        print('here!', ext_args_gsl)
         ext_modules.append(
             Extension(name='lsqfit._gsl', sources=['src/lsqfit/_gsl.pyx'], **ext_args_gsl)
             )
@@ -44,7 +43,6 @@ if sys.version_info >= (3, 7):
         # no gsl
         ext_modules = ext_modules[:1]
 else:
-    print('xxxx hi')
     ext_modules.append(
         Extension(name='lsqfit._gsl', sources=['src/lsqfit/_gsl.pyx'], **ext_args_gsl)
         )
