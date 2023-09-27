@@ -93,7 +93,7 @@ equation for <code class="docutils literal notranslate"><span class="pre">theta(
 <span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
 
 <span class="k">class</span> <span class="nc">Pendulum</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Integrator for pendulum motion.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; Integrator for pendulum motion.</span>
 
 <span class="sd">    Input parameters are:</span>
 <span class="sd">        g/l .... where g is acceleration due to gravity and l the length</span>
@@ -104,7 +104,7 @@ equation for <code class="docutils literal notranslate"><span class="pre">theta(
         <span class="bp">self</span><span class="o">.</span><span class="n">odeint</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">ode</span><span class="o">.</span><span class="n">Integrator</span><span class="p">(</span><span class="n">deriv</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deriv</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta0</span><span class="p">,</span> <span class="n">t_array</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Calculate pendulum angle theta for every t in t_array.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Calculate pendulum angle theta for every t in t_array.</span>
 
 <span class="sd">        Assumes that the pendulum is released at time t=0</span>
 <span class="sd">        from angle theta0 with no initial velocity. Returns</span>
@@ -302,7 +302,7 @@ the <code class="docutils literal notranslate"><span class="pre">t</span></code>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2009-2019, G. P. Lepage.
+        &#169; Copyright 2009-2023, G. P. Lepage.
       Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
     </div>
   </body>

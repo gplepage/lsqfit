@@ -1,6 +1,7 @@
+#
 # -*- coding: utf-8 -*-
 #
-# lsqfit documentation build configuration file, created by
+# gvar documentation build configuration file, created by
 # sphinx-quickstart on Sat Dec 26 13:11:17 2009.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -11,7 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+# import sys, os
 import lsqfit
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -27,10 +28,12 @@ import lsqfit
 # jsmath_path = '/usr/local/share/jsmath/easy/load.js'
 # extensions = ['sphinx.ext.autodoc','sphinx.ext.mathjax']
 extensions = ['sphinx.ext.autodoc','sphinx.ext.napoleon', 'sphinx.ext.imgmath'] # ,'rst2pdf.pdfbuilder']
-imgmath_image_format = 'png'
+imgmath_image_format = 'svg'
 imgmath_use_preview = True
 imgmath_latex_preamble = r"\usepackage{arev}"
-imgmath_dvipng_args = ['-gamma', '0.35', '-D', '110', '-bg', 'Transparent']
+#imgmath_dvipng_args = ['-gamma', '0.35', '-D', '110', '-bg', 'Transparent']
+# imgmath_dvisvgm_args = ['-TT 10cm,0.1cm']
+imgmath_font_size = 12
 
 napoleon_google_docstring = True
 napoleon_numpy_docstring = True
@@ -56,8 +59,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'lsqfit'
-copyright = '2009-2019, G. P. Lepage'
+project = u'lsqfit'
+copyright = u'2009-2023, G. P. Lepage'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -84,6 +87,7 @@ release = lsqfit.__version__
 # List of directories, relative to source directory, that shouldn't be searched
 # for source files.
 exclude_trees = ['_build']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The reST default role (used for this markup: `text`) to use for all documents.
 #default_role = None
@@ -100,7 +104,7 @@ exclude_trees = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -112,7 +116,6 @@ pygments_style = 'sphinx'
 # Sphinx are currently 'default' and 'sphinxdoc'.
 html_theme = 'sphinxdoc'
 html_theme = 'nature'
-html_theme = 'sphinx_rtd_theme'
 html_theme = 'pyramid'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -180,37 +183,6 @@ html_static_path = ['_static']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'lsqfitdoc'
+# htmlhelp_basename = 'gvardoc'
 
 
-# -- Options for LaTeX output --------------------------------------------------
-
-# The paper size ('letter' or 'a4').
-#latex_paper_size = 'letter'
-
-# The font size ('10pt', '11pt' or '12pt').
-#latex_font_size = '10pt'
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-  ('index', 'lsqfit.tex', 'lsqfit Documentation',
-   'G. P. Lepage', 'manual'),
-]
-
-# The name of an image file (relative to this directory) to place at the top of
-# the title page.
-#latex_logo = None
-
-# For "manual" documents, if this is true, then toplevel headings are parts,
-# not chapters.
-#latex_use_parts = False
-
-# Additional stuff for the LaTeX preamble.
-#latex_preamble = ''
-
-# Documents to append as an appendix to all manuals.
-#latex_appendices = []
-
-# If false, no module index is generated.
-#latex_use_modindex = True

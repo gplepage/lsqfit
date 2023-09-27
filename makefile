@@ -27,6 +27,7 @@ install install-sys :
 	$(PIP) install . --no-cache-dir
 
 update:
+	rm src/lsqfit/*.c 
 	make uninstall install
 
 rebuild:
