@@ -36,3 +36,5 @@ lsqfit.egg-info
 outputfile.p
 README.html
 multi/
+src/lsqfit/_gsl.c        
+src/lsqfit/_utilities.c
