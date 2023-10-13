@@ -10,7 +10,7 @@ jobs:
       # matrix:
       #   os:  [ubuntu-20.04]
       matrix:
-        os: [ubuntu-22.04, windows-2022, macos-11]
+        os: [ubuntu-22.04, windows-2022, macos-12]
         # see https://github.com/actions/runner-images
     steps:
       - uses: actions/checkout@v4
