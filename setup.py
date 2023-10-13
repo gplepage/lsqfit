@@ -1,4 +1,5 @@
 from setuptools import setup, Extension
+from Cython.Build import cythonize
 import numpy
 import subprocess
 import sys
@@ -48,11 +49,11 @@ else:
         )
 
 try:    
-    setup(ext_modules=ext_modules)
+    setup(ext_modules=cythonize(ext_modules))
 except:
     print("*** can't find gsl; re-install without it")
     if len(ext_modules) > 1:
-        setup(ext_modules=ext_modules[:1])
+        setup(ext_modules=cythonize(ext_modules[:1]))
     else:
         raise RuntimeError("can't find gsl or scipy")
 

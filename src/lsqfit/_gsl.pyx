@@ -128,10 +128,10 @@ cdef extern from "gsl/gsl_multifit_nlinear.h":
         GSL_MULTIFIT_NLINEAR_CTRDIFF
 
     ctypedef struct gsl_multifit_nlinear_fdf:
-        int (* f) (const gsl_vector * x, void * params, gsl_vector * f)
-        int (* df) (const gsl_vector * x, void * params, gsl_matrix * df)
+        int (* f) (const gsl_vector * x, void * params, gsl_vector * f) noexcept
+        int (* df) (const gsl_vector * x, void * params, gsl_matrix * df) noexcept
         int (* fvv) (const gsl_vector * x, const gsl_vector * v, void * params,
-                   gsl_vector * fvv)
+                   gsl_vector * fvv) noexcept
         size_t n        # number of functions
         size_t p        # number of independent variables
         void * params   # user parameters
@@ -349,7 +349,7 @@ cdef extern from "gsl/gsl_multifit_nlin.h":
 # for v1 of gsl multifit
 cdef extern from "gsl/gsl_multimin.h":
     ctypedef struct gsl_multimin_function:
-        double (*f) (gsl_vector* x, void* p)
+        double (*f) (gsl_vector* x, void* p) noexcept
         int n
         void * params
 
@@ -726,7 +726,7 @@ class gsl_multifit(object):
 
 
 # wrappers for multifit's python function #
-cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):
+cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) noexcept:
     global _p_f, _pyerr
     cdef numpy.ndarray f
     # can't do numpy.ndarray[object,ndim=1] because might be numbers
@@ -741,7 +741,7 @@ cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf):
         _pyerr = sys.exc_info()
         return GSL_EBADFUNC
 
-cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ):
+cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) noexcept:
     global _p_f, _pyerr, _valder
     cdef gvar.GVar fi
     cdef gvar.svec fi_d
@@ -761,7 +761,7 @@ cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ):
         _pyerr = sys.exc_info()
         return GSL_EBADFUNC
 
-cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ):
+cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ) noexcept:
     global _p_f, _pyerr, _valder
     cdef gvar.GVar fi
     cdef gvar.svec f_i_d
@@ -1096,7 +1096,7 @@ class gsl_multiminex(object):
         return str(self.x)
 
 # wrapper for multiminex's python function #
-cdef double _c_fs(gsl_vector* vx, void* p):
+cdef double _c_fs(gsl_vector* vx, void* p) noexcept:
     global _p_fs, _pyerr
     if _pyerr is not None:
         return GSL_NAN

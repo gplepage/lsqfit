@@ -27,11 +27,11 @@ install install-sys :
 	$(PIP) install . --no-cache-dir
 
 update:
-	rm src/lsqfit/*.c 
+	rm -rf src/lsqfit/*.c 
 	make uninstall install
 
 rebuild:
-	rm src/lsqfit/*.c 
+	rm -rf src/lsqfit/*.c 
 	make update
 
 uninstall :			# mostly works (may leave some empty directories)
@@ -72,7 +72,7 @@ run run-examples:
 	$(MAKE) -C examples PYTHON=$(PYTHON) run
 
 upload-twine: 
-	twine upload dist/lsqfit-$(VERSION).tar.gz
+	twine upload dist/lsqfit-$(VERSION)*
 
 upload-git: 
 	echo  "version $(VERSION)"

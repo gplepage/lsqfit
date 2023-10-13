@@ -4,7 +4,8 @@ requires = [
     "wheel",
 
     # see https://github.com/scipy/oldest-supported-numpy/tree/main
-    "oldest-supported-numpy>=2023.8.3; python_version>='3.7'",
+    "oldest-supported-numpy>=2023.8.3; python_version>='3.8'",
+    "numpy==1.16.6; python_version=='3.7'",
     "numpy; python_version<'3.7'",
 
     "Cython>=0.29.33",

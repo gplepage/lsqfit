@@ -1,7 +1,9 @@
-Version 13.0.1
-=================
+Version 13.0.3 2023-10-13
+===========================
 - New installation code so that it works on Python3.11 even when numpy
-  is not installed.
+  is not installed, and on systems with old versions of numpy.
+
+- Adds Python wheels to PyPi distribution.
 
 
 Version 13 2022-11-01
