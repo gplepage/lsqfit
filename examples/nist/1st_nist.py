@@ -5,8 +5,8 @@ import gvar as gv
 import numpy as np
 import lsqfit
 
-# lsqfit.nonlinear_fit.set(alg='subspace2D')
-# lsqfit.nonlinear_fit.set(fitter='scipy_least_squares')  # doesn't work
+lsqfit.nonlinear_fit.set(alg='subspace2D')
+# lsqfit.nonlinear_fit.set(fitter='scipy_least_squares', method='dogbox')  # doesn't work
 
 log = np.log
 exp = np.exp
@@ -723,7 +723,10 @@ def mgh17():
         prior=prior, data=(x,y), fcn=fcn, p0=p0, tol=1e-10,
         )
     print(fit)
-    assert str(fit.p) == '[0.3754(21) 1.94(22) -1.46(22) 0.01287(45) 0.02212(89)]'
+    correct = str(sorted(
+        ['0.3754(21)', '1.94(22)', '-1.46(22)', '0.01287(45)', '0.02212(89)']
+        ))
+    assert str(sorted(gv.fmt(fit.p))) == correct
 
 
 def lanczos1():

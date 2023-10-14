@@ -2045,8 +2045,8 @@ across most (80%) of the interval 0.02±0.02.
 
 .. _faster-fitters:
 
-Faster Fitters
--------------------
+Faster Fitters; Default Settings
+-----------------------------------
 |nonlinear_fit| uses fitters from the Gnu Scientific Library (GSL) and/or
 from the :mod:`scipy` Python module to do the actual fitting, depending
 upon which of these is installed. It is worth trying a different fitter
@@ -2089,8 +2089,17 @@ to |nonlinear_fit|'s argument list, for example, can double or triple
 the fitter's speed for  large problems.
 The more robust choices are important for challenging fits, but
 straightforward fits can be greatly accelerated by using different options.
-The ``scipy_least_squares`` fitter can also be much faster than the default.
-It is worth experimenting when fits become costly.
+The ``scipy_least_squares`` fitter can also be much faster than the default: e.g., set ::
+
+  fitter='scipy_least_squares', method='dogbox'
+
+It is worth experimenting when fits become costly
+
+Note: The GSL fitters are not included in binary distributions (wheels) of 
+``lsqfit``. To use these fitters, first install the GSL library and then install
+``lsqfit`` from its source code::
+  
+   pip install --no-binary lsqfit lsqfit
 
 Method :meth:`lsqfit.nonlinear_fit.set`
 modifies the defaults used by |nonlinear_fit|.

@@ -2682,8 +2682,8 @@ is chosen to make the prior probability
 distribution for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code> almost flat
 across most (80%) of the interval 0.02±0.02.</p>
 </section>
-<section id="faster-fitters">
-<span id="id2"></span><h2>Faster Fitters<a class="headerlink" href="#faster-fitters" title="Permalink to this heading">¶</a></h2>
+<section id="faster-fitters-default-settings">
+<span id="faster-fitters"></span><h2>Faster Fitters; Default Settings<a class="headerlink" href="#faster-fitters-default-settings" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> uses fitters from the Gnu Scientific Library (GSL) and/or
 from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Python module to do the actual fitting, depending
 upon which of these is installed. It is worth trying a different fitter
@@ -2726,8 +2726,17 @@ can be much faster. Adding</p>
 the fitter’s speed for  large problems.
 The more robust choices are important for challenging fits, but
 straightforward fits can be greatly accelerated by using different options.
-The <code class="docutils literal notranslate"><span class="pre">scipy_least_squares</span></code> fitter can also be much faster than the default.
-It is worth experimenting when fits become costly.</p>
+The <code class="docutils literal notranslate"><span class="pre">scipy_least_squares</span></code> fitter can also be much faster than the default: e.g., set</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fitter</span><span class="o">=</span><span class="s1">&#39;scipy_least_squares&#39;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;dogbox&#39;</span>
+</pre></div>
+</div>
+<p>It is worth experimenting when fits become costly</p>
+<p>Note: The GSL fitters are not included in binary distributions (wheels) of
+<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code>. To use these fitters, first install the GSL library and then install
+<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> from its source code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">binary</span> <span class="n">lsqfit</span> <span class="n">lsqfit</span>
+</pre></div>
+</div>
 <p>Method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.set" title="lsqfit.nonlinear_fit.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.set()</span></code></a>
 modifies the defaults used by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.
 For example, we can make the fast
@@ -2769,7 +2778,7 @@ It is a good idea to set this parameter in the early stages of any project.</p>
 <p>Sometimes the optimization algorithm has trouble finding the true
 minimum of the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function, leading to unexpectedly poor fits.
 Trying a different algorithm
-(see <a class="reference internal" href="#faster-fitters"><span class="std std-ref">Faster Fitters</span></a>) will sometimes help. Another option is
+(see <a class="reference internal" href="#faster-fitters"><span class="std std-ref">Faster Fitters; Default Settings</span></a>) will sometimes help. Another option is
 to replace <code class="docutils literal notranslate"><span class="pre">svdcut</span></code> with <code class="docutils literal notranslate"><span class="pre">eps</span></code> in <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>, which changes
 the underlying fit functions from which <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> is constructed.
 A third option is to try different starting points <code class="docutils literal notranslate"><span class="pre">p0</span></code>. The
@@ -2876,7 +2885,7 @@ This line can be rewritten</p>
 <li><a class="reference internal" href="#y-has-unknown-errors"><code class="docutils literal notranslate"><span class="pre">y</span></code> has Unknown Errors</a></li>
 <li><a class="reference internal" href="#tuning-priors-with-the-empirical-bayes-criterion">Tuning Priors with the Empirical Bayes Criterion</a></li>
 <li><a class="reference internal" href="#positive-parameters-non-gaussian-priors">Positive Parameters; Non-Gaussian Priors</a></li>
-<li><a class="reference internal" href="#faster-fitters">Faster Fitters</a></li>
+<li><a class="reference internal" href="#faster-fitters-default-settings">Faster Fitters; Default Settings</a></li>
 <li><a class="reference internal" href="#debugging-and-troubleshooting">Debugging and Troubleshooting</a></li>
 </ul>
 </li>
