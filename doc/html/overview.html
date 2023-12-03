@@ -2731,13 +2731,6 @@ The <code class="docutils literal notranslate"><span class="pre">scipy_least_squ
 </pre></div>
 </div>
 <p>It is worth experimenting when fits become costly</p>
-<p>Note: The GSL fitters are not included in binary distributions (wheels) of
-<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code>. To use these fitters, first install the GSL library (command-line
-command <code class="docutils literal notranslate"><span class="pre">gsl-config</span></code> should be on your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>) and then install
-<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> from its source code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">lsqfit</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">binary</span> <span class="n">lsqfit</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="nb">dir</span>
-</pre></div>
-</div>
 <p>Method <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit.set" title="lsqfit.nonlinear_fit.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.set()</span></code></a>
 modifies the defaults used by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.
 For example, we can make the fast
@@ -2767,6 +2760,13 @@ module, which provides powerful tools for error propagation, generating error
 budgets, and creating potentially complicated priors for Bayesian fitting. The
 underlying fitters are available from <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> for use in other
 more specialized applications.</p>
+<p>Note: The GSL fitters are not included in binary distributions (wheels) of
+<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code>. To use these fitters, first install the GSL library (command-line
+command <code class="docutils literal notranslate"><span class="pre">gsl-config</span></code> should be on your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>) and then install
+<code class="docutils literal notranslate"><span class="pre">lsqfit</span></code> from its source code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">lsqfit</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">binary</span> <span class="n">lsqfit</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="nb">dir</span>
+</pre></div>
+</div>
 </section>
 <section id="debugging-and-troubleshooting">
 <h2>Debugging and Troubleshooting<a class="headerlink" href="#debugging-and-troubleshooting" title="Permalink to this heading">¶</a></h2>

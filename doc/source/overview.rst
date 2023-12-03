@@ -2095,13 +2095,6 @@ The ``scipy_least_squares`` fitter can also be much faster than the default: e.g
 
 It is worth experimenting when fits become costly
 
-Note: The GSL fitters are not included in binary distributions (wheels) of 
-``lsqfit``. To use these fitters, first install the GSL library (command-line 
-command ``gsl-config`` should be on your ``PATH``) and then install
-``lsqfit`` from its source code::
-  
-   python -m pip install lsqfit --no-binary lsqfit --no-cache-dir
-
 Method :meth:`lsqfit.nonlinear_fit.set`
 modifies the defaults used by |nonlinear_fit|.
 For example, we can make the fast
@@ -2132,6 +2125,14 @@ module, which provides powerful tools for error propagation, generating error
 budgets, and creating potentially complicated priors for Bayesian fitting. The
 underlying fitters are available from :mod:`lsqfit` for use in other
 more specialized applications.
+
+Note: The GSL fitters are not included in binary distributions (wheels) of 
+``lsqfit``. To use these fitters, first install the GSL library (command-line 
+command ``gsl-config`` should be on your ``PATH``) and then install
+``lsqfit`` from its source code::
+  
+   python -m pip install lsqfit --no-binary lsqfit --no-cache-dir
+
 
 Debugging and Troubleshooting
 -----------------------------
