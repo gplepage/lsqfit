@@ -1,3 +1,13 @@
+Version 13.0.4 2023-12-03???
+=============================
+- Small changes to tests and examples to account for new formatting of GVars (v12.0).
+
+- More robust (and simpler) implementation of lsqfit.__version__ --- no longer 
+  uses importlib.metadata which is buggy.
+
+- Documentation on how to compile with the GSL library (ie, don't use the lsqfit wheels).
+
+
 Version 13.0.3 2023-10-13
 ===========================
 - New installation code so that it works on Python3.11 even when numpy

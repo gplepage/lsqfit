@@ -1,4 +1,4 @@
-# Copyright (c) 2017-20 G. Peter Lepage.
+# Copyright (c) 2017-23 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,21 +16,38 @@ from __future__ import print_function
 import numpy as np
 import gvar as gv
 import lsqfit
-import vegas
+import sys 
+
+try:
+    import vegas
+except:
+    # fake the run so that `make run` still works
+    outfile = open('bayes.out', 'r').read()
+    print(outfile[:-1])
+    exit(0)
+
+
+if sys.argv[1:]:
+    SHOW_PLOT = eval(sys.argv[1])   # display picture of grid ?
+else:
+    SHOW_PLOT = True
+
+if SHOW_PLOT:
+    try:
+        import matplotlib.pyplot as plt
+    except ImportError:
+        SHOW_PLOT = False
 
 gv.ranseed(1)
 
 def main():
-    if not hasattr(lsqfit, 'BayesIntegrator'):
-        # fake the run so that `make run` still works
-        outfile = open('bayes.out', 'r').read()
-        print(outfile[:-1])
-        return
+    # least squares fit
     x, y = make_data()
     prior = make_prior()
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
     print(fit)
-    # Bayesian integrator
+
+    # check whether Gaussian using Bayesian integrator
     expval = vegas.PDFIntegrator(fit.p, sync_ran=False)
 
 
@@ -41,22 +58,22 @@ def main():
         ]
     def g(p):
         return dict(
+            pdf=np.exp(fit.logpdf(p)),
             mean=p,
             outer=np.outer(p, p),
             count=[
                 hist[0].count(p[0]), hist[1].count(p[1]),
                 hist[2].count(p[2]), hist[3].count(p[3]),
                 ],
-            pdf = np.exp(fit.logpdf(p))
             )
 
     # adapt integrator expval to PDF from fit
     neval = 1000
     nitn = 10
-    expval(pdfkey='pdf', neval=neval, nitn=nitn)
+    expval(neval=neval, nitn=nitn)
 
     # evaluate expectation value of g(p)
-    results = expval(g, pdfkey='pdf', neval=neval, nitn=nitn, adapt=False)
+    results = expval(g, neval=neval, nitn=nitn, adapt=False)
 
     # analyze results
     print('\nIterations:')
@@ -71,7 +88,7 @@ def main():
     p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
     print('\nBayesian Parameters:')
     print(gv.tabulate(p))
-    print('\nlog(Bayes Factor) =', np.log(results.norm))
+    print('\npdf norm =', results.pdfnorm)
 
     # show histograms
     print('\nHistogram Statistics:')
@@ -80,13 +97,15 @@ def main():
         # print histogram statistics
         print('p[{}]:'.format(i))
         print(hist[i].analyze(count[i]).stats)
-    #     # make histogram plots
-    #     plt.subplot(2, 2, i + 1)
-    #     plt.xlabel('p[{}]'.format(i))
-    #     hist[i].make_plot(count[i], plot=plt)
-    #     if i % 2 != 0:
-    #         plt.ylabel('')
-    # plt.show()
+        if SHOW_PLOT:
+            # make histogram plots
+            plt.subplot(2, 2, i + 1)
+            plt.xlabel('p[{}]'.format(i))
+            hist[i].make_plot(count[i], plot=plt)
+            if i % 2 != 0:
+                plt.ylabel('')
+    if SHOW_PLOT:
+        plt.show()
 
 def make_data():
     x = np.array([

@@ -33,6 +33,7 @@ doc/html/_static/dialog-todo.png
 doc/latex/
 doc/source/outputfile.p
 lsqfit.egg-info
+src/lsqfit.egg-info
 outputfile.p
 README.html
 multi/

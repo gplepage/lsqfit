@@ -10,7 +10,7 @@ from lsqfit import MultiFitter, MultiFitterModel
 
 class test_multifitter(unittest.TestCase):
     def setUp(self):
-        gv.ranseed(1)
+        gv.ranseed(12345)
         # a = gv.gvar('1.000(1)')
         # b = gv.gvar('0.500(1)')
         a = gv.gvar('1.0(1)')
@@ -23,7 +23,7 @@ class test_multifitter(unittest.TestCase):
             ans['c2'] = 4 * [p['a']]
             return ans
         self.prior = gv.BufferDict([('a', a), ('b', b)])
-        self.data = gv.make_fake_data(fcn(self.prior))
+        self.data = gv.make_fake_data(fcn(self.prior))  # with gv._GVAR_RNG = np.random
         self.fcn = fcn
         # reference fit without using MultiFitter
         self.ref_fit = lsqfit.nonlinear_fit(

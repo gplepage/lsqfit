@@ -1,7 +1,7 @@
 """
 y-noerr.py - Code for "y has no Error Bars"
 """
-# Copyright (c) 2017-20 G. Peter Lepage.
+# Copyright (c) 2017-23 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@ from __future__ import print_function
 import numpy as np
 import gvar as gv
 import lsqfit
+
+gv.ranseed(123)
 
 def main():
     x, y = make_data()

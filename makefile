@@ -21,18 +21,17 @@ SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
 CYTHONFILES := src/lsqfit/_gsl.c src/lsqfit/_utilities.c
 
 install-user : 
+	rm -rf src/lsqfit/*.c 
+	python make_version.py src/lsqfit/_version.py
 	$(PIP) install . --user --no-cache-dir
 
 install install-sys : 
+	rm -rf src/lsqfit/*.c 
+	python make_version.py src/lsqfit/_version.py
 	$(PIP) install . --no-cache-dir
 
 update:
-	rm -rf src/lsqfit/*.c 
 	make uninstall install
-
-rebuild:
-	rm -rf src/lsqfit/*.c 
-	make update
 
 uninstall :			# mostly works (may leave some empty directories)
 	- $(PIP) uninstall lsqfit

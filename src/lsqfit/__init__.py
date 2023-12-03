@@ -94,16 +94,7 @@ import numpy
 
 import gvar as _gvar
 
-try:
-    if sys.version_info >= (3, 8):
-        from importlib import metadata
-    else:
-        import importlib_metadata as metadata
-    __version__ = metadata.version('lsqfit')
-except:
-    # less precise default if fail
-    __version__ = '>=13.0.1'
-
+from ._version import __version__
 
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(

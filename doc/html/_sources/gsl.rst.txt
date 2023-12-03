@@ -8,8 +8,14 @@ GSL Routines
 Fitters
 --------
 :mod:`lsqfit` uses routines from the GSL C-library provided it is
-installed; GSL is the open-source Gnu Scientific Library. There are two
-fitters that are available for use by |nonlinear_fit|.
+installed and :mod:`lsqfit` is installed from source (not from a Python wheel); 
+GSL is the open-source Gnu Scientific Library. To install :mod:`lsqfit` from source use ::
+
+    python -m pip install lsqfit --no-binary lsqfit --no-cache-dir
+
+making sure that command-line command ``gsl-config`` is on your ``PATH``.
+
+There are two GSL fitters that are available for use by |nonlinear_fit|.
 
 .. class:: lsqfit.gsl_multifit(n, f, tol=(1e-5, 0.0, 0.0), maxit=1000, alg='lm', solver='qr', scaler='more', factor_up=3.0, factor_down=2.0, avmax=0.75)
 

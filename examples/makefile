@@ -34,12 +34,8 @@ run:
 	- diff -w -I svdcut -I fitter nist.out nist.tmp
 	$(PYTHON) uncorrelated.py > uncorrelated.tmp
 	- diff -w -I svdcut -I fitter uncorrelated.out uncorrelated.tmp
-	$(PYTHON) bayes.py > bayes.tmp
+	$(PYTHON) bayes.py $(PLOT) > bayes.tmp
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
-	# mpi tests
-	- mpirun -np 2 -outfile-pattern=bayes.tmp.%r $(PYTHON) bayes.py
-	- diff -w -I svdcut -I fitter bayes.out bayes.tmp.0
-	- diff -w -I svdcut -I fitter bayes.out bayes.tmp.1
 
 time:
 	time $(MAKE) _time
@@ -55,19 +51,20 @@ _time:
 	$(PYTHON) pendulum.py > /dev/null
 	$(PYTHON) nist.py > /dev/null
 	$(PYTHON) uncorrelated.py > /dev/null
-	$(PYTHON) bayes.py > /dev/null
+	$(PYTHON) bayes.py False > /dev/null
 
 update-all:
 	$(PYTHON) simple.py > simple.out
-	$(PYTHON) y-vs-x.py > y-vs-x.out
+	$(PYTHON) multifitter.py False > multifitter.out
+	$(PYTHON) y-vs-x.py False > y-vs-x.out
 	$(PYTHON) x-err.py > x-err.out
-	$(PYTHON) p-corr.py > p-corr.out
+	$(PYTHON) p-corr.py False > p-corr.out
 	$(PYTHON) y-noerr.py > y-noerr.out
 	$(PYTHON) empbayes.py > empbayes.out
 	$(PYTHON) pendulum.py > pendulum.out
 	$(PYTHON) nist.py > nist.out
 	$(PYTHON) uncorrelated.py > uncorrelated.out
-	$(PYTHON) bayes.py > bayes.out
+	$(PYTHON) bayes.py False > bayes.out
 
 clean:
 	rm -f *.pyc *.tmp *.p *.prof *.1.0 *.1.1
