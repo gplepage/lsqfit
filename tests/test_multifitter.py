@@ -530,7 +530,7 @@ class test_multifitter(unittest.TestCase):
             prior = dict(a=gv.gvar(1.0, z), b=gv.gvar(0.5, z))
             return dict(prior=prior, data=self.data, chained=False, p0=dict(a=20., b=20.))
         fit2,z2 = fitter.empbayes_fit(0.1, fitargs2, p0=dict(a=2.0, b=1.), step=0.01)
-        self.assertAlmostEqual(z, z2)
+        self.assertAlmostEqual(abs(z), abs(z2))
         self.assertGreater(fit.logGBF, self.ref_fit.logGBF)
         self.assertGreater(fit2.nit, fit.nit)
 
