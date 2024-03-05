@@ -1861,7 +1861,7 @@ class vegas_fit(object):
 
     When the PDF is sufficiently peaked around its maximum, 
     :math:`\chi^2(p)` is (usually) well approximated by a quadratic
-    expansion around its minimum, and the results obtained from 
+    expansion around its minimum, and results obtained from 
     :mod:`lsqfit.vegas_fit` will agree with those obtained from 
     :mod:`lsqfit.nonlinear_fit` --- the latter is the Gaussian 
     approximation to the former. The output from ``nonlinear_fit``
@@ -1961,8 +1961,7 @@ class vegas_fit(object):
             a dictionary where each ``p[k]`` is a single parameter or an array
             of parameters (any shape); or, 2) a single array of parameters. The
             layout of the parameters is the same as that of prior ``prior`` if
-            it is specified; otherwise, it is inferred from of the starting
-            value ``p0`` for the fit.
+            it is specified; otherwise, it is inferred from ``param``.
 
             ``vegas_fit`` is usually much faster if ``fcn`` is designed to 
             process a large batch of integration points all at once. See
@@ -1991,11 +1990,11 @@ class vegas_fit(object):
             Ignored if parameter ``fit`` is specified.
 
         fit: Fit results from either :class:`lsqfit.nonlinear_fit` or 
-            :class:`lsqfit.vegas_fit``. When ``fit`` is specified, the 
-            data, prior, and fit function are take from ``fit``. The fit 
-            function from ``fit`` can be replaced by setting the ``fcn`` 
-            parameter (for example, to replace ``fit.fcn`` by an equivalent 
-            batch function). 
+            :class:`lsqfit.vegas_fit`. When ``fit`` is specified, the 
+            data, prior, and fit function are take from ``fit`` and 
+            ``param=fit.p`` is set. The fit function from ``fit`` can 
+            be replaced by setting the ``fcn`` parameter (for example, 
+            to replace ``fit.fcn`` by an equivalent batch function). 
 
         svdcut (float): If nonzero, singularities in the correlation
             matrix for ``y`` and ``prior`` are regulated using 
@@ -2444,7 +2443,7 @@ class vegas_fit(object):
         
         When the |vegas_fit| object is derived from a |nonlinear_fit|
         object (``vfit = vegas_fit(fit=fit)``), the PDF is 
-        :math:`\exp(-(\chi^2(p) - \chi^2_\mathrm{min})/2). Otherwise
+        :math:`\exp(-(\chi^2(p) - \chi^2_\mathrm{min})/2)`. Otherwise
         it is just :math:`\exp(-\chi^2(p)/2)`. In either case it 
         is *not* normalized. Divide by ``vfit.pdfnorm`` to normalize 
         it.
