@@ -15,6 +15,7 @@
 
 import collections
 import copy
+import functools
 import pickle
 import time
 import warnings
@@ -24,21 +25,16 @@ import numpy
 import lsqfit
 import gvar
 
-try:
-    from ._gsl import gsl_multiminex as _multiminex
-    from ._gsl import gammaQ as _gammaQ
-except ImportError:
-    from ._scipy import scipy_multiminex as _multiminex
-    from ._scipy import gammaQ as _gammaQ
+_multiminex = getattr(lsqfit, 'gsl_multiminex', lsqfit.scipy_multiminex)
 
-def empbayes_fit(z0, fitargs, p0=None, **minargs):
-    """ Return fit and ``z`` corresponding to the fit
-    ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``logGBF``.
+def empbayes_fit(z0, fitargs, p0=None, fitter=lsqfit.nonlinear_fit, **minargs):
+    """ Return ``fit`` and ``z`` corresponding to the fit
+    ``lsqfit.nonlinear_fit(**fitargs(z))`` that maximizes ``fit.logGBF``.
 
     This function maximizes the logarithm of the Bayes Factor from
     fit  ``lsqfit.nonlinear_fit(**fitargs(z))`` by varying ``z``,
     starting at ``z0``. The fit is redone for each value of ``z``
-    that is tried, in order to determine ``logGBF``.
+    that is tried, in order to determine ``fit.logGBF``.
 
     The Bayes Factor is proportional to the probability that the data
     came from the model (fit function and priors) used in the fit.
@@ -100,6 +96,13 @@ def empbayes_fit(z0, fitargs, p0=None, **minargs):
     fit curve to estimate that the uncertainty in each data point is
     of order 1.6%.
 
+    :func:`empbayes_fit` can be used with other fitters: for example, 
+    to use ``lsqfit.vegas_int`` instead of ``lsqfit.nonlinear_fit`` 
+    (the default) for the fits, replace the next to last line in 
+    the code above with ::
+    
+        fit, z = lsqfit.empbayes_fit(0.1, fitargs, fitter=lsqfit.vegas_fit).
+
     See also :meth:`MultiFitter.empbayes_fit`.
 
     Args:
@@ -119,6 +122,8 @@ def empbayes_fit(z0, fitargs, p0=None, **minargs):
         p0: Fit-parameter starting values for the first fit. ``p0``
             for subsequent fits is set automatically to optimize fitting
             unless a value is specified by ``fitargs``.
+        fitter: Fitter to be used. Default is ``lsqfit.nonlinear_fit``;
+            also works with ``lsqfit.vegas_fit``.
         minargs (dict): Optional argument dictionary, passed on to
             :class:`lsqfit.gsl_multiminex` (or
             :class:`lsqfit.scipy_multiminex`), which finds the minimum.
@@ -128,10 +133,6 @@ def empbayes_fit(z0, fitargs, p0=None, **minargs):
         :class:`lsqfit.nonlinear_fit`) and the
         optimal value for parameter ``z``.
     """
-    return _empbayes_fit(z0, fitargs, p0=p0, nonlinear_fit=lsqfit.nonlinear_fit, **minargs)
-
-def _empbayes_fit(z0, fitargs, p0, nonlinear_fit, **minargs):
-    " For use by lsqfit.empbayes_fit and lsqfit.MultiFitter.empbayes_fit "
     save = dict(lastz=None, lastp0=p0)
     if hasattr(z0, 'keys'):
         # z is a dictionary
@@ -156,15 +157,21 @@ def _empbayes_fit(z0, fitargs, p0, nonlinear_fit, **minargs):
             args, plausibility = args
         else:
             plausibility = 0.0
-        if save['lastp0'] is not None and 'p0' not in args:
+        if save['lastp0'] is not None and 'p0' not in args and fitter != lsqfit.vegas_fit:
             args['p0'] = save['lastp0']
-        fit = nonlinear_fit(**args)
-        if numpy.isnan(fit.logGBF):
-            raise ValueError
+        fit = fitter(**args)
+        if hasattr(fit, 'logBF'):
+            logGBF = gvar.mean(fit.logBF)
+        elif hasattr(fit, 'logGBF'):
+            logGBF = fit.logGBF 
+        else:
+            raise RuntimeError('fit has no logGBF or logBF')
+        if numpy.isnan(logGBF):
+            raise ValueError('logGBF undefined - nan')
         else:
             save['lastz'] = z
             save['lastp0'] = fit.pmean
-        return -fit.logGBF - plausibility
+        return -logGBF - plausibility
     try:
         z = convert(_multiminex(z0buf, minfcn, **minargs).x)
     except ValueError:
@@ -173,9 +180,9 @@ def _empbayes_fit(z0, fitargs, p0, nonlinear_fit, **minargs):
     args = fitargs(z)
     if not hasattr(args, 'keys'):
         args, plausibility = args
-    if save['lastp0'] is not None and 'p0' not in args:
+    if save['lastp0'] is not None and 'p0' not in args and fitter != lsqfit.vegas_fit:
         args['p0'] = save['lastp0']
-    return nonlinear_fit(**args), z
+    return fitter(**args), z
 
 
 class GVarWAvg(gvar.GVar):
@@ -425,12 +432,12 @@ def wavg(datalist, fast=False, prior=None, **fitterargs):
 
         **fit** - Fit returned by :class:`lsqfit.nonlinear_fit`.
     """
-    if prior is not None:
-        datalist = list(datalist) + [prior]
-        warnings.warn(
-            'use of prior in lsqfit.wavg is deprecated',
-            DeprecationWarning
-            )
+    # if prior is not None:
+    #     datalist = list(datalist) + [prior]
+    #     warnings.warn(
+    #         'use of prior in lsqfit.wavg is deprecated',
+    #         DeprecationWarning
+    #         )
     if len(datalist) <= 0:
         return None
     elif len(datalist) == 1:
@@ -450,7 +457,7 @@ def wavg(datalist, fast=False, prior=None, **fitterargs):
             time += ans.time
             correction += ans.correction
         ans.fit.dof = dof
-        ans.fit.Q = _gammaQ(dof / 2., chi2 / 2.)
+        ans.fit.Q = lsqfit.gammaQ(dof / 2., chi2 / 2.)
         ans.fit.chi2 = chi2
         ans.fit.time = time
         ans.fit.correction = correction
@@ -1467,7 +1474,7 @@ class MultiFitter(object):
             A tuple containing the best fit (a fit object) and the
             optimal value for parameter ``z``.
         """
-        return _empbayes_fit(z0, fitargs, p0=p0, nonlinear_fit=self.lsqfit, **minargs)
+        return empbayes_fit(z0, fitargs, p0=p0, fitter=self.lsqfit, **minargs)
 
     @staticmethod
     def _compile_models(models):
@@ -1822,7 +1829,633 @@ class _multifitfcn(object):
         return ans
 
 
+class vegas_fit(object):
+    r""" Least-squares fit using Bayesian integrals. 
 
+    :class:`lsqfit.vegas_fit` fits a (nonlinear) function 
+    ``f(x,p)`` (or ``f(p)``) to data ``y`` using Bayesian 
+    integrals over fit parameters ``p``. Typical usage is ::
 
+        vfit = vegas_fit(data=(x,y), fcn=f, prior=prior)
+        print(vfit)
+        print('best-fit parameters =', vfit.p)
 
+    The fitter calculates the means and (co)variances of 
+    the fit parameters (``vfit.p``) assuming that the parameters 
+    are described by a probability density function (PDF) 
+    proportional to :math:`\exp(-\chi^2(p))` where
 
+    .. math::
+
+        \chi^2(p) = \Delta y \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
+        \: + \: 
+        \Delta p \cdot\mathrm{cov}^{-1}_\mathrm{prior}\cdot\Delta p
+
+    and :math:`\Delta y_i \equiv \overline y_i - f(x_i,p)` 
+    and :math:`\Delta p_i\equiv \overline p_i - p_i`. This involves a 
+    multi-dimensional integration over the parameter space using
+    :class:`vegas.PDFIntegrator` from the :mod:`vegas` module  
+    (which must be installed separately). :mod:`vegas` uses 
+    adaptive Monte Carlo integration to obtain estimates for the 
+    integrals; see its documentation for more information.
+
+    When the PDF is sufficiently peaked around its maximum, 
+    :math:`\chi^2(p)` is (usually) well approximated by a quadratic
+    expansion around its minimum, and the results obtained from 
+    :mod:`lsqfit.vegas_fit` will agree with those obtained from 
+    :mod:`lsqfit.nonlinear_fit` --- the latter is the Gaussian 
+    approximation to the former. The output from ``nonlinear_fit``
+    can often be used to improve significantly the accuracy of 
+    the numerical integrals used by ``vegas_fit``, particularly 
+    if the PDF is sharply peaked and there are lots of parameters: 
+    for example, by setting  ``param=fit.p`` in  ::
+
+        fit = nonlinear_fit(data=(x,y), fcn=f, prior=prior)
+        vfit = vegas_fit(data=(x,y), fcn=f, prior=prior, param=fit.p)
+        print(vfit)
+
+    we direct ``vegas_fit`` to re-express the integrals over 
+    ``p`` in terms of variables that emphasize the region 
+    indicated by ``fit.p``. This facilitates the integration 
+    and can greatly reduce the numerical uncertainties in the 
+    results. Note that the second line in this code snippet can 
+    be written more succinctly as ::
+
+        vfit = vegas_fit(fit=fit)
+
+    :mod:`vegas` adapts iteratively to the PDF, averaging results 
+    over the iterations. By default it uses 10 iterations to 
+    train the integrator on the PDF, and then 10 more, without 
+    further adaptation, to estimate the means and covariances 
+    of the fit parameters. During the training stage, the 
+    integrator remaps the integrals to variables that emphasize
+    regions where the PDF is large, refining the map after 
+    each iteration. Integral results from the training 
+    stage are often unreliable and so are discarded. 
+    (Adaptation is turned off for the latter iterations 
+    to provide more robust estimates; see the :mod:`vegas` 
+    documentation for more information.) The number of evaluations
+    of ``f(x,p)`` is limited to at most 1000 by default. Both 
+    the number of iterations and the number of function evaluations
+    can be specified using parameters ``nitn`` and ``neval``, 
+    respectively: for example ::
+
+        vfit = vegas_fit(fit=fit, nitn=(5,10), neval=10_000)
+
+    specifies 5 iterations for adapting to the PDF (training) 
+    followed by 10 more for computing ``vfit.p``, with at most 
+    10,000 function evaluations per iteration. The number of 
+    function evaluations needed depends upon the number of 
+    parameters and how sharply peaked the PDF is. 
+
+    Having obtained a fit ``vfit`` from ``vegas_fit``,  
+    expectation values with respect to the PDF can be obtained
+    for any function ``g(p)`` of the parameters, where ``g(p)`` 
+    typically returns an array of numbers or a dictionary whose 
+    values are numbers or arrays of numbers, so that multiple 
+    expectation values can be computed together::
+
+        s = vfit.stats(g)
+    
+    where ``s`` is an array or dictionary of |GVar|\s
+    giving the means and covariances of the components of ``g(p)``
+    with respect to the PDF. Result ``s`` agrees well with 
+    ``g(vfit.p)`` when the Gaussian approximation is valid
+    (for the PDF and ``g(p)``), but could be quite different 
+    otherwise. ``vfit.stats`` can also calculate other 
+    statistical parameters (e.g., skewness) and/or histograms
+    for the distribution of ``g(p)`` values.
+
+    Args:
+
+        data (dict, array or tuple):
+            Data to be fit by :class:`lsqfit.vegas_fit`
+            can have either of the following forms:
+
+                ``data = x, y``
+                    ``x`` is the independent data that is passed to the fit
+                    function with the fit parameters: ``fcn(x, p)``. ``y`` is a
+                    dictionary (or array) of |GVar|\s that encode the means and
+                    covariance matrix for the data that is to be fit being fit.
+                    The fit function must return a result having the same
+                    layout as ``y``.
+
+                ``data = y``
+                    ``y`` is a dictionary (or array) of |GVar|\s that encode
+                    the means and covariance matrix for the data being fit.
+                    There is no independent data so the fit function depends
+                    only upon the fit parameters: ``fit(p)``. The fit function
+                    must return a result having the same layout as ``y``.
+
+            Setting ``x=False`` in the first of these formats implies
+            that the fit function depends only on the fit parameters:
+            that is, ``fcn(p)`` instead of ``fcn(x, p)``. (This is not assumed
+            if ``x=None``.) Ignored if parameter ``fit`` is specified.
+
+        fcn (callable): The function to be fit to ``data``. It is either a
+            function of the independent data ``x`` and the fit parameters ``p``
+            (``fcn(x, p)``), or a function of just the fit parameters
+            (``fcn(p)``) when there is no ``x`` data or ``x=False``. The
+            function's return value must have the same layout as the ``y`` data
+            (a dictionary or an array). The fit parameters ``p`` are either: 1)
+            a dictionary where each ``p[k]`` is a single parameter or an array
+            of parameters (any shape); or, 2) a single array of parameters. The
+            layout of the parameters is the same as that of prior ``prior`` if
+            it is specified; otherwise, it is inferred from of the starting
+            value ``p0`` for the fit.
+
+            ``vegas_fit`` is usually much faster if ``fcn`` is designed to 
+            process a large batch of integration points all at once. See
+            the :mod:`vegas` documentation on ``rbatchintegrand`` and 
+            ``lbatchintegrand``.
+
+        prior: A dictionary or array of |GVar|\s representing  
+            *a priori* estimates for all parameters ``p`` used by
+            fit function ``fcn(x, p)`` (or ``fcn(p)``). Fit parameters ``p``
+            are stored in a dictionary or array with the same keys and
+            structure (or shape) as ``prior``. The default value is ``None``;
+            ``prior`` must be defined if ``param`` is ``None``.
+            Ignored if parameter ``fit`` is specified.
+    
+        param: A dictionary or array of |GVar|\s that specifies the fit 
+            parameters ``p`` used by ``fcn(x,p)`` (or ``fcn(p)``), and 
+            indicates where in that parameter space the integrator should 
+            focus its attention. Fit parameters ``p`` are stored in a 
+            dictionary or array with the same keys and structure (or shape) 
+            as ``param`` (and ``prior``, if specified). ``vegas_fit`` 
+            re-expresses the parameter integrals in terms of variables that 
+            emphasize the region of parameter space covered by 
+            ``param``. Setting ``param=None`` (the default) is 
+            equivalent to setting ``param=prior``; ``prior`` 
+            must be defined if ``param=None``.
+            Ignored if parameter ``fit`` is specified.
+
+        fit: Fit results from either :class:`lsqfit.nonlinear_fit` or 
+            :class:`lsqfit.vegas_fit``. When ``fit`` is specified, the 
+            data, prior, and fit function are take from ``fit``. The fit 
+            function from ``fit`` can be replaced by setting the ``fcn`` 
+            parameter (for example, to replace ``fit.fcn`` by an equivalent 
+            batch function). 
+
+        svdcut (float): If nonzero, singularities in the correlation
+            matrix for ``y`` and ``prior`` are regulated using 
+            :func:`gvar.regulate` with an SVD cutoff ``svdcut``. This 
+            makes the correlation matrices less singular, which 
+            can improve the  stability and accuracy of a fit. 
+            Default is ``svdcut=1e-12``. Ignored if parameter ``fit``
+            is specified.
+
+        eps (float): If positive, singularities in the correlation 
+            matrix for ``y`` and ``prior`` are regulated using 
+            :func:`gvar.regulate` with cutoff ``eps``. This makes 
+            the correlation matrices less singular, which can 
+            improve the  stability and accuracy of a fit. 
+            Ignored if ``svdcut`` is specified (and not ``None``).
+            Ignored if parameter ``fit`` is specified.
+
+        noise (tuple or bool): If ``noise[0]=True``, noise is 
+            added to the data means commensurate with the additional
+            uncertainties (if any) introduced by using ``svdcut>0`` 
+            or ``eps>0``. If ``noise[1]=True``, noise is added 
+            to the prior means commensurate with the uncertainties
+            in the prior. Noise is useful for testing the
+            quality of a fit (``chi2``). Setting ``noise=True`` 
+            is shorthand for ``noise=(True, True)``, and
+            ``noise=False`` means ``noise=(False, False)`` (the default).
+            Ignored if parameter ``fit`` is specified.
+
+        vegasargs: Any additional keyword argments are passed to 
+            the integrator, :class:`vegas.PDFIntegrator`. The most 
+            important of these arguments are the number of ``vegas`` 
+            interations ``nitn`` and the maximum number ``neval`` of 
+            integrand evaluations per iteration. Default values for 
+            these are ``nitn=(10,10)`` and ``neval=1000``, where 
+            nitn[0] is the number of iterations used to train the
+            integrator to the PDF, and nitn[1] is the number of 
+            iterations used to determine the means and covariances
+            of the parameters. (``vegas`` adapts to the PDF in 
+            the first set of (training) iterations; adaptation is 
+            turned off for the second.)
+
+    Objects of type :class:`lsqfit.nonlinear_fit` have the following
+    attributes:
+
+    Attributes:
+
+        chi2: :math:`\chi^2(p)` evaluated at ``vfit.p``.
+            ``fit.chi2 / fit.dof`` is usually of order one in good fits.
+            Values much less than one suggest that actual fluctuations in
+            the input data and/or priors might be smaller than suggested
+            by the standard deviations (or covariances) used in the fit.
+
+        dof: Number of degrees of freedom in the fit, which equals
+            the number of pieces of data being fit when priors are specified
+            for the fit parameters. Without priors, it is the number of pieces
+            of data minus the number of fit parameters.
+
+        integrator: The :class:`vegas.PDFIntegrator` used to do the 
+            integrals.
+
+        logBF: The logarithm of the probability (density)
+            of obtaining the fit data by randomly sampling the parameter model
+            (priors plus fit function) used in the fit --- that is, it is
+            the logarithm of ``P(data|model)``. This quantity is useful for 
+            comparing fits of the same data to different models, with 
+            different priors and/or fit functions. The model with the 
+            largest value of ``fit.logBF`` is the one preferred by the 
+            data. The exponential of the difference in ``fit.logBF`` between 
+            two models is the ratio of probabilities (Bayes factor) for 
+            those models. Differences in ``fit.logBF`` smaller than 1 
+            are not very significant.
+
+        p: Best-fit parameters from fit in the same format as the 
+            prior (array or dictionary containing |GVar|\s). The 
+            means and uncertainties (standard deviations/covariances) 
+            are calculated from the Bayesian integrals. The 
+            uncertainties come from the distribution and from 
+            uncertainties in ``vegas``'s estimates of the 
+            means (added in quadrature). 
+            
+            ``vfit.p`` is output from :meth:`vegas.PDFIntegrator.stats`.
+            It has additional attributes that provide more information
+            about the integrals. See the documentation for 
+            :class:`vegas.PDFEV`, :class:`PDFEVArray`, and 
+            :class:`vegas.PDFEVDict` for more information.
+
+        pmean: An array or dictionary containing the means of the 
+            best-fit parameters from fit.
+
+        psdev: Standard deviations of the best-fit
+            parameters from fit.
+
+        palt: Same as ``vfit.p``.
+        
+        prior: Prior used in the fit. This may differ from the 
+            input prior if an SVD cut is set (it is the prior 
+            after the SVD cut). It is either a  dictionary 
+            (:class:`gvar.BufferDict`) or an array 
+            (:class:`numpy.ndarray`), depending upon the input. 
+            Equals ``None`` if no prior is specified.
+
+        Q: The probability that the ``chi**2`` from the fit
+            could have been larger, by chance, assuming the best-fit model
+            is correct. Good fits have ``Q`` values larger than 0.1 or so.
+            Also called the *p-value* of the fit. The probabilistic
+            intrepretation becomes unreliable if the actual fluctuations
+            in the input data and/or priors are much smaller than suggested
+            by the standard deviations (or covariances) used in the fit
+            (leading to an unusually small ``chi**2``).
+
+        residuals: An array containing the fit residuals normalized by the
+            corresponding standard deviations. The residuals are projected
+            onto the eigenvectors of the correlation matrix and so should 
+            be uncorrelated from each other. The residuals include 
+            contributions from both the fit data and the prior. 
+            They are related to the the ``chi**2`` of the fit by:
+            ``chi2 = sum(fit.residuals**2)``.
+
+        training: Results returned by the :class:`vegas.PDFIntegrator` 
+            after evaluating the integrals used to train the integrator
+            to the PDF. These results are not included in the final 
+            averages.            
+        
+        correction: Sum of all corrections, if any, added
+            to the fit data and prior when ``eps>0`` or ``svdcut>0``.
+
+        svdn: Number of eigenmodes of the correlation matrix 
+            modified (and/or deleted) when ``svdcut>0``.
+
+        time: CPU time (in secs) taken by fit.
+
+        x: The first field in the input ``data``. This is sometimes the
+            independent variable (as in 'y vs x' plot), but may be anything.
+            It is set equal to ``False`` if the ``x`` field is omitted from
+            the input ``data``. (This also means that the fit function has no
+            ``x`` argument: so ``f(p)`` rather than ``f(x,p)``.)
+
+        y: Fit data used in the fit, with |GVar| for each data point. 
+            This may differ rom the input data if an SVD cut is used 
+            (it is ``y`` after the SVD cut). It is either a dictionary 
+            (:class:`gvar.BufferDict`) or an array (:class:`numpy.ndarray`), 
+            depending upon the input.
+
+        nblocks: ``nblocks[s]`` equals the number of block-diagonal
+            sub-matrices of the ``y``--``prior`` covariance matrix that are
+            size ``s``-by-``s``. This is sometimes useful for debugging.
+
+    """
+    def __init__(
+            self, data=None, fcn=None, prior=None, fit=None, param=None, 
+            svdcut=False, eps=False, noise=None, 
+            neval=1000, nitn=(10,10), **kargs):
+        clock = time.perf_counter if hasattr(time, 'perf_counter') else time.time
+        cpu_time = clock()
+        try:
+            import vegas 
+        except ImportError:
+            raise ImportError('Install the vegas module to use vegas_fit.')
+        if numpy.size(nitn) == 1:
+            self.nitn = 2 * (nitn,)
+        if fit is None:
+            fcn = self._build_pdf(
+                data=data, fcn=fcn, prior=prior, param=param, svdcut=svdcut, 
+                eps=eps, noise=noise
+                )
+        elif isinstance(fit, vegas_fit):
+            # flatfcn already defined so don't need fcn
+            self._extract_pdf_vegas_fit(fit=fit, param=param)
+        elif isinstance(fit, lsqfit.nonlinear_fit):
+            fcn = self._extract_pdf_nonlinear_fit(fit=fit, fcn=fcn, param=param)
+
+        # create integrator and fit function
+        self.integrator = vegas.PDFIntegrator(self.param, pdf=None, **kargs)
+        if not hasattr(self, 'flatfcn'):
+            self.flatfcn = self.integrator._make_std_integrand(fcn, xsample=gvar.mean(self.param)) 
+
+        # pdf
+        self.chivkargs = {}
+        for k in ['inv_wgts', 'nw', '_flat_y_prior_mean', 'minchi2']:
+            self.chivkargs[k] = getattr(self, k) 
+        self.chivkargs['jac'] = None 
+        self.chivkargs['flatfcn_eval'] = self.flatfcn.eval
+        pdf = vegas.lbatchintegrand(functools.partial(
+            vegas_fit._pdf, **self.chivkargs
+            ))
+        self.integrator.set(pdf=pdf)
+
+        self.training = self.integrator(nitn=nitn[0], neval=neval, adapt=True)
+        self.p = self.integrator.stats(
+            f=None,
+            nitn=nitn[1], neval=neval,
+            adapt=kargs.get('adapt', False),
+            )
+        # collect results
+        self.pmean = gvar.mean(self.p) 
+        self.psdev = gvar.sdev(self.p)
+        self.palt = self.p 
+        # self.pdfnorm = self.p.pdfnorm
+
+        self.fitter = 'vegas_fit'
+        self.description = '({})'.format(gvar.fmt_chi2(self.p))
+
+        # calculate chi2
+        if hasattr(self.pmean, 'keys'):
+            # remove extra keys for chi**2 calculation
+            tmp = gvar.BufferDict(self.pmean)
+            extrakeys = []
+            for k in tmp:
+                if k not in self.param:
+                    extrakeys.append(k)
+            for k in extrakeys:
+                del tmp[k]
+            p = gvar.BufferDict(tmp, lbatch_buf=tmp.buf.reshape(1, -1))
+        elif numpy.ndim(self.pmean) == 0:
+            p = numpy.array([self.pmean])
+        else:
+            p = self.pmean.reshape(1, -1)
+        self.residuals = self.chiv(p)[0]
+        self.chi2 = numpy.sum(self.residuals ** 2)
+        self.Q = lsqfit.gammaQ(self.dof/2., self.chi2/2.)
+        if self._delta_logBF is not None:
+            self.logBF = numpy.log(self.p.pdfnorm) + self._delta_logBF
+        self.time = clock() - cpu_time
+
+    def _extract_pdf_vegas_fit(self, fit, param, **kargs):
+        for v in ['data', 'fcn', 'x', 'y', 'prior', 'minchi2', '_delta_logBF', 'dof', 'svdcut', 'svdn', 'correction', 'eps', 'noise', 'nw', 'nblocks', 'flatfcn', '_flat_y_prior_mean', 'inv_wgts']:
+            if hasattr(fit, v):
+                setattr(self, v, getattr(fit, v))
+        if param is None:
+            if fit.param.shape is None:
+                self.param = gvar.BufferDict()
+                for k in fit.param:
+                    self.param[k] = fit.p[k]
+            else:
+                self.param = fit.p
+        else:
+            self.param = lsqfit._unpack_gvars(param)
+    
+    def _extract_pdf_nonlinear_fit(self, fit, fcn, param, **kargs):
+        for v in ['data', 'x', 'y', 'prior', 'dof', 'svdcut', 'correction', 'svdn', 'eps', 'noise', 'nblocks']:
+            if hasattr(fit, v):
+                setattr(self, v, getattr(fit, v))
+        self.minchi2 = fit.chi2
+        if param is None:
+            self.param = fit.p
+        else:
+            self.param = lsqfit._unpack_gvars(param)
+        self.nw = fit.yp_pdf.nchiv
+        self.inv_wgts = fit.yp_pdf.i_invwgts 
+        self._flat_y_prior_mean = fit.yp_pdf.mean
+        fcn = fit.fcn if fcn is None else fcn
+        self.fcn = fcn
+        if self.fcn is None:
+            raise ValueError('must specify fcn')
+        # attach x to the function
+        if self.x is not False:
+            fcn = functools.partial(self.fcn, self.x)
+            fcn.fcntype = getattr(self.fcn, 'fcntype', 'scalar')
+
+        self._delta_logBF = - 0.5 * (
+            fit.yp_pdf.logdet
+            + numpy.log(2*numpy.pi) * numpy.size(self._flat_y_prior_mean)
+            + self.minchi2
+            ) 
+        return fcn 
+    
+    def _build_pdf(self, data, fcn, prior, param, svdcut, eps, noise, **kargs):
+        """ pdf=None means must construct it here """
+        if eps is False:
+            eps = lsqfit.nonlinear_fit.DEFAULTS.get(
+                'eps', lsqfit._FITTER_DEFAULTS['eps']
+                )
+        if svdcut is False:
+            svdcut = lsqfit.nonlinear_fit.DEFAULTS.get(
+                'svdcut', lsqfit._FITTER_DEFAULTS['svdcut'],
+                )
+        if noise is None:
+            noise = lsqfit.nonlinear_fit.DEFAULTS.get(
+                'noise', lsqfit._FITTER_DEFAULTS['noise'],
+                )
+        if isinstance(noise, bool):
+            noise = (noise, noise)
+        self.noise = noise
+        self.eps = eps 
+        self.svdcut = svdcut 
+        self.minchi2 = 0.0
+
+        if data is None:
+            raise ValueError('must specify data')
+        self.data = data
+        if isinstance(self.data, tuple):
+            self.x, self.y = self.data 
+        else:
+            self.x = False 
+            self.y = self.data
+        self.y = lsqfit._unpack_gvars(self.y)
+
+        self.fcn = fcn 
+        if self.fcn is None:
+            raise ValueError('must specify fcn')
+        # attach x to the function
+        if self.x is not False:
+            fcn = functools.partial(fcn, self.x)
+            fcn.fcntype = getattr(self.fcn, 'fcntype', 'scalar')
+
+        self.prior = lsqfit._unpack_gvars(prior)
+        if param is None:
+            if self.prior is None:
+                raise ValueError('must specify one of prior or param')
+            self.param = self.prior
+        else:
+            self.param = lsqfit._unpack_gvars(param)
+        if noise[1]:
+            self.prior = self.prior + gvar.sample(self.prior) - gvar.mean(self.prior) 
+
+        # create PDF components
+        # 1) create the data array (incl prior)
+        if self.prior is not None:
+            flat_y_prior = numpy.concatenate((self.y.flat[:], self.prior.flat[:]))
+        else:
+            flat_y_prior = self.y.flat[:]
+
+        # 2) apply svd cut, and calculate chi**2 weights
+        flat_y_prior, self.inv_wgts = gvar.regulate(flat_y_prior, svdcut=svdcut, eps=eps, wgts=-1, noise=noise[0])
+        self.nw = sum([len(wgts) for _,wgts in self.inv_wgts])
+        self.nblocks = flat_y_prior.nblocks
+        self.dof = self.nw - self.param.size
+        self.svdcut = flat_y_prior.svdcut 
+        self.eps = flat_y_prior.eps
+        self.svdn = flat_y_prior.nmod
+        self.correction = flat_y_prior.correction
+
+        if self.svdn > 0:
+            if hasattr(self.y, 'keys'):
+                self.y = gvar.BufferDict(self.y, buf=flat_y_prior[:self.y.size])
+            else:
+                self.y = flat_y_prior[:numpy.size(self.y)].reshape(self.y.shape)
+            if hasattr(self.prior, 'keys'):
+                self.prior = gvar.BufferDict(self.prior, buf=flat_y_prior[self.y.size:])
+            elif self.prior is not None:
+                self.prior = flat_y_prior[numpy.size(self.y):].reshape(self.prior.shape)
+                
+        # 3) separate mean and set up logBF
+        self._flat_y_prior_mean = gvar.mean(flat_y_prior)
+        self._delta_logBF = - 0.5 * (
+            flat_y_prior.logdet
+            + numpy.log(2*numpy.pi) * numpy.size(flat_y_prior)
+            )
+        return fcn
+
+    def __str__(self):
+        return self.format()
+    
+    def format(self, maxline=0, pstyle='v'):
+        """ Format the output from a :class:`lsqfit.vegas_fit`.
+        
+        See the documentation for :meth:`lsqfit.nonlinear_fit.format` 
+        for more information.
+        """
+        return lsqfit.nonlinear_fit.format(self, maxline=maxline, pstyle='v')
+    
+    def qqplot_residuals(self, plot=None):
+        """ Create QQ plot of the fit residuals.
+        
+        See the documentation for :meth:`lsqfit.nonlinear_fit.qqplot_residuals` 
+        for more information.
+        """
+        return lsqfit.nonlinear_fit.qqplot_residuals(self, plot=plot)
+
+    def plot_residuals(self, plot=None):
+        """ Create QQ plot of the fit residuals.
+        
+        See the documentation for :meth:`lsqfit.nonlinear_fit.plot_residuals` 
+        for more information.        
+        """
+        return lsqfit.nonlinear_fit.plot_residuals(self, plot=plot)
+
+    def _remove_gvars(self, gvlist):
+        fit = copy.copy(self)
+        try:
+            # if can pickle fcn then keep everything
+            fit.pickled_fcn = gvar.dumps((self.fcn, self.flatfcn))
+            for k in ['fcn', 'flatfcn']:
+                del fit.__dict__[k]
+        except:
+            warnings.warn('unable to pickle fit function; it is omitted')
+        fit.__dict__ = gvar.remove_gvars(fit.__dict__, gvlist)
+        return fit
+    
+    def _distribute_gvars(self, gvlist):
+        self.__dict__ = gvar.distribute_gvars(self.__dict__, gvlist)
+        try:
+            # try restoring fit function
+            self.fcn, self.flatfcn = gvar.loads(self.pickled_fcn)
+            del self.__dict__['pickled_fcn']
+        except:
+            warnings.warn('unable to unpickle fit function; it is omitted')
+        return self 
+        
+    def stats(self, f=None, *args, **kargs):
+        """ Means and standard deviations (and covariances) of function ``f(p)``.
+        
+        If ``f`` is set to ``None`` or omitted, the means and 
+        standard deviations (and covariances) of the fit parameters 
+        are recalculated.
+
+        See documentation for :class:`vegas.PDFIntegrator.stats` for 
+        further options.
+        """
+        # if f is None:
+        #     f = self._default_integrand
+        return self.integrator.stats(f, *args, **kargs)  
+    
+    def chiv(self, p, jac=None):
+        """ :math:`\chi^2(p)` 
+        
+        Note ``chi2(p) == numpy.sum(chiv(p)**2, axis=1)``. 
+        """
+        # lbatchintegrand
+        # jac ignored because useless (esp if have correlations)
+        return vegas_fit._chiv(p, **self.chivkargs)
+    
+    @staticmethod
+    def _chiv(p, jac, inv_wgts, nw, flatfcn_eval, _flat_y_prior_mean, minchi2):
+        """ chi2(p) = numpy.sum(chiv(p)**2, axis=1) """
+        # minchi2 not used here
+        if p.shape is None:
+            p = p.lbatch_buf
+        elif p.ndim != 2:
+            p = p.reshape(p.shape[0], -1)
+        chiv = numpy.zeros((p.shape[0], nw), dtype=float)
+        ffp = flatfcn_eval(p, jac)
+        if ffp.shape[1] == _flat_y_prior_mean.shape[0]:
+            delta = ffp - _flat_y_prior_mean[None, :] # lbatch index
+        else:
+            delta = numpy.concatenate((ffp, p), axis=1) - _flat_y_prior_mean[None, :] # lbatch index
+        iw, wgt = inv_wgts[0]
+        if len(iw) > 0:
+            chiv[:, iw] = wgt[None, :] * delta[:, iw]
+        for iw, wgt in inv_wgts[1:]:
+            chiv[:, iw] = delta[:, iw].dot(wgt.T)
+        return chiv
+
+    def pdf(self, p, jac=None):
+        """ Probability density function for fit parameters ``p``.
+        
+        When the |vegas_fit| object is derived from a |nonlinear_fit|
+        object (``vfit = vegas_fit(fit=fit)``), the PDF is 
+        :math:`\exp(-(\chi^2(p) - \chi^2_\mathrm{min})/2). Otherwise
+        it is just :math:`\exp(-\chi^2(p)/2)`. In either case it 
+        is *not* normalized. Divide by ``vfit.pdfnorm`` to normalize 
+        it.
+        """
+        # jac ignored
+        # an lbatchintegrand
+        return vegas_fit._pdf(p, **self.chivkargs)
+    
+    @staticmethod
+    def _pdf(p, **kargs):
+        # an lbatchintegrand 
+        minchi2 = kargs['minchi2']
+        return numpy.exp(- 0.5 * numpy.sum(vegas_fit._chiv(p, **kargs) ** 2, axis=1) + minchi2/2)
+        

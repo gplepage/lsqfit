@@ -3,6 +3,7 @@
 
 .. |GVar| replace:: :class:`gvar.GVar`
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
+.. |vegas_fit| replace:: :class:`lsqfit.vegas_fit`
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
 .. |MultiFitter| replace:: :class:`lsqfit.MultiFitter`
 .. |~| unicode:: U+00A0
@@ -309,9 +310,27 @@ nonlinear_fit Objects
 
    .. automethod:: set(clear=False, **defaults)
 
+vegas_fit Objects
+-------------------
+.. autoclass:: lsqfit.vegas_fit(data, fcn, prior=None, param=None, fit=None, svdcut=1e-12, eps=None, noise=False, **vegasargs)
+
+   Additional methods are provided for printing out detailed information
+   about the fit, evaluating  ``chi**2``:
+
+   .. automethod:: stats(f, moments=False, histograms=False)
+
+   .. automethod:: format(maxline=0, pstyle='v')
+
+   .. automethod:: pdf(p)
+  
+   .. automethod:: qqplot_residuals(plot=None)
+
+   .. automethod:: plot_residuals(plot=None)
+
+
 Functions
 ---------
-.. autofunction:: lsqfit.empbayes_fit
+.. autofunction:: lsqfit.empbayes_fit(z0, fitargs, p0=None, fitter=lsqfit.nonlinear_fit, **minargs)
 
 .. autofunction:: lsqfit.wavg
 
@@ -353,6 +372,7 @@ correlators typically share many fit parameters.
 A simpler example of a model is one that encapsulates
 a linear fit function::
 
+   import gvar as gv
    import numpy as np
    import lsqfit
 

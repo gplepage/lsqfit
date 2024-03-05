@@ -40,7 +40,7 @@ def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
         return w.dot(x) # numpy.dot(w, x)
     nx = len(x)
     nans = w.shape[0]
-    assert nx==w.shape[1], str(nx)+'!='+str(w.shape[1])
+    assert nx==w.shape[1], str(nx) + '!=' + str(w.shape[1])
     ans = numpy.zeros(nans, object)
     gvar.msum_gvar(w, x, out=ans)
     # for i in range(nans):
@@ -48,15 +48,15 @@ def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
     return ans
 
 
-def _build_chiv_chivw(fdata, fcn, prior):
+def _build_chiv_chivw(yp_pdf, fcn, prior):
     """ Build ``chiv`` where ``chi**2=sum(chiv(p)**2)``.
 
     Also builds ``chivw``.
     """
-    cv = chiv(fd=fdata, fcn=fcn, noprior=prior is None)
-    # cv = functools.partial(chiv, fd=fdata, fcn=fcn, noprior=prior is None)
-    cvw = chivw(fd=fdata, fcn=fcn, noprior=prior is None)
-    # cvw = functools.partial(chivw, fd=fdata, fcn=fcn, noprior=prior is None)
+    cv = chiv(fd=yp_pdf, fcn=fcn, noprior=prior is None)
+    # cv = functools.partial(chiv, fd=yp_pdf, fcn=fcn, noprior=prior is None)
+    cvw = chivw(fd=yp_pdf, fcn=fcn, noprior=prior is None)
+    # cvw = functools.partial(chivw, fd=yp_pdf, fcn=fcn, noprior=prior is None)
     return cv, cvw
 
 cdef class chiv(object):
@@ -69,8 +69,8 @@ cdef class chiv(object):
 
     def __init__(self, fd, fcn, noprior):
         self.mean = fd.mean 
-        self.nw = fd.nw 
-        self.inv_wgts = fd.inv_wgts 
+        self.nw = fd.nchiv 
+        self.inv_wgts = fd.i_invwgts 
         self.fcn = fcn 
         self.noprior = noprior 
 
@@ -115,8 +115,8 @@ cdef class chivw(object):
 
     def __init__(self, fd, fcn, noprior):
         self.mean = fd.mean 
-        self.niw = fd.niw 
-        self.inv_wgts = fd.inv_wgts 
+        self.niw = fd.mean.size 
+        self.inv_wgts = fd.i_invwgts 
         self.fcn = fcn 
         self.noprior = noprior 
 

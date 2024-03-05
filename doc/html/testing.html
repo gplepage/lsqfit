@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.0.4 documentation</title>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>  
@@ -69,9 +69,359 @@ Some of these techniques, like the <em>statistical bootstrap</em> and
 Bayesian integration, can also be used to analyze non-Gaussian
 results.</p>
 </section>
+<section id="bayesian-integrals">
+<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> provides an alternative fitting strategy
+(multi-dimensional Bayesian integrals) from that used by
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. Both approaches assume that the fit parameters
+are described by a probability distribution whose
+probability density function (PDF) is proportional to
+<img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/>.  <img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/>
+has contributions from both the data and the prior:</p>
+<div class="math">
+<p><img src="_images/math/3db003c9d07f6b78978f4a6f57e4295bbca96a34.svg" alt="\chi^2(p) \equiv \Delta y^T \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
+\: + \:
+\Delta p^T \cdot\mathrm{cov}^{-1}_\mathrm{prior}\cdot\Delta p,"/></p>
+</div><p>where <img class="math" src="_images/math/0f5c227cbc34ace77bcd5b3ae38a04d935979994.svg" alt="\Delta y_i \equiv \overline y_i - f(x_i,p)"/>
+and <img class="math" src="_images/math/33c601deff4f434ffccb1e970789bf5131b2b084.svg" alt="\Delta p_i\equiv \overline p_i^\mathrm{prior} - p_i"/>.
+Both of these approaches characterize this distribution by
+specifying <em>best-fit</em> mean values and covariances for the
+fit parameters (packaged as an array or dictionary of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s).
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> estimates the mean values
+and covariances from the minimum of <img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> and its
+curvature at the minimum, while <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> calculates the
+actual means and standard deviations of the parameters
+by evaluating the following integrals:</p>
+<div class="math">
+<p><img src="_images/math/8a0be671c10e19cc1e8064c38c9de063f640abe9.svg" alt="\overline p_i &amp;\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,p_i\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
+\mathrm{cov}(p_i,p_j) &amp;\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,(p_i - \overline p_i)(p_j - \overline p_j)\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
+N_\mathrm{pdf} &amp;\equiv \int d^np\,\mathrm{e}^{-\chi^2(p)/2}"/></p>
+</div><p>The integrals are evaluated numerically, using adaptive Monte Carlo integration
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">PDFIntegrator</span></code> from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>
+module).
+The best-fit results from the two approaches agree when
+<img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> is well approximated by the quadratic expansion around its
+minimum — that is,
+insofar as
+<img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/> is well approximated
+by a Gaussian distribution in the parameters.
+But the results can differ significantly otherwise; the output from <code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code>
+is the Gaussian approximation to that from <code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code>.</p>
+<p>To compare <code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code> with <code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code>, we revisit
+the analysis in the section
+on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function
+in the original code to repeat the analysis using <code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
+<span class="kn">import</span> <span class="nn">lsqfit</span>
+<span class="kn">import</span> <span class="nn">vegas</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
+
+    <span class="c1"># nonlinear_fit</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlinear_fit&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;   prod(p) =&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) = </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># vegas_fit</span>
+    <span class="n">vfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">vegas_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;vegas_fit&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">vfit</span><span class="p">)</span>
+    <span class="c1"># measure p1/p0 and prod(p)</span>
+    <span class="nd">@vegas</span><span class="o">.</span><span class="n">rbatchintegrand</span>
+    <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">:</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;prod(p)&#39;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)}</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">vfit</span><span class="o">.</span><span class="n">stats</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">],</span> <span class="s1">&#39;   prod(p) =&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;prod(p)&#39;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) = </span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">vfit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]))</span>
+
+<span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+        <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0833</span><span class="p">,</span> <span class="mf">0.0714</span><span class="p">,</span> <span class="mf">0.0625</span>
+        <span class="p">])</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
+        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;0.044(16)&#39;</span>
+        <span class="p">])</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
+
+<span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
+    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>        <span class="c1"># p[1] correlated with p[0]</span>
+    <span class="k">return</span> <span class="n">p</span>
+
+<span class="nd">@vegas</span><span class="o">.</span><span class="n">rbatchintegrand</span>
+<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># add batch index to x if in batch mode</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Running this code gives the following output:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- nonlinear_fit
+Least Squares Fit:
+  chi2/dof [dof] = 0.61 [11]    Q = 0.82    logGBF = 19.129
+
+Parameters:
+              0   0.149 (17)     [    0 ± 1.0 ]  
+              1    2.97 (34)     [     0 ± 20 ]  
+              2    1.23 (61)     [    0 ± 1.0 ]  *
+              3    0.59 (15)     [    0 ± 1.0 ]  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.1s)
+
+p1/p0 = 19.97(67)    prod(p) = 0.32(28)
+corr(p0,p1) = 0.96
+
+-------------------- vegas_fit
+Least Squares Fit:
+  chi2/dof [dof] = 0.65 [11]    Q = 0.78    logBF = 19.124(17)
+
+Parameters:
+              0   0.155 (14)     [    0 ± 1.0 ]  
+              1    3.09 (29)     [     0 ± 20 ]  
+              2    1.44 (54)     [    0 ± 1.0 ]  *
+              3    0.69 (18)     [    0 ± 1.0 ]  
+
+Settings:
+  svdcut/n = 1e-12/0    (time = 0.1s)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.86 [135]    Q = 0.89)
+
+p1/p0 = 19.99(64)    prod(p) = 0.52(37)
+corr(p0,p1) = 0.94
+</pre></div>
+</div>
+<p>There are several things to notice about these results:</p>
+<ul>
+<li><p>The fit results <code class="docutils literal notranslate"><span class="pre">vfit.p</span></code> from <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> are quite similar
+to those from <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> (<code class="docutils literal notranslate"><span class="pre">fit.p</span></code>), as are <code class="docutils literal notranslate"><span class="pre">vfit.chi2</span></code>
+and <code class="docutils literal notranslate"><span class="pre">fit.chi2</span></code>, and <code class="docutils literal notranslate"><span class="pre">vfit.logBF</span></code> and <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>. This
+suggests that the Gaussian approximation used by
+<a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> is a reasonable approximation to the
+full Bayesian analysis used by <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vfit.logBF</span></code> has an uncertainty of about 0.1%. This comes
+from the uncertainty in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> estimate of
+the norm of the PDF (<img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/> above).
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> uses adaptive Monte Carlo integration
+to estimate the values of integrals, as well as the
+uncertainties in those estimates.</p>
+<p>The accuracy of
+<a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>’s integrals can almost always be
+improved by using information from the fit
+with <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. For example, replacing
+the <code class="docutils literal notranslate"><span class="pre">vfit</span></code> line in the code above with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">vegas_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>reduces the error on <code class="docutils literal notranslate"><span class="pre">vfit.logBF</span></code> by about a factor of
+two:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- vegas_fit   (param=fit.p)
+Least Squares Fit:
+  chi2/dof [dof] = 0.65 [11]    Q = 0.78    logBF = 19.152(8)
+
+Parameters:
+              0   0.155 (15)     [    0 ± 1.0 ]  
+              1    3.10 (31)     [     0 ± 20 ]  
+              2    1.45 (58)     [    0 ± 1.0 ]  *
+              3    0.69 (18)     [    0 ± 1.0 ]  
+
+Settings:
+  svdcut/n = 1e-12/0    (time = 0.1s)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.97 [135]    Q = 0.59)
+
+p1/p0 = 19.98(66)    prod(p) = 0.55(41)
+corr(p0,p1) = 0.95
+</pre></div>
+</div>
+<p>The integrals for the means and covariances are similarly improved
+(compare <code class="docutils literal notranslate"><span class="pre">vfit.p.vegas_mean</span></code> and <code class="docutils literal notranslate"><span class="pre">vfit.p.vegas_cov</span></code>
+with and without <code class="docutils literal notranslate"><span class="pre">param=fit.p</span></code>).</p>
+<p>The integrator re-expresses the
+fit parameter integrals in terms of new variables that are
+optimized for integrating the (Gaussian) distribution
+corresponding to <code class="docutils literal notranslate"><span class="pre">param</span></code>. By default <code class="docutils literal notranslate"><span class="pre">param=prior</span></code>,
+but <code class="docutils literal notranslate"><span class="pre">param=fit.p</span></code> is almost certainly a better match
+to the actual PDF used in the integrals.</p>
+<p>A more
+succinct way to use results from <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
+object <code class="docutils literal notranslate"><span class="pre">fit</span></code>
+is</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">vegas_fit</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="n">fit</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">vfit</span></code>’s  <code class="docutils literal notranslate"><span class="pre">prior</span></code>, <code class="docutils literal notranslate"><span class="pre">data</span></code>, and <code class="docutils literal notranslate"><span class="pre">fcn</span></code>
+are copied from <code class="docutils literal notranslate"><span class="pre">fit</span></code>.</p>
+</li>
+<li><p>Values for <code class="docutils literal notranslate"><span class="pre">p[1]/p[0]</span></code> and for the product of all
+the <code class="docutils literal notranslate"><span class="pre">p[i]</span></code>s are obtained from <code class="docutils literal notranslate"><span class="pre">vfit.stats(g)</span></code>.
+This uses <code class="docutils literal notranslate"><span class="pre">vfit</span></code>’s (trained) integrator to evaluate
+the means and covariances of the components of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code>.
+While results
+from the two fits agree well on <code class="docutils literal notranslate"><span class="pre">p[1]/p[0]</span></code>, results
+for <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code> do not agree so well. This suggests that
+the distribution for <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code> in not as well
+approximated by a Gaussian.</p>
+<p>More information about the
+distributions can be obtained from <code class="docutils literal notranslate"><span class="pre">vfit.stats</span></code> by
+using keywords <code class="docutils literal notranslate"><span class="pre">moments</span></code> and <code class="docutils literal notranslate"><span class="pre">histograms</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">vfit</span><span class="o">.</span><span class="n">stats</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">moments</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">histograms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">stats</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="mi">20</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">()</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This results in the following output</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- p1/p0
+   mean = 19.9839(64)   sdev = 0.6563(53)   skew = 0.054(28)   ex_kurt = 0.011(57)
+   split-normal: 19.954(18) +/- 0.678(11)/0.640(14)
+         median: 19.9835(84) +/- 0.656(10)/0.654(12)
+
+-------------------- prod(p)
+   mean = 0.5473(46)   sdev = 0.4139(80)   skew = 1.98(12)   ex_kurt = 6.7(1.1)
+   split-normal: 0.1223(41) +/- 0.5922(61)/0.0495(79)
+         median: 0.4391(42) +/- 0.4505(90)/0.2365(41)
+</pre></div>
+</div>
+<p>together with histogram plots for the distributions of
+<code class="docutils literal notranslate"><span class="pre">p[1]/p[0]</span></code> and <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code>:</p>
+<a class="reference internal image-reference" href="_images/eg3.5a.png"><img alt="_images/eg3.5a.png" src="_images/eg3.5a.png" style="width: 95%;" /></a>
+<p>The distribution for <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code> is clearly skewed. The plot
+shows the actual distribution (gray bars) and the
+Gaussian (blue dots) corresponding to <code class="docutils literal notranslate"><span class="pre">s['prod(p)']</span></code>, 0.55 ± 0.41.
+It also shows fits to two two-sided Gaussian models: one that is
+continuous (split-normal, solid green line) and another centered
+on the median that is discontinuous (red dashes). The split-normal
+fit suggests that a better description of the <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code> distribution
+might be 0.12 plus 0.6 minus 0.05, although any of the three
+models gives a reasonable impression
+of the range of possible values for <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code>.</p>
+</li>
+<li><p>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integration is much faster if the integrand
+can process large batches of integration points
+simultaneously. An example is <code class="docutils literal notranslate"><span class="pre">fcn(x,</span> <span class="pre">p)</span></code> above. When
+called by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>, parameter <code class="docutils literal notranslate"><span class="pre">p</span></code> represents
+a single point in parameter space with coordinates
+<code class="docutils literal notranslate"><span class="pre">p[d]</span></code> where <code class="docutils literal notranslate"><span class="pre">d=0...3</span></code>. When called by <code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code>
+(in rbatch mode), <code class="docutils literal notranslate"><span class="pre">p</span></code> represents a large number of points
+in parameter space with coordinates <code class="docutils literal notranslate"><span class="pre">p[d,i]</span></code> where
+<code class="docutils literal notranslate"><span class="pre">d=0...3</span></code> labels the direction in parameter space, and
+<code class="docutils literal notranslate"><span class="pre">i</span></code>, the batch index, labels the different points in
+parameter space. The function checks to see if it is being used
+in batch mode, and adds a batch index to <code class="docutils literal notranslate"><span class="pre">x</span></code> if it
+is. The decorator <code class="docutils literal notranslate"><span class="pre">&#64;vegas.rbatchintegrand</span></code> tells
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> that the function can be called in batch mode.
+(See the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> documentation for more information.)</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> uses an iterative algorithm to adapt to the
+PDF. By default, <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> uses 10 iterations to
+train the integrator to the PDF, and then 10 more,
+without further adaptation, to evaluate the integrals
+for the means <img class="math" src="_images/math/74813f3eac398fc5c50544c6d9967ea528a4f29a.svg" alt="\overline p_i"/> and covariances
+<img class="math" src="_images/math/549c1cc6009d54073ccd57a4efc2515cc63db9f0.svg" alt="\mathrm{cov}(p_i,p_j)"/> of the fit parameters,
+and the PDF’s norm <img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/>  (see
+equations above). Printing <code class="docutils literal notranslate"><span class="pre">vfit.training.summary()</span></code>
+shows estimates for the norm <img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/>
+from each of the first 10 iterations (here without
+<code class="docutils literal notranslate"><span class="pre">param=fit.p</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>itn   integral        wgt average     chi2/dof        Q
+-------------------------------------------------------
+  1   0.00013(13)     0.00013(13)         0.00     1.00
+  2   1.9(1.0)e-05    1.9(1.0)e-05        0.74     0.39
+  3   2.13(67)e-05    2.07(56)e-05        0.38     0.68
+  4   4.18(76)e-05    2.80(45)e-05        1.93     0.12
+  5   4.03(68)e-05    3.17(38)e-05        2.01     0.09
+  6   4.07(48)e-05    3.51(30)e-05        2.05     0.07
+  7   3.85(39)e-05    3.64(23)e-05        1.78     0.10
+  8   3.71(23)e-05    3.68(16)e-05        1.54     0.15
+  9   5.07(49)e-05    3.82(15)e-05        2.26     0.02
+ 10   4.33(23)e-05    3.98(13)e-05        2.40     0.01
+
+</pre></div>
+</div>
+<p>The uncertainties in the first column
+are 25–60 times smaller after <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> has adapted
+to the PDF.
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> averages results from different
+iterations, but results from the training iterations
+are frequently unreliable and so are discarded.
+The final results come from
+the final 10 iterations (see <code class="docutils literal notranslate"><span class="pre">vfit.p.summary()</span></code>).</p>
+<p>The accuracy of the integrals is determined by the number
+of iterations <code class="docutils literal notranslate"><span class="pre">nitn</span></code> used and, especially, by the number of integrand
+evaluations <code class="docutils literal notranslate"><span class="pre">neval</span></code> allowed for each iteration. The
+defaults for these parameters are <code class="docutils literal notranslate"><span class="pre">nitn=(10,10)</span></code> and
+<code class="docutils literal notranslate"><span class="pre">neval=1000</span></code>. The following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vfit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">vegas_fit</span><span class="p">(</span><span class="n">fit</span><span class="o">=</span><span class="n">fit</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">neval</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>reduces the number of training iterations to 6 but also
+increases the number of integrand evaluations by a factor
+of 100. The integration errors are then about 20 times smaller,
+which is much smaller than is needed here. This particular
+problem, however, is relatively easy for <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>; other problems could
+well require hundreds of thousands or millions of integration
+evaluations per iteration.</p>
+</li>
+<li><p>At the end of <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>, we examined what happened
+to the <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> when the correlation (<code class="docutils literal notranslate"><span class="pre">p[1]</span></code> is approximately
+<code class="docutils literal notranslate"><span class="pre">20*p[0]</span></code>) was removed from the prior by setting</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The fit result is completely different with the uncorrelated prior when
+using <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. This
+is <em>not</em> the case with <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>, where the uncorrelated prior leads
+to the following fit:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- vegas_fit   (uncorrelated prior)
+Least Squares Fit:
+  chi2/dof [dof] = 0.71 [11]    Q = 0.73    logBF = 16.299(47)
+
+Parameters:
+              0   0.147 (21)     [    0 ± 1.0 ]  
+              1    3.66 (85)     [     0 ± 20 ]  
+              2    1.53 (57)     [    0 ± 1.0 ]  *
+              3    0.78 (22)     [    0 ± 1.0 ]  
+
+Settings:
+  svdcut/n = 1e-12/0    (time = 0.1s)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.89 [135]    Q = 0.81)
+
+p1/p0 = 24.5(8.4)    prod(p) = 0.66(51)
+corr(p0,p1) = -0.40
+</pre></div>
+</div>
+<p>These results are quite similar to what is obtained with the
+correlated prior, although less accurate. This suggests
+that the Gaussian approximation assumed by <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> is
+unreliable for the uncorrelated problem. This might have
+been anticipated since three of the four parameters have
+means that are effectively zero (compared to their
+standard deviations).</p>
+</li>
+</ul>
+<p>A central assumption when using <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> or <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> is that
+the data are drawn from a Gaussian distribution.
+<a class="reference internal" href="case-outliers.html#outliers"><span class="std std-ref">Case Study: Outliers and Bayesian Integrals</span></a> shows how to use <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code>
+directly, rather than <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>,
+when the input data are not Gaussian. It  discusses
+two versions of a fit,  one with 5 parameters
+and the other with 22 parameters.</p>
+</section>
 <section id="bootstrap-error-analysis-non-gaussian-output">
 <h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Permalink to this heading">¶</a></h2>
-<p>The bootstrap provides an efficient way to check on a fit’s
+<p>The bootstrap provides another way to check on a fit’s
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:</p>
 <blockquote>
@@ -93,491 +443,107 @@ to bootstrap copy to determine an approximate probability
 distribution (possibly non-Gaussian) for the each result.</p></li>
 </ol>
 </div></blockquote>
-<p>To illustrate, we return to our fit in the section
-on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>, where the uncertainties on the
-final parameters were relatively large.
-We will use a booststrap analysis to check the error
-estimates coming out of that fit.
-We do this by adding code right after the
-fit, in the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
-<span class="kn">import</span> <span class="nn">lsqfit</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
-    <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
-    <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p1/p0 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;p3/p2 =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="c1"># boostrap analysis: collect bootstrap data</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Bootstrap Analysis:&#39;</span><span class="p">)</span>
-    <span class="n">Nbs</span> <span class="o">=</span> <span class="mi">40</span>                <span class="c1"># number of bootstrap copies</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
-    <span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span><span class="n">Nbs</span><span class="p">):</span>
-        <span class="n">p</span> <span class="o">=</span> <span class="n">bsfit</span><span class="o">.</span><span class="n">pmean</span>
-        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">output</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-
-    <span class="c1"># average over bootstrap copies and tabulate results</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">bstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;corr(p0,p1) =&#39;</span><span class="p">,</span> <span class="n">gv</span><span class="o">.</span><span class="n">evalcorr</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;p&#39;</span><span class="p">][:</span><span class="mi">2</span><span class="p">])[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
-
-<span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="mf">4.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.167</span><span class="p">,</span> <span class="mf">0.125</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.0833</span><span class="p">,</span> <span class="mf">0.0714</span><span class="p">,</span> <span class="mf">0.0625</span>
-        <span class="p">])</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;0.044(16)&#39;</span>
-        <span class="p">])</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-
-<span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c1"># p[1] correlated with p[0]</span>
-    <span class="k">return</span> <span class="n">p</span>
-
-<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">bootstrapped_fit_iter</span></code> produces fits <code class="docutils literal notranslate"><span class="pre">bsfit</span></code> for each of
-<code class="docutils literal notranslate"><span class="pre">Nbs=40</span></code> different bootstrap copies of the input data (<code class="docutils literal notranslate"><span class="pre">y</span></code> and the prior).
-We collect the mean values for the various parameters and functions of
-parameters from each fit, ignoring the uncertainties, and
-then calculate averages and covariance matrices from these results using
-<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.dataset.avg_data()</span></code>.</p>
-<p>Most of the bootstrap results agree with the results coming directly from
-the fit:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
-
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
-              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">19</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
-
-<span class="n">p1</span><span class="o">/</span><span class="n">p0</span> <span class="o">=</span> <span class="mf">19.97</span><span class="p">(</span><span class="mi">67</span><span class="p">)</span>     <span class="n">p3</span><span class="o">/</span><span class="n">p2</span> <span class="o">=</span> <span class="mf">0.48</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>
-<span class="n">corr</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.9570678206095675</span>
-
-<span class="n">Bootstrap</span> <span class="n">Averages</span><span class="p">:</span>
-  <span class="n">key</span><span class="o">/</span><span class="n">index</span>         <span class="n">value</span>
-<span class="o">-------------------------</span>
-        <span class="n">p</span> <span class="mi">0</span>    <span class="mf">0.146</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-          <span class="mi">1</span>     <span class="mf">2.91</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>
-          <span class="mi">2</span>     <span class="mf">1.14</span> <span class="p">(</span><span class="mi">77</span><span class="p">)</span>
-          <span class="mi">3</span>     <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-      <span class="n">p1</span><span class="o">/</span><span class="n">p0</span>    <span class="mf">19.86</span> <span class="p">(</span><span class="mi">79</span><span class="p">)</span>
-      <span class="n">p3</span><span class="o">/</span><span class="n">p2</span>     <span class="mf">0.49</span> <span class="p">(</span><span class="mi">39</span><span class="p">)</span>
-<span class="n">corr</span><span class="p">(</span><span class="n">p0</span><span class="p">,</span><span class="n">p1</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.9487861077873482</span>
-</pre></div>
-</div>
-<p>In particular, the bootstrap analysis confirms the previous error estimates
-(to within 10-30%, since <code class="docutils literal notranslate"><span class="pre">Nbs=40</span></code>) except for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code>, where the error
-is substantially larger in the bootstrap analysis.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is important, one might want to look
-more closely at its distribution.
-We use the bootstrap to create histograms of the probability distributions
-of <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> and <code class="docutils literal notranslate"><span class="pre">p1/p01</span></code>
-by adding the following code to the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code>
-function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Histogram Analysis:&#39;</span><span class="p">)</span>
-<span class="n">count</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">:[],</span> <span class="s1">&#39;p3/p2&#39;</span><span class="p">:[]}</span>
-<span class="n">hist</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;p1/p0&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
-    <span class="s1">&#39;p3/p2&#39;</span><span class="p">:</span><span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-    <span class="p">}</span>
-
-<span class="c1"># collect bootstrap data</span>
-<span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">bsfit</span><span class="o">.</span><span class="n">pmean</span>
-    <span class="n">count</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-    <span class="n">count</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="s1">&#39;p3/p2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
-
-<span class="c1"># calculate averages and covariances</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
-
-<span class="c1"># print histogram statistics and show plots</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="n">pltnum</span> <span class="o">=</span> <span class="mi">1</span>
-<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">count</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">pltnum</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-    <span class="n">hist</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">pltnum</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">pltnum</span> <span class="o">+=</span> <span class="mi">1</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Here we do 1000 bootstrap copies (rather than 40)
-to improve the accuracy of the bootstrap
-results. The output from this code shows statistical analyses of the
-histogram data for <code class="docutils literal notranslate"><span class="pre">p1/p0</span></code> and <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
-<span class="n">p1</span><span class="o">/</span><span class="n">p0</span><span class="p">:</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">19.967</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.723</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.127</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.02</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">19.939</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.734</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.662</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>
-<span class="n">p3</span><span class="o">/</span><span class="n">p2</span><span class="p">:</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.5164</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.2385</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.628</span><span class="p">(</span><span class="mi">84</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.84</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.4874</span><span class="p">(</span><span class="mi">79</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.314</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.1481</span><span class="p">(</span><span class="mi">54</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The code also displays histograms of the probability distributions, where the
-dashed lines show the results expected directly from the fit (that is,
-in the Gaussian approximation):</p>
-<blockquote>
-<div><a class="reference internal image-reference" href="_images/eg3d.png"><img alt="_images/eg3d.png" src="_images/eg3d.png" style="width: 100%;" /></a>
-</div></blockquote>
-<p>While the distribution for <code class="docutils literal notranslate"><span class="pre">p1/p0</span></code> is consistent with the fit
-results (dashed line) and Gaussian,
-the distribution for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is significantly skewed, with
-a much longer tail to the right. The final result for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> might
-more accurately be summarized as 0.48 with errors of +0.31 and -0.15,
-although the Gaussian estimate of 0.48±0.22 would suffice for many
-applications.
-The skewed distribution for <code class="docutils literal notranslate"><span class="pre">p3/p2</span></code> is not particularly
-surprising given the ±50% uncertainty in the
-denominator <code class="docutils literal notranslate"><span class="pre">p2</span></code>.</p>
-</section>
-<section id="bayesian-integrals">
-<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this heading">¶</a></h2>
-<p>Bayesian expectation values provide an alternative to least-squares fits.
-These expectation values are integrals over the fit parameters that are
-weighted by the probability density function (PDF for the parameters)
-proportional
-to <code class="docutils literal notranslate"><span class="pre">exp(-chi**2/2)</span></code>, where <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> includes contributions from both
-the data and the priors. They can be used to
-calculate mean values of the parameters, their covariances, and the means
-and covariances of any function of the parameters.
-These will agree with the
-best-fit results of our least-squares fits provided <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> is well
-approximated by its quadratic expansion in the parameters — that is,
-insofar as
-<code class="docutils literal notranslate"><span class="pre">exp(-chi**2/2)</span></code> is well approximated
-by the Gaussian distribution in the parameters
-specified by their best-fit means and covariance matrix (from <code class="docutils literal notranslate"><span class="pre">fit.p</span></code>).</p>
-<p>Here we use
-<code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> to evaluate Bayesian expectation values.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> uses the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module for adaptive
-multi-dimensional integration to evaluate expectation values. It integrates
-arbitrary functions of the parameters, multiplied by the probability
-density function, over the entire parameter space.</p>
-<p>To illustrate how <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> works with <a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a>,
-we again revisit the analysis in the section
-on <a class="reference internal" href="overview.html#correlated-parameters"><span class="std std-ref">Correlated Parameters; Gaussian Bayes Factor</span></a>. We modify the end of the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function
-of our original code
-to evaluate the means and covariances of the parameters, and also
-their probability histograms, using a Bayesian integral:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
-<span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">vegas</span>
-
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_data</span><span class="p">()</span>
-    <span class="n">prior</span> <span class="o">=</span> <span class="n">make_prior</span><span class="p">()</span>
-    <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-
-    <span class="c1"># Bayesian integrator with PDF from the fit</span>
-    <span class="n">expval</span> <span class="o">=</span> <span class="n">vegas</span><span class="o">.</span><span class="n">PDFIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">pdf</span><span class="p">)</span>
-
-    <span class="c1"># adapt integrator expval to PDF from fit</span>
-    <span class="n">neval</span> <span class="o">=</span> <span class="mi">1000</span>
-    <span class="n">nitn</span> <span class="o">=</span> <span class="mi">10</span>
-    <span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="n">neval</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="n">nitn</span><span class="p">)</span>
-
-    <span class="c1"># &lt;g(p)&gt; gives mean and covariance matrix, and counts for histograms</span>
-    <span class="n">hist</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-        <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
-        <span class="p">]</span>
-    <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">mean</span><span class="o">=</span><span class="n">p</span><span class="p">,</span>
-            <span class="n">outer</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">p</span><span class="p">),</span>
-            <span class="n">count</span><span class="o">=</span><span class="p">[</span>
-                <span class="n">hist</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">hist</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                <span class="n">hist</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">hist</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span>
-                <span class="p">],</span>
-            <span class="p">)</span>
-
-    <span class="c1"># evaluate expectation value of g(p)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="n">neval</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="n">nitn</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="c1"># analyze results</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Iterations:&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Integration Results:&#39;</span><span class="p">)</span>
-    <span class="n">pmean</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">]</span>
-    <span class="n">pcov</span> <span class="o">=</span>  <span class="n">results</span><span class="p">[</span><span class="s1">&#39;outer&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">pmean</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    mean(p) =&#39;</span><span class="p">,</span> <span class="n">pmean</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    cov(p) =</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pcov</span><span class="p">)</span>
-
-    <span class="c1"># create GVars from results</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pmean</span><span class="p">),</span> <span class="n">gv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">pcov</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Bayesian Parameters:&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">gv</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">n&#39;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;logBF =&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">pdfnorm</span><span class="p">)</span> <span class="o">-</span> <span class="n">fit</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">lognorm</span><span class="p">)</span>
-
-    <span class="c1"># show histograms</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Histogram Statistics:&#39;</span><span class="p">)</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-        <span class="c1"># print histogram statistics</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;p[</span><span class="si">{}</span><span class="s1">]:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
-        <span class="c1"># make histogram plots</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;p[</span><span class="si">{}</span><span class="s1">]&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="n">hist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">plot</span><span class="o">=</span><span class="n">plt</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-<span class="k">def</span> <span class="nf">make_data</span><span class="p">():</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-        <span class="mf">4.</span>    <span class="p">,</span>  <span class="mf">2.</span>    <span class="p">,</span>  <span class="mf">1.</span>    <span class="p">,</span>  <span class="mf">0.5</span>   <span class="p">,</span>  <span class="mf">0.25</span>  <span class="p">,</span>  <span class="mf">0.167</span> <span class="p">,</span>  <span class="mf">0.125</span> <span class="p">,</span>
-        <span class="mf">0.1</span>   <span class="p">,</span>  <span class="mf">0.0833</span><span class="p">,</span>  <span class="mf">0.0714</span><span class="p">,</span>  <span class="mf">0.0625</span>
-        <span class="p">])</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-        <span class="s1">&#39;0.198(14)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.216(15)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.184(23)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.156(44)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.099(49)&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;0.142(40)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.108(32)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.065(26)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.044(22)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.041(19)&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;0.044(16)&#39;</span>
-        <span class="p">])</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span>
-
-<span class="k">def</span> <span class="nf">make_prior</span><span class="p">():</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span><span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">,</span> <span class="s1">&#39;0(1)&#39;</span><span class="p">])</span>
-    <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="s1">&#39;0.0(1)&#39;</span><span class="p">)</span>     <span class="c1"># p[1] correlated with p[0]</span>
-    <span class="k">return</span> <span class="n">p</span>
-
-<span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Here <code class="docutils literal notranslate"><span class="pre">expval</span></code> is an integrator that is used to evaluate expectation
-values of arbitrary functions of the fit parameters.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">PDFIntegrator</span></code> uses output (<code class="docutils literal notranslate"><span class="pre">fit.p</span></code>) from the least-squares fit to
-design a <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integrator
-optimized for calculating expectation values.
-The integrator uses an
-iterative Monte Carlo algorithm that adapts to the
-probability density function (<code class="docutils literal notranslate"><span class="pre">fit.pdf(p)</span></code>) after each iteration.
-See the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> documentation for much more information.</p>
-<p>We first call the integrator without a function. This allows it
-to adapt to the probability density function from the fit without the extra
-overhead of evaluating a function of the parameters. The integrator
-uses <code class="docutils literal notranslate"><span class="pre">nitn=10</span></code> iterations of the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> algorithm, with at most
-<code class="docutils literal notranslate"><span class="pre">neval=1000</span></code> evaluations of the probability density function for each
-iteration.</p>
-<p>We then use the optimized integrator to evaluate the expectation value
-of function <code class="docutils literal notranslate"><span class="pre">g(p)</span></code>, turning adaptation off with <code class="docutils literal notranslate"><span class="pre">adapt=False</span></code> (since
-it is unneeded).
-The expectation value of <code class="docutils literal notranslate"><span class="pre">g(p)</span></code> is returned
-in dictionary <code class="docutils literal notranslate"><span class="pre">results</span></code>.</p>
-<p>The results from this script are:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
-
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
-              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">19</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
-
-
-<span class="n">Iterations</span><span class="p">:</span>
-<span class="n">itn</span>   <span class="n">integral</span>        <span class="n">average</span>         <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span>        <span class="n">Q</span>
-<span class="o">-------------------------------------------------------</span>
-  <span class="mi">1</span>   <span class="mf">0.001288</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.001288</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>        <span class="mf">0.00</span>     <span class="mf">1.00</span>
-  <span class="mi">2</span>   <span class="mf">0.001303</span><span class="p">(</span><span class="mi">23</span><span class="p">)</span>    <span class="mf">0.001296</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>        <span class="mf">0.76</span>     <span class="mf">0.92</span>
-  <span class="mi">3</span>   <span class="mf">0.001311</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.001301</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>        <span class="mf">0.67</span>     <span class="mf">1.00</span>
-  <span class="mi">4</span>   <span class="mf">0.001302</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.001301</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>        <span class="mf">0.64</span>     <span class="mf">1.00</span>
-  <span class="mi">5</span>   <span class="mf">0.001422</span><span class="p">(</span><span class="mi">71</span><span class="p">)</span>    <span class="mf">0.001325</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>        <span class="mf">0.68</span>     <span class="mf">1.00</span>
-  <span class="mi">6</span>   <span class="mf">0.001350</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.001329</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span>        <span class="mf">0.70</span>     <span class="mf">1.00</span>
-  <span class="mi">7</span>   <span class="mf">0.001301</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.001325</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>        <span class="mf">0.71</span>     <span class="mf">1.00</span>
-  <span class="mi">8</span>   <span class="mf">0.001357</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span>    <span class="mf">0.001329</span><span class="p">(</span><span class="mi">12</span><span class="p">)</span>        <span class="mf">0.76</span>     <span class="mf">1.00</span>
-  <span class="mi">9</span>   <span class="mf">0.001265</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>    <span class="mf">0.001322</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>        <span class="mf">0.76</span>     <span class="mf">1.00</span>
- <span class="mi">10</span>   <span class="mf">0.001297</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0013196</span><span class="p">(</span><span class="mi">99</span><span class="p">)</span>       <span class="mf">0.75</span>     <span class="mf">1.00</span>
-
-<span class="n">Integration</span> <span class="n">Results</span><span class="p">:</span>
-    <span class="n">mean</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.15490</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> <span class="mf">3.0953</span><span class="p">(</span><span class="mi">37</span><span class="p">)</span> <span class="mf">1.4430</span><span class="p">(</span><span class="mi">68</span><span class="p">)</span> <span class="mf">0.6900</span><span class="p">(</span><span class="mi">36</span><span class="p">)]</span>
-    <span class="n">cov</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">=</span>
- <span class="p">[[</span><span class="mf">0.0002303</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span> <span class="mf">0.004469</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span> <span class="mf">0.00791</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span> <span class="mf">0.001280</span><span class="p">(</span><span class="mi">96</span><span class="p">)]</span>
- <span class="p">[</span><span class="mf">0.004469</span><span class="p">(</span><span class="mi">85</span><span class="p">)</span> <span class="mf">0.0966</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span> <span class="mf">0.1595</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="mf">0.0268</span><span class="p">(</span><span class="mi">18</span><span class="p">)]</span>
- <span class="p">[</span><span class="mf">0.00791</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span> <span class="mf">0.1595</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span> <span class="mf">0.3213</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span> <span class="mf">0.0269</span><span class="p">(</span><span class="mi">29</span><span class="p">)]</span>
- <span class="p">[</span><span class="mf">0.001280</span><span class="p">(</span><span class="mi">96</span><span class="p">)</span> <span class="mf">0.0268</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> <span class="mf">0.0269</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="mf">0.0316</span><span class="p">(</span><span class="mi">22</span><span class="p">)]]</span>
-
-<span class="n">Bayesian</span> <span class="n">Parameters</span><span class="p">:</span>
-  <span class="n">index</span>         <span class="n">value</span>
-<span class="o">---------------------</span>
-      <span class="mi">0</span>    <span class="mf">0.155</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-      <span class="mi">1</span>     <span class="mf">3.10</span> <span class="p">(</span><span class="mi">31</span><span class="p">)</span>
-      <span class="mi">2</span>     <span class="mf">1.44</span> <span class="p">(</span><span class="mi">57</span><span class="p">)</span>
-      <span class="mi">3</span>     <span class="mf">0.69</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>
-
-<span class="n">logBF</span> <span class="o">=</span> <span class="mf">19.1514</span><span class="p">(</span><span class="mi">75</span><span class="p">)</span>
-
-<span class="n">Histogram</span> <span class="n">Statistics</span><span class="p">:</span>
-<span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.15496</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.01607</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.106</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">0.74</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.15446</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.01586</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.01510</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-<span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">3.0955</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.3262</span><span class="p">(</span><span class="mi">27</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.027</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">1.13</span><span class="p">(</span><span class="mi">54</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">3.0883</span><span class="p">(</span><span class="mi">37</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.3203</span><span class="p">(</span><span class="mi">49</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.3102</span><span class="p">(</span><span class="mi">34</span><span class="p">)</span>
-<span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">1.4414</span><span class="p">(</span><span class="mi">67</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.5886</span><span class="p">(</span><span class="mi">56</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.285</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.053</span><span class="p">(</span><span class="mi">55</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">1.4107</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.597</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.5438</span><span class="p">(</span><span class="mi">57</span><span class="p">)</span>
-<span class="n">p</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.6706</span><span class="p">(</span><span class="mi">38</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.1848</span><span class="p">(</span><span class="mi">58</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.24</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="mf">1.48</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.6657</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.1924</span><span class="p">(</span><span class="mi">37</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.1481</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The iterations table shows results from each of the <code class="docutils literal notranslate"><span class="pre">nitn=10</span></code>
-vegas iterations used to
-evaluate the expectation values. Estimates for the integral of the probability
-density function are listed for each iteration. (Results from the integrator
-are approximate, with error estimates.) These are consistent with each other
-and with the (more accurate) overall average.</p>
-<p>The integration results show that the Bayesian estimates for the means
-of the parameters are accurate to roughly 1% or better, which is
-sufficiently accurate here given the size of the standard deviations.
-Estimates for
-the covariance matrix elements are less accurate, which is typical.
-This information is converted into <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s for the parameters and
-tabulated under “Bayesian Parameters,” for comparison with the
-original fit results — the agreement is pretty good.
-This is further confirmed by the
-(posterior) probability distributions
-for each parameter:</p>
-<a class="reference internal image-reference" href="_images/eg3e.png"><img alt="_images/eg3e.png" src="_images/eg3e.png" style="width: 85%;" /></a>
-<p>The means are shifted slightly from the fit results and there
-is modest skewing, but the differences are not great. The
-logarithm of the Bayes Factor (<code class="docutils literal notranslate"><span class="pre">logBF</span></code>), calculated from
-the integral of <code class="docutils literal notranslate"><span class="pre">fit.pdf(p)</span></code>, agrees well with
-<code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code> which is the Bayes Factor evaluated
-in the Gaussian approximation (implicit in
-least-squares fitting). This is further evidence
-that the Gaussian approximation is reasonable
-for this problem.</p>
-<p>As a second example of Bayesian integration, we return briefly to
-the problem described in <a class="reference internal" href="overview.html#positive-parameters"><span class="std std-ref">Positive Parameters; Non-Gaussian Priors</span></a>: we want the
-average <code class="docutils literal notranslate"><span class="pre">a</span></code> of noisy data subject the constraint that the average
-must be positive. The constraint is likely to
-introduce strong distortions in the probability density function (PDF)
-given that the fit analysis suggests a value of 0.011±0.013.
-We plot the actual PDF using the following code, beginning with
-a fit that uses a flat prior (between 0 and 0.04):</p>
+<p>To illustrate, we revisit the fit in the section
+on <a class="reference internal" href="overview.html#positive-parameters"><span class="std std-ref">Positive Parameters; Non-Gaussian Priors</span></a>, where
+the goal is to average noisy data subject to
+the constraint that the average must be positive.
+The constraint is likely to introduce strong distortions
+in the probability density function (PDF) given that the
+fit analysis suggests a value of 0.011 ± 0.013.
+We will use a bootstrap analysis to investigate
+the distribution of the average. We do this
+by adding code right after the fit:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
 <span class="kn">import</span> <span class="nn">lsqfit</span>
-<span class="kn">import</span> <span class="nn">vegas</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<span class="c1"># data, prior, and fit function</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">([</span>
-   <span class="s1">&#39;-0.17(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.39(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.10(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;0.06(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.15(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.01(20)&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;-0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.05(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.09(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.36(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.09(20)&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;-0.07(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.31(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.11(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.13(20)&#39;</span>
-   <span class="p">])</span>
+    <span class="s1">&#39;-0.17(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.39(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.10(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.03(20)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;0.06(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.23(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.15(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.01(20)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;-0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.05(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.09(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.36(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.09(20)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;-0.07(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;-0.31(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.12(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.11(20)&#39;</span><span class="p">,</span> <span class="s1">&#39;0.13(20)&#39;</span>
+    <span class="p">])</span>
 
-<span class="n">prior</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">prior</span><span class="p">[</span><span class="s1">&#39;ga(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="s1">&#39;ga&#39;</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span>
+<span class="c1"># nonlinear_fit</span>
+<span class="n">prior</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="p">()</span>
+<span class="n">prior</span><span class="p">[</span><span class="s1">&#39;f(a)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">BufferDict</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="s1">&#39;f&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">fcn</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
-   <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">N</span> <span class="o">*</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]]</span>
 
-<span class="c1"># least-squares fit</span>
 <span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="mi">20</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;nonlinear_fit&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fit</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">])</span>
 
-<span class="c1"># Bayesian analysis: histogram for a</span>
-<span class="n">hist</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFHistogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">nbin</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">binwidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">hist</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-
-<span class="n">expval</span> <span class="o">=</span> <span class="n">vegas</span><span class="o">.</span><span class="n">PDFIntegrator</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">p</span><span class="p">,</span> <span class="n">pdf</span><span class="o">=</span><span class="n">fit</span><span class="o">.</span><span class="n">pdf</span><span class="p">)</span>
-<span class="n">expval</span><span class="p">(</span><span class="n">neval</span><span class="o">=</span><span class="mi">1009</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">count</span> <span class="o">=</span> <span class="n">expval</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">neval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">nitn</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">adapt</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-<span class="c1"># print out results and show plot</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Histogram Analysis:&#39;</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="n">hist</span><span class="o">.</span><span class="n">analyze</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
-
-<span class="n">hist</span><span class="o">.</span><span class="n">make_plot</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Nbs bootstrap copies</span>
+<span class="n">Nbs</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">a</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">bsfit</span> <span class="ow">in</span> <span class="n">fit</span><span class="o">.</span><span class="n">bootstrapped_fit_iter</span><span class="p">(</span><span class="n">Nbs</span><span class="p">):</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bsfit</span><span class="o">.</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+<span class="n">avg_a</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">avg_data</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="mi">20</span> <span class="o">*</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;bootstrap&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;a =&#39;</span><span class="p">,</span> <span class="n">avg_a</span><span class="p">)</span>
+<span class="n">counts</span><span class="p">,</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">s</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">PDFStatistics</span><span class="p">(</span><span class="n">histogram</span><span class="o">=</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">counts</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="n">plot</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">()</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The output from this script is</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.85</span> <span class="p">[</span><span class="mi">20</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.65</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">5.2385</span>
+<p><code class="docutils literal notranslate"><span class="pre">fit.bootstrapped_fit_iter(Nbs)</span></code> produces fits <code class="docutils literal notranslate"><span class="pre">bsfit</span></code> for each of
+<code class="docutils literal notranslate"><span class="pre">Nbs=1000</span></code> different bootstrap copies of the input data (<code class="docutils literal notranslate"><span class="pre">y</span></code> and the prior).
+We collect the mean values for parameter <code class="docutils literal notranslate"><span class="pre">a</span></code>, ignoring the uncertainties, and
+then calculate the average and standard deviation from these results using
+<code class="xref py py-func docutils literal notranslate"><span class="pre">gvar.dataset.avg_data()</span></code>. We then use <code class="docutils literal notranslate"><span class="pre">gvar.PDFStatistics</span></code> to analyze
+the distribution of the <code class="docutils literal notranslate"><span class="pre">a</span></code> values and create a histogram of its PDF.</p>
+<p>The bootstrap estimate for <code class="docutils literal notranslate"><span class="pre">a</span></code> agrees reasonably well with the result from <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>,
+but the statistical analysis shows that the distribution of <code class="docutils literal notranslate"><span class="pre">a</span></code> values is skewed (towards
+positive <code class="docutils literal notranslate"><span class="pre">a</span></code> values):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- nonlinear_fit
+Least Squares Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
 
-<span class="n">Parameters</span><span class="p">:</span>
-          <span class="n">ga</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>   <span class="o">-</span><span class="mf">0.59</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-<span class="o">-----------------------------------------------</span>
-              <span class="n">a</span>   <span class="mf">0.011</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>     <span class="p">[</span> <span class="mf">0.020</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+           f(a)   -0.59 (96)     [    0 ± 1.0 ]  
+-----------------------------------------------
+              a   0.011 (13)     [ 0.020 (16) ]  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">15</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.1s)
 
-<span class="n">a</span> <span class="o">=</span> <span class="mf">0.011</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
+a = 0.011(13)
 
-<span class="n">Histogram</span> <span class="n">Analysis</span><span class="p">:</span>
-   <span class="n">mean</span> <span class="o">=</span> <span class="mf">0.014054</span><span class="p">(</span><span class="mi">22</span><span class="p">)</span>   <span class="n">sdev</span> <span class="o">=</span> <span class="mf">0.010659</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span>   <span class="n">skew</span> <span class="o">=</span> <span class="mf">0.6181</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>   <span class="n">ex_kurt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5593</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
-   <span class="n">median</span> <span class="o">=</span> <span class="mf">0.011867</span><span class="p">(</span><span class="mi">19</span><span class="p">)</span>   <span class="n">plus</span> <span class="o">=</span> <span class="mf">0.014385</span><span class="p">(</span><span class="mi">31</span><span class="p">)</span>   <span class="n">minus</span> <span class="o">=</span> <span class="mf">0.008761</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span>
+-------------------- bootstrap
+a = 0.014(10)
+   mean = 0.013974667685490355   sdev = 0.010333   skew = 0.86437   ex_kurt = -0.22463
+   split-normal: None
+         median: 0.011050094668754508 +/- 0.014386/0.0069843
 </pre></div>
 </div>
-<p>and the probability distribution for <code class="docutils literal notranslate"><span class="pre">a</span></code> looks like</p>
-<a class="reference internal image-reference" href="_images/eg6.png"><img alt="_images/eg6.png" src="_images/eg6.png" style="width: 70%;" /></a>
-<p>This distribution is distorted between <code class="docutils literal notranslate"><span class="pre">a=0</span></code> and the mean
-value, but otherwise is fairly similar to the Gaussian result
-0.011±0.013 (dashed line). A more accurate summary of the result
-for <code class="docutils literal notranslate"><span class="pre">a</span></code> would be 0.012 with an error of +0.014 and -0.009, though
-again the Gaussian result is not terribly misleading even in this
-case.</p>
-<p>The Bayesian integrals are relatively simple in these example. More
-complicated problems can require much more computer time to evaluate
-the integrals, with hundreds of thousands or millions of integrand
-evaluations per iteration (<code class="docutils literal notranslate"><span class="pre">neval</span></code>). This is particularly true
-as the number of parameters increases. <code class="xref py py-class docutils literal notranslate"><span class="pre">PDFIntegrator</span></code> uses
-information from the least-squares fit to simplify the integration
-for <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> by optimizing the integration variables used, but
-integrals over tens of variables are intrinsically challenging.
-<code class="xref py py-class docutils literal notranslate"><span class="pre">PDFIntegrator</span></code> can be used with MPI to run such integrals
-on multiple processors, for a considerable speed-up.</p>
-<p>We used Bayesian integrals here to deal with non-Gaussian behavior in
-fit outputs. The case study <a class="reference internal" href="case-outliers.html#outliers"><span class="std std-ref">Case Study: Outliers and Bayesian Integrals</span></a> shows how to use them
-when the input data is not quite Gaussian.</p>
+<p>This is confirmed by the histogram:</p>
+<a class="reference internal image-reference" href="_images/eg3.6a.png"><img alt="_images/eg3.6a.png" src="_images/eg3.6a.png" style="width: 60%;" /></a>
+<p>Fitting with <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> rather than <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> gives the same result as the
+bootstrap for the average value of <code class="docutils literal notranslate"><span class="pre">a</span></code>, but is 10x faster (and more accurate):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- vegas_fit
+Least Squares Fit:
+  chi2/dof [dof] = 0.85 [20]    Q = 0.65    logBF = 5.1599(3)
+
+Parameters:
+           f(a)   -0.50 (93)     [    0 ± 1.0 ]  
+              a   0.014 (10)     [ 0.020 (16) ]  
+
+Settings:
+  svdcut/n = 1e-12/0    (time = 0.3s)
+  fitter = vegas_fit    (chi2/dof [dof] = 1.2 [54]    Q = 0.14)
+
+</pre></div>
+</div>
+<p>The histogram from <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> is also similar to that from the bootstrap.</p>
 </section>
 <section id="testing-fits-with-simulated-data">
-<span id="testing-fits"></span><h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this heading">¶</a></h2>
+<h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this heading">¶</a></h2>
 <p>Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method</p>
@@ -653,127 +619,127 @@ we add three fit simulations at the end of the <code class="docutils literal not
 </div>
 <p>This code produces the following output, showing how the input data
 fluctuate from simulation to simulation:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">****************************************</span> <span class="n">real</span> <span class="n">fit</span>
-<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.61</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.82</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">19.129</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>**************************************** real fit
+Least Squares Fit:
+  chi2/dof [dof] = 0.61 [11]    Q = 0.82    logGBF = 19.129
 
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.149</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">2.97</span> <span class="p">(</span><span class="mi">34</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">1.23</span> <span class="p">(</span><span class="mi">61</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
-              <span class="mi">3</span>    <span class="mf">0.59</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+              0   0.149 (17)     [    0 ± 1.0 ]  
+              1    2.97 (34)     [     0 ± 20 ]  
+              2    1.23 (61)     [    0 ± 1.0 ]  *
+              3    0.59 (15)     [    0 ± 1.0 ]  
 
-<span class="n">Fit</span><span class="p">:</span>
-     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
-<span class="o">--------------------------------------</span>
-        <span class="mi">4</span>    <span class="mf">0.198</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.193</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
-        <span class="mi">2</span>    <span class="mf">0.216</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.210</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
-        <span class="mi">1</span>    <span class="mf">0.184</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.209</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  <span class="o">*</span>
-      <span class="mf">0.5</span>    <span class="mf">0.156</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.177</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
-     <span class="mf">0.25</span>    <span class="mf">0.099</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.124</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>  
-    <span class="mf">0.167</span>    <span class="mf">0.142</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.094</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="o">*</span>
-    <span class="mf">0.125</span>    <span class="mf">0.108</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.075</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  <span class="o">*</span>
-      <span class="mf">0.1</span>    <span class="mf">0.065</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0629</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
-   <span class="mf">0.0833</span>    <span class="mf">0.044</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0538</span> <span class="p">(</span><span class="mi">87</span><span class="p">)</span>  
-   <span class="mf">0.0714</span>    <span class="mf">0.041</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0471</span> <span class="p">(</span><span class="mi">79</span><span class="p">)</span>  
-   <span class="mf">0.0625</span>    <span class="mf">0.044</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0418</span> <span class="p">(</span><span class="mi">72</span><span class="p">)</span>  
+Fit:
+     x[k]          y[k]      f(x[k],p)
+--------------------------------------
+        4    0.198 (14)     0.193 (11)  
+        2    0.216 (15)     0.210 (10)  
+        1    0.184 (23)     0.209 (15)  *
+      0.5    0.156 (44)     0.177 (15)  
+     0.25    0.099 (49)     0.124 (13)  
+    0.167    0.142 (40)     0.094 (12)  *
+    0.125    0.108 (32)     0.075 (11)  *
+      0.1    0.065 (26)    0.0629 (96)  
+   0.0833    0.044 (22)    0.0538 (87)  
+   0.0714    0.041 (19)    0.0471 (79)  
+   0.0625    0.044 (16)    0.0418 (72)  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">19</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.1s)
 
-<span class="o">========================================</span> <span class="n">simulation</span>
-<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.2</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.27</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">15.278</span>
+======================================== simulation
+Least Squares Fit:
+  chi2/dof [dof] = 1.4 [11]    Q = 0.18    logGBF = 13.7
 
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.134</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">2.68</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">0.68</span> <span class="p">(</span><span class="mi">47</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">3</span>    <span class="mf">0.54</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+              0   0.118 (11)     [    0 ± 1.0 ]  
+              1    2.36 (24)     [     0 ± 20 ]  
+              2    0.28 (34)     [    0 ± 1.0 ]  
+              3   0.416 (83)     [    0 ± 1.0 ]  
 
-<span class="n">Fit</span><span class="p">:</span>
-     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
-<span class="o">--------------------------------------</span>
-        <span class="mi">4</span>    <span class="mf">0.200</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.186</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
-        <span class="mi">2</span>    <span class="mf">0.192</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.212</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="o">*</span>
-        <span class="mi">1</span>    <span class="mf">0.242</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.221</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>  
-      <span class="mf">0.5</span>    <span class="mf">0.163</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.187</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>  
-     <span class="mf">0.25</span>    <span class="mf">0.089</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.126</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
-    <span class="mf">0.167</span>    <span class="mf">0.130</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.093</span> <span class="p">(</span><span class="mi">13</span><span class="p">)</span>  
-    <span class="mf">0.125</span>    <span class="mf">0.103</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.073</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
-      <span class="mf">0.1</span>    <span class="mf">0.046</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0599</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
-   <span class="mf">0.0833</span>    <span class="mf">0.054</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0508</span> <span class="p">(</span><span class="mi">85</span><span class="p">)</span>  
-   <span class="mf">0.0714</span>    <span class="mf">0.004</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0441</span> <span class="p">(</span><span class="mi">77</span><span class="p">)</span>  <span class="o">**</span>
-   <span class="mf">0.0625</span>    <span class="mf">0.060</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0389</span> <span class="p">(</span><span class="mi">70</span><span class="p">)</span>  <span class="o">*</span>
+Fit:
+     x[k]          y[k]      f(x[k],p)
+--------------------------------------
+        4    0.170 (14)     0.171 (11)  
+        2    0.211 (15)     0.207 (10)  
+        1    0.227 (23)     0.234 (17)  
+      0.5    0.184 (44)     0.209 (21)  
+     0.25    0.167 (49)     0.140 (16)  
+    0.167    0.211 (40)     0.101 (13)  **
+    0.125    0.028 (32)     0.078 (11)  *
+      0.1    0.087 (26)    0.0638 (97)  
+   0.0833    0.017 (22)    0.0537 (86)  *
+   0.0714    0.054 (19)    0.0464 (77)  
+   0.0625    0.034 (16)    0.0408 (69)  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">7</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
-
-
-<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.015</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.29</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.54</span><span class="p">(</span><span class="mi">47</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">(</span><span class="mi">12</span><span class="p">)]</span>
-<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.34</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.85</span>
-<span class="o">========================================</span> <span class="n">simulation</span>
-<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.38</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">17.048</span>
-
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.156</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">3.12</span> <span class="p">(</span><span class="mi">36</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">1.35</span> <span class="p">(</span><span class="mi">66</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
-              <span class="mi">3</span>    <span class="mf">0.77</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-
-<span class="n">Fit</span><span class="p">:</span>
-     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
-<span class="o">--------------------------------------</span>
-        <span class="mi">4</span>    <span class="mf">0.207</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.201</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
-        <span class="mi">2</span>    <span class="mf">0.224</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.214</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
-        <span class="mi">1</span>    <span class="mf">0.163</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.206</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  <span class="o">*</span>
-      <span class="mf">0.5</span>    <span class="mf">0.162</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.167</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>  
-     <span class="mf">0.25</span>    <span class="mf">0.124</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.113</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  
-    <span class="mf">0.167</span>    <span class="mf">0.111</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.084</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
-    <span class="mf">0.125</span>    <span class="mf">0.085</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.066</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
-      <span class="mf">0.1</span>    <span class="mf">0.097</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0550</span> <span class="p">(</span><span class="mi">93</span><span class="p">)</span>  <span class="o">*</span>
-   <span class="mf">0.0833</span>    <span class="mf">0.020</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0469</span> <span class="p">(</span><span class="mi">83</span><span class="p">)</span>  <span class="o">*</span>
-   <span class="mf">0.0714</span>    <span class="mf">0.043</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0409</span> <span class="p">(</span><span class="mi">75</span><span class="p">)</span>  
-   <span class="mf">0.0625</span>    <span class="mf">0.031</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0362</span> <span class="p">(</span><span class="mi">68</span><span class="p">)</span>  
-
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">23</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 9/0.0s)
 
 
-<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.008</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> <span class="mf">0.15</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span> <span class="mf">0.13</span><span class="p">(</span><span class="mi">66</span><span class="p">)</span> <span class="mf">0.18</span><span class="p">(</span><span class="mi">20</span><span class="p">)]</span>
-<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.22</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.93</span>
-<span class="o">========================================</span> <span class="n">simulation</span>
-<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.76</span> <span class="p">[</span><span class="mi">11</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.68</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">17.709</span>
+sfit.p - pexact = [-0.031(11) -0.61(24) -0.95(34) -0.178(83)]
+chi2/dof [dof] = 3 [4]    Q = 0.018
+======================================== simulation
+Least Squares Fit:
+  chi2/dof [dof] = 1.4 [11]    Q = 0.15    logGBF = 14.64
 
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="mi">0</span>   <span class="mf">0.138</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">1</span>    <span class="mf">2.77</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>     <span class="p">[</span>     <span class="mi">0</span> <span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">2</span>    <span class="mf">0.72</span> <span class="p">(</span><span class="mi">46</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="mi">3</span>    <span class="mf">0.53</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>     <span class="p">[</span>  <span class="mf">0.0</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+              0   0.154 (17)     [    0 ± 1.0 ]  
+              1    3.08 (36)     [     0 ± 20 ]  
+              2    1.39 (65)     [    0 ± 1.0 ]  *
+              3    0.61 (15)     [    0 ± 1.0 ]  
 
-<span class="n">Fit</span><span class="p">:</span>
-     <span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>          <span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>      <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">p</span><span class="p">)</span>
-<span class="o">--------------------------------------</span>
-        <span class="mi">4</span>    <span class="mf">0.196</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>     <span class="mf">0.193</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  
-        <span class="mi">2</span>    <span class="mf">0.218</span> <span class="p">(</span><span class="mi">15</span><span class="p">)</span>     <span class="mf">0.221</span> <span class="p">(</span><span class="mi">10</span><span class="p">)</span>  
-        <span class="mi">1</span>    <span class="mf">0.240</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>     <span class="mf">0.231</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>  
-      <span class="mf">0.5</span>    <span class="mf">0.157</span> <span class="p">(</span><span class="mi">44</span><span class="p">)</span>     <span class="mf">0.198</span> <span class="p">(</span><span class="mi">18</span><span class="p">)</span>  
-     <span class="mf">0.25</span>    <span class="mf">0.157</span> <span class="p">(</span><span class="mi">49</span><span class="p">)</span>     <span class="mf">0.134</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  
-    <span class="mf">0.167</span>    <span class="mf">0.022</span> <span class="p">(</span><span class="mi">40</span><span class="p">)</span>     <span class="mf">0.099</span> <span class="p">(</span><span class="mi">12</span><span class="p">)</span>  <span class="o">*</span>
-    <span class="mf">0.125</span>    <span class="mf">0.070</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>     <span class="mf">0.078</span> <span class="p">(</span><span class="mi">11</span><span class="p">)</span>  
-      <span class="mf">0.1</span>    <span class="mf">0.090</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>    <span class="mf">0.0644</span> <span class="p">(</span><span class="mi">96</span><span class="p">)</span>  
-   <span class="mf">0.0833</span>    <span class="mf">0.045</span> <span class="p">(</span><span class="mi">22</span><span class="p">)</span>    <span class="mf">0.0547</span> <span class="p">(</span><span class="mi">86</span><span class="p">)</span>  
-   <span class="mf">0.0714</span>    <span class="mf">0.053</span> <span class="p">(</span><span class="mi">19</span><span class="p">)</span>    <span class="mf">0.0475</span> <span class="p">(</span><span class="mi">78</span><span class="p">)</span>  
-   <span class="mf">0.0625</span>    <span class="mf">0.059</span> <span class="p">(</span><span class="mi">16</span><span class="p">)</span>    <span class="mf">0.0420</span> <span class="p">(</span><span class="mi">70</span><span class="p">)</span>  <span class="o">*</span>
+Fit:
+     x[k]          y[k]      f(x[k],p)
+--------------------------------------
+        4    0.211 (14)     0.197 (11)  *
+        2    0.197 (15)     0.211 (10)  
+        1    0.221 (23)     0.209 (14)  
+      0.5    0.122 (44)     0.177 (15)  *
+     0.25    0.019 (49)     0.125 (13)  **
+    0.167    0.112 (40)     0.095 (12)  
+    0.125    0.131 (32)     0.077 (11)  *
+      0.1    0.076 (26)    0.0641 (96)  
+   0.0833    0.032 (22)    0.0550 (87)  *
+   0.0714    0.052 (19)    0.0482 (79)  
+   0.0625    0.054 (16)    0.0429 (73)  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">1e-12</span><span class="o">/</span><span class="mi">0</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">10</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0s)
 
 
-<span class="n">sfit</span><span class="o">.</span><span class="n">p</span> <span class="o">-</span> <span class="n">pexact</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.010</span><span class="p">(</span><span class="mi">14</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.21</span><span class="p">(</span><span class="mi">29</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.51</span><span class="p">(</span><span class="mi">46</span><span class="p">)</span> <span class="o">-</span><span class="mf">0.06</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span>
-<span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="o">=</span> <span class="mf">0.77</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.54</span>
+sfit.p - pexact = [0.005(17) 0.11(36) 0.17(65) 0.02(15)]
+chi2/dof [dof] = 0.031 [4]    Q = 1
+======================================== simulation
+Least Squares Fit:
+  chi2/dof [dof] = 0.72 [11]    Q = 0.72    logGBF = 18.305
+
+Parameters:
+              0   0.144 (16)     [    0 ± 1.0 ]  
+              1    2.89 (33)     [     0 ± 20 ]  
+              2    1.02 (56)     [    0 ± 1.0 ]  *
+              3    0.57 (14)     [    0 ± 1.0 ]  
+
+Fit:
+     x[k]          y[k]      f(x[k],p)
+--------------------------------------
+        4    0.210 (14)     0.193 (12)  *
+        2    0.193 (15)     0.213 (10)  *
+        1    0.225 (23)     0.216 (15)  
+      0.5    0.193 (44)     0.183 (16)  
+     0.25    0.123 (49)     0.127 (14)  
+    0.167    0.095 (40)     0.095 (12)  
+    0.125    0.054 (32)     0.076 (11)  
+      0.1    0.047 (26)    0.0628 (96)  
+   0.0833    0.083 (22)    0.0536 (86)  *
+   0.0714    0.052 (19)    0.0467 (78)  
+   0.0625    0.034 (16)    0.0414 (71)  
+
+Settings:
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 10/0.0s)
+
+
+sfit.p - pexact = [-0.004(16) -0.09(33) -0.20(56) -0.02(14)]
+chi2/dof [dof] = 0.056 [4]    Q = 0.99
 </pre></div>
 </div>
 <p>The parameters <code class="docutils literal notranslate"><span class="pre">sfit.p</span></code> produced by the simulated fits agree well
@@ -864,36 +830,36 @@ code to include a second fit at the end:</p>
 </pre></div>
 </div>
 <p>Running this code gives the following output:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.38</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.86</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">53.598</span>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Least Square Fit:
+  chi2/dof [dof] = 0.38 [5]    Q = 0.86    logGBF = 53.598
 
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">0.74338</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.750</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  
-              <span class="n">b</span>   <span class="mf">0.292480</span> <span class="p">(</span><span class="mi">42</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.300</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+              a    0.74338 (29)      [ 0.750 (50) ]  
+              b   0.292480 (42)      [ 0.300 (30) ]  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">0.0028</span><span class="o">/</span><span class="mi">3</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 0.0028/3    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
 
 
-<span class="o">================</span> <span class="n">Add</span> <span class="n">noise</span> <span class="n">to</span> <span class="n">prior</span><span class="p">,</span> <span class="n">SVD</span>
-<span class="n">Least</span> <span class="n">Square</span> <span class="n">Fit</span><span class="p">:</span>
-  <span class="n">chi2</span><span class="o">/</span><span class="n">dof</span> <span class="p">[</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.81</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span>    <span class="n">Q</span> <span class="o">=</span> <span class="mf">0.54</span>    <span class="n">logGBF</span> <span class="o">=</span> <span class="mf">52.523</span>
+================ Add noise to prior, SVD
+Least Square Fit:
+  chi2/dof [dof] = 0.81 [5]    Q = 0.54    logGBF = 52.523
 
-<span class="n">Parameters</span><span class="p">:</span>
-              <span class="n">a</span>    <span class="mf">0.74343</span> <span class="p">(</span><span class="mi">29</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.803</span> <span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="p">]</span>  <span class="o">*</span>
-              <span class="n">b</span>   <span class="mf">0.292485</span> <span class="p">(</span><span class="mi">42</span><span class="p">)</span>      <span class="p">[</span> <span class="mf">0.314</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="p">]</span>  
+Parameters:
+              a    0.74343 (29)      [ 0.803 (50) ]  *
+              b   0.292485 (42)      [ 0.314 (30) ]  
 
-<span class="n">Fit</span><span class="p">:</span>
-      <span class="n">key</span>            <span class="n">y</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>         <span class="n">f</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="n">key</span><span class="p">]</span>
-<span class="o">---------------------------------------------</span>
-        <span class="mi">0</span>    <span class="mf">0.0092436</span> <span class="p">(</span><span class="mi">39</span><span class="p">)</span>    <span class="mf">0.0092443</span> <span class="p">(</span><span class="mi">32</span><span class="p">)</span>  
-        <span class="mi">1</span>    <span class="mf">0.0068987</span> <span class="p">(</span><span class="mi">35</span><span class="p">)</span>    <span class="mf">0.0069000</span> <span class="p">(</span><span class="mi">26</span><span class="p">)</span>  
-        <span class="mi">2</span>    <span class="mf">0.0051496</span> <span class="p">(</span><span class="mi">30</span><span class="p">)</span>    <span class="mf">0.0051502</span> <span class="p">(</span><span class="mi">21</span><span class="p">)</span>  
-        <span class="mi">3</span>    <span class="mf">0.0038437</span> <span class="p">(</span><span class="mi">23</span><span class="p">)</span>    <span class="mf">0.0038441</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>  
-        <span class="mi">4</span>    <span class="mf">0.0028689</span> <span class="p">(</span><span class="mi">17</span><span class="p">)</span>    <span class="mf">0.0028693</span> <span class="p">(</span><span class="mi">14</span><span class="p">)</span>  
+Fit:
+      key            y[key]         f(p)[key]
+---------------------------------------------
+        0    0.0092436 (39)    0.0092443 (32)  
+        1    0.0068987 (35)    0.0069000 (26)  
+        2    0.0051496 (30)    0.0051502 (21)  
+        3    0.0038437 (23)    0.0038441 (17)  
+        4    0.0028689 (17)    0.0028693 (14)  
 
-<span class="n">Settings</span><span class="p">:</span>
-  <span class="n">svdcut</span><span class="o">/</span><span class="n">n</span> <span class="o">=</span> <span class="mf">0.0028</span><span class="o">/</span><span class="mi">3</span><span class="o">*</span>    <span class="n">tol</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1e-08</span><span class="o">*</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">,</span><span class="mf">1e-10</span><span class="p">)</span>    <span class="p">(</span><span class="n">itns</span><span class="o">/</span><span class="n">time</span> <span class="o">=</span> <span class="mi">5</span><span class="o">/</span><span class="mf">0.0</span><span class="p">)</span>
+Settings:
+  svdcut/n = 0.0028/3*    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0)
 
 </pre></div>
 </div>
@@ -983,8 +949,8 @@ come from a lattice QCD analysis with 383 residuals:</p>
     <ul>
 <li><a class="reference internal" href="#">Non-Gaussian Behavior; Testing Fits</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#bootstrap-error-analysis-non-gaussian-output">Bootstrap Error Analysis; Non-Gaussian Output</a></li>
 <li><a class="reference internal" href="#bayesian-integrals">Bayesian Integrals</a></li>
+<li><a class="reference internal" href="#bootstrap-error-analysis-non-gaussian-output">Bootstrap Error Analysis; Non-Gaussian Output</a></li>
 <li><a class="reference internal" href="#testing-fits-with-simulated-data">Testing Fits with Simulated Data</a></li>
 <li><a class="reference internal" href="#goodness-of-fit">Goodness of Fit</a></li>
 <li><a class="reference internal" href="#fit-residuals-and-q-q-plots">Fit Residuals and Q-Q Plots</a></li>
@@ -1039,7 +1005,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.0.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.1 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>

@@ -95,7 +95,6 @@ The complete code for this analysis is
 as follows::
 
     import numpy as np
-
     import gvar as gv
     import lsqfit
     import vegas
@@ -115,44 +114,34 @@ as follows::
             '2.11(20)', '2.75(20)', '0.86(20)', '2.73(20)'
             ])
         prior = make_prior()
+
+        print(20 * '-', 'nonlinear_fit')
         fit = lsqfit.nonlinear_fit(data=(x, y), prior=prior, fcn=fitfcn)
         print(fit)
 
-        ### 2) Bayesian integral with modified PDF
-        # modified probability density function
-        mod_pdf = ModifiedPDF(data=(x, y), fcn=fitfcn, prior=prior)
+        ### 2) Bayesian integrals with modified PDF
+        print(20 * '-', 'Bayesian integral fit')
+        modpdf = ModifiedPDF(data=(x, y), fitfcn=fitfcn, prior=prior)
 
         # integrator for expectation values with modified PDF
-        expval = vegas.PDFIntegrator(fit.p, pdf=mod_pdf)
+        modpdf_ev = vegas.PDFIntegrator(param=fit.p, pdf=modpdf)
 
         # adapt integrator to pdf
-        expval(neval=1000, nitn=15)
+        modpdf_ev(neval=4000, nitn=10)
 
-        # evaluate expectation value of g(p)
-        def g(p):
-            w = p['w']
-            c = p['c']
-            return dict(w=[w, w**2], mean=c, outer=np.outer(c,c))
+        # calculate means and covariances of g(p)
+        @vegas.rbatchintegrand
+        def f(p):
+            return {k:p[k] for k in ['c', 'b', 'w']}
+        s = modpdf_ev.stats(f)
 
-        results = expval(g, neval=1000, nitn=15, adapt=False)
-        print(results.summary())
-
-        # parameters c[i]
-        mean = results['mean']
-        cov = results['outer'] - np.outer(mean, mean)
-        c = mean + gv.gvar(np.zeros(mean.shape), gv.mean(cov))
-        print('c =', c)
-        print('corr(c) =', str(gv.evalcorr(c)).replace('\n', '\n' + 10*' '))
-        print()
-
-        # parameter w
-        wmean, w2mean = results['w']
-        wsdev = gv.mean(w2mean - wmean ** 2) ** 0.5
-        w = wmean + gv.gvar(np.zeros(np.shape(wmean)), wsdev)
-        print('w =', w, '\n')
-
-        # Bayes Factor
-        print('logBF =', np.log(results.pdfnorm))
+        # print out results
+        print(s.summary())
+        print('c =', s['c'])
+        print('corr(c) =', str(gv.evalcorr(s['c'])).replace('\n', '\n' + 10*' '), '\n')
+        print('b =', s['b'])
+        print('w =', s['w'], '\n')
+        print('logBF =', np.log(s.pdfnorm))
 
     def fitfcn(x, p):
         c = p['c']
@@ -160,80 +149,93 @@ as follows::
 
     def make_prior():
         prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
+        prior['gb(b)'] = gv.BufferDict.uniform('gb', 5., 20.)
         prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1.)
         return prior
 
+    @vegas.rbatchintegrand
     class ModifiedPDF:
         """ Modified PDF to account for measurement failure. """
-
-        def __init__(self, data, fcn, prior):
-            self.x, self.y = data
-            self.fcn = fcn
-            self.prior = prior
+        def __init__(self, data, fitfcn, prior):
+            x, y = data
+            self.fitfcn = fitfcn
+            self.prior_pdf = gv.PDF(prior, mode='rbatch')
+            # add rbatch index
+            self.x = x[:, None]             
+            self.ymean = gv.mean(y)[:, None]
+            self.yvar = gv.var(y)[:, None]
 
         def __call__(self, p):
             w = p['w']
-            y_fx = self.y - self.fcn(self.x, p)
-            data_pdf1 = self.gaussian_pdf(y_fx, 1.)
-            data_pdf2 = self.gaussian_pdf(y_fx, 10.)
-            prior_pdf = self.gaussian_pdf(
-                p.buf[:len(self.prior.buf)] - self.prior.buf
-                )
-            return np.prod((1. - w) * data_pdf1 + w * data_pdf2) * np.prod(prior_pdf)
+            b = p['b'] 
 
-        @staticmethod
-        def gaussian_pdf(x, f=1.):
-            xmean = gv.mean(x)
-            xvar = gv.var(x) * f ** 2
-            return gv.exp(-xmean ** 2 / 2. /xvar) / gv.sqrt(2 * np.pi * xvar)
+            # modified PDF for data
+            fxp = self.fitfcn(self.x, p)
+            chi2 = (self.ymean - fxp) ** 2 / self.yvar
+            norm = np.sqrt(2 * np.pi * self.yvar)
+            y_pdf = np.exp(-chi2 / 2) / norm
+            yb_pdf = np.exp(-chi2 / (2 * b**2)) / (b * norm)
+            # product over probabilities for each y[i]
+            data_pdf = np.prod((1 - w) * y_pdf + w * yb_pdf, axis=0) 
 
+            # multiply by prior PDF
+            return data_pdf * self.prior_pdf(p)
+    
     if __name__ == '__main__':
         main()
 
 Here class ``ModifiedPDF`` implements the modified PDF.  As usual the PDF for
 the parameters (in ``__call__``) is the product of a PDF for the data times a
-PDF for the priors. The data PDF is more complicated than usual, however, as
-it consists of two Gaussian distributions: one, ``data_pdf1``, with the
-nominal data errors, and the other, ``data_pdf2``, with errors that are ten
-times larger. Parameter ``w`` determines the relative weight of each data PDF.
+PDF for the priors. The data PDF is the product of the PDFs for each data point,
+but the latter PDFs are more complicated than usual as
+they consists of two Gaussian distributions: one with the
+nominal data errors (``y_pdf``), and the other with errors that are ``b`` times
+times larger (``yb_pdf``). The prior's PDF is Gaussian and here is implemented 
+use ``gvar.PDF``. Parameter ``w`` determines the relative weight of each data PDF.
+
+``ModifiedPDF`` is designed to handle integration points in batches 
+(``@vegas.rbatchintegrand``): the parameters ``p[k]`` have an extra 
+index on the right labeling the integration point (e.g., ``p['b'][i]`` 
+and ``p['c'][d,i] where ``i`` is the batch index).
+This makes for substantially faster integrals.
 
 The Bayesian integrals are estimated using :class:`vegas.PDFIntegrator`
-``expval``, which is created from the least-squares fit output (``fit``).
+``modpdf_ev``, which is created from the least-squares fit output (``fit``).
 It is used to evaluate expectation values of arbitrary functions of the
-fit variables. Normally it would use the standard PDF from the least-squares
-fit, but we replace that PDF here with an instance (``mod_pdf``) of class
-``ModifiedPDF``.
+fit variables with respect to a modified PDF ``modpdf`` (an instance 
+of class ``ModifiedPDF``).
 
-We have modified ``make_prior()`` to introduce ``w`` as a new fit
-parameter. The prior for this parameter is uniformly distributed
-across the interval from 0 |~| to |~| 1. Parameter ``w`` plays 
-no role in the initial fit. (The uniform distribution is implemented
-by introducing a function ``gw(w)`` that maps it onto a Gaussian 
-distribution 0 |~| ± |~| 1. The integration parameter in the 
-Bayesian integrals is ``gw(w)`` but the ``BufferDict`` dictionary 
-makes the corresponding value of ``w`` available automatically.)
+We have modified ``make_prior()`` to introduce ``w`` and ``b`` 
+as new fit
+parameters. The prior for ``w`` is uniformly distributed
+across the interval from 0 to 1, while ``b``'s prior is 
+uniformly distributed between 5 and 20. Parameters ``w`` and ``b`` play 
+no role in the initial least-squares fit. (The uniform distributions are implemented
+by introducing functions ``gw(w)`` and ``gb(b)`` that map them onto Gaussian 
+distributions 0 ± 1. The integration parameters in the 
+Bayesian integrals are ``gw(w)`` and ``gb(b)`` but the ``BufferDict`` dictionary 
+makes the corresponding values of ``w`` and ``b`` available automatically.)
 
-We first call ``expval`` with no function, to allow the integrator to adapt
-to the modified PDF. We then use the integrator, now with adaptation
-turned off (``adapt=False``), to evaluate the expectation value of
-function ``g(p)``. The output dictionary ``results``
-contains expectation values of the corresponding entries in the dictionary
-returned ``g(p)``. These data allow us to calculate means, standard deviations
-and correlation matrices for the fit parameters.
+We first call ``modpdf_ev`` with no function, to allow the integrator to adapt
+to the modified PDF. We then use ``modpdf_ev.stats(f)`` to calculate the 
+means, standard deviations, and covariances of the fit parameters in the 
+dictionary returned by 
+function ``f(p)``. The output dictionary ``s``
+contains expectation values (|GVar|\s) for the corresponding entries in ``f(p)``. 
 
 The results from this code are as follows:
 
 .. literalinclude:: case-outliers.out
 
 The table after the fit shows results for the normalization of the
-modified PDF from each of the ``nitn=15`` iterations of the :mod:`vegas`
+modified PDF from each of ``nitn=10`` iterations of the :mod:`vegas`
 algorithm used to estimate the integrals. The logarithm of the normalization
-(``logBF``) is -23.4, which is much larger than the value -117.5 of ``logGBF``
+(``logBF``) is -23.8, which is much larger than the value -117.5 of ``logGBF``
 from the least-squares fit. This means that the data much prefer the
-modified prior (by a factor of ``exp(-23.4 + 117.4)`` or about 10\ :sup:`41`.).
+modified PDF (by a factor of ``exp(-23.8 + 117.4)`` or about 10\ :sup:`40`).
 
 The new fit parameters are much more reasonable. In particular the
-intercept is 0.28(14) rather than the 1.15(10) from the least-squares fit.
+intercept is 0.29(14) rather than the 1.15(10) from the least-squares fit.
 This is much better suited to the data (see the dashed line in red, with 
 the red band showing the 1-sigma region about the best fit):
 
@@ -242,8 +244,9 @@ the red band showing the 1-sigma region about the best fit):
 
 Note, from the correlation matrix, that the intercept and slope are
 anti-correlated, as one might guess for this fit.
-The analysis also gives us an estimate for the failure rate ``w=0.26(11)``
-of our detectors --- they fail about a quarter of the time.
+The analysis also gives us an estimate for the failure rate ``w=0.27(12)``
+of our detectors (they fail about a quarter of the time) and the 
+extent ``b=11(4)`` of the failure (errors are about 11 times larger).
 
 A Variation
 ------------------
@@ -254,19 +257,20 @@ so that ``w`` is an array::
 
     def make_prior():
         prior = gv.BufferDict(c=gv.gvar(['0(5)', '0(5)']))
+        prior['gb(b)'] = gv.BufferDict.uniform('gb', 5., 20.)
         prior['gw(w)'] = gv.BufferDict.uniform('gw', 0., 1., shape=19)
         return prior
 
-The Bayesian integral then has 21 parameters, rather than the 3 parameters
-before. The code still takes only 4 |~| secs to run (on a 2020 laptop).
+The Bayesian integral then has 22 parameters, rather than the 4 parameters
+before. The code still takes only a few seconds to run (on a 2020 laptop).
 
 The final results are quite similar to the other model:
 
 .. literalinclude:: case-outliers-multi.out
 
-Note that the logarithm of the Bayes Factor ``logBF`` is slighly lower for
-this model than before. It is also less accurately determined (20x), because
-21-parameter integrals are considerably more difficult than 3-parameter
+Note that the logarithm of the Bayes Factor ``logBF`` is slightly lower for
+this model than before. It is also less accurately determined (18x), because
+22-parameter integrals are considerably more difficult than 4-parameter
 integrals. More precision can be obtained by increasing ``neval``, but
 the current precision is more than adequate.
 

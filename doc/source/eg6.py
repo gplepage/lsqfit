@@ -14,7 +14,7 @@ import functools
 import inspect
 import sys
 import vegas
-from outputsplitter import log_stdout
+from outputsplitter import log_stdout, unlog_stdout
 
 DO_PLOT =  True
 
@@ -54,7 +54,7 @@ for p in [prior, log_prior, sqrt_prior, unif_prior]:
     fit = nonlinear_fit(prior=p, fcn=fcn, data=(y))
     print (fit)
     print ("a =", fit.p['a'])
-
+    unlog_stdout()
 
 
 if DO_PLOT:

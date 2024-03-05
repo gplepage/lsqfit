@@ -1,16 +1,17 @@
-Least Square Fit:
+Least Squares Fit:
   chi2/dof [dof] = 0.85 [20]    Q = 0.65    logGBF = 5.2385
 
 Parameters:
-          ga(a)   -0.59 (96)     [  0.0 (1.0) ]  
+          ga(a)   -0.59 (96)     [    0 ± 1.0 ]  
 -----------------------------------------------
               a   0.011 (13)     [ 0.020 (16) ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 15/0.0s)
 
 a = 0.011(13)
 
 Histogram Analysis:
-   mean = 0.014054(22)   sdev = 0.010659(21)   skew = 0.6181(26)   ex_kurt = -0.5593(50)
-   median = 0.011867(19)   plus = 0.014385(31)   minus = 0.008761(18)
+   mean = 0.014065(21)   sdev = 0.010680(20)   skew = 0.6228(24)   ex_kurt = -0.5544(48)
+   split-normal: None
+         median: 0.011851(18) +/- 0.014436(32)/0.008736(16)

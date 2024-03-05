@@ -99,7 +99,7 @@ from ._version import __version__
 # default parameters for nonlinear_fit
 _FITTER_DEFAULTS = dict(
     tol=1e-8,
-    svdcut=None,
+    svdcut=1e-12,
     eps=None,
     debug=False,
     maxit=1000,
@@ -130,43 +130,43 @@ except:
 if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
-_FDATA_attr = 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'.split()
+# _yp_pdf_attr = 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'.split()
 
-if sys.version_info.major == 2:
-    class _FDATA(object):
-        __slots__ = _FDATA_attr
-        def __init__(self, **kargs):
-            for k in kargs:
-                setattr(self, k, kargs[k])
+# if sys.version_info.major == 2:
+#     class _yp_pdf(object):
+#         __slots__ = _yp_pdf_attr
+#         def __init__(self, **kargs):
+#             for k in kargs:
+#                 setattr(self, k, kargs[k])
 
-        def __getstate__(self):
-            return {k:getattr(self, k) for k in self.__slots__}
+#         def __getstate__(self):
+#             return {k:getattr(self, k) for k in self.__slots__}
         
-        def __setstate__(self, state):
-            for k in state:
-                setattr(self, k, state[k])
+#         def __setstate__(self, state):
+#             for k in state:
+#                 setattr(self, k, state[k])
 
-        def _remove_gvars(self, gvlist):
-            newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
-            newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
-            return newfdata 
+#         def _remove_gvars(self, gvlist):
+#             newyp_pdf = _yp_pdf(**{k:getattr(self, k) for k in self.__slots__})
+#             newyp_pdf.correction = _gvar.remove_gvars(newyp_pdf.correction, gvlist)
+#             return newyp_pdf 
 
-        def _distribute_gvars(self, gvlist):
-            self.correction = _gvar.distribute_gvars(self.correction, gvlist)
-else:
-    class _FDATA(object):
-        __slots__ = _FDATA_attr
-        def __init__(self, **kargs):
-            for k in kargs:
-                setattr(self, k, kargs[k])
+#         def _distribute_gvars(self, gvlist):
+#             self.correction = _gvar.distribute_gvars(self.correction, gvlist)
+# else:
+#     class _yp_pdf(object):
+#         __slots__ = _yp_pdf_attr
+#         def __init__(self, **kargs):
+#             for k in kargs:
+#                 setattr(self, k, kargs[k])
 
-        def _remove_gvars(self, gvlist):
-            newfdata = _FDATA(**{k:getattr(self, k) for k in self.__slots__})
-            newfdata.correction = _gvar.remove_gvars(newfdata.correction, gvlist)
-            return newfdata 
+#         def _remove_gvars(self, gvlist):
+#             newyp_pdf = _yp_pdf(**{k:getattr(self, k) for k in self.__slots__})
+#             newyp_pdf.correction = _gvar.remove_gvars(newyp_pdf.correction, gvlist)
+#             return newyp_pdf 
 
-        def _distribute_gvars(self, gvlist):
-            self.correction = _gvar.distribute_gvars(self.correction, gvlist)
+#         def _distribute_gvars(self, gvlist):
+#             self.correction = _gvar.distribute_gvars(self.correction, gvlist)
 
 
 # Internal data type for _unpack_data()
@@ -197,7 +197,7 @@ class nonlinear_fit(object):
 
         data (dict, array or tuple):
             Data to be fit by :class:`lsqfit.nonlinear_fit`
-            can have any of the following forms:
+            can have one of the following forms:
 
                 ``data = x, y``
                     ``x`` is the independent data that is passed to the fit
@@ -214,25 +214,7 @@ class nonlinear_fit(object):
                     only upon the fit parameters: ``fit(p)``. The fit function
                     must return a result having the same layout as ``y``.
 
-                ``data = x, ymean, ycov``
-                    ``x`` is the independent data that is passed to the fit
-                    function with the fit parameters: ``fcn(x, p)``. ``ymean``
-                    is an array containing the mean values of the fit data.
-                    ``ycov`` is an array containing the covariance matrix of
-                    the fit data; ``ycov.shape`` equals ``2*ymean.shape``.
-                    The fit function must return an array having the same
-                    shape as ``ymean``.
-
-                ``data = x, ymean, ysdev``
-                    ``x`` is the independent data that is passed to the fit
-                    function with the fit parameters: ``fcn(x, p)``. ``ymean``
-                    is an array containing the mean values of the fit data.
-                    ``ysdev`` is an array containing the standard deviations of
-                    the fit data; ``ysdev.shape`` equals ``ymean.shape``. The
-                    data are assumed to be uncorrelated. The fit function must
-                    return an array having the same shape as ``ymean``.
-
-            Setting ``x=False`` in the first, third or fourth of these formats
+            Setting ``x=False`` in the first of these formats
             implies that the fit function depends only on the fit parameters:
             that is, ``fcn(p)`` instead of ``fcn(x, p)``. (This is not assumed
             if ``x=None``.)
@@ -289,28 +271,30 @@ class nonlinear_fit(object):
             in an array. Note that this feature is experimental; the
             interface may change in the future.
 
-        eps (float): If positive, singularities in the correlation matrix 
-            for ``g`` are regulated using :func:`gvar.regulate` 
-            with cutoff ``eps``. This makes the correlation matrices 
-            less singular, which can improve the  stability and accuracy 
-            of a fit. Ignored if ``svdcut`` is specified (and 
-            not ``None``).
-
         svdcut (float): If nonzero, singularities in the correlation
-            matrix are regulated using :func:`gvar.regulate`
-            with an SVD cutoff ``svdcut``. This makes the correlation 
-            matrices less singular, which can improve the  stability and 
-            accuracy of a fit. Default is ``svdcut=1e-12``.
+            matrix for ``y`` and ``prior`` are regulated using 
+            :func:`gvar.regulate` with an SVD cutoff ``svdcut``. This 
+            makes the correlation matrices less singular, which 
+            can improve the  stability and accuracy of a fit. 
+            Default is ``svdcut=1e-12``.
 
-        noise (tuple or bool): If ``noise[0]=True``, noise is 
-            added to the data and prior means corresponding to any 
-            additional uncertainties introduced by using ``eps>0`` 
-            or ``svdcut>0``. If ``noise[1]=True``, noise is added 
-            to the prior means corresponding to the uncertainties
-            in the prior. Noise is useful for testing the
-            quality of a fit (``chi2``). Setting ``noise=True`` 
-            is shorthand for ``noise=(True, True)``, and
-            ``noise=False`` means ``noise=(False, False)`` (the default).
+        eps (float): If positive, singularities in the correlation 
+            matrix for ``y`` and ``prior`` are regulated using 
+            :func:`gvar.regulate` with cutoff ``eps``. This makes 
+            the correlation matrices less singular, which can 
+            improve the  stability and accuracy of a fit. 
+            Ignored if ``svdcut`` is specified (and not ``None``).
+
+        noise (tuple or bool): If ``noise[0]=True``, noise is added 
+            to the data means commensurate with the additional 
+            uncertainties introduced by using 
+            ``svdcut>0`` or ``eps>0``. If ``noise[1]=True``, noise 
+            is added to the prior means commensurate with
+            the uncertainties in the prior. Noise is useful 
+            for testing the quality of a fit (``chi2``). 
+            Setting ``noise=True`` is shorthand for 
+            ``noise=(True, True)``, and ``noise=False`` 
+            means ``noise=(False, False)`` (the default).
         
         udata (dict, array or tuple):
             Same as ``data`` but instructs the fitter to ignore  correlations
@@ -496,12 +480,12 @@ class nonlinear_fit(object):
     added to that dictionary to be are passed through |nonlinear_fit| 
     to the underlying fitter (via dictionary ``fitterargs``).
     """
-    # N.B. If _fdata is specified (set from a previous fit's
-    # fit.fdata), then the data and prior correlation matrices are
-    # from _fdata and not from the data themselves. The means in
-    # _fdata are adjusted to be the same as in data and prior.
+    # N.B. If _yp_pdf is specified (set from a previous fit's
+    # fit.yp_pdf), then the data and prior correlation matrices are
+    # from _yp_pdf and not from the data themselves. The means in
+    # _yp_pdf are adjusted to be the same as in data and prior.
     # This was introduced to make simulated_fit_iter a little faster,
-    # since now it doesn't have to rediagonalize the correlation matrix
+    # since now it doesn't have to re-diagonalize the correlation matrix
     # before each fit. This is not part of the public interface and
     # could easily disappear in the future.
 
@@ -511,10 +495,9 @@ class nonlinear_fit(object):
 
     def __init__(
         self, data=None, fcn=None, prior=None, p0=None, eps=False,
-        svdcut=False, debug=None, tol=None, maxit=None, udata=None, _fdata=None,
-        noise=None, 
-        add_svdnoise=None, add_priornoise=None, # legacy names
-        linear=[], fitter=None, **fitterargs
+        svdcut=False, debug=None, tol=None, maxit=None, udata=None, _yp_pdf=None,
+        noise=None, linear=None,
+        fitter=None, **fitterargs
         ):
 
         # check arguments
@@ -526,14 +509,15 @@ class nonlinear_fit(object):
             raise ValueError('neither p0 nor prior is specified')
 
         # install defaults where needed
-        if eps is False:
-            eps = nonlinear_fit.DEFAULTS.get(
-                'eps', _FITTER_DEFAULTS['eps']
-                )
-        if svdcut is False:
+        if svdcut is False and eps is False:
             svdcut = nonlinear_fit.DEFAULTS.get(
                 'svdcut', _FITTER_DEFAULTS['svdcut'],
                 )
+            eps = None
+        elif svdcut is False:
+            svdcut = None 
+        elif eps is False:
+            eps = None 
         if debug is None:
             debug = nonlinear_fit.DEFAULTS.get(
                 'debug', _FITTER_DEFAULTS['debug'],
@@ -554,11 +538,6 @@ class nonlinear_fit(object):
                 )
         if isinstance(noise, bool):
             noise = (noise, noise)
-        # legacy overwrites -- don't rely on these
-        if add_svdnoise is not None and noise_not_specified:
-            noise = (add_svdnoise, noise[1])
-        if add_priornoise is not None and noise_not_specified:
-            noise = (noise[0], add_priornoise)
 
         if fitter is None:
             fitter = nonlinear_fit.DEFAULTS.get(
@@ -567,7 +546,7 @@ class nonlinear_fit(object):
         for k in nonlinear_fit.DEFAULTS:
             if k in [
                 'eps', 'svdcut', 'debug', 'maxit', 'fitter', 'tol',
-                'noise', 'add_svdnoise', 'add_priornoise',
+                'noise', #'add_svdnoise', 'add_priornoise',
                 ]:
                 continue
             if k not in fitterargs:
@@ -598,8 +577,8 @@ class nonlinear_fit(object):
             prior = prior + (_gvar.sample(prior) - _gvar.mean(prior))
 
         # unpack prior,data,fcn,p0 to reconfigure for multifit
-        if _fdata is None:
-            x, y, prior, fdata = _unpack_data(
+        if _yp_pdf is None:
+            x, y, prior, yp_pdf = _unpack_data(
                 data=self.data, prior=prior, svdcut=svdcut, eps=eps,
                 uncorrelated_data=self.uncorrelated_data,
                 noise=noise, debug=debug
@@ -607,20 +586,20 @@ class nonlinear_fit(object):
         else:
             x = data[0]
             y = data[1]
-            fdata = copy.deepcopy(_fdata)
-            fdata.mean[:y.size] = _gvar.mean(y.flat)
+            yp_pdf = copy.deepcopy(_yp_pdf)
+            yp_pdf.mean[:y.size] = _gvar.mean(y.flat)
             if prior is not None:
-                fdata.mean[y.size:] = _gvar.mean(prior.flat)
-        self.eps = fdata.eps 
-        self.svdcut = fdata.svdcut
+                yp_pdf.mean[y.size:] = _gvar.mean(prior.flat)
+            yp_pdf.meanflat = yp_pdf.mean
+        self.eps = yp_pdf.eps 
+        self.svdcut = yp_pdf.svdcut
         self.x = x
         self.y = y
         self.prior = prior
-        self.fdata = fdata
-        self.correction = fdata.correction
-        self.svdcorrection = fdata.correction  # legacy name
-        self.nblocks = fdata.nblocks
-        self.svdn = fdata.svdn
+        self.yp_pdf = yp_pdf
+        self.correction = sum(yp_pdf.correction)
+        self.nblocks = yp_pdf.nblocks
+        self.svdn = yp_pdf.nmod
         self.p0 = _unpack_p0(
             p0=self.p0, p0file=self.p0file, prior=self.prior,
             )
@@ -631,9 +610,9 @@ class nonlinear_fit(object):
 
         # create fit function chiv for multifit
         self._chiv, self._chivw = _build_chiv_chivw(
-            fdata=self.fdata, fcn=flatfcn, prior=self.prior
+            yp_pdf=self.yp_pdf, fcn=flatfcn, prior=self.prior
             )
-        nf = self.fdata.nw
+        nf = self.yp_pdf.nchiv
         self.dof = nf - self.p0.size
 
         # check for linear variables
@@ -778,7 +757,7 @@ class nonlinear_fit(object):
                 # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
             logdet_cov = logdet(self.cov)
             self.logGBF = 0.5*(
-                logdet_cov - self.fdata.logdet - self.chi2 -
+                logdet_cov - self.yp_pdf.logdet - self.chi2 -
                 self.dof * numpy.log(2. * numpy.pi)
                 )
 
@@ -969,12 +948,6 @@ class nonlinear_fit(object):
 
     p = property(_getp, doc="Best-fit parameters with correlations.")
 
-    # transformed_p = property(_getp, doc="Same as fit.p --- for legacy code.")  # legacy name
-
-    # fmt_partialsdev = _gvar.fmt_errorbudget  # this is for legacy code
-    # fmt_errorbudget = _gvar.fmt_errorbudget
-    # fmt_values = _gvar.fmt_values
-
     def evalchi2(self, p):
         """ Evaluate ``chi**2`` for arbitrary parameters ``p``.
 
@@ -1016,7 +989,7 @@ class nonlinear_fit(object):
         """
         if not hasattr(self, '_logpdfnorm'):
             self._logpdfnorm = 0.5 * (
-                self.fdata.logdet
+                self.yp_pdf.logdet
                 + numpy.log(2*numpy.pi) * (self.dof + numpy.size(self.palt))
                 )
         # return (self.dchi2(p) + self.chi2) / 2 + self._logpdfnorm
@@ -1258,6 +1231,7 @@ class nonlinear_fit(object):
                             ktag = ""
             else:
                 # numpy array
+                v1 = numpy.asarray(v1)
                 v2 = numpy.asarray(v2)
                 for k in numpy.ndindex(v1.shape):
                     # convert array(GVar) to GVar
@@ -1289,25 +1263,11 @@ class nonlinear_fit(object):
             return ans
 
         # build header
-        dof = self.dof
-        if dof > 0:
-            chi2_dof = self.chi2/self.dof
-        else:
-            chi2_dof = self.chi2
-        try:
-            Q = 'Q = %.2g' % self.Q
-        except:
-            Q = ''
-        try:
-            logGBF = 'logGBF = %.5g' % self.logGBF
-        except:
-            logGBF = ''
         if self.prior is None:
             descr = ' (no prior)'
         else:
             descr = ''
-        table = ('Least Square Fit%s:\n  chi2/dof [dof] = %.2g [%d]    %s'
-                 '    %s\n' % (descr, chi2_dof, dof, Q, logGBF))
+        table = 'Least Squares Fit{}:\n  {}\n'.format(descr, _gvar.fmt_chi2(self))
         if maxline < 0:
             return table
 
@@ -1327,7 +1287,8 @@ class nonlinear_fit(object):
                 max(w1, 15), 3 * ' ',
                 max(w2, 10), int(max(w2,10)/2) * ' ', max(w3,10)
                 )
-            if len(self.linear) > 0:
+            linear = getattr(self, 'linear', [])
+            if len(linear) > 0:
                 spacer = [' ', '-']
             else:
                 spacer = ['', '']
@@ -1342,7 +1303,7 @@ class nonlinear_fit(object):
                     continue
                 table += (
                     (fst % tuple(di)) +
-                    spacer[i in self.linear] +
+                    spacer[i in linear] +
                     stars + '\n'
                     )
 
@@ -1357,7 +1318,7 @@ class nonlinear_fit(object):
                 settings += "\n  svdcut/n = {svdcut:.2g}/{svdn}*".format(
                         svdcut=self.svdcut, svdn=self.svdn
                         )
-        else:
+        elif self.eps is not None:
             if self.noise[0]:
                 settings += "\n  eps = {eps:.2g}*".format(
                         eps=self.eps
@@ -1366,7 +1327,9 @@ class nonlinear_fit(object):
                 settings += "\n  eps = {eps:.2g}".format(
                         eps=self.eps
                         )
-        criterion = self.stopping_criterion
+        else:
+            settings += "\n  svdcut/n = None/0"
+        criterion = getattr(self, 'stopping_criterion', None)
         try:
             fmtstr = [
                 "    tol = ({:.2g},{:.2g},{:.2g})",
@@ -1378,14 +1341,25 @@ class nonlinear_fit(object):
             settings += fmtstr.format(*self.tol)
         except:
             pass
-        if criterion is not None and criterion == 0:
-            settings +="    (itns/time = {itns}*/{time:.1f})".format(
-                itns=self.nit, time=self.time
-                )
+        
+        # format time
+        for unit,sym in [(24*3600., 'd'),(3600., 'h'), (60., 'm')]:
+            if self.time > unit:
+                ftime = '{:.1f}{}'.format(self.time / unit, sym)
+                break
         else:
-            settings +="    (itns/time = {itns}/{time:.1f})".format(
-                itns=self.nit, time=self.time
-                )
+            ftime = '{:.1f}s'.format(self.time)
+        if hasattr(self, 'nit'):
+            if criterion is not None and criterion == 0:
+                settings +="    (itns/time = {itns}*/{time})".format(
+                    itns=self.nit, time=ftime
+                    )
+            else:
+                settings +="    (itns/time = {itns}/{time})".format(
+                    itns=self.nit, time=ftime
+                    )
+        else:
+            settings += "    (time = {time})".format(time=ftime)
         default_line = '\n  fitter = gsl_multifit    methods = lm/more/qr\n'
         newline = "\n  fitter = {}    {}\n".format(
             self.fitter, self.description
@@ -1440,61 +1414,6 @@ class nonlinear_fit(object):
             table += fst[:-1] % tuple(di) + stars + '\n'
 
         return table + settings
-
-    @staticmethod
-    def load_parameters(filename):
-        """ Load parameters stored in file ``filename``.
-
-        ``p = nonlinear_fit.load_p(filename)`` is used to recover the
-        values of fit parameters dumped using ``fit.dump_p(filename)`` (or
-        ``fit.dump_pmean(filename)``) where ``fit`` is of type
-        :class:`lsqfit.nonlinear_fit`. The layout of the returned
-        parameters ``p`` is the same as that of ``fit.p`` (or
-        ``fit.pmean``).
-        """
-        warnings.warn(
-            "nonlinear_fit.load_parameters deprecated; use pickle.load or gvar.load instead",
-            DeprecationWarning,
-            )
-        with open(filename,"rb") as f:
-            return pickle.load(f)
-
-    def dump_p(self, filename):
-        """ Dump parameter values (``fit.p``) into file ``filename``.
-
-        ``fit.dump_p(filename)`` saves the best-fit parameter values
-        (``fit.p``) from a ``nonlinear_fit`` called ``fit``. These values
-        are recovered using
-        ``p = nonlinear_fit.load_parameters(filename)``
-        where ``p``'s layout is the same as that of ``fit.p``.
-        """
-        warnings.warn(
-            "nonlinear_fit.dump_p deprecated; use gvar.dump instead",
-            DeprecationWarning
-            )
-        with open(filename, "wb") as f:
-            pickle.dump(self.palt, f) # dump as a dict
-
-    def dump_pmean(self, filename):
-        """ Dump parameter means (``fit.pmean``) into file ``filename``.
-
-        ``fit.dump_pmean(filename)`` saves the means of the best-fit
-        parameter values (``fit.pmean``) from a ``nonlinear_fit`` called
-        ``fit``. These values are recovered using
-        ``p0 = nonlinear_fit.load_parameters(filename)``
-        where ``p0``'s layout is the same as ``fit.pmean``. The saved
-        values can be used to initialize a later fit (``nonlinear_fit``
-        parameter ``p0``).
-        """
-        warnings.warn(
-            "nonlinear_fit.dump_pmean deprecated; use pickle.dump instead",
-            DeprecationWarning,
-            )
-        with open(filename, "wb") as f:
-            if self.pmean.shape is not None:
-                pickle.dump(numpy.array(self.pmean), f)
-            else:
-                pickle.dump(collections.OrderedDict(self.pmean), f) # dump as a dict
 
     def simulated_fit_iter(
         self, n=None, pexact=None, add_priornoise=False, bootstrap=None, **kargs
@@ -1570,7 +1489,7 @@ class nonlinear_fit(object):
             n, pexact=pexact, add_priornoise=add_priornoise
             ):
             fit = nonlinear_fit(
-                data=(self.x, ysim), prior=priorsim, _fdata=self.fdata,
+                data=(self.x, ysim), prior=priorsim, _yp_pdf=self.yp_pdf,
                 **fargs
                 )
             fit.pexact = pexact
@@ -1784,8 +1703,8 @@ class _fit_pdf(object):
     is the product of the Gaussian PDF for the data ``P(data|p,M)`` 
     times the Gaussian PDF for the prior ``P(p|M)`` where ``M`` is the model 
     used in the fit (i.e., the fit function and prior). The product of PDFs
-    is ``P(data,p|M)`` by Bayes' Theorem; integrating over fit parameters
-    p gives the Bayes Factor or model evidence ``P(data|M)``, which is proportional
+    is ``P(data,p|M)``; integrating over fit parameters ``p`` gives 
+    the Bayes Factor or model evidence ``P(data|M)``, which is proportional
     to the probability that the fit data come from fit model ``M``. The logarithm 
     of the Bayes Factor should agree with ``fit.logGBF`` when the Gaussian 
     approximation assumed in the fit is accurate.
@@ -1912,7 +1831,7 @@ class _fit_pdf(object):
         self._chiv = fit._chiv 
         self.chi2 = fit.chi2
         self.lognorm = 0.5 * (
-            fit.fdata.logdet
+            fit.yp_pdf.logdet
             + numpy.log(2*numpy.pi) * (fit.dof + numpy.size(fit.palt))
             ) + fit.chi2 / 2
 
@@ -1946,11 +1865,11 @@ def _reformat(p, buf):
     return ans
 
 def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
-    """ Unpack data and prior into ``(x, y, prior, fdata)``.
+    """ Unpack data and prior into ``(x, y, prior, yp_pdf)``.
 
-    This routine unpacks ``data`` and ``prior`` into ``x, y, prior, fdata``
+    This routine unpacks ``data`` and ``prior`` into ``x, y, prior, yp_pdf``
     where ``x`` is the independent data, ``y`` is the fit data,
-    ``prior`` is the collection of priors for the fit, and ``fdata``
+    ``prior`` is the collection of priors for the fit, and ``yp_pdf``
     contains the information about the data and prior needed for the
     fit function. Both ``y`` and ``prior`` are modified to account
     if ``svdcut>0`` or ``eps>0``.
@@ -1962,14 +1881,8 @@ def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
     function of only the parameters: ``fcn(p)`` --- no ``x``. (This is also
     assumed if ``x = False``.)
 
-    Output data in ``fdata`` is: ``fdata.mean`` containing the mean values of
-    ``y.flat`` and ``prior.flat`` (if there is a prior);
-    ``fdata.correction``  containing the sum of the SVD corrections to
-    ``y.flat`` and ``prior.flat``; ``fdata.logdet`` containing  the logarithm
-    of the  determinant of the covariance matrix of ``y.flat`` and
-    ``prior.flat``; and ``fdata.inv_wgts`` containing a representation of the
-    inverse of the covariance matrix, after SVD cuts (see :func:`gvar.svd`
-    for a description of the format).
+    ``yp_pdf`` is an object of type ``gvar.PDF`` representing the 
+    product of the data and prior PDFs. 
     """
     # unpack data tuple
     if not isinstance(data, tuple):
@@ -1984,7 +1897,7 @@ def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
         x, y = data
         y = _unpack_gvars(y)
     else:
-        raise ValueError("data tuple wrong length: "+str(len(data)))
+        raise ValueError("data tuple wrong length: " + str(len(data)))
     if debug:
         if numpy.any(_gvar.sdev(y.flat) == 0):
             raise ValueError('some input data have zero standard deviations')
@@ -2002,68 +1915,17 @@ def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
             if numpy.any(numpy.isnan(_gvar.mean(prior.flat))):
                 raise ValueError("some prior means are nan's")
             if numpy.any(numpy.isnan(_gvar.sdev(prior.flat))):
-                raise ValueError("some prior std devs are nan's")
-
-    def _apply_svd(data, svdcut=svdcut, eps=eps):
-        ans, inv_wgts = _gvar.regulate(
-            data, wgts=-1, eps=eps, svdcut=svdcut, noise=noise[0],
-            )
-        fdata = _FDATA(
-            mean=_gvar.mean(ans.flat),
-            inv_wgts=inv_wgts,
-            correction=numpy.sum(ans.correction.flat),
-            logdet=ans.logdet,
-            nblocks=ans.nblocks,
-            svdn=ans.nmod,
-            svdcut=ans.svdcut,
-            eps=ans.eps,
-            nw=sum(len(wgts) for iw, wgts in inv_wgts),
-            niw=sum(len(iw) for iw, wgts in inv_wgts),
-            )
-        del ans.nblocks
-        # del ans.correction
-        return ans, fdata
-
+                raise ValueError("some prior std devs are nan's") 
     if uncorrelated_data:
-        ysdev = _gvar.sdev(y.flat)
-        if prior is None:
-            pfdata = _FDATA(
-                mean=[], inv_wgts=[([],[])], correction=_gvar.gvar(0,0),
-                logdet=0.0, nblocks={1:0}, svdn=0, svdcut=0, eps=0, nw=0, niw=0,
-                )
-        else:
-            prior, pfdata = _apply_svd(prior)
-        inv_wgts = [(numpy.arange(y.size, dtype=numpy.intp), 1. / ysdev)]
-        i, wgt = pfdata.inv_wgts[0]
-        if len(i) > 0:
-            inv_wgts = [(
-                numpy.concatenate((inv_wgts[0][0], i + y.size)),
-                numpy.concatenate((inv_wgts[0][1], wgt))
-                )]
-        for i, wgt in pfdata.inv_wgts[1:]:
-            inv_wgts.append((
-                i + y.size, wgt
-                ))
-        pfdata.nblocks[1] = pfdata.nblocks.get(1, 0) + y.size
-        fdata = _FDATA(
-            mean=numpy.concatenate((_gvar.mean(y.flat), pfdata.mean)),
-            inv_wgts=inv_wgts,
-            correction=pfdata.correction,
-            logdet=2 * numpy.sum(numpy.log(ysdev)) + pfdata.logdet,
-            nblocks=pfdata.nblocks,
-            svdn=pfdata.svdn,
-            svdcut=pfdata.svdcut,
-            eps=pfdata.svdcut,
-            nw=sum(len(wgts) for iw, wgts in inv_wgts),
-            niw=sum(len(iw) for iw, wgts in inv_wgts),
-            )
-    elif prior is None:
-        y, fdata = _apply_svd(y)
+        y = _gvar.gvar(_gvar.mean(y), _gvar.sdev(y))
+    if prior is None:
+        yp_pdf = _gvar.PDF(y.flat[:], svdcut=svdcut, noise=noise, eps=eps)
+        y.flat = yp_pdf.distribution
     else:
-        yp, fdata = _apply_svd(numpy.concatenate((y.flat, prior.flat)))
-        y.flat = yp[:y.size]
-        prior.flat = yp[y.size:]
-    return x, y, prior, fdata
+        yp_pdf = _gvar.PDF(numpy.concatenate([y.flat[:], prior.flat[:]], axis=0), eps=eps, svdcut=svdcut, noise=noise[0])
+        y.flat = yp_pdf.distribution[:y.size]
+        prior.flat = yp_pdf.distribution[y.size:]
+    return x, y, prior, yp_pdf
 
 def _unpack_gvars(g):
     """ Unpack collection of GVars to BufferDict or numpy array. """
@@ -2235,7 +2097,7 @@ def _y_fcn_match(y, f):
 
 # add extras and utilities to lsqfit
 from ._extras import empbayes_fit, wavg
-from ._extras import MultiFitterModel, MultiFitter
+from ._extras import MultiFitterModel, MultiFitter, vegas_fit
 from ._utilities import _build_chiv_chivw
 
 # legacy definitions (obsolete)

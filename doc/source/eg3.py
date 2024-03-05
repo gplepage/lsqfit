@@ -8,7 +8,7 @@ Copyright (c) 2016-2021 Cornell University. All rights reserved.
 """
 DO_PLOT = True
 DO_BOOTSTRAP = True
-DO_BAYESIAN = True
+DO_BAYESIAN = False
 DO_SIMULATION = True
 
 import collections
@@ -33,7 +33,7 @@ def main():
     prior = make_prior()
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
     print(fit)
-    print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+    print('p1/p0 =', fit.p[1] / fit.p[0], '    prod(p) =', np.prod(fit.p))
     print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
 
     if DO_PLOT:
@@ -56,49 +56,53 @@ def main():
         gv.ranseed(123)
         sys.stdout = tee.tee(sys_stdout, open('eg3c.out', 'w'))
         print(fit)
-        print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+        print('p1/p0 =', fit.p[1] / fit.p[0], '    prod(p) =', np.prod(fit.p))
         print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
-        Nbs = 40
-        outputs = {'p':[], 'p1/p0':[], 'p3/p2':[]}
+        Nbs = 4000*4
+        outputs = {'p':[], 'p1/p0':[], 'prod(p)':[]}
         for bsfit in fit.bootstrap_iter(n=Nbs):
             p = bsfit.pmean
             outputs['p'].append(p)
             outputs['p1/p0'].append(p[1] / p[0])
-            outputs['p3/p2'].append(p[3] / p[2])
+            outputs['prod(p)'].append(np.prod(p))
         print('\nBootstrap Averages:')
-        outputs = gv.dataset.avg_data(outputs, bstrap=True)
+        outputs = gv.dataset.avg_data(outputs, spread=True)
         print(gv.tabulate(outputs))
         print('corr(p0,p1) =', gv.evalcorr(outputs['p'][:2])[1,0])
 
-        # make histograms of p1/p0 and p3/p2
+        # make histograms of p1/p0 and prod(p)
         sys.stdout = sys_stdout
         print
         sys.stdout = tee.tee(sys_stdout, open('eg3d.out', 'w'))
-        print('Histogram Analysis:')
-        count = {'p1/p0':[], 'p3/p2':[]}
-        hist = {
-            'p1/p0':gv.PDFHistogram(fit.p[1] / fit.p[0]),
-            'p3/p2':gv.PDFHistogram(fit.p[3] / fit.p[2]),
-            }
-        for bsfit in fit.bootstrap_iter(n=1000):
-            p = bsfit.pmean
-            count['p1/p0'].append(hist['p1/p0'].count(p[1] / p[0]))
-            count['p3/p2'].append(hist['p3/p2'].count(p[3] / p[2]))
-        count = gv.dataset.avg_data(count)
-        plt.rcParams['figure.figsize'] = [6.4, 2.4]
-        pltnum = 1
-        for k in count:
-            print(k + ':')
-            print(hist[k].analyze(count[k]).stats)
-            plt.subplot(1, 2, pltnum)
-            plt.xlabel(k)
-            hist[k].make_plot(count[k], plot=plt)
-            if pltnum == 2:
-                plt.ylabel('')
-            pltnum += 1
-        plt.rcParams['figure.figsize'] = [6.4, 4.8]
-        plt.savefig('eg3d.png', bbox_inches='tight')
-        plt.show()
+        if False:
+            print('Histogram Analysis:')
+            count = {'p1/p0':[], 'prod(p)':[]}
+            hist = {
+                'p1/p0':gv.PDFHistogram(fit.p[1] / fit.p[0]),
+                'prod(p)':gv.PDFHistogram(np.prod(fit.p)),
+                }
+            for bsfit in fit.bootstrap_iter(n=1000):
+                p = bsfit.pmean
+                count['p1/p0'].append(hist['p1/p0'].count(p[1] / p[0]))
+                count['prod(p)'].append(hist['prod(p)'].count(np.prod(p)))
+            count = gv.dataset.avg_data(count)
+            plt.rcParams['figure.figsize'] = [6.4, 2.4]
+            pltnum = 1
+            for k in count:
+                print(k + ':')
+                stats = gv.PDFStatistics(histogram=(hist[k].bins, count[k]))
+                print(stats)
+                print(hist[k].analyze(count[k]).stats)
+                stats.plot_histogram().show()
+                plt.subplot(1, 2, pltnum)
+                plt.xlabel(k)
+                hist[k].make_plot(count[k], plot=plt)
+                if pltnum == 2:
+                    plt.ylabel('')
+                pltnum += 1
+            plt.rcParams['figure.figsize'] = [6.4, 4.8]
+            plt.savefig('eg3d.png', bbox_inches='tight')
+            plt.show()
 
     if DO_BAYESIAN:
         gv.ranseed(123)
@@ -181,7 +185,7 @@ def main():
     prior[1] = gv.gvar('0(20)')
     fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
     print(fit)
-    print('p1/p0 =', fit.p[1] / fit.p[0], '    p3/p2 =', fit.p[3] / fit.p[2])
+    print('p1/p0 =', fit.p[1] / fit.p[0], '    prod(p) =', np.prod(fit.p))
     print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
 
 

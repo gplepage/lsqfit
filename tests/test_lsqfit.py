@@ -267,7 +267,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol,
             )
         out = [
-            'Least Square Fit:',
+            'Least Squares Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
             'Parameters:',
@@ -285,7 +285,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertEqual(out, fit.format(True).split('\n')[:len(out)])
         self.assertEqual(out, fit.format(True, pstyle='v').split('\n')[:len(out)])
         out = [
-            'Least Square Fit:',
+            'Least Squares Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
             'Parameters:',
@@ -300,7 +300,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             data=y, prior=prior, fcn=f, svdcut=1e-15, tol=tol,
             )
         out = [
-            'Least Square Fit:',
+            'Least Squares Fit:',
             '  chi2/dof [dof] = 0.3 [2]    Q = 0.74    logGBF = -2.9682',
             '',
             'Parameters:',
@@ -324,8 +324,8 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             p0=p0, data=(x,y), fcn=f, svdcut=None, tol=tol,
             )
         out = [
-            'Least Square Fit (no prior):',
-            '  chi2/dof [dof] = 0.8 [1]    Q = 0.37    ',
+            'Least Squares Fit (no prior):',
+            '  chi2/dof [dof] = 0.8 [1]    Q = 0.37',
             '',
             'Parameters:',
             '              p    1.09 (19)     [    0 ± inf ]  ',
@@ -350,7 +350,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             prior=prior, data=y, fcn=fcn, debug=True, tol=tol,
             )
         out = [
-            'Least Square Fit:',
+            'Least Squares Fit:',
             '  chi2/dof [dof] = 1.7 [4]    Q = 0.14    logGBF = -2.3346',
             '',
             'Parameters:',
@@ -377,7 +377,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             )
         # print(fit.format(extend=True))
         out = [
-            'Least Square Fit:',
+            'Least Squares Fit:',
             '  chi2/dof [dof] = 1.1 [4]    Q = 0.36    logGBF = -1.77',
             '',
             'Parameters:',
@@ -641,7 +641,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
             a = gv.gvar('1(1)')
             b = gv.gvar('2(1)')
             c = gv.gvar('3(1)')
-            avg = wavg([a, b, c], fast=fast)
+            avg = wavg([a, b, c], fast=fast) 
             np.testing.assert_allclose([avg.mean, avg.sdev], [2., 1/3.**0.5])
             a = gv.gvar(dict(a=[['1(1)', '2(1)']], b=['10(1)', '5(3)'], c='1(1)'))
             b = gv.gvar(dict(a=[['2(1)', '1(1)']], b=['20(1)'], c='2(1)'))
@@ -948,7 +948,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         p = gv.gvar(2,4)
         po = lsqfit._unpack_gvars({'log(p)':gv.log(p)})
         xo = 20
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=(xo,yo), prior=po, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
@@ -957,104 +957,104 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assert_gvclose(gv.exp(prior['log(p)']), p)
         self.assert_gvclose(prior['p'], p)
 
-        self.assert_arraysequal(fdata.mean, [1., 10., gv.log(2.)])
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
-        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.5])
-        sumsvd = fdata.correction
+        self.assert_arraysequal(yp_pdf.mean, [1., 10., gv.log(2.)])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [0,1,2])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][1], [0.5, 0.25, 0.5])
+        sumsvd = sum(yp_pdf.correction)
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
         # case 2 - no x
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'], yo['y'])
         self.assert_gvclose(prior['p'], po['p'])
-        self.assert_arraysequal(fdata.mean, [1., 10., 2.])
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1,2])
-        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25, 0.25])
-        sumsvd = fdata.correction
+        self.assert_arraysequal(yp_pdf.mean, [1., 10., 2.])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [0,1,2])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][1], [0.5, 0.25, 0.25])
+        sumsvd = sum(yp_pdf.correction)
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
         # case 3 - no prior, x
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=None, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'], yo['y'])
         self.assertEqual(prior, None)
-        self.assert_arraysequal(fdata.mean, [1., 10.])
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [0,1])
-        self.assert_arraysequal(fdata.inv_wgts[0][1], [0.5, 0.25])
-        sumsvd = fdata.correction
+        self.assert_arraysequal(yp_pdf.mean, [1., 10.])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [0,1])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][1], [0.5, 0.25])
+        sumsvd = sum(yp_pdf.correction)
         self.assertEqual([sumsvd.mean, sumsvd.sdev], [0, 0])
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
 
         # case 3 - prior and data correlated
         one = gv.gvar(1,1e-3)
         yo['y'][0] *= one
         po['p'] *= one
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=0.0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assert_arraysequal(fdata.mean, [1,10,2])
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [1])
-        self.assert_arraysequal(fdata.inv_wgts[1][0], [0, 2])
-        fd_icov = make_mat(fdata.inv_wgts, 3)
+        self.assert_arraysequal(yp_pdf.mean, [1,10,2])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [1])
+        self.assert_arraysequal(yp_pdf.i_invwgts[1][0], [0, 2])
+        fd_icov = make_mat(yp_pdf.i_invwgts, 3)
         icov = np.linalg.inv(gv.evalcov(y['y'].tolist()+[po['p']]))
         self.assert_arraysclose(fd_icov,icov)
         icov = np.linalg.inv(gv.evalcov(np.concatenate((y.flat,prior.flat))))
         self.assert_arraysclose(fd_icov,icov)
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
         # case 4 - vector p, no correlation
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=pvo, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assert_arraysequal(fdata.mean,[1, 10, 1, 1])
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [0, 1, 2, 3])
-        self.assert_arraysequal(fdata.inv_wgts[0][1],[0.5, 0.25, 0.5, 0.25])
-        test_logdet(fdata, prior, y)
+        self.assert_arraysequal(yp_pdf.mean,[1, 10, 1, 1])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [0, 1, 2, 3])
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][1],[0.5, 0.25, 0.5, 0.25])
+        test_logdet(yp_pdf, prior, y)
 
         # case 5 - vector p, correlation
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
         pvo = lsqfit._unpack_gvars([gv.gvar(1,2),gv.gvar(1,4)])
         yo['y'][0] *= one
         pvo[0] *= one
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=pvo, svdcut=0, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,False)
         self.assert_gvclose(y['y'],yo['y'])
         self.assert_gvclose(prior,pvo)
-        self.assert_arraysequal(fdata.inv_wgts[0][0], [1, 3])
-        self.assertEqual(numpy.ndim(fdata.inv_wgts[0][1]), 1)
-        self.assert_arraysequal(fdata.inv_wgts[1][0], [0, 2])
-        self.assertEqual(numpy.ndim(fdata.inv_wgts[1][1]), 2)
-        fd_icov = make_mat(fdata.inv_wgts, 4)
+        self.assert_arraysequal(yp_pdf.i_invwgts[0][0], [1, 3])
+        self.assertEqual(numpy.ndim(yp_pdf.i_invwgts[0][1]), 1)
+        self.assert_arraysequal(yp_pdf.i_invwgts[1][0], [0, 2])
+        self.assertEqual(numpy.ndim(yp_pdf.i_invwgts[1][1]), 2)
+        fd_icov = make_mat(yp_pdf.i_invwgts, 4)
         icov = np.linalg.inv(gv.evalcov(y['y'].tolist()+prior.tolist()))
         self.assert_arraysclose(fd_icov,icov)
         icov = np.linalg.inv(gv.evalcov(np.concatenate((y.flat,prior.flat))))
         self.assert_arraysclose(fd_icov,icov)
 
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
         # case 6 - (x,y,ycov)
         yo = dict(y=[gv.gvar(1, 2),gv.gvar(10,4)])
@@ -1063,20 +1063,20 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         po = lsqfit._unpack_gvars(dict(p=gv.gvar(2, 4)))
         xo = 20
         svdcut = None
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=(xo,yo_mean,yo_cov), prior=po, svdcut=svdcut,eps=None,
             debug=True, uncorrelated_data=False, **noiseargs
             )
         self.assertEqual(x,xo)
         self.assert_gvclose(y,yo['y'])
         self.assert_gvclose(prior['p'],po['p'])
-        self.assert_arraysequal(fdata.mean,[1,10,2])
-        self.assertEqual(set(fdata.inv_wgts[0][0]), set([0, 1, 2]))
+        self.assert_arraysequal(yp_pdf.mean,[1,10,2])
+        self.assertEqual(set(yp_pdf.i_invwgts[0][0]), set([0, 1, 2]))
         self.assert_arraysequal(
-            fdata.inv_wgts[0][1][fdata.inv_wgts[0][0]],
+            yp_pdf.i_invwgts[0][1][yp_pdf.i_invwgts[0][0]],
             [0.5, 0.25, 0.25]
             )
-        test_logdet(fdata, prior, y)
+        test_logdet(yp_pdf, prior, y)
 
         # case 8 - svd cuts
         a = gv.gvar(1,1)
@@ -1088,7 +1088,7 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         sc = 0.01
         da_svd = gv.gvar(0,sc**0.5)
         for svdcut in [0.0, sc]:
-            x, y, prior, fdata = lsqfit._unpack_data(
+            x, y, prior, yp_pdf = lsqfit._unpack_data(
                 data=yo, prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                 )
@@ -1111,10 +1111,10 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
                 with self.assertRaises(AssertionError):
                     self.assert_gvclose(prior,po)
             self.assert_arraysclose(
-                make_mat(fdata.inv_wgts, 4),
+                make_mat(yp_pdf.i_invwgts, 4),
                 np.linalg.inv(gv.evalcov(list(y.flat) + list(prior.flat)))
                 )
-            test_logdet(fdata, prior, y)
+            test_logdet(yp_pdf, prior, y)
 
         # case 9 - noise
         a = gv.gvar(1, 1)
@@ -1125,13 +1125,13 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         po = gv.gvar([20*(a+da), 20*(a-da), '10(10)'])
         sc = 0.01
         da_svd = gv.gvar(0, sc**0.5)
-        x, y_ref, prior_ref, fdata_ref = lsqfit._unpack_data(
+        x, y_ref, prior_ref, yp_pdf_ref = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=sc, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
         # 9a - check that it runs (all need do here)
         noiseargs['noise'] = (True, False)
-        x, y, prior, fdata = lsqfit._unpack_data(
+        x, y, prior, yp_pdf = lsqfit._unpack_data(
             data=yo, prior=po, svdcut=sc, eps=None, debug=True,
             uncorrelated_data=False, **noiseargs
             )
@@ -1139,12 +1139,12 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         # others: svdcut= #
         # case ?? - wrong length data tuple
         with self.assertRaises(ValueError):
-            x, y, prior, fdata = lsqfit._unpack_data(
+            x, y, prior, yp_pdf = lsqfit._unpack_data(
                 data=(xo,yo,yo,yo), prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                     )
         with self.assertRaises(ValueError):
-            x, y, prior, fdata = lsqfit._unpack_data(
+            x, y, prior, yp_pdf = lsqfit._unpack_data(
                 data=(xo,), prior=po, svdcut=svdcut, eps=None, debug=True,
                 uncorrelated_data=False, **noiseargs
                     )

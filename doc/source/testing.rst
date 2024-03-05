@@ -1,5 +1,7 @@
 .. |GVar| replace:: :class:`gvar.GVar`
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
+.. |vegas_fit| replace:: :class:`lsqfit.vegas_fit`
+.. |vegas| replace:: :mod:`vegas`
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
 .. |~| unicode:: U+00A0
    :trim:
@@ -29,9 +31,300 @@ Bayesian integration, can also be used to analyze non-Gaussian
 results.
 
 
+Bayesian Integrals
+-------------------
+|vegas_fit| provides an alternative fitting strategy
+(multi-dimensional Bayesian integrals) from that used by
+|nonlinear_fit|. Both approaches assume that the fit parameters 
+are described by a probability distribution whose 
+probability density function (PDF) is proportional to 
+:math:`\exp(-\chi^2(p)/2)`.  :math:`\chi^2(p)` 
+has contributions from both the data and the prior:
+
+.. math::
+
+        \chi^2(p) \equiv \Delta y^T \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
+        \: + \: 
+        \Delta p^T \cdot\mathrm{cov}^{-1}_\mathrm{prior}\cdot\Delta p,
+
+where :math:`\Delta y_i \equiv \overline y_i - f(x_i,p)` 
+and :math:`\Delta p_i\equiv \overline p_i^\mathrm{prior} - p_i`.
+Both of these approaches characterize this distribution by 
+specifying *best-fit* mean values and covariances for the 
+fit parameters (packaged as an array or dictionary of |GVar|\s). 
+|nonlinear_fit| estimates the mean values 
+and covariances from the minimum of :math:`\chi^2(p)` and its
+curvature at the minimum, while |vegas_fit| calculates the 
+actual means and standard deviations of the parameters 
+by evaluating the following integrals:
+
+.. math::
+
+    \overline p_i &\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,p_i\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
+    \mathrm{cov}(p_i,p_j) &\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,(p_i - \overline p_i)(p_j - \overline p_j)\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
+    N_\mathrm{pdf} &\equiv \int d^np\,\mathrm{e}^{-\chi^2(p)/2}
+
+The integrals are evaluated numerically, using adaptive Monte Carlo integration 
+(:class:`PDFIntegrator` from the :mod:`vegas`  
+module). 
+The best-fit results from the two approaches agree when 
+:math:`\chi^2(p)` is well approximated by the quadratic expansion around its 
+minimum --- that is,
+insofar as
+:math:`\exp(-\chi^2(p)/2)` is well approximated
+by a Gaussian distribution in the parameters. 
+But the results can differ significantly otherwise; the output from ``nonlinear_fit``
+is the Gaussian approximation to that from ``vegas_fit``.
+
+To compare ``vegas_fit`` with ``nonlinear_fit``, we revisit
+the analysis in the section
+on :ref:`correlated-parameters`. We modify the end of the ``main()`` function
+in the original code to repeat the analysis using ``vegas_fit``::
+
+    import numpy as np
+    import gvar as gv
+    import lsqfit
+    import vegas
+
+    def main():
+        x, y = make_data()
+        prior = make_prior()
+
+        # nonlinear_fit
+        fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
+        print(20 * '-', 'nonlinear_fit')
+        print(fit)
+        print('p1/p0 =', fit.p[1] / fit.p[0], '   prod(p) =', np.prod(fit.p))
+        print('corr(p0,p1) = {:.2f}'.format(gv.evalcorr(fit.p[:2])[1,0]), '\n')
+
+        # vegas_fit
+        vfit = lsqfit.vegas_fit(prior=prior, data=(x,y), fcn=fcn)
+        print(20 * '-', 'vegas_fit')
+        print(vfit)
+        # measure p1/p0 and prod(p)
+        @vegas.rbatchintegrand
+        def g(p):
+            return {'p1/p0':p[1] / p[0], 'prod(p)':np.prod(p, axis=0)}
+        s = vfit.stats(g)
+        print('p1/p0 =', s['p1/p0'], '   prod(p) =', s['prod(p)'])
+        print('corr(p0,p1) = {:.2f}'.format(gv.evalcorr(vfit.p[:2])[1,0]))
+    
+    def make_data():
+        x = np.array([
+            4., 2., 1., 0.5, 0.25, 0.167, 0.125, 0.1, 0.0833, 0.0714, 0.0625
+            ])
+        y = gv.gvar([
+            '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
+            '0.142(40)', '0.108(32)', '0.065(26)', '0.044(22)', '0.041(19)',
+            '0.044(16)'
+            ])
+        return x, y
+
+    def make_prior():
+        p = gv.gvar(['0(1)', '0(1)', '0(1)', '0(1)'])
+        p[1] = 20 * p[0] + gv.gvar('0.0(1)')        # p[1] correlated with p[0]
+        return p
+
+    @vegas.rbatchintegrand
+    def fcn(x, p):
+        if p.ndim == 2:
+            # add batch index to x if in batch mode
+            x = x[:, None]
+        return (p[0] * (x**2 + p[1] * x)) / (x**2 + x * p[2] + p[3])
+
+    if __name__ == '__main__':
+        main()
+
+Running this code gives the following output:
+
+..  literalinclude:: eg3.5a.out
+    :language: none
+
+There are several things to notice about these results:
+
+* The fit results ``vfit.p`` from |vegas_fit| are quite similar 
+  to those from |nonlinear_fit| (``fit.p``), as are ``vfit.chi2`` 
+  and ``fit.chi2``, and ``vfit.logBF`` and ``fit.logGBF``. This 
+  suggests that the Gaussian approximation used by 
+  |nonlinear_fit| is a reasonable approximation to the 
+  full Bayesian analysis used by |vegas_fit|.
+
+* ``vfit.logBF`` has an uncertainty of about 0.1\%. This comes 
+  from the uncertainty in the |vegas| estimate of
+  the norm of the PDF (:math:`N_\mathrm{pdf}` above). 
+  :mod:`vegas` uses adaptive Monte Carlo integration 
+  to estimate the values of integrals, as well as the
+  uncertainties in those estimates. 
+  
+  The accuracy of 
+  |vegas_fit|'s integrals can almost always be 
+  improved by using information from the fit 
+  with |nonlinear_fit|. For example, replacing 
+  the ``vfit`` line in the code above with ::
+
+    vfit = lsqfit.vegas_fit(prior=prior, data=(x,y), fcn=fcn, param=fit.p)
+
+  reduces the error on ``vfit.logBF`` by about a factor of 
+  two:
+
+  ..  literalinclude:: eg3.5d.out 
+      :language: none
+
+  The integrals for the means and covariances are similarly improved
+  (compare ``vfit.p.vegas_mean`` and ``vfit.p.vegas_cov``
+  with and without ``param=fit.p``).
+
+  The integrator re-expresses the
+  fit parameter integrals in terms of new variables that are 
+  optimized for integrating the (Gaussian) distribution 
+  corresponding to ``param``. By default ``param=prior``,
+  but ``param=fit.p`` is almost certainly a better match
+  to the actual PDF used in the integrals. 
+  
+  A more 
+  succinct way to use results from |nonlinear_fit| 
+  object ``fit`` 
+  is ::
+
+    vfit = lsqfit.vegas_fit(fit=fit)
+
+  where ``vfit``'s  ``prior``, ``data``, and ``fcn`` 
+  are copied from ``fit``.
+
+* Values for ``p[1]/p[0]`` and for the product of all 
+  the ``p[i]``\s are obtained from ``vfit.stats(g)``.
+  This uses ``vfit``'s (trained) integrator to evaluate 
+  the means and covariances of the components of ``g(p)``. 
+  While results 
+  from the two fits agree well on ``p[1]/p[0]``, results
+  for ``prod(p)`` do not agree so well. This suggests that
+  the distribution for ``prod(p)`` in not as well 
+  approximated by a Gaussian. 
+  
+  More information about the 
+  distributions can be obtained from ``vfit.stats`` by 
+  using keywords ``moments`` and ``histograms``::
+
+    s = vfit.stats(g, moments=True, histograms=True)
+    for k in s.stats:
+        print('\n' + 20 * '-', k)
+        print(s.stats[k])
+        plot = s.stats[k].plot_histogram()
+        plot.xlabel(k)
+        plot.show()
+
+  This results in the following output
+
+  ..  literalinclude:: eg3.5b.out
+      :language: none
+
+  together with histogram plots for the distributions of 
+  ``p[1]/p[0]`` and ``prod(p)``:
+
+  .. image:: eg3.5a.png
+        :width: 95%
+
+  The distribution for ``prod(p)`` is clearly skewed. The plot 
+  shows the actual distribution (gray bars) and the 
+  Gaussian (blue dots) corresponding to ``s['prod(p)']``, 0.55 ± 0.41.
+  It also shows fits to two two-sided Gaussian models: one that is 
+  continuous (split-normal, solid green line) and another centered 
+  on the median that is discontinuous (red dashes). The split-normal 
+  fit suggests that a better description of the ``prod(p)`` distribution 
+  might be 0.12 plus 0.6 minus 0.05, although any of the three 
+  models gives a reasonable impression
+  of the range of possible values for ``prod(p)``.
+
+* A |vegas| integration is much faster if the integrand
+  can process large batches of integration points 
+  simultaneously. An example is ``fcn(x, p)`` above. When 
+  called by |nonlinear_fit|, parameter ``p`` represents 
+  a single point in parameter space with coordinates 
+  ``p[d]`` where ``d=0...3``. When called by ``vegas_fit``
+  (in rbatch mode), ``p`` represents a large number of points 
+  in parameter space with coordinates ``p[d,i]`` where 
+  ``d=0...3`` labels the direction in parameter space, and
+  ``i``, the batch index, labels the different points in 
+  parameter space. The function checks to see if it is being used 
+  in batch mode, and adds a batch index to ``x`` if it 
+  is. The decorator ``@vegas.rbatchintegrand`` tells 
+  |vegas| that the function can be called in batch mode.
+  (See the |vegas| documentation for more information.)
+
+* |vegas| uses an iterative algorithm to adapt to the 
+  PDF. By default, |vegas_fit| uses 10 iterations to 
+  train the integrator to the PDF, and then 10 more,
+  without further adaptation, to evaluate the integrals
+  for the means :math:`\overline p_i` and covariances 
+  :math:`\mathrm{cov}(p_i,p_j)` of the fit parameters,
+  and the PDF's norm :math:`N_\mathrm{pdf}`  (see 
+  equations above). Printing ``vfit.training.summary()`` 
+  shows estimates for the norm :math:`N_\mathrm{pdf}` 
+  from each of the first 10 iterations (here without 
+  ``param=fit.p``):
+
+  ..  literalinclude:: eg3.5c.out
+      :language: none
+
+  The uncertainties in the first column 
+  are 25–60 times smaller after |vegas| has adapted 
+  to the PDF.
+  |vegas| averages results from different 
+  iterations, but results from the training iterations 
+  are frequently unreliable and so are discarded. 
+  The final results come from 
+  the final 10 iterations (see ``vfit.p.summary()``).
+
+  The accuracy of the integrals is determined by the number 
+  of iterations ``nitn`` used and, especially, by the number of integrand 
+  evaluations ``neval`` allowed for each iteration. The
+  defaults for these parameters are ``nitn=(10,10)`` and 
+  ``neval=1000``. The following ::
+
+    vfit = lsqfit.vegas_fit(fit=fit, nitn=(6, 10), neval=100_000)
+
+  reduces the number of training iterations to 6 but also 
+  increases the number of integrand evaluations by a factor 
+  of 100. The integration errors are then about 20 times smaller,
+  which is much smaller than is needed here. This particular 
+  problem, however, is relatively easy for |vegas|; other problems could 
+  well require hundreds of thousands or millions of integration 
+  evaluations per iteration.
+
+* At the end of :ref:`correlated-parameters`, we examined what happened
+  to the |nonlinear_fit| when the correlation (``p[1]`` is approximately 
+  ``20*p[0]``) was removed from the prior by setting ::
+
+    prior = gv.gvar(['0(1)', '0(20)', '0(1)', '0(1)']).
+
+  The fit result is completely different with the uncorrelated prior when 
+  using |nonlinear_fit|. This 
+  is *not* the case with |vegas_fit|, where the uncorrelated prior leads 
+  to the following fit:
+
+  ..  literalinclude:: eg3.5e.out
+      :language: none
+
+  These results are quite similar to what is obtained with the 
+  correlated prior, although less accurate. This suggests 
+  that the Gaussian approximation assumed by |nonlinear_fit| is 
+  unreliable for the uncorrelated problem. This might have
+  been anticipated since three of the four parameters have 
+  means that are effectively zero (compared to their 
+  standard deviations).
+
+A central assumption when using |nonlinear_fit| or |vegas_fit| is that
+the data are drawn from a Gaussian distribution. 
+:ref:`outliers` shows how to use :class:`vegas.PDFIntegrator`
+directly, rather than :class:`lsqfit.vegas_fit`, 
+when the input data are not Gaussian. It  discusses 
+two versions of a fit,  one with 5 parameters
+and the other with 22 parameters.
+
+
 Bootstrap Error Analysis; Non-Gaussian Output
 -------------------------------------------------
-The bootstrap provides an efficient way to check on a fit's
+The bootstrap provides another way to check on a fit's
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:
 
@@ -52,408 +345,83 @@ The strategy is to:
         to bootstrap copy to determine an approximate probability
         distribution (possibly non-Gaussian) for the each result.
 
-To illustrate, we return to our fit in the section
-on :ref:`correlated-parameters`, where the uncertainties on the
-final parameters were relatively large.
-We will use a booststrap analysis to check the error
-estimates coming out of that fit.
-We do this by adding code right after the
-fit, in the ``main()`` function::
+To illustrate, we revisit the fit in the section
+on :ref:`positive-parameters`, where
+the goal is to average noisy data subject to 
+the constraint that the average must be positive. 
+The constraint is likely to introduce strong distortions 
+in the probability density function (PDF) given that the 
+fit analysis suggests a value of 0.011 |~| ± |~| 0.013. 
+We will use a bootstrap analysis to investigate 
+the distribution of the average. We do this 
+by adding code right after the fit::
 
+    import gvar as gv 
+    import lsqfit 
     import numpy as np
-    import gvar as gv
-    import lsqfit
 
-    def main():
-        x, y = make_data()
-        prior = make_prior()
-        fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
-        print(fit)
-        print('p1/p0 =', fit.p[1] / fit.p[0], 'p3/p2 =', fit.p[3] / fit.p[2])
-        print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
-
-        # boostrap analysis: collect bootstrap data
-        print('\nBootstrap Analysis:')
-        Nbs = 40                # number of bootstrap copies
-        output = {'p':[], 'p1/p0':[], 'p3/p2':[]}
-        for bsfit in fit.bootstrapped_fit_iter(Nbs):
-            p = bsfit.pmean
-            output['p'].append(p)
-            output['p1/p0'].append(p[1] / p[0])
-            output['p3/p2'].append(p[3] / p[2])
-
-        # average over bootstrap copies and tabulate results
-        output = gv.dataset.avg_data(output, bstrap=True)
-        print(gv.tabulate(output))
-        print('corr(p0,p1) =', gv.evalcorr(output['p'][:2])[1,0])
-
-    def make_data():
-        x = np.array([
-            4., 2., 1., 0.5, 0.25, 0.167, 0.125, 0.1, 0.0833, 0.0714, 0.0625
-            ])
-        y = gv.gvar([
-            '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
-            '0.142(40)', '0.108(32)', '0.065(26)', '0.044(22)', '0.041(19)',
-            '0.044(16)'
-            ])
-        return x, y
-
-    def make_prior():
-        p = gv.gvar(['0(1)', '0(1)', '0(1)', '0(1)'])
-        p[1] = 20 * p[0] + gv.gvar('0.0(1)')     # p[1] correlated with p[0]
-        return p
-
-    def fcn(x, p):
-        return (p[0] * (x**2 + p[1] * x)) / (x**2 + x * p[2] + p[3])
-
-    if __name__ == '__main__':
-        main()
-
-The ``bootstrapped_fit_iter`` produces fits ``bsfit`` for each of
-``Nbs=40`` different bootstrap copies of the input data (``y`` and the prior).
-We collect the mean values for the various parameters and functions of
-parameters from each fit, ignoring the uncertainties, and
-then calculate averages and covariance matrices from these results using
-:func:`gvar.dataset.avg_data`.
-
-Most of the bootstrap results agree with the results coming directly from
-the fit:
-
-.. literalinclude:: eg3c.out
-
-In particular, the bootstrap analysis confirms the previous error estimates
-(to within 10-30%, since ``Nbs=40``) except for ``p3/p2``, where the error
-is substantially larger in the bootstrap analysis.
-
-If ``p3/p2`` is important, one might want to look
-more closely at its distribution.
-We use the bootstrap to create histograms of the probability distributions
-of ``p3/p2`` and ``p1/p01``
-by adding the following code to the end of the ``main()``
-function::
-
-        print('Histogram Analysis:')
-        count = {'p1/p0':[], 'p3/p2':[]}
-        hist = {
-            'p1/p0':gv.PDFHistogram(fit.p[1] / fit.p[0]),
-            'p3/p2':gv.PDFHistogram(fit.p[3] / fit.p[2]),
-            }
-
-        # collect bootstrap data
-        for bsfit in fit.bootstrapped_fit_iter(n=1000):
-            p = bsfit.pmean
-            count['p1/p0'].append(hist['p1/p0'].count(p[1] / p[0]))
-            count['p3/p2'].append(hist['p3/p2'].count(p[3] / p[2]))
-
-        # calculate averages and covariances
-        count = gv.dataset.avg_data(count)
-
-        # print histogram statistics and show plots
-        import matplotlib.pyplot as plt
-        pltnum = 1
-        for k in count:
-            print(k + ':')
-            print(hist[k].analyze(count[k]).stats)
-            plt.subplot(1, 2, pltnum)
-            plt.xlabel(k)
-            hist[k].make_plot(count[k], plot=plt)
-            if pltnum == 2:
-                plt.ylabel('')
-            pltnum += 1
-        plt.show()
-
-Here we do 1000 bootstrap copies (rather than 40)
-to improve the accuracy of the bootstrap
-results. The output from this code shows statistical analyses of the
-histogram data for ``p1/p0`` and ``p3/p2``:
-
-.. literalinclude:: eg3d.out
-
-The code also displays histograms of the probability distributions, where the
-dashed lines show the results expected directly from the fit (that is,
-in the Gaussian approximation):
-
-    .. image:: eg3d.png
-        :width: 100%
-
-While the distribution for ``p1/p0`` is consistent with the fit
-results (dashed line) and Gaussian,
-the distribution for ``p3/p2`` is significantly skewed, with
-a much longer tail to the right. The final result for ``p3/p2`` might
-more accurately be summarized as 0.48 with errors of +0.31 and |~| -0.15,
-although the Gaussian estimate of 0.48±0.22 would suffice for many
-applications.
-The skewed distribution for ``p3/p2`` is not particularly
-surprising given the ±50% uncertainty in the
-denominator |~| ``p2``.
-
-
-Bayesian Integrals
--------------------
-Bayesian expectation values provide an alternative to least-squares fits.
-These expectation values are integrals over the fit parameters that are
-weighted by the probability density function (PDF for the parameters)
-proportional
-to ``exp(-chi**2/2)``, where ``chi**2`` includes contributions from both
-the data and the priors. They can be used to
-calculate mean values of the parameters, their covariances, and the means
-and covariances of any function of the parameters.
-These will agree with the
-best-fit results of our least-squares fits provided ``chi**2`` is well
-approximated by its quadratic expansion in the parameters --- that is,
-insofar as
-``exp(-chi**2/2)`` is well approximated
-by the Gaussian distribution in the parameters
-specified by their best-fit means and covariance matrix (from ``fit.p``).
-
-Here we use
-:class:`vegas.PDFIntegrator` to evaluate Bayesian expectation values.
-:class:`vegas.PDFIntegrator` uses the :mod:`vegas` module for adaptive
-multi-dimensional integration to evaluate expectation values. It integrates
-arbitrary functions of the parameters, multiplied by the probability
-density function, over the entire parameter space. 
-
-To illustrate how :class:`vegas.PDFIntegrator` works with :mod:`lsqfit`,
-we again revisit the analysis in the section
-on :ref:`correlated-parameters`. We modify the end of the ``main()`` function
-of our original code
-to evaluate the means and covariances of the parameters, and also
-their probability histograms, using a Bayesian integral::
-
-    import matplotlib.pyplot as plt
-    import numpy as np
-    
-    import gvar as gv
-    import lsqfit
-    import vegas
-
-    def main():
-        x, y = make_data()
-        prior = make_prior()
-        fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
-        print(fit)
-
-        # Bayesian integrator with PDF from the fit
-        expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf)
-
-        # adapt integrator expval to PDF from fit
-        neval = 1000
-        nitn = 10
-        expval(neval=neval, nitn=nitn)
-
-        # <g(p)> gives mean and covariance matrix, and counts for histograms
-        hist = [
-            gv.PDFHistogram(fit.p[0]), gv.PDFHistogram(fit.p[1]),
-            gv.PDFHistogram(fit.p[2]), gv.PDFHistogram(fit.p[3]),
-            ]
-        def g(p):
-            return dict(
-                mean=p,
-                outer=np.outer(p, p),
-                count=[
-                    hist[0].count(p[0]), hist[1].count(p[1]),
-                    hist[2].count(p[2]), hist[3].count(p[3]),
-                    ],
-                )
-
-        # evaluate expectation value of g(p)
-        results = expval(g, neval=neval, nitn=nitn, adapt=False)
-
-        # analyze results
-        print('\nIterations:')
-        print(results.summary())
-        print('Integration Results:')
-        pmean = results['mean']
-        pcov =  results['outer'] - np.outer(pmean, pmean)
-        print('    mean(p) =', pmean)
-        print('    cov(p) =\n', pcov)
-
-        # create GVars from results
-        p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
-        print('\nBayesian Parameters:')
-        print(gv.tabulate(p), '\\n')
-        print('logBF =', np.log(results.pdfnorm) - fit.pdf.lognorm)
-
-        # show histograms
-        print('\nHistogram Statistics:')
-        count = results['count']
-        for i in range(4):
-            # print histogram statistics
-            print('p[{}]:'.format(i))
-            print(hist[i].analyze(count[i]).stats)
-            # make histogram plots
-            plt.subplot(2, 2, i + 1)
-            plt.xlabel('p[{}]'.format(i))
-            hist[i].make_plot(count[i], plot=plt)
-            if i % 2 != 0:
-                plt.ylabel('')
-        plt.show()
-
-    def make_data():
-        x = np.array([
-            4.    ,  2.    ,  1.    ,  0.5   ,  0.25  ,  0.167 ,  0.125 ,
-            0.1   ,  0.0833,  0.0714,  0.0625
-            ])
-        y = gv.gvar([
-            '0.198(14)', '0.216(15)', '0.184(23)', '0.156(44)', '0.099(49)',
-            '0.142(40)', '0.108(32)', '0.065(26)', '0.044(22)', '0.041(19)',
-            '0.044(16)'
-            ])
-        return x, y
-
-    def make_prior():
-        p = gv.gvar(['0(1)', '0(1)', '0(1)', '0(1)'])
-        p[1] = 20 * p[0] + gv.gvar('0.0(1)')     # p[1] correlated with p[0]
-        return p
-
-    def fcn(x, p):
-        return (p[0] * (x**2 + p[1] * x)) / (x**2 + x * p[2] + p[3])
-
-    if __name__ == '__main__':
-        main()
-
-
-Here ``expval`` is an integrator that is used to evaluate expectation
-values of arbitrary functions of the fit parameters.
-:class:`PDFIntegrator` uses output (``fit.p``) from the least-squares fit to
-design a :mod:`vegas` integrator
-optimized for calculating expectation values.
-The integrator uses an
-iterative Monte Carlo algorithm that adapts to the
-probability density function (``fit.pdf(p)``) after each iteration.
-See the :mod:`vegas` documentation for much more information.
-
-We first call the integrator without a function. This allows it
-to adapt to the probability density function from the fit without the extra
-overhead of evaluating a function of the parameters. The integrator
-uses ``nitn=10`` iterations of the :mod:`vegas` algorithm, with at most
-``neval=1000`` evaluations of the probability density function for each
-iteration.
-
-We then use the optimized integrator to evaluate the expectation value
-of function ``g(p)``, turning adaptation off with ``adapt=False`` (since 
-it is unneeded).
-The expectation value of ``g(p)`` is returned
-in dictionary ``results``.
-
-The results from this script are:
-
-.. literalinclude:: eg3e.out
-
-The iterations table shows results from each of the ``nitn=10``
-vegas iterations used to
-evaluate the expectation values. Estimates for the integral of the probability
-density function are listed for each iteration. (Results from the integrator
-are approximate, with error estimates.) These are consistent with each other
-and with the (more accurate) overall average.
-
-The integration results show that the Bayesian estimates for the means
-of the parameters are accurate to roughly 1% or better, which is
-sufficiently accurate here given the size of the standard deviations.
-Estimates for
-the covariance matrix elements are less accurate, which is typical.
-This information is converted into |GVar|\s for the parameters and
-tabulated under "Bayesian Parameters," for comparison with the
-original fit results --- the agreement is pretty good.
-This is further confirmed by the
-(posterior) probability distributions
-for each parameter:
-
-.. image:: eg3e.png
-    :width: 85%
-
-The means are shifted slightly from the fit results and there
-is modest skewing, but the differences are not great. The 
-logarithm of the Bayes Factor (``logBF``), calculated from 
-the integral of ``fit.pdf(p)``, agrees well with 
-``fit.logGBF`` which is the Bayes Factor evaluated 
-in the Gaussian approximation (implicit in 
-least-squares fitting). This is further evidence
-that the Gaussian approximation is reasonable 
-for this problem.
-
-As a second example of Bayesian integration, we return briefly to
-the problem described in :ref:`positive-parameters`: we want the
-average ``a`` of noisy data subject the constraint that the average
-must be positive. The constraint is likely to
-introduce strong distortions in the probability density function (PDF)
-given that the fit analysis suggests a value of 0.011±0.013.
-We plot the actual PDF using the following code, beginning with
-a fit that uses a flat prior (between 0 and |~| 0.04)::
-
-    import gvar as gv
-    import lsqfit
-    import vegas
-
-    # data, prior, and fit function
     y = gv.gvar([
-       '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)',
-       '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)',
-       '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)',
-       '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
-       ])
+        '-0.17(20)', '-0.03(20)', '-0.39(20)', '0.10(20)', '-0.03(20)',
+        '0.06(20)', '-0.23(20)', '-0.23(20)', '-0.15(20)', '-0.01(20)',
+        '-0.12(20)', '0.05(20)', '-0.09(20)', '-0.36(20)', '0.09(20)',
+        '-0.07(20)', '-0.31(20)', '0.12(20)', '0.11(20)', '0.13(20)'
+        ])
 
-    prior = {}
-    prior['ga(a)'] = gv.BufferDict.uniform('ga', 0., 0.04)
+    # nonlinear_fit
+    prior = gv.BufferDict()
+    prior['f(a)'] = gv.BufferDict.uniform('f', 0, 0.04)
 
     def fcn(p, N=len(y)):
-       return N * [p['a']]
+        return N * [p['a']]
 
-    # least-squares fit
     fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
+    print(20 * '-', 'nonlinear_fit')
     print(fit)
-    a = fit.p['a']
-    print('a =', a)
+    print('a =', fit.p['a'])                     
 
-    # Bayesian analysis: histogram for a
-    hist = gv.PDFHistogram(a, nbin=16, binwidth=0.5)
+    # Nbs bootstrap copies
+    Nbs = 1000
+    a = []
+    for bsfit in fit.bootstrapped_fit_iter(Nbs):
+        a.append(bsfit.p['a'].mean)
+    avg_a = gv.dataset.avg_data(a, spread=True)
+    print('\n' + 20 * '-', 'bootstrap')
+    print('a =', avg_a)
+    counts,bins = np.histogram(a, density=True)
+    s = gv.PDFStatistics(histogram=(bins, counts))
+    print(s)
+    plot = s.plot_histogram()
+    plot.xlabel('a')
+    plot.show()
 
-    def g(p):
-        a = p['a']
-        return hist.count(a)
 
-    expval = vegas.PDFIntegrator(fit.p, pdf=fit.pdf) 
-    expval(neval=1009, nitn=10)
-    count = expval(g, neval=1000, nitn=10, adapt=False)
+``fit.bootstrapped_fit_iter(Nbs)`` produces fits ``bsfit`` for each of
+``Nbs=1000`` different bootstrap copies of the input data (``y`` and the prior).
+We collect the mean values for parameter ``a``, ignoring the uncertainties, and
+then calculate the average and standard deviation from these results using
+:func:`gvar.dataset.avg_data`. We then use ``gvar.PDFStatistics`` to analyze 
+the distribution of the ``a`` values and create a histogram of its PDF.
 
-    # print out results and show plot
-    print('\nHistogram Analysis:')
-    print (hist.analyze(count).stats)
+The bootstrap estimate for ``a`` agrees reasonably well with the result from |nonlinear_fit|,
+but the statistical analysis shows that the distribution of ``a`` values is skewed (towards 
+positive ``a`` values):
 
-    hist.make_plot(count, show=True)
+.. literalinclude:: eg3.6a.out
+    :language: none
 
-The output from this script is
+This is confirmed by the histogram: 
 
-.. literalinclude:: eg6-hist.out
+.. image:: eg3.6a.png
+        :width: 60%
 
-and the probability distribution for ``a`` looks like
+Fitting with |vegas_fit| rather than |nonlinear_fit| gives the same result as the 
+bootstrap for the average value of ``a``, but is 10x faster (and more accurate):
 
-.. image:: eg6.png
-    :width: 70%
+.. literalinclude:: eg3.6b.out
+    :language: none 
 
-This distribution is distorted between ``a=0`` and the mean
-value, but otherwise is fairly similar to the Gaussian result
-0.011±0.013 (dashed line). A more accurate summary of the result
-for ``a`` would be 0.012 with an error of +0.014 and -0.009, though
-again the Gaussian result is not terribly misleading even in this
-case.
+The histogram from |vegas_fit| is also similar to that from the bootstrap.
 
-The Bayesian integrals are relatively simple in these example. More
-complicated problems can require much more computer time to evaluate
-the integrals, with hundreds of thousands or millions of integrand
-evaluations per iteration (``neval``). This is particularly true
-as the number of parameters increases. :class:`PDFIntegrator` uses
-information from the least-squares fit to simplify the integration
-for :mod:`vegas` by optimizing the integration variables used, but
-integrals over tens of variables are intrinsically challenging.
-:class:`PDFIntegrator` can be used with MPI to run such integrals
-on multiple processors, for a considerable speed-up.
-
-We used Bayesian integrals here to deal with non-Gaussian behavior in
-fit outputs. The case study :ref:`outliers` shows how to use them
-when the input data is not quite Gaussian.
-
-.. _testing-fits:
 
 Testing Fits with Simulated Data
 --------------------------------
@@ -535,7 +503,8 @@ we add three fit simulations at the end of the ``main()`` function::
 This code produces the following output, showing how the input data
 fluctuate from simulation to simulation:
 
-.. literalinclude:: eg3f.out
+..  literalinclude:: eg3f.out
+    :language: none
 
 The parameters ``sfit.p`` produced by the simulated fits agree well
 with the original fit parameters ``pexact=fit.pmean``, with good
@@ -633,7 +602,8 @@ code to include a second fit at the end::
 
 Running this code gives the following output:
 
-.. literalinclude:: eg10e.out
+..  literalinclude:: eg10e.out
+    :language: none
 
 The fit with extra noise has a larger ``chi**2``, as expected,
 but is still a good fit. It also

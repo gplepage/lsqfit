@@ -22,7 +22,7 @@ run:
 	- diff -w -I svdcut -I fitter y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
 	- diff -w -I svdcut -I fitter x-err.out x-err.tmp
-	$(PYTHON) p-corr.py $(PLOT) > p-corr.tmp
+	$(PYTHON) p-corr.py False > p-corr.tmp
 	- diff -w -I svdcut -I fitter p-corr.out p-corr.tmp
 	$(PYTHON) y-noerr.py > y-noerr.tmp
 	- diff -w -I svdcut -I fitter y-noerr.out y-noerr.tmp
@@ -34,7 +34,7 @@ run:
 	- diff -w -I svdcut -I fitter nist.out nist.tmp
 	$(PYTHON) uncorrelated.py > uncorrelated.tmp
 	- diff -w -I svdcut -I fitter uncorrelated.out uncorrelated.tmp
-	$(PYTHON) bayes.py $(PLOT) > bayes.tmp
+	$(PYTHON) bayes.py False > bayes.tmp
 	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
 
 time:

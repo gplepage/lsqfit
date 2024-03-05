@@ -106,7 +106,8 @@ a dictionary having the same keys and layout as the input data ``y``.
 
 The output from the code sample above is:
 
-.. literalinclude:: eg0.out
+..  literalinclude:: eg0.out
+    :language: none
 
 
 The best-fit values for ``a`` and ``b`` are 0.253(32) and
@@ -722,7 +723,8 @@ of the ``p0`` parameter for :class:`lsqfit.nonlinear_fit`.) Running
 this code produces the following output, which is reproduced here in some
 detail in order to illustrate a variety of features:
 
-.. literalinclude:: eg1.out
+..  literalinclude:: eg1.out
+    :language: none
 
 There are several things to notice here:
 
@@ -957,7 +959,8 @@ end::
 The results of the new fit (to one piece of new data) are at the end of the
 output:
 
-.. literalinclude:: eg1a.out
+..  literalinclude:: eg1a.out
+    :language: none
 
 Parameters ``a[0]`` and ``E[0]`` are essentially unchanged by the new
 information, but ``a[1]`` and ``E[1]`` are much more precise,
@@ -993,7 +996,8 @@ onto the end of the ``main()`` function above ::
 
 gives the following output:
 
-.. literalinclude:: eg1b.out
+..  literalinclude:: eg1b.out
+    :language: none
 
 Here we do a weighted average of ``a[1]/a[0]`` from the
 original fit (``fit.p['a1/a0']``) with our new piece of data
@@ -1049,7 +1053,8 @@ and its prior comes from fitting the 100 points before those, and so on
 for 100 |~| fits in all.
 The output from this code is:
 
-.. literalinclude:: eg9a.out
+..  literalinclude:: eg9a.out
+    :language: none
 
 It shows the errors on ``p[1]`` and ``p[2]`` decreasing steadily as more
 data points are included. The error on ``p[0]``, however, hardly changes
@@ -1155,7 +1160,8 @@ The actual fit is now straightforward::
 
 This generates the following output:
 
-.. literalinclude:: eg2.out
+..  literalinclude:: eg2.out
+    :language: none
 
 The fit gives new results for the ``b[i]`` parameters that are much
 improved from our prior estimates. Results for many of the ``x[i]``\s
@@ -1184,7 +1190,7 @@ how this is done::
       prior = make_prior()
       fit = lsqfit.nonlinear_fit(prior=prior, data=(x,y), fcn=fcn)
       print(fit)
-      print('p1/p0 =', fit.p[1] / fit.p[0], 'p3/p2 =', fit.p[3] / fit.p[2])
+      print('p1/p0 =', fit.p[1] / fit.p[0], 'prod(p) =', np.prod(fit.p))
       print('corr(p0,p1) =', gv.evalcorr(fit.p[:2])[1,0])
 
   def make_data():
@@ -1199,9 +1205,9 @@ how this is done::
       return x, y
 
   def make_prior():
-      p = gv.gvar(['0(1)', '0(1)', '0(1)', '0(1)'])
-      p[1] = 20 * p[0] + gv.gvar('0.0(1)')        # p[1] correlated with p[0]
-      return p
+      prior = gv.gvar(4 * ['0(1)'])
+      prior[1] = 20 * prior[0] + gv.gvar('0.0(1)')   # prior[1] correlated with prior[0]
+      return prior
 
   def fcn(x, p):
       return (p[0] * (x**2 + p[1] * x)) / (x**2 + x * p[2] + p[3])
@@ -1220,7 +1226,8 @@ and restricts the fit.
 
 Running the code gives the following output:
 
-.. literalinclude:: eg3a.out
+..  literalinclude:: eg3a.out
+    :language: none 
 
 Note how the ratio ``p1/p0`` is much more accurate than either quantity
 separately. The prior introduces a strong, positive correlation between
@@ -1241,7 +1248,8 @@ If we omit the constraint in the prior, ::
 
 we obtain quite different fit results:
 
-.. literalinclude:: eg3b.out
+..  literalinclude:: eg3b.out
+    :language: none
 
 Note that the Gaussian Bayes Factor (see ``logGBF`` in the output) is
 larger with the correlated prior (``logGBF = 19.1``) than it
@@ -1434,7 +1442,8 @@ Our complete code, therefore, is::
 We loop over ``nexp``, moving parameters from ``ymod`` back into the fit
 as ``nexp`` increases. The output from this script is:
 
-.. literalinclude:: eg5a.out
+..  literalinclude:: eg5a.out
+    :language: none
 
 Here we use ``fit.format(True)`` to print out a table of ``x`` and
 ``y`` (actually ``ymod``) values, together with the value of the
@@ -1492,7 +1501,8 @@ in the problem discussed in the previous section. Had we run that fit,
 for example, with an SVD cut of 1e-19, instead of 1e-12, we would have
 obtained the following output:
 
-.. literalinclude:: eg5b.out
+..  literalinclude:: eg5b.out
+    :language: none
 
 The standard deviations quoted for ``E1/E0``, *etc.* are much too large
 compared with the standard deviations than what we obtained
@@ -1628,7 +1638,8 @@ number of samples)::
 
 This gives a terrible fit:
 
-.. literalinclude:: eg10a.out
+..  literalinclude:: eg10a.out
+    :language: none
 
 The problem is that the small eigenvalues of the fit data's correlation
 matrix are badly underestimated when we have only a small number of samples
@@ -1652,7 +1663,8 @@ in the code by ::
 and set ``svdcut=s.svdcut`` in the call to the fitter. The result is
 the following (excellent) fit:
 
-.. literalinclude:: eg10b.out
+..  literalinclude:: eg10b.out
+    :language: none
 
 The SVD cut is set to ``0.0028`` here and modifies 3 of the 5 eigenmodes in the
 correlation matrix. Generally one needs an SVD cut unless there
@@ -1734,7 +1746,8 @@ equal to ``dy[i] = y[i] * z``::
 
 This code produces the following output:
 
-.. literalinclude:: eg7a.out
+..  literalinclude:: eg7a.out
+    :language: none
 
 The variation in the data suggests a relative error of about 1.6%
 for the input data. The overall fit is excellent.
@@ -1752,7 +1765,8 @@ becomes ::
 
 and the output is:
 
-.. literalinclude:: eg7b.out
+..  literalinclude:: eg7b.out
+    :language: none
 
 The data suggest an uncertainty of 0.0066 in each ``y[i]``.
 Results for the fit parameters ``fit.p[i]`` are similar in the two cases,
@@ -1820,7 +1834,8 @@ input data ``y``. We don't know *a priori* how large the coefficients
 ``dp = z``. Function ``empbayes_fit`` varies ``z`` to maximize
 |~| ``fit.logGBF``. The output is as follows:
 
-.. literalinclude:: eg4a.out
+..  literalinclude:: eg4a.out
+    :language: none
 
 The data suggest that the coefficients are of order 0±5.3.
 The actual values of the parameters are, of course,
@@ -1838,7 +1853,8 @@ but with the following data ::
 
 we find that fits with 3 or 4 |~| ``p[i]``\s give the following results:
 
-.. literalinclude:: eg4b.out
+..  literalinclude:: eg4b.out
+    :language: none
 
 The two fits are almost equally good, giving almost the same ``chi**2``
 values. The first fit, with only 3 |~| ``p[i]``\s, however, has a
@@ -1956,7 +1972,8 @@ use the following fitting code::
 where we are assuming *a priori* information that suggests
 the average is around 0.02. The output from this code is:
 
-.. literalinclude:: eg6-a.out
+..  literalinclude:: eg6-a.out
+    :language: none
 
 This is not such a useful result since much of the one-sigma range for ``a``
 is negative, and yet we know that ``a`` must be postive.
@@ -1980,7 +1997,8 @@ parameter dictionary ``p`` returns values for both ``'a'`` and ``'log(a)'``.
 
 The result from this fit is
 
-.. literalinclude:: eg6-log_a.out
+..  literalinclude:: eg6-log_a.out
+    :language: none
 
 which is more compelling. Parameters listed  above the dashed line in the
 parameter table are the actual  parameters used in the fit; those listed below
@@ -1997,7 +2015,7 @@ Other distributions are available. For example, the code ::
 
    fit = lsqfit.nonlinear_fit(prior=prior, data=y, fcn=fcn)
    print(fit)
-   print('a =', fit.p['a'])                       # exp(log(a))
+   print('a =', fit.p['a'])                     
 
 creates a function ``f(a)`` such that the prior for 
 parameter |~| ``p['a']`` is uniformly distributed between |~| 0
@@ -2005,7 +2023,8 @@ and |~| 0.04, and zero otherwise. The function name |~| ``f``
 is arbitrary; ``f(a)`` has a Gaussian prior 0 |~| ± |~| 1. 
 This code gives the following output:
 
-.. literalinclude:: eg6-f_a.out
+..  literalinclude:: eg6-f_a.out
+    :language: none
 
 This fit implies that ``a=0.011(13)``
 which is almost identical to the result obtained from the log-normal

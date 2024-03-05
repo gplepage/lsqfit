@@ -1,5 +1,16 @@
-Version 13.0.4 2023-12-03???
+Version 13.1 2024-03-05
 =============================
+Adds a second least-squares fitting strategy. lsqfit.vegas_fit uses PDFIntegrator 
+from the vegas Python module to evaluate means, covariances, PDF histograms, etc 
+using Bayesian integrals, as opposed to minimization as in lsqfit.nonlinear_fit. 
+Fits from nonlinear_fit are Gaussian approximations to the results from 
+vegas_fit.
+
+
+Version 13.0.4 2023-12-04
+=============================
+- New fitter lsqfit.vegas_fit that uses Bayesian integration rather than minimization.
+
 - Small changes to tests and examples to account for new formatting of GVars (v12.0).
 
 - More robust (and simpler) implementation of lsqfit.__version__ --- no longer 
