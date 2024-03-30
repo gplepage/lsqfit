@@ -2,6 +2,7 @@
 ===============================================
 
 .. |GVar| replace:: :class:`gvar.GVar`
+.. |PDFIntegrator| replace:: :class:`vegas.PDFIntegrator`
 .. |nonlinear_fit| replace:: :class:`lsqfit.nonlinear_fit`
 .. |vegas_fit| replace:: :class:`lsqfit.vegas_fit`
 .. |BufferDict| replace:: :class:`gvar.BufferDict`
@@ -318,6 +319,8 @@ vegas_fit Objects
    about the fit, evaluating  ``chi**2``:
 
    .. automethod:: stats(f, moments=False, histograms=False)
+
+   .. automethod:: sample(nbatch, mode='rbatch')
 
    .. automethod:: format(maxline=0, pstyle='v')
 

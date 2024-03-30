@@ -2435,8 +2435,8 @@ class vegas_fit(object):
             the PDF. 
             
             In general, ``samples`` is either a dictionary or an array 
-            depending upon the format of |PDFIntegrator| parameter ``param``. 
-            For example, if ::
+            depending upon the format of :class:`lsqfit.vegas_fit` 
+            parameter ``param``. For example, if ::
 
                 param = gv.gvar(dict(s='1.5(1)', v=['3.2(8)', '1.1(4)']))
 

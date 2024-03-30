@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.1 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.2 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>  
@@ -1475,6 +1475,57 @@ further options.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="lsqfit.vegas_fit.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbatch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rbatch'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate random samples from PDF used in fit.</p>
+<p>See documentation for <code class="xref py py-meth docutils literal notranslate"><span class="pre">vegas.PDFIntegrator.sample()</span></code> for more
+information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nbatch</strong> (<em>int</em>) – The integrator will return
+at least <code class="docutils literal notranslate"><span class="pre">nbatch</span></code> samples drawn from its PDF. The
+actual number of samples is the smallest multiple of
+<code class="docutils literal notranslate"><span class="pre">self.last_neval</span></code> that is equal to or larger than <code class="docutils literal notranslate"><span class="pre">nbatch</span></code>.
+Results are packaged in arrays or dictionaries
+whose elements have an extra index labeling the different
+samples in the batch. The batch index is
+the rightmost index if <code class="docutils literal notranslate"><span class="pre">mode='rbatch'</span></code>; it is
+the leftmost index if <code class="docutils literal notranslate"><span class="pre">mode</span></code> is <code class="docutils literal notranslate"><span class="pre">'lbatch'</span></code>.</p></li>
+<li><p><strong>mode</strong> (<em>bool</em>) – Batch mode. Allowed
+modes are <code class="docutils literal notranslate"><span class="pre">'rbatch'</span></code> or <code class="docutils literal notranslate"><span class="pre">'lbatch'</span></code>,
+corresponding to batch indices that are on the
+right or the left, respectively.
+Default is <code class="docutils literal notranslate"><span class="pre">mode='rbatch'</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>A tuple <code class="docutils literal notranslate"><span class="pre">(wgts,samples)</span></code> containing samples drawn from the integrator’s
+PDF, together with their weights <code class="docutils literal notranslate"><span class="pre">wgts</span></code>. The weighted sample points
+are distributed through parameter space with a density proportional to
+the PDF.</p>
+<p>In general, <code class="docutils literal notranslate"><span class="pre">samples</span></code> is either a dictionary or an array
+depending upon the format of <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> parameter <code class="docutils literal notranslate"><span class="pre">param</span></code>.
+For example, if</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">param</span> <span class="o">=</span> <span class="n">gv</span><span class="o">.</span><span class="n">gvar</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="s1">&#39;1.5(1)&#39;</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;3.2(8)&#39;</span><span class="p">,</span> <span class="s1">&#39;1.1(4)&#39;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>then <code class="docutils literal notranslate"><span class="pre">samples['s'][i]</span></code> is a sample for parameter <code class="docutils literal notranslate"><span class="pre">p['s']</span></code>
+where index <code class="docutils literal notranslate"><span class="pre">i=0,1...nbatch(approx)</span></code> labels the sample. The
+corresponding sample for <code class="docutils literal notranslate"><span class="pre">p['v'][d]</span></code>, where <code class="docutils literal notranslate"><span class="pre">d=0</span></code> or <code class="docutils literal notranslate"><span class="pre">1</span></code>,
+is <code class="docutils literal notranslate"><span class="pre">samples['v'][d,</span> <span class="pre">i]</span></code> provided <code class="docutils literal notranslate"><span class="pre">mode='rbatch'</span></code>, which
+is the default. (Otherwise it is <code class="docutils literal notranslate"><span class="pre">p['v'][i,</span> <span class="pre">d]</span></code>, for
+<code class="docutils literal notranslate"><span class="pre">mode='lbatch'</span></code>.) The corresponding weight for this sample
+is <code class="docutils literal notranslate"><span class="pre">wgts[i]</span></code>.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">param</span></code> is an array, <code class="docutils literal notranslate"><span class="pre">samples</span></code> is an array with the same
+shape plus an extra sample index which is either on the right
+(<code class="docutils literal notranslate"><span class="pre">mode='rbatch'</span></code>, default) or left (<code class="docutils literal notranslate"><span class="pre">mode='lbatch'</span></code>).</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.format">
 <span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format the output from a <a class="reference internal" href="#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>.</p>
@@ -2503,7 +2554,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>
