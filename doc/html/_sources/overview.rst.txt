@@ -1172,6 +1172,12 @@ plot shows the fit (dashed line) compared with the input data for |~| ``y``:
    :width: 70%
 
 
+In practice, it is possible that the uncertainties in the ``x[i]`` are correlated
+with those in the ``y[i]``. It such cases the ``x[i]`` cannot be considered to be 
+*prior* information. The approach desribed above is still valid, however, 
+because ``lsqfit.nonlinear_fit`` checks for correlations between the data and 
+the priors, and includes them in the fit when they are present. 
+
 .. _correlated-parameters:
 
 Correlated Parameters; Gaussian Bayes Factor

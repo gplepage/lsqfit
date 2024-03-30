@@ -229,11 +229,47 @@ There are several things to notice about these results:
   Gaussian (blue dots) corresponding to ``s['prod(p)']``, 0.55 ± 0.41.
   It also shows fits to two two-sided Gaussian models: one that is 
   continuous (split-normal, solid green line) and another centered 
-  on the median that is discontinuous (red dashes). The split-normal 
+  on the median that is discontinuous (red dashes). The median 
   fit suggests that a better description of the ``prod(p)`` distribution 
-  might be 0.12 plus 0.6 minus 0.05, although any of the three 
+  might be 0.44 plus 0.45 minus 0.24, although any of the three 
   models gives a reasonable impression
   of the range of possible values for ``prod(p)``.
+
+* A simple way to create histograms and contour plots of the probability density 
+  is from samples drawn from the underlying distribution used in the fit::
+
+    import corner 
+    import matplotlib.pyplot as plt 
+
+    wgts,psamples = vfit.sample(nbatch=100_000)
+    samples = dict()
+    samples['p3'] = psamples[3]
+    samples['p1/p0'] = psamples[1] / psamples[0]
+    samples['prod(p)'] = np.prod(psamples, axis=0)
+    corner.corner(
+        data=samples, weights=wgts, range=3 * [0.99], 
+        show_titles=True, quantiles=[0.16, 0.5, 0.84]
+        )
+    plt.show()
+
+  Here :meth:`lsqfit.vegas_fit.sample` is used to draw approximately 100,000
+  samples whose weighted density is proportional to :math:`\exp(-\chi^2(p)/2)`.
+  The samples corresponding to parameter ``p[d]`` are ``psamples[d, i]`` where 
+  ``i=0,1,2...100_000(approx)``; the corresponding weights are ``wgts[i]``. 
+  Samples for the quantities of interest are 
+  collected in dictionary ``samples``. The :mod:`corner` Python module is used 
+  to create histograms of the probability density for each of the quantities in 
+  ``sample``; it also creates contour plots of the joint densities for each 
+  pair of quantities:
+
+  .. image:: eg3.5b.png
+        :width: 90%
+
+  The histograms are labeled by the median value plus or minus intervals that 
+  each enclose 34% of the probability (``quantiles=[0.16, 0.5, 0.84]``).
+
+  The :mod:`corner` module (and the :mod:`arviz` module) must be installed 
+  separately.
 
 * A |vegas| integration is much faster if the integrand
   can process large batches of integration points 

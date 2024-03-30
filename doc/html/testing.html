@@ -178,26 +178,26 @@ Parameters:
               3    0.59 (15)     [    0 ± 1.0 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.1s)
+  svdcut/n = 1e-12/0    tol = (1e-08*,1e-10,1e-10)    (itns/time = 18/0.0s)
 
 p1/p0 = 19.97(67)    prod(p) = 0.32(28)
 corr(p0,p1) = 0.96
 
 -------------------- vegas_fit
 Least Squares Fit:
-  chi2/dof [dof] = 0.65 [11]    Q = 0.78    logBF = 19.124(17)
+  chi2/dof [dof] = 0.66 [11]    Q = 0.78    logBF = 19.141(18)
 
 Parameters:
               0   0.155 (14)     [    0 ± 1.0 ]  
-              1    3.09 (29)     [     0 ± 20 ]  
-              2    1.44 (54)     [    0 ± 1.0 ]  *
-              3    0.69 (18)     [    0 ± 1.0 ]  
+              1    3.11 (30)     [     0 ± 20 ]  
+              2    1.45 (54)     [    0 ± 1.0 ]  *
+              3    0.70 (18)     [    0 ± 1.0 ]  
 
 Settings:
   svdcut/n = 1e-12/0    (time = 0.1s)
-  fitter = vegas_fit    (chi2/dof [dof] = 0.86 [135]    Q = 0.89)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.85 [135]    Q = 0.89)
 
-p1/p0 = 19.99(64)    prod(p) = 0.52(37)
+p1/p0 = 19.99(65)    prod(p) = 0.56(40)
 corr(p0,p1) = 0.94
 </pre></div>
 </div>
@@ -227,19 +227,19 @@ the <code class="docutils literal notranslate"><span class="pre">vfit</span></co
 two:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- vegas_fit   (param=fit.p)
 Least Squares Fit:
-  chi2/dof [dof] = 0.65 [11]    Q = 0.78    logBF = 19.152(8)
+  chi2/dof [dof] = 0.66 [11]    Q = 0.78    logBF = 19.159(8)
 
 Parameters:
               0   0.155 (15)     [    0 ± 1.0 ]  
-              1    3.10 (31)     [     0 ± 20 ]  
-              2    1.45 (58)     [    0 ± 1.0 ]  *
-              3    0.69 (18)     [    0 ± 1.0 ]  
+              1    3.09 (31)     [     0 ± 20 ]  
+              2    1.44 (56)     [    0 ± 1.0 ]  *
+              3    0.70 (20)     [    0 ± 1.0 ]  
 
 Settings:
   svdcut/n = 1e-12/0    (time = 0.1s)
-  fitter = vegas_fit    (chi2/dof [dof] = 0.97 [135]    Q = 0.59)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.85 [135]    Q = 0.9)
 
-p1/p0 = 19.98(66)    prod(p) = 0.55(41)
+p1/p0 = 20.00(65)    prod(p) = 0.54(40)
 corr(p0,p1) = 0.95
 </pre></div>
 </div>
@@ -285,14 +285,14 @@ using keywords <code class="docutils literal notranslate"><span class="pre">mome
 </div>
 <p>This results in the following output</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- p1/p0
-   mean = 19.9839(64)   sdev = 0.6563(53)   skew = 0.054(28)   ex_kurt = 0.011(57)
-   split-normal: 19.954(18) +/- 0.678(11)/0.640(14)
-         median: 19.9835(84) +/- 0.656(10)/0.654(12)
+   mean = 19.9973(45)   sdev = 0.6500(39)   skew = 0.046(23)   ex_kurt = 0.084(46)
+   split-normal: 19.972(15) +/- 0.6682(97)/0.6350(97)
+         median: 19.9901(68) +/- 0.663(10)/0.648(10)
 
 -------------------- prod(p)
-   mean = 0.5473(46)   sdev = 0.4139(80)   skew = 1.98(12)   ex_kurt = 6.7(1.1)
-   split-normal: 0.1223(41) +/- 0.5922(61)/0.0495(79)
-         median: 0.4391(42) +/- 0.4505(90)/0.2365(41)
+   mean = 0.5434(26)   sdev = 0.4008(48)   skew = 1.783(62)   ex_kurt = 4.87(48)
+   split-normal: 0.13617(99) +/- 0.5779(44)/0.0476(19)
+         median: 0.4387(28) +/- 0.4458(54)/0.2353(33)
 </pre></div>
 </div>
 <p>together with histogram plots for the distributions of
@@ -303,11 +303,43 @@ shows the actual distribution (gray bars) and the
 Gaussian (blue dots) corresponding to <code class="docutils literal notranslate"><span class="pre">s['prod(p)']</span></code>, 0.55 ± 0.41.
 It also shows fits to two two-sided Gaussian models: one that is
 continuous (split-normal, solid green line) and another centered
-on the median that is discontinuous (red dashes). The split-normal
+on the median that is discontinuous (red dashes). The median
 fit suggests that a better description of the <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code> distribution
-might be 0.12 plus 0.6 minus 0.05, although any of the three
+might be 0.44 plus 0.45 minus 0.24, although any of the three
 models gives a reasonable impression
 of the range of possible values for <code class="docutils literal notranslate"><span class="pre">prod(p)</span></code>.</p>
+</li>
+<li><p>A simple way to create histograms and contour plots of the probability density
+is from samples drawn from the underlying distribution used in the fit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">corner</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">wgts</span><span class="p">,</span><span class="n">psamples</span> <span class="o">=</span> <span class="n">vfit</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">nbatch</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">samples</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">psamples</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">samples</span><span class="p">[</span><span class="s1">&#39;p1/p0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">psamples</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">psamples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">samples</span><span class="p">[</span><span class="s1">&#39;prod(p)&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">psamples</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">corner</span><span class="o">.</span><span class="n">corner</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">samples</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">wgts</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="p">[</span><span class="mf">0.99</span><span class="p">],</span>
+    <span class="n">show_titles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">quantiles</span><span class="o">=</span><span class="p">[</span><span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.84</span><span class="p">]</span>
+    <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here <code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.vegas_fit.sample()</span></code> is used to draw approximately 100,000
+samples whose weighted density is proportional to <img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/>.
+The samples corresponding to parameter <code class="docutils literal notranslate"><span class="pre">p[d]</span></code> are <code class="docutils literal notranslate"><span class="pre">psamples[d,</span> <span class="pre">i]</span></code> where
+<code class="docutils literal notranslate"><span class="pre">i=0,1,2...100_000(approx)</span></code>; the corresponding weights are <code class="docutils literal notranslate"><span class="pre">wgts[i]</span></code>.
+Samples for the quantities of interest are
+collected in dictionary <code class="docutils literal notranslate"><span class="pre">samples</span></code>. The <code class="xref py py-mod docutils literal notranslate"><span class="pre">corner</span></code> Python module is used
+to create histograms of the probability density for each of the quantities in
+<code class="docutils literal notranslate"><span class="pre">sample</span></code>; it also creates contour plots of the joint densities for each
+pair of quantities:</p>
+<a class="reference internal image-reference" href="_images/eg3.5b.png"><img alt="_images/eg3.5b.png" src="_images/eg3.5b.png" style="width: 90%;" /></a>
+<p>The histograms are labeled by the median value plus or minus intervals that
+each enclose 34% of the probability (<code class="docutils literal notranslate"><span class="pre">quantiles=[0.16,</span> <span class="pre">0.5,</span> <span class="pre">0.84]</span></code>).</p>
+<p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">corner</span></code> module (and the <code class="xref py py-mod docutils literal notranslate"><span class="pre">arviz</span></code> module) must be installed
+separately.</p>
 </li>
 <li><p>A <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> integration is much faster if the integrand
 can process large batches of integration points
@@ -337,16 +369,16 @@ from each of the first 10 iterations (here without
 <code class="docutils literal notranslate"><span class="pre">param=fit.p</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>itn   integral        wgt average     chi2/dof        Q
 -------------------------------------------------------
-  1   0.00013(13)     0.00013(13)         0.00     1.00
-  2   1.9(1.0)e-05    1.9(1.0)e-05        0.74     0.39
-  3   2.13(67)e-05    2.07(56)e-05        0.38     0.68
-  4   4.18(76)e-05    2.80(45)e-05        1.93     0.12
-  5   4.03(68)e-05    3.17(38)e-05        2.01     0.09
-  6   4.07(48)e-05    3.51(30)e-05        2.05     0.07
-  7   3.85(39)e-05    3.64(23)e-05        1.78     0.10
-  8   3.71(23)e-05    3.68(16)e-05        1.54     0.15
-  9   5.07(49)e-05    3.82(15)e-05        2.26     0.02
- 10   4.33(23)e-05    3.98(13)e-05        2.40     0.01
+  1   6.7(6.7)e-06    6.7(6.7)e-06        0.00     1.00
+  2   1.04(41)e-06    1.06(41)e-06        0.71     0.40
+  3   0.0012(11)      1.06(41)e-06        0.98     0.37
+  4   2.8(1.0)e-05    1.11(41)e-06        2.93     0.03
+  5   2.90(76)e-05    1.19(41)e-06        5.59     0.00
+  6   7.4(3.3)e-05    1.20(41)e-06        5.47     0.00
+  7   4.44(83)e-05    1.30(41)e-06        9.02     0.00
+  8   4.66(67)e-05    1.47(41)e-06       14.32     0.00
+  9   5.26(79)e-05    1.61(41)e-06       17.73     0.00
+ 10   4.40(27)e-05    2.57(40)e-06       43.03     0.00
 
 </pre></div>
 </div>
@@ -386,20 +418,20 @@ is <em>not</em> the case with <a class="reference internal" href="lsqfit.html#ls
 to the following fit:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>-------------------- vegas_fit   (uncorrelated prior)
 Least Squares Fit:
-  chi2/dof [dof] = 0.71 [11]    Q = 0.73    logBF = 16.299(47)
+  chi2/dof [dof] = 0.91 [11]    Q = 0.53    logBF = 18.566(793)
 
 Parameters:
-              0   0.147 (21)     [    0 ± 1.0 ]  
-              1    3.66 (85)     [     0 ± 20 ]  
-              2    1.53 (57)     [    0 ± 1.0 ]  *
-              3    0.78 (22)     [    0 ± 1.0 ]  
+              0   0.126 (25)     [    0 ± 1.0 ]  
+              1    4.6 (1.2)     [     0 ± 20 ]  
+              2    1.28 (27)     [    0 ± 1.0 ]  *
+              3    1.04 (27)     [    0 ± 1.0 ]  *
 
 Settings:
   svdcut/n = 1e-12/0    (time = 0.1s)
-  fitter = vegas_fit    (chi2/dof [dof] = 0.89 [135]    Q = 0.81)
+  fitter = vegas_fit    (chi2/dof [dof] = 0.58 [135]    Q = 1)
 
-p1/p0 = 24.5(8.4)    prod(p) = 0.66(51)
-corr(p0,p1) = -0.40
+p1/p0 = 18.2(8.6)    prod(p) = 0.45(43)
+corr(p0,p1) = -0.93
 </pre></div>
 </div>
 <p>These results are quite similar to what is obtained with the

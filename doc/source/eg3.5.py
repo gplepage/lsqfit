@@ -2,6 +2,8 @@ import numpy as np
 import gvar as gv
 import lsqfit
 from vegas import rbatchintegrand
+import corner 
+import matplotlib.pyplot as plt 
 gv.ranseed(123454)
 from outputsplitter import log_stdout, unlog_stdout
 
@@ -64,6 +66,16 @@ def main():
     unlog_stdout()
     print(vfit.p.vegas_mean)
 
+    # samples
+    wgts, psamples = vfit.sample(nbatch=100_000)
+    samples = dict()
+    samples['p3'] = psamples[3]
+    samples['p1/p0'] = psamples[1] / psamples[0]
+    samples['prod(p)'] = np.prod(psamples, axis=0)
+    corner.corner(data=samples, weights=wgts, range=3 * [0.99], show_titles=True, quantiles=[0.16, 0.5, 0.84])
+    plt.savefig('eg3.5b.png', bbox_inches='tight')
+    plt.show()
+
     # log_stdout('eg3.5c.out')
     print(vfit.training.summary())
     # unlog_stdout()
@@ -82,6 +94,7 @@ def main():
     s = vfit.stats(g, moments=True, histograms=True)
     print('p1/p0 =', s['p1/p0'], '   prod(p) =', s['prod(p)'])
     print('corr(p0,p1) = {:.2f}'.format(gv.evalcorr(vfit.p[:2])[1,0]))
+    unlog_stdout()
 
 def make_data():
     x = np.array([

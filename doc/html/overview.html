@@ -1414,6 +1414,11 @@ improved from our prior estimates. Results for many of the <code class="docutils
 are improved as well, by information from the fit data. The following
 plot shows the fit (dashed line) compared with the input data for <code class="docutils literal notranslate"><span class="pre">y</span></code>:</p>
 <a class="reference internal image-reference" href="_images/eg2.png"><img alt="_images/eg2.png" src="_images/eg2.png" style="width: 70%;" /></a>
+<p>In practice, it is possible that the uncertainties in the <code class="docutils literal notranslate"><span class="pre">x[i]</span></code> are correlated
+with those in the <code class="docutils literal notranslate"><span class="pre">y[i]</span></code>. It such cases the <code class="docutils literal notranslate"><span class="pre">x[i]</span></code> cannot be considered to be
+<em>prior</em> information. The approach desribed above is still valid, however,
+because <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code> checks for correlations between the data and
+the priors, and includes them in the fit when they are present.</p>
 </section>
 <section id="correlated-parameters-gaussian-bayes-factor">
 <span id="correlated-parameters"></span><h2>Correlated Parameters; Gaussian Bayes Factor<a class="headerlink" href="#correlated-parameters-gaussian-bayes-factor" title="Permalink to this heading">¶</a></h2>

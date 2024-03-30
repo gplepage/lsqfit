@@ -2146,7 +2146,8 @@ class vegas_fit(object):
     def __init__(
             self, data=None, fcn=None, prior=None, fit=None, param=None, 
             svdcut=False, eps=False, noise=None, 
-            neval=1000, nitn=(10,10), **kargs):
+            nitn=(10,10), **kargs
+            ):
         clock = time.perf_counter if hasattr(time, 'perf_counter') else time.time
         cpu_time = clock()
         try:
@@ -2167,6 +2168,7 @@ class vegas_fit(object):
             fcn = self._extract_pdf_nonlinear_fit(fit=fit, fcn=fcn, param=param)
 
         # create integrator and fit function
+        
         self.integrator = vegas.PDFIntegrator(self.param, pdf=None, **kargs)
         if not hasattr(self, 'flatfcn'):
             self.flatfcn = self.integrator._make_std_integrand(fcn, xsample=gvar.mean(self.param)) 
@@ -2182,11 +2184,9 @@ class vegas_fit(object):
             ))
         self.integrator.set(pdf=pdf)
 
-        self.training = self.integrator(nitn=nitn[0], neval=neval, adapt=True)
+        self.training = self.integrator(nitn=nitn[0], adapt=True)
         self.p = self.integrator.stats(
-            f=None,
-            nitn=nitn[1], neval=neval,
-            adapt=kargs.get('adapt', False),
+            f=None, nitn=nitn[1], adapt=kargs.get('adapt', False),
             )
         # collect results
         self.pmean = gvar.mean(self.p) 
@@ -2401,13 +2401,59 @@ class vegas_fit(object):
         standard deviations (and covariances) of the fit parameters 
         are recalculated.
 
-        See documentation for :class:`vegas.PDFIntegrator.stats` for 
+        See documentation for :meth:`vegas.PDFIntegrator.stats` for 
         further options.
         """
-        # if f is None:
-        #     f = self._default_integrand
         return self.integrator.stats(f, *args, **kargs)  
-    
+
+    def sample(self, nbatch, mode='rbatch'):
+        """ Generate random samples from PDF used in fit.
+
+        See documentation for :meth:`vegas.PDFIntegrator.sample` for more 
+        information.
+
+        Args:
+            nbatch (int): The integrator will return
+                at least ``nbatch`` samples drawn from its PDF. The 
+                actual number of samples is the smallest multiple of 
+                ``self.last_neval`` that is equal to or larger than ``nbatch``.
+                Results are packaged in arrays or dictionaries
+                whose elements have an extra index labeling the different 
+                samples in the batch. The batch index is 
+                the rightmost index if ``mode='rbatch'``; it is 
+                the leftmost index if ``mode`` is ``'lbatch'``. 
+            mode (bool): Batch mode. Allowed 
+                modes are ``'rbatch'`` or ``'lbatch'``,
+                corresponding to batch indices that are on the 
+                right or the left, respectively. 
+                Default is ``mode='rbatch'``.
+        
+        Returns:
+            A tuple ``(wgts,samples)`` containing samples drawn from the integrator's
+            PDF, together with their weights ``wgts``. The weighted sample points 
+            are distributed through parameter space with a density proportional to
+            the PDF. 
+            
+            In general, ``samples`` is either a dictionary or an array 
+            depending upon the format of |PDFIntegrator| parameter ``param``. 
+            For example, if ::
+
+                param = gv.gvar(dict(s='1.5(1)', v=['3.2(8)', '1.1(4)']))
+
+            then ``samples['s'][i]`` is a sample for parameter ``p['s']``
+            where index ``i=0,1...nbatch(approx)`` labels the sample. The 
+            corresponding sample for ``p['v'][d]``, where ``d=0`` or ``1``, 
+            is ``samples['v'][d, i]`` provided ``mode='rbatch'``, which 
+            is the default. (Otherwise it is ``p['v'][i, d]``, for 
+            ``mode='lbatch'``.) The corresponding weight for this sample
+            is ``wgts[i]``.
+
+            When ``param`` is an array, ``samples`` is an array with the same 
+            shape plus an extra sample index which is either on the right 
+            (``mode='rbatch'``, default) or left (``mode='lbatch'``).        
+        """
+        return self.integrator.sample(nbatch=nbatch, mode=mode)
+
     def chiv(self, p, jac=None):
         """ :math:`\chi^2(p)` 
         

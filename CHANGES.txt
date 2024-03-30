@@ -1,3 +1,10 @@
+Version 13.2 2024-03-30
+=============================
+- Adds vegas_fit.sample, which samples the PDF used in the fit. This is useful for 
+  making probability density histograms and contour plots.
+
+- Minor bug fix: vegas_fit wasn't always passing correct arguments to PDFIntegrator.
+
 Version 13.1 2024-03-05
 =============================
 Adds a second least-squares fitting strategy. lsqfit.vegas_fit uses PDFIntegrator 

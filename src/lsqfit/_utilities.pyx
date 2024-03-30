@@ -74,12 +74,6 @@ cdef class chiv(object):
         self.fcn = fcn 
         self.noprior = noprior 
 
-    # def _remove_gvars(self, gvlist):
-    #     return chiv(fd=gvar.remove_gvars(self.fd, gvlist), fcn=self.fcn, noprior=self.noprior)
-
-    # def _distribute_gvars(self, gvlist):
-    #     self.fd = gvar.distribute_gvars(self.fd, gvlist)
-
     def __call__(self, p):        
     # def chiv(p, fd, fcn, noprior):
         cdef Py_ssize_t i1, i2
@@ -119,12 +113,6 @@ cdef class chivw(object):
         self.inv_wgts = fd.i_invwgts 
         self.fcn = fcn 
         self.noprior = noprior 
-
-    # def _remove_gvars(self, gvlist):
-    #     return chivw(fd=gvar.remove_gvars(self.fd, gvlist), fcn=self.fcn, noprior=self.noprior)
-
-    # def _distribute_gvars(self, gvlist):
-    #     self.fd = gvar.distribute_gvars(self.fd, gvlist)
 
     def __call__(self, p):        
     # def chivw(p, fd, fcn, noprior):

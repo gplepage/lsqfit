@@ -130,47 +130,6 @@ except:
 if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
-# _yp_pdf_attr = 'mean inv_wgts correction logdet nblocks svdn svdcut eps nw niw'.split()
-
-# if sys.version_info.major == 2:
-#     class _yp_pdf(object):
-#         __slots__ = _yp_pdf_attr
-#         def __init__(self, **kargs):
-#             for k in kargs:
-#                 setattr(self, k, kargs[k])
-
-#         def __getstate__(self):
-#             return {k:getattr(self, k) for k in self.__slots__}
-        
-#         def __setstate__(self, state):
-#             for k in state:
-#                 setattr(self, k, state[k])
-
-#         def _remove_gvars(self, gvlist):
-#             newyp_pdf = _yp_pdf(**{k:getattr(self, k) for k in self.__slots__})
-#             newyp_pdf.correction = _gvar.remove_gvars(newyp_pdf.correction, gvlist)
-#             return newyp_pdf 
-
-#         def _distribute_gvars(self, gvlist):
-#             self.correction = _gvar.distribute_gvars(self.correction, gvlist)
-# else:
-#     class _yp_pdf(object):
-#         __slots__ = _yp_pdf_attr
-#         def __init__(self, **kargs):
-#             for k in kargs:
-#                 setattr(self, k, kargs[k])
-
-#         def _remove_gvars(self, gvlist):
-#             newyp_pdf = _yp_pdf(**{k:getattr(self, k) for k in self.__slots__})
-#             newyp_pdf.correction = _gvar.remove_gvars(newyp_pdf.correction, gvlist)
-#             return newyp_pdf 
-
-#         def _distribute_gvars(self, gvlist):
-#             self.correction = _gvar.distribute_gvars(self.correction, gvlist)
-
-
-# Internal data type for _unpack_data()
-
 class nonlinear_fit(object):
     """ Nonlinear least-squares fit.
 
@@ -706,6 +665,7 @@ class nonlinear_fit(object):
             self.error = fit.error
             self.cov = fit.cov
             self.chi2 = numpy.sum(fit.f**2)
+            self.J = fit.J                      # J[i,j] = dchiv[i]/dp[j];  J.T @ J = inv of self.cov
             self.residuals = numpy.array(fit.f)
             self.Q = gammaQ(self.dof/2., self.chi2/2.)
             self.nit = fit.nit
@@ -755,7 +715,10 @@ class nonlinear_fit(object):
                     warnings.warn('det(fit.cov) < 0 --- roundoff errors? Try an svd cut.')
                 return ans
                 # return numpy.sum(numpy.log(numpy.linalg.svd(m, compute_uv=False)))
-            logdet_cov = logdet(self.cov)
+            if hasattr(self, 'J'):
+                logdet_cov = -logdet(fit.J.T.dot(fit.J))   # numerically more stable
+            else:
+                logdet_cov = logdet(self.cov)
             self.logGBF = 0.5*(
                 logdet_cov - self.yp_pdf.logdet - self.chi2 -
                 self.dof * numpy.log(2. * numpy.pi)

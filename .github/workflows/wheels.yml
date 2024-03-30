@@ -1,4 +1,5 @@
 name: Build wheels
+# see https://github.com/pypa/cibuildwheel
 
 on: [workflow_dispatch]
 
