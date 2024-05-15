@@ -15,27 +15,27 @@ PLOT = True
 
 run:
 	$(PYTHON) simple.py > simple.tmp
-	- diff -w -I svdcut -I fitter simple.out simple.tmp
+	- diff -w -I svdcut -I time -I fitter simple.out simple.tmp
 	$(PYTHON) multifitter.py $(PLOT) > multifitter.tmp
-	- diff -w -I svdcut -I fitter multifitter.out multifitter.tmp
+	- diff -w -I svdcut -I time -I fitter multifitter.out multifitter.tmp
 	$(PYTHON) y-vs-x.py $(PLOT) > y-vs-x.tmp
-	- diff -w -I svdcut -I fitter y-vs-x.out y-vs-x.tmp
+	- diff -w -I svdcut -I time -I fitter y-vs-x.out y-vs-x.tmp
 	$(PYTHON) x-err.py > x-err.tmp
-	- diff -w -I svdcut -I fitter x-err.out x-err.tmp
+	- diff -w -I svdcut -I time -I fitter x-err.out x-err.tmp
 	$(PYTHON) p-corr.py False > p-corr.tmp
-	- diff -w -I svdcut -I fitter p-corr.out p-corr.tmp
+	- diff -w -I svdcut -I time -I fitter p-corr.out p-corr.tmp
 	$(PYTHON) y-noerr.py > y-noerr.tmp
-	- diff -w -I svdcut -I fitter y-noerr.out y-noerr.tmp
+	- diff -w -I svdcut -I time -I fitter y-noerr.out y-noerr.tmp
 	$(PYTHON) empbayes.py > empbayes.tmp
-	- diff -w -I svdcut -I fitter empbayes.out empbayes.tmp
+	- diff -w -I svdcut -I time -I fitter empbayes.out empbayes.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
-	- diff -w -I svdcut -I fitter pendulum.out pendulum.tmp
+	- diff -w -I svdcut -I time -I fitter pendulum.out pendulum.tmp
 	$(PYTHON) nist.py > nist.tmp
-	- diff -w -I svdcut -I fitter nist.out nist.tmp
+	- diff -w -I svdcut -I time -I fitter nist.out nist.tmp
 	$(PYTHON) uncorrelated.py > uncorrelated.tmp
-	- diff -w -I svdcut -I fitter uncorrelated.out uncorrelated.tmp
+	- diff -w -I svdcut -I time -I fitter uncorrelated.out uncorrelated.tmp
 	$(PYTHON) bayes.py False > bayes.tmp
-	- diff -w -B -I svdcut -I fitter bayes.out bayes.tmp
+	- diff -w -B -I svdcut -I time -I fitter bayes.out bayes.tmp
 
 time:
 	time $(MAKE) _time

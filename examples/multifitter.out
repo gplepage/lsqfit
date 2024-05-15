@@ -13,7 +13,7 @@ Parameters:
              s1    0.9486 (54)      [  1.0 (1.0) ]  
 
 Settings:
-  eps = 1e-10    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.1s)
+  eps = 1e-10    tol = (1e-08*,1e-10,1e-10)    (itns/time = 5/0.0s)
 
 
 ------------------------------ chained_lsqfit

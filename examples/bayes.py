@@ -1,4 +1,4 @@
-# Copyright (c) 2017-23 G. Peter Lepage.
+# Copyright (c) 2017-24 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ except:
     print(outfile[:-1])
     exit(0)
 
-
 if sys.argv[1:]:
     SHOW_PLOT = eval(sys.argv[1])   # display picture of grid ?
 else:
@@ -48,64 +47,19 @@ def main():
     print(fit)
 
     # check whether Gaussian using Bayesian integrator
-    expval = vegas.PDFIntegrator(fit.p, sync_ran=False)
-
-
-    # mean and covariance matrix, and counts for histograms
-    hist = [
-        gv.PDFHistogram(fit.p[0]), gv.PDFHistogram(fit.p[1]),
-        gv.PDFHistogram(fit.p[2]), gv.PDFHistogram(fit.p[3]),
-        ]
-    def g(p):
-        return dict(
-            pdf=np.exp(fit.logpdf(p)),
-            mean=p,
-            outer=np.outer(p, p),
-            count=[
-                hist[0].count(p[0]), hist[1].count(p[1]),
-                hist[2].count(p[2]), hist[3].count(p[3]),
-                ],
-            )
-
-    # adapt integrator expval to PDF from fit
-    neval = 1000
-    nitn = 10
-    expval(neval=neval, nitn=nitn)
-
-    # evaluate expectation value of g(p)
-    results = expval(g, neval=neval, nitn=nitn, adapt=False)
-
-    # analyze results
-    print('\nIterations:')
-    print(results.summary())
-    print('Integration Results:')
-    pmean = results['mean']
-    pcov =  results['outer'] - np.outer(pmean, pmean)
-    print('    mean(p) =', pmean)
-    print('    cov(p) =\n', pcov)
-
-    # create GVars from results
-    p = gv.gvar(gv.mean(pmean), gv.mean(pcov))
-    print('\nBayesian Parameters:')
-    print(gv.tabulate(p))
-    print('\npdf norm =', results.pdfnorm)
-
-    # show histograms
-    print('\nHistogram Statistics:')
-    count = results['count']
-    for i in range(4):
-        # print histogram statistics
-        print('p[{}]:'.format(i))
-        print(hist[i].analyze(count[i]).stats)
+    vfit = lsqfit.vegas_fit(fit=fit, neval=1_000)
+    print(vfit)
+    r = vfit.stats(histograms=True)
+    for i in range(len(r)):
+        print(f'\n---- p[{i}]')
+        print(r.stats[i])
         if SHOW_PLOT:
-            # make histogram plots
             plt.subplot(2, 2, i + 1)
-            plt.xlabel('p[{}]'.format(i))
-            hist[i].make_plot(count[i], plot=plt)
-            if i % 2 != 0:
-                plt.ylabel('')
+            r.stats[i].plot_histogram(plot=plt)
+            plt.xlabel(f'p[{i}]')
     if SHOW_PLOT:
         plt.show()
+    return 
 
 def make_data():
     x = np.array([
@@ -124,8 +78,13 @@ def make_prior():
     p[1] = 20 * p[0] + gv.gvar('0.0(1)')     # p[1] correlated with p[0]
     return p
 
+# @vegas.rbatchintegrand
 def fcn(x, p):
+    if len(p.shape) == 2:
+        # add batch index
+        x = x[:, None]
     return (p[0] * (x**2 + p[1] * x)) / (x**2 + x * p[2] + p[3])
 
 if __name__ == '__main__':
+    gv.ranseed(1234)
     main()

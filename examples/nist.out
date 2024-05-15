@@ -7,7 +7,7 @@ Parameters:
               1   0.0005502 (73)       [    0 ± 0.11 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 8/0.1s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 8/0.0s)
 
 ==================== chwirut2
 Least Squares Fit:
@@ -19,7 +19,7 @@ Parameters:
               2    0.0122 (15)      [    0 ± 2.4 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 8/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 10/0.0s)
 
 ==================== chwirut1
 Least Squares Fit:
@@ -31,7 +31,7 @@ Parameters:
               2   0.01053 (79)      [    0 ± 2.1 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 10/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 8/0.0s)
 
 ==================== lanczos3
 Least Squares Fit:
@@ -116,7 +116,7 @@ Parameters:
               4    2.166(20)e-05       [  0 ± 0.0043 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 12/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 11/0.0s)
 
 agree to sigma/10
 ==================== hahn1
@@ -133,7 +133,7 @@ Parameters:
               6   -1.23(13)e-07      [ 0 ± 2.5e-05 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 21/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 22/0.0s)
 
 ==================== nelson
 Least Squares Fit:
@@ -145,7 +145,7 @@ Parameters:
               2   -0.0577 (40)      [      0 ± 12 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 27/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 28/0.0s)
 
 ==================== mgh17
 Least Squares Fit:
@@ -159,24 +159,23 @@ Parameters:
               4   0.02212 (89)      [     0 ± 4.4 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 25/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 23/0.0s)
 
 ==================== lanczos1
 Least Squares Fit:
   chi2/dof [dof] = 0.75 [24]    Q = 0.8    logGBF = 495.88
 
 Parameters:
-              0   0.095100000028 (53)         [      0 ± 19 ]  
+              0   0.095100000027 (53)         [      0 ± 19 ]  
               1    1.00000000013 (27)         [ 0 ± 2.0e+02 ]  
-              2    0.86070000014 (14)         [ 0 ± 1.7e+02 ]  
-              3    3.00000000024 (33)         [ 0 ± 6.0e+02 ]  
+              2    0.86070000013 (14)         [ 0 ± 1.7e+02 ]  
+              3    3.00000000023 (33)         [ 0 ± 6.0e+02 ]  
               4    1.55759999984 (19)         [ 0 ± 3.1e+02 ]  
               5    5.00000000011 (11)         [ 0 ± 1.0e+03 ]  
 
 Settings:
   svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 93/0.0s)
 
-agree to sigma/10
 ==================== lanczos2
 Least Squares Fit:
   chi2/dof [dof] = 0.75 [24]    Q = 0.8    logGBF = 201.75
@@ -207,7 +206,7 @@ Parameters:
               7     19.67 (38)      [ 0 ± 3.9e+03 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 7/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 8/0.0s)
 
 ==================== misra1c
 Least Squares Fit:
@@ -289,7 +288,7 @@ Parameters:
               6    0.0497 (66)      [     0 ± 9.9 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 27/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 25/0.0s)
 
 ==================== boxbod
 Least Squares Fit:
@@ -300,7 +299,7 @@ Parameters:
               1    0.55 (10)     [ 0 ± 1.1e+02 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 16/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 14/0.0s)
 
 ==================== rat42
 Least Squares Fit:
@@ -324,7 +323,7 @@ Parameters:
               2    345.22 (78)      [ 0 ± 6.9e+04 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 142/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 144/0.0s)
 
 ==================== eckerle4
 Least Squares Fit:
@@ -336,7 +335,7 @@ Parameters:
               2   451.541 (47)      [ 0 ± 9.0e+04 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 9/0.0s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 10/0.0s)
 
 ==================== rat43
 Least Squares Fit:
@@ -361,6 +360,6 @@ Parameters:
               2      0.932 (20)      [ 0 ± 1.9e+02 ]  
 
 Settings:
-  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 304/0.1s)
+  svdcut/n = 1e-12/0    tol = (1e-10*,1e-10,1e-10)    (itns/time = 303/0.0s)
 
 agree to sigma/10
