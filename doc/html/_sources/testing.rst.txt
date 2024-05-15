@@ -248,7 +248,8 @@ There are several things to notice about these results:
     samples['prod(p)'] = np.prod(psamples, axis=0)
     corner.corner(
         data=samples, weights=wgts, range=3 * [0.99], 
-        show_titles=True, quantiles=[0.16, 0.5, 0.84]
+        show_titles=True, quantiles=[0.16, 0.5, 0.84],
+        plot_datapoints=False, fill_contours=True,
         )
     plt.show()
 

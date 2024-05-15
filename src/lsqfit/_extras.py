@@ -1775,7 +1775,7 @@ class MultiFitter(object):
                             color='r', alpha=0.075,
                             )
                         plt.plot(extra_x, numpy.ones(2, float), 'r-')
-                    plt.errorbar(x[ii], g[ii]/gth[ii], dg[ii]/gth[ii], fmt='o')
+                    plt.errorbar(x[ii], g[ii]/gth[ii], numpy.fabs(dg[ii]/gth[ii]), fmt='o')
             elif plotview == 'diff':
                 plt.ylabel('({} - fit) / sigma'.format(str(k))  + '   [%s]' % plotview)
                 ii = (dg != 0.0)       # check for exact zeros
@@ -2155,7 +2155,8 @@ class vegas_fit(object):
         except ImportError:
             raise ImportError('Install the vegas module to use vegas_fit.')
         if numpy.size(nitn) == 1:
-            self.nitn = 2 * (nitn,)
+            nitn = 2 * (nitn,)
+        self.nitn = nitn
         if fit is None:
             fcn = self._build_pdf(
                 data=data, fcn=fcn, prior=prior, param=param, svdcut=svdcut, 

@@ -72,7 +72,11 @@ def main():
     samples['p3'] = psamples[3]
     samples['p1/p0'] = psamples[1] / psamples[0]
     samples['prod(p)'] = np.prod(psamples, axis=0)
-    corner.corner(data=samples, weights=wgts, range=3 * [0.99], show_titles=True, quantiles=[0.16, 0.5, 0.84])
+    corner.corner(
+        data=samples, weights=wgts, range=3 * [0.99], 
+        show_titles=True, quantiles=[0.16, 0.5, 0.84],
+        plot_datapoints=False, fill_contours=True,
+        )
     plt.savefig('eg3.5b.png', bbox_inches='tight')
     plt.show()
 

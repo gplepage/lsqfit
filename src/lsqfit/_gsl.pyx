@@ -726,7 +726,7 @@ class gsl_multifit(object):
 
 
 # wrappers for multifit's python function #
-cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) noexcept:
+cdef int _c_f(const gsl_vector* vx, void* params, gsl_vector* vf) noexcept:
     global _p_f, _pyerr
     cdef numpy.ndarray f
     # can't do numpy.ndarray[object,ndim=1] because might be numbers
@@ -741,7 +741,7 @@ cdef int _c_f(gsl_vector* vx, void* params, gsl_vector* vf) noexcept:
         _pyerr = sys.exc_info()
         return GSL_EBADFUNC
 
-cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) noexcept:
+cdef int _c_df(const gsl_vector* vx, void* params, gsl_matrix* mJ) noexcept:
     global _p_f, _pyerr, _valder
     cdef gvar.GVar fi
     cdef gvar.svec fi_d
@@ -761,7 +761,7 @@ cdef int _c_df(gsl_vector* vx, void* params, gsl_matrix* mJ) noexcept:
         _pyerr = sys.exc_info()
         return GSL_EBADFUNC
 
-cdef int _c_fdf(gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ) noexcept:
+cdef int _c_fdf(const gsl_vector* vx, void* params, gsl_vector* vf, gsl_matrix* mJ) noexcept:
     global _p_f, _pyerr, _valder
     cdef gvar.GVar fi
     cdef gvar.svec f_i_d
@@ -1096,7 +1096,7 @@ class gsl_multiminex(object):
         return str(self.x)
 
 # wrapper for multiminex's python function #
-cdef double _c_fs(gsl_vector* vx, void* p) noexcept:
+cdef double _c_fs(const gsl_vector* vx, void* p) noexcept:
     global _p_fs, _pyerr
     if _pyerr is not None:
         return GSL_NAN

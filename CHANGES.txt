@@ -1,3 +1,9 @@
+Version 13.2.1 ????
+======================
+- Fixes bug in lsqfit's GSL module that prevented compilation on some systems.
+
+- Fixes minor bug in vegas_fit affecting parameter nitn.
+
 Version 13.2 2024-03-30
 =============================
 - Adds vegas_fit.sample, which samples the PDF used in the fit. This is useful for 
