@@ -1,5 +1,5 @@
-Version 13.2.1 ????
-======================
+Version 13.2.1 2024-05-21
+==========================
 - Fixes bug in lsqfit's GSL module that prevented compilation on some systems.
 
 - Fixes minor bug in vegas_fit affecting parameter nitn.
