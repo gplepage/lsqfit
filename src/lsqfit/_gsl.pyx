@@ -23,6 +23,11 @@ import sys
 from numpy cimport npy_intp as INTP_TYPE
 # index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
 
+if numpy.version.version >= '2.0':
+    FLOAT_TYPE = numpy.float64
+else:
+    FLOAT_TYPE = numpy.float_
+    
 #  gsl interface
 cdef extern from "gsl/gsl_sf.h":
     struct gsl_sf_result_struct:
@@ -83,7 +88,7 @@ cdef numpy.ndarray[numpy.float_t, ndim=2] matrix2array(gsl_matrix* m):
     """ copies contents of m into numeric array """
     cdef Py_ssize_t i1, i2
     cdef numpy.ndarray[numpy.float_t, ndim=2] ans
-    ans = numpy.zeros((m.size1, m.size2), numpy.float_)
+    ans = numpy.zeros((m.size1, m.size2), FLOAT_TYPE)
     for i1 in range(m.size1):
         for i2 in range(m.size2):
             ans[i1, i2] = gsl_matrix_get(m, i1, i2)
@@ -117,7 +122,7 @@ cdef numpy.ndarray[numpy.float_t, ndim=1] vector2array(gsl_vector* v):
     """ copies contents of v into numeric array """
     cdef Py_ssize_t i
     cdef numpy.ndarray[numpy.float_t, ndim=1] ans
-    ans = numpy.zeros(v.size, numpy.float_)
+    ans = numpy.zeros(v.size, FLOAT_TYPE)
     for i in range(v.size):
         ans[i] = gsl_vector_get(v, i)
     return ans

@@ -23,6 +23,11 @@ import functools
 from numpy cimport npy_intp as INTP_TYPE
 # index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
 
+if numpy.version.version >= '2.0':
+    FLOAT_TYPE = numpy.float64
+else:
+    FLOAT_TYPE = numpy.float_
+    
 
 def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
     """ Compute dot product of matrix ``w`` with vector ``x``.
@@ -88,7 +93,7 @@ cdef class chiv(object):
         if delta.dtype == object:
             ans = numpy.zeros(self.nw, object)
         else:
-            ans = numpy.zeros(self.nw, numpy.float_)
+            ans = numpy.zeros(self.nw, FLOAT_TYPE)
         iw, wgts = self.inv_wgts[0]
         i1 = 0
         i2 = len(iw)
@@ -128,12 +133,12 @@ cdef class chivw(object):
         if delta.dtype == object:
             ans = numpy.zeros(self.niw, object)
         else:
-            ans = numpy.zeros(self.niw, numpy.float_)
+            ans = numpy.zeros(self.niw, FLOAT_TYPE)
         iw, wgts = self.inv_wgts[0]
         if len(iw) > 0:
             ans[iw] = wgts ** 2 * delta[iw]
         for iw, wgt in self.inv_wgts[1:]:
-            wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), numpy.float_)
+            wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), FLOAT_TYPE)
             for wj in wgt:
                 wgt2 += numpy.outer(wj, wj)
             ans[iw] = dot(wgt2, delta[iw])

@@ -30,6 +30,8 @@ run:
 	- diff -w -I svdcut -I time -I fitter empbayes.out empbayes.tmp
 	$(PYTHON) pendulum.py > pendulum.tmp
 	- diff -w -I svdcut -I time -I fitter pendulum.out pendulum.tmp
+	$(PYTHON) spline.py False > spline.tmp
+	- diff -w -I svdcut -I time -I fitter spline.out spline.tmp
 	$(PYTHON) nist.py > nist.tmp
 	- diff -w -I svdcut -I time -I fitter nist.out nist.tmp
 	$(PYTHON) uncorrelated.py > uncorrelated.tmp
@@ -62,6 +64,7 @@ update-all:
 	$(PYTHON) y-noerr.py > y-noerr.out
 	$(PYTHON) empbayes.py > empbayes.out
 	$(PYTHON) pendulum.py > pendulum.out
+	$(PYTHON) spline.py > spline.out
 	$(PYTHON) nist.py > nist.out
 	$(PYTHON) uncorrelated.py > uncorrelated.out
 	$(PYTHON) bayes.py False > bayes.out

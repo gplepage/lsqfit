@@ -1,3 +1,7 @@
+Version 13.2.3 2024-07-08
+==========================
+Modified so that it works with numpy>=2.0.
+
 Version 13.2.2 2024-05-22
 ==========================
 Same as v13.2.1.

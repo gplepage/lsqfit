@@ -20,6 +20,9 @@ import lsqfit
 import gvar as gv
 import sys
 
+if np.version.version >= '2.0':
+    np.set_printoptions(legacy="1.25")
+
 gv.ranseed(12)   # remove randomness
 
 if sys.argv[1:]:
