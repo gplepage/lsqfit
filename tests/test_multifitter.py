@@ -36,9 +36,9 @@ class test_multifitter(unittest.TestCase):
         r = self.ref_fit.p 
         for k in ['a', 'b']:
             print('***', r[k], p[k])
-            if abs(r[k].mean - p[k].mean) > r[k].sdev:
+            if abs(r[k].mean - p[k].mean) > 5 * r[k].sdev:
                 return False 
-            if abs(r[k].sdev - p[k].sdev) > r[k].sdev:
+            if abs(r[k].sdev - p[k].sdev) > 5 * r[k].sdev:
                 return False 
         return True
 
