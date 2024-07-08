@@ -35,11 +35,11 @@ class test_multifitter(unittest.TestCase):
     def agree_ref(self, p):
         r = self.ref_fit.p 
         for k in ['a', 'b']:
+            print('***', r[k], p[k])
             if abs(r[k].mean - p[k].mean) > r[k].sdev:
                 return False 
             if abs(r[k].sdev - p[k].sdev) > r[k].sdev:
                 return False 
-            print('***', r[k], p[k])
         return True
 
     def make_models(self, ncg):
