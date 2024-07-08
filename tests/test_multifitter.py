@@ -39,6 +39,7 @@ class test_multifitter(unittest.TestCase):
                 return False 
             if abs(r[k].sdev - p[k].sdev) > r[k].sdev:
                 return False 
+            print('***', r[k], p[k])
         return True
 
     def make_models(self, ncg):
