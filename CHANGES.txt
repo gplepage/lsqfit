@@ -1,3 +1,7 @@
+Version 13.2.4 2024-12-26
+=========================
+Fixes trivial problem with the pyproject.toml introduced in the last version.
+
 Version 13.2.3 2024-07-08
 ==========================
 Modified so that it works with numpy>=2.0.

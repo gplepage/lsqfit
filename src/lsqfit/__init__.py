@@ -1520,7 +1520,7 @@ class nonlinear_fit(object):
             y += numpy.asarray(f) - _gvar.mean(y)
         prior = copy.deepcopy(self.prior)
         if prior is None or not add_priornoise:
-            yiter = _gvar.bootstrap_iter(y, n)
+            # yiter = _gvar.bootstrap_iter(y, n)
             for ysim in _gvar.bootstrap_iter(y, n):
                 yield ysim, prior
         else:
@@ -1552,7 +1552,7 @@ class nonlinear_fit(object):
         Bootstrap copies of the data for step 2 are provided in
         ``datalist``. If ``datalist`` is ``None``, they are generated
         instead from the means and covariance matrix of the fit data
-        (assuming gaussian statistics). The maximum number of bootstrap
+        (assuming Gaussian statistics). The maximum number of bootstrap
         copies considered is specified by ``n`` (``None`` implies no
         limit).
 
