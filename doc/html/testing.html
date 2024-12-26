@@ -1,19 +1,16 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.2.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
+    <title>Non-Gaussian Behavior; Testing Fits &#8212; lsqfit 13.2.4 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4848ba22" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css?v=310c80ee" />
+    <script src="_static/documentation_options.js?v=f063417a"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Case Study: Simple Extrapolation" href="case-extrapolation.html" />
@@ -41,7 +38,7 @@
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>  
@@ -52,9 +49,9 @@
           <div class="body" role="main">
             
   <section id="non-gaussian-behavior-testing-fits">
-<span id="non-gaussian-behavior"></span><h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Permalink to this heading">¶</a></h1>
+<span id="non-gaussian-behavior"></span><h1>Non-Gaussian Behavior; Testing Fits<a class="headerlink" href="#non-gaussian-behavior-testing-fits" title="Link to this heading">¶</a></h1>
 <section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>The various analyses in the Tutorial assume implicitly that every
 probability distribution relevant to a fit is Gaussian. The input
 data and priors are assumed Gaussian. The <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> function is
@@ -70,40 +67,40 @@ Bayesian integration, can also be used to analyze non-Gaussian
 results.</p>
 </section>
 <section id="bayesian-integrals">
-<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Permalink to this heading">¶</a></h2>
+<h2>Bayesian Integrals<a class="headerlink" href="#bayesian-integrals" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> provides an alternative fitting strategy
 (multi-dimensional Bayesian integrals) from that used by
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>. Both approaches assume that the fit parameters
 are described by a probability distribution whose
 probability density function (PDF) is proportional to
-<img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/>.  <img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/>
+<img class="math" src="_images/math/09fe19ab2bea5d5d6e8b95acf0de19cdb7250f2e.svg" alt="\exp(-\chi^2(p)/2)"/>.  <img class="math" src="_images/math/268aebf7e98eefd86b1672e74bcb8b5484820043.svg" alt="\chi^2(p)"/>
 has contributions from both the data and the prior:</p>
 <div class="math">
-<p><img src="_images/math/3db003c9d07f6b78978f4a6f57e4295bbca96a34.svg" alt="\chi^2(p) \equiv \Delta y^T \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
+<p><img src="_images/math/57dfc93acb2a4dc95f20ec85ad2c53913b5d2651.svg" alt="\chi^2(p) \equiv \Delta y^T \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
 \: + \:
 \Delta p^T \cdot\mathrm{cov}^{-1}_\mathrm{prior}\cdot\Delta p,"/></p>
-</div><p>where <img class="math" src="_images/math/0f5c227cbc34ace77bcd5b3ae38a04d935979994.svg" alt="\Delta y_i \equiv \overline y_i - f(x_i,p)"/>
-and <img class="math" src="_images/math/33c601deff4f434ffccb1e970789bf5131b2b084.svg" alt="\Delta p_i\equiv \overline p_i^\mathrm{prior} - p_i"/>.
+</div><p>where <img class="math" src="_images/math/88a08bcacdb9a53852b04a5fdf6b79ab2367986c.svg" alt="\Delta y_i \equiv \overline y_i - f(x_i,p)"/>
+and <img class="math" src="_images/math/bd8bf40f10e797b0166d20258c588340316579eb.svg" alt="\Delta p_i\equiv \overline p_i^\mathrm{prior} - p_i"/>.
 Both of these approaches characterize this distribution by
 specifying <em>best-fit</em> mean values and covariances for the
 fit parameters (packaged as an array or dictionary of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s).
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> estimates the mean values
-and covariances from the minimum of <img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> and its
+and covariances from the minimum of <img class="math" src="_images/math/268aebf7e98eefd86b1672e74bcb8b5484820043.svg" alt="\chi^2(p)"/> and its
 curvature at the minimum, while <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> calculates the
 actual means and standard deviations of the parameters
 by evaluating the following integrals:</p>
 <div class="math">
-<p><img src="_images/math/8a0be671c10e19cc1e8064c38c9de063f640abe9.svg" alt="\overline p_i &amp;\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,p_i\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
+<p><img src="_images/math/6f9e22a873cade782f7b5106d74aa7657bd88909.svg" alt="\overline p_i &amp;\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,p_i\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
 \mathrm{cov}(p_i,p_j) &amp;\equiv \frac{1}{N_\mathrm{pdf}}\int d^np\,(p_i - \overline p_i)(p_j - \overline p_j)\,\mathrm{e}^{-\chi^2(p)/2}\\[1.5ex]
 N_\mathrm{pdf} &amp;\equiv \int d^np\,\mathrm{e}^{-\chi^2(p)/2}"/></p>
 </div><p>The integrals are evaluated numerically, using adaptive Monte Carlo integration
 (<code class="xref py py-class docutils literal notranslate"><span class="pre">PDFIntegrator</span></code> from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code>
 module).
 The best-fit results from the two approaches agree when
-<img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> is well approximated by the quadratic expansion around its
+<img class="math" src="_images/math/268aebf7e98eefd86b1672e74bcb8b5484820043.svg" alt="\chi^2(p)"/> is well approximated by the quadratic expansion around its
 minimum — that is,
 insofar as
-<img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/> is well approximated
+<img class="math" src="_images/math/09fe19ab2bea5d5d6e8b95acf0de19cdb7250f2e.svg" alt="\exp(-\chi^2(p)/2)"/> is well approximated
 by a Gaussian distribution in the parameters.
 But the results can differ significantly otherwise; the output from <code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code>
 is the Gaussian approximation to that from <code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code>.</p>
@@ -211,7 +208,7 @@ suggests that the Gaussian approximation used by
 full Bayesian analysis used by <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">vfit.logBF</span></code> has an uncertainty of about 0.1%. This comes
 from the uncertainty in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> estimate of
-the norm of the PDF (<img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/> above).
+the norm of the PDF (<img class="math" src="_images/math/395e41e12e8d9558224d7c929220126f8615fbb3.svg" alt="N_\mathrm{pdf}"/> above).
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> uses adaptive Monte Carlo integration
 to estimate the values of integrals, as well as the
 uncertainties in those estimates.</p>
@@ -328,7 +325,7 @@ is from samples drawn from the underlying distribution used in the fit:</p>
 </pre></div>
 </div>
 <p>Here <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit.sample" title="lsqfit.vegas_fit.sample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.vegas_fit.sample()</span></code></a> is used to draw approximately 100,000
-samples whose weighted density is proportional to <img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/>.
+samples whose weighted density is proportional to <img class="math" src="_images/math/09fe19ab2bea5d5d6e8b95acf0de19cdb7250f2e.svg" alt="\exp(-\chi^2(p)/2)"/>.
 The samples corresponding to parameter <code class="docutils literal notranslate"><span class="pre">p[d]</span></code> are <code class="docutils literal notranslate"><span class="pre">psamples[d,</span> <span class="pre">i]</span></code> where
 <code class="docutils literal notranslate"><span class="pre">i=0,1,2...100_000(approx)</span></code>; the corresponding weights are <code class="docutils literal notranslate"><span class="pre">wgts[i]</span></code>.
 Samples for the quantities of interest are
@@ -361,11 +358,11 @@ is. The decorator <code class="docutils literal notranslate"><span class="pre">&
 PDF. By default, <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> uses 10 iterations to
 train the integrator to the PDF, and then 10 more,
 without further adaptation, to evaluate the integrals
-for the means <img class="math" src="_images/math/74813f3eac398fc5c50544c6d9967ea528a4f29a.svg" alt="\overline p_i"/> and covariances
-<img class="math" src="_images/math/549c1cc6009d54073ccd57a4efc2515cc63db9f0.svg" alt="\mathrm{cov}(p_i,p_j)"/> of the fit parameters,
-and the PDF’s norm <img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/>  (see
+for the means <img class="math" src="_images/math/59a1f7cb07f30205cdf8315bb9a1b2313735a8f8.svg" alt="\overline p_i"/> and covariances
+<img class="math" src="_images/math/7e75f7747864829d370c0dee1ec83c61e35cbaa8.svg" alt="\mathrm{cov}(p_i,p_j)"/> of the fit parameters,
+and the PDF’s norm <img class="math" src="_images/math/395e41e12e8d9558224d7c929220126f8615fbb3.svg" alt="N_\mathrm{pdf}"/>  (see
 equations above). Printing <code class="docutils literal notranslate"><span class="pre">vfit.training.summary()</span></code>
-shows estimates for the norm <img class="math" src="_images/math/c44f690f9df0901da12c2a67958967af52cf5844.svg" alt="N_\mathrm{pdf}"/>
+shows estimates for the norm <img class="math" src="_images/math/395e41e12e8d9558224d7c929220126f8615fbb3.svg" alt="N_\mathrm{pdf}"/>
 from each of the first 10 iterations (here without
 <code class="docutils literal notranslate"><span class="pre">param=fit.p</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>itn   integral        wgt average     chi2/dof        Q
@@ -453,7 +450,7 @@ two versions of a fit,  one with 5 parameters
 and the other with 22 parameters.</p>
 </section>
 <section id="bootstrap-error-analysis-non-gaussian-output">
-<h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Permalink to this heading">¶</a></h2>
+<h2>Bootstrap Error Analysis; Non-Gaussian Output<a class="headerlink" href="#bootstrap-error-analysis-non-gaussian-output" title="Link to this heading">¶</a></h2>
 <p>The bootstrap provides another way to check on a fit’s
 validity, and also a method for analyzing non-Gaussian outputs.
 The strategy is to:</p>
@@ -576,7 +573,7 @@ Settings:
 <p>The histogram from <a class="reference internal" href="lsqfit.html#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> is also similar to that from the bootstrap.</p>
 </section>
 <section id="testing-fits-with-simulated-data">
-<h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Permalink to this heading">¶</a></h2>
+<h2>Testing Fits with Simulated Data<a class="headerlink" href="#testing-fits-with-simulated-data" title="Link to this heading">¶</a></h2>
 <p>Ideally we would test a fitting protocol by doing fits of data similar to
 our actual fit but where we know the correct values for the fit parameters
 ahead of the fit. Method</p>
@@ -783,7 +780,7 @@ each case; good <code class="docutils literal notranslate"><span class="pre">chi
 deviations, and correlations.</p>
 </section>
 <section id="goodness-of-fit">
-<span id="id1"></span><h2>Goodness of Fit<a class="headerlink" href="#goodness-of-fit" title="Permalink to this heading">¶</a></h2>
+<span id="id1"></span><h2>Goodness of Fit<a class="headerlink" href="#goodness-of-fit" title="Link to this heading">¶</a></h2>
 <p>The quality of a fit is often judged by the value of
 <code class="docutils literal notranslate"><span class="pre">chi**2/N</span></code>, where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the
 number of degrees of freedom.
@@ -907,7 +904,7 @@ if adding noise makes <code class="docutils literal notranslate"><span class="pr
 or changes the best-fit values of the parameters significantly.</p>
 </section>
 <section id="fit-residuals-and-q-q-plots">
-<span id="fit-residuals"></span><h2>Fit Residuals and Q-Q Plots<a class="headerlink" href="#fit-residuals-and-q-q-plots" title="Permalink to this heading">¶</a></h2>
+<span id="fit-residuals"></span><h2>Fit Residuals and Q-Q Plots<a class="headerlink" href="#fit-residuals-and-q-q-plots" title="Link to this heading">¶</a></h2>
 <p>It can be useful to examine the normalized residuals from a fit (in array
 <code class="docutils literal notranslate"><span class="pre">fit.residuals</span></code>). These are the differences between
 the data and the corresponding values from the fit function using the best-fit
@@ -1009,7 +1006,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -1017,7 +1014,7 @@ come from a lattice QCD analysis with 383 residuals:</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
@@ -1038,13 +1035,13 @@ come from a lattice QCD analysis with 383 residuals:</p>
         <li class="right" >
           <a href="overview.html" title="Overview and Tutorial"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Non-Gaussian Behavior; Testing Fits</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2009-2023, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    &#169; Copyright 2009-2023, G. P. Lepage.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     </div>
   </body>
 </html>

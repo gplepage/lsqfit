@@ -1,19 +1,16 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.2.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.2.4 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4848ba22" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css?v=310c80ee" />
+    <script src="_static/documentation_options.js?v=f063417a"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="GSL Routines" href="gsl.html" />
@@ -41,7 +38,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>  
@@ -52,9 +49,9 @@
           <div class="body" role="main">
             
   <section id="lsqfit-nonlinear-least-squares-fitting">
-<h1><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> - Nonlinear Least Squares Fitting<a class="headerlink" href="#lsqfit-nonlinear-least-squares-fitting" title="Permalink to this heading">¶</a></h1>
-<span class="target" id="module-lsqfit"></span><section id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h2>
+<h1><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> - Nonlinear Least Squares Fitting<a class="headerlink" href="#lsqfit-nonlinear-least-squares-fitting" title="Link to this heading">¶</a></h1>
+<section id="introduction">
+<span id="module-lsqfit"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
 <p>This package contains tools for nonlinear least-squares curve fitting of
 data. In general a fit has four inputs:</p>
 <blockquote>
@@ -121,10 +118,10 @@ provides conceptual background on the techniques used in this
 module for fits and, especially, error budgets.</p>
 </section>
 <section id="nonlinear-fit-objects">
-<h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Permalink to this heading">¶</a></h2>
+<h2>nonlinear_fit Objects<a class="headerlink" href="#nonlinear-fit-objects" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">nonlinear_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svdcut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gsl_multifit'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">nonlinear_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svdcut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gsl_multifit'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit" title="Link to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fit.</p>
 <p><a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> fits a (nonlinear) function <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p)</span></code>
 to data <code class="docutils literal notranslate"><span class="pre">y</span></code> by varying parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>, and stores the results: for
@@ -290,7 +287,7 @@ parameters; see the documentation for each.</p></li>
 attributes:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.chi2">
-<span class="sig-name descname"><span class="pre">chi2</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">chi2</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.chi2" title="Link to this definition">¶</a></dt>
 <dd><p>The minimum <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> for the fit.
 <code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> is usually of order one in good fits.
 Values much less than one suggest that actual fluctuations in
@@ -305,7 +302,7 @@ by the standard deviations (or covariances) used in the fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.cov">
-<span class="sig-name descname"><span class="pre">cov</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cov</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.cov" title="Link to this definition">¶</a></dt>
 <dd><p>Covariance matrix of the best-fit parameters from
 the fit.</p>
 <dl class="field-list simple">
@@ -317,7 +314,7 @@ the fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.dof">
-<span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.dof" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.dof" title="Link to this definition">¶</a></dt>
 <dd><p>Number of degrees of freedom in the fit, which equals
 the number of pieces of data being fit when priors are specified
 for the fit parameters. Without priors, it is the number of pieces
@@ -331,7 +328,7 @@ of data minus the number of fit parameters.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.error">
-<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.error" title="Link to this definition">¶</a></dt>
 <dd><p>Error message generated by the underlying fitter when
 an error occurs. <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise.</p>
 <dl class="field-list simple">
@@ -343,14 +340,14 @@ an error occurs. <code class="docutils literal notranslate"><span class="pre">No
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.fitter_results">
-<span class="sig-name descname"><span class="pre">fitter_results</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.fitter_results" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fitter_results</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.fitter_results" title="Link to this definition">¶</a></dt>
 <dd><p>Results returned by the underlying fitter. Refer to
 the appropriate fitter’s documentation for details.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.logGBF">
-<span class="sig-name descname"><span class="pre">logGBF</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logGBF</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.logGBF" title="Link to this definition">¶</a></dt>
 <dd><p>The logarithm of the probability (density)
 of obtaining the fit data by randomly sampling the parameter model
 (priors plus fit function) used in the fit — that is, it is
@@ -371,7 +368,7 @@ assumed when computing <code class="docutils literal notranslate"><span class="p
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.p">
-<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.p" title="Link to this definition">¶</a></dt>
 <dd><p>Best-fit parameters from fit. Depending
 upon what was used for the prior (or <code class="docutils literal notranslate"><span class="pre">p0</span></code>), it is either: a
 dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s and/or arrays of
@@ -388,7 +385,7 @@ distribution of the fit parameters.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.pmean">
-<span class="sig-name descname"><span class="pre">pmean</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.pmean" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pmean</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.pmean" title="Link to this definition">¶</a></dt>
 <dd><p>Means of the best-fit parameters
 from fit.</p>
 <dl class="field-list simple">
@@ -400,7 +397,7 @@ from fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.psdev">
-<span class="sig-name descname"><span class="pre">psdev</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.psdev" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">psdev</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.psdev" title="Link to this definition">¶</a></dt>
 <dd><p>Standard deviations of the best-fit
 parameters from fit.</p>
 <dl class="field-list simple">
@@ -412,7 +409,7 @@ parameters from fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.palt">
-<span class="sig-name descname"><span class="pre">palt</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.palt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">palt</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.palt" title="Link to this definition">¶</a></dt>
 <dd><p>Same as <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> except that the errors
 are computed directly from <code class="docutils literal notranslate"><span class="pre">fit.cov</span></code>. This is faster but means
 that no information about correlations with the input data is
@@ -432,7 +429,7 @@ for <code class="docutils literal notranslate"><span class="pre">eps</span></cod
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.p0">
-<span class="sig-name descname"><span class="pre">p0</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.p0" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">p0</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.p0" title="Link to this definition">¶</a></dt>
 <dd><p>The parameter values used to start the fit.
 This will differ from the input <code class="docutils literal notranslate"><span class="pre">p0</span></code> if the latter was
 incomplete.</p>
@@ -445,7 +442,7 @@ incomplete.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.prior">
-<span class="sig-name descname"><span class="pre">prior</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prior</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.prior" title="Link to this definition">¶</a></dt>
 <dd><p>Prior used in the fit. This may
 differ  from the input prior if an SVD cut is used. It is either
 a  dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) or an array
@@ -460,7 +457,7 @@ a  dictionary (<code class="xref py py-class docutils literal notranslate"><span
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.Q">
-<span class="sig-name descname"><span class="pre">Q</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Q</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.Q" title="Link to this definition">¶</a></dt>
 <dd><p>The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> from the fit
 could have been larger, by chance, assuming the best-fit model
 is correct. Good fits have <code class="docutils literal notranslate"><span class="pre">Q</span></code> values larger than 0.1 or so.
@@ -478,7 +475,7 @@ by the standard deviations (or covariances) used in the fit
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.residuals">
-<span class="sig-name descname"><span class="pre">residuals</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">residuals</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.residuals" title="Link to this definition">¶</a></dt>
 <dd><p>An array containing the fit residuals normalized by the
 corresponding standard deviations. The residuals are projected
 onto the eigenvectors of the correlation matrix and so should
@@ -490,7 +487,7 @@ the <code class="docutils literal notranslate"><span class="pre">chi**2</span></
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.stopping_criterion">
-<span class="sig-name descname"><span class="pre">stopping_criterion</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.stopping_criterion" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">stopping_criterion</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.stopping_criterion" title="Link to this definition">¶</a></dt>
 <dd><p>Criterion used to
 stop fit:</p>
 <blockquote>
@@ -509,7 +506,7 @@ stop fit:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.correction">
-<span class="sig-name descname"><span class="pre">correction</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.correction" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">correction</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.correction" title="Link to this definition">¶</a></dt>
 <dd><p>Sum of all corrections, if any, added
 to the fit data and prior when <code class="docutils literal notranslate"><span class="pre">eps&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 <dl class="field-list simple">
@@ -521,7 +518,7 @@ to the fit data and prior when <code class="docutils literal notranslate"><span 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.svdn">
-<span class="sig-name descname"><span class="pre">svdn</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">svdn</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.svdn" title="Link to this definition">¶</a></dt>
 <dd><p>Number of eigenmodes of the correlation matrix
 modified (and/or deleted) when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 <dl class="field-list simple">
@@ -533,7 +530,7 @@ modified (and/or deleted) when <code class="docutils literal notranslate"><span 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.time">
-<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.time" title="Link to this definition">¶</a></dt>
 <dd><p><em>CPU</em> time (in secs) taken by fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -544,7 +541,7 @@ modified (and/or deleted) when <code class="docutils literal notranslate"><span 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.tol">
-<span class="sig-name descname"><span class="pre">tol</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.tol" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">tol</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.tol" title="Link to this definition">¶</a></dt>
 <dd><p>Tolerance used in fit. This differs from the input
 tolerance if the latter was incompletely specified.</p>
 <dl class="field-list simple">
@@ -556,7 +553,7 @@ tolerance if the latter was incompletely specified.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.x" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.x" title="Link to this definition">¶</a></dt>
 <dd><p>The first field in the input <code class="docutils literal notranslate"><span class="pre">data</span></code>. This is sometimes the
 independent variable (as in ‘y vs x’ plot), but may be anything.
 It is set equal to <code class="docutils literal notranslate"><span class="pre">False</span></code> if the <code class="docutils literal notranslate"><span class="pre">x</span></code> field is omitted from
@@ -571,7 +568,7 @@ the input <code class="docutils literal notranslate"><span class="pre">data</spa
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.y">
-<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.y" title="Link to this definition">¶</a></dt>
 <dd><p>Fit data used in the fit. This may differ
 from the input data if an SVD cut is used. It is either a
 dictionary (<code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.BufferDict</span></code>) or an array
@@ -585,7 +582,7 @@ dictionary (<code class="xref py py-class docutils literal notranslate"><span cl
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.nblocks">
-<span class="sig-name descname"><span class="pre">nblocks</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.nblocks" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nblocks</span></span><a class="headerlink" href="#lsqfit.nonlinear_fit.nblocks" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">nblocks[s]</span></code> equals the number of block-diagonal
 sub-matrices of the <code class="docutils literal notranslate"><span class="pre">y</span></code>–<code class="docutils literal notranslate"><span class="pre">prior</span></code> covariance matrix that are
 size <code class="docutils literal notranslate"><span class="pre">s</span></code>-by-<code class="docutils literal notranslate"><span class="pre">s</span></code>. This is sometimes useful for debugging.</p>
@@ -609,7 +606,7 @@ dumping (for later use) and loading parameter values, and checking for roundoff
 errors in the final error  estimates:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.format">
-<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.format" title="Link to this definition">¶</a></dt>
 <dd><p>Formats fit output details into a string for printing.</p>
 <p>The output tabulates the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> per degree of freedom of the fit
 (<code class="docutils literal notranslate"><span class="pre">chi2/dof</span></code>), the number of degrees of freedom, the <code class="docutils literal notranslate"><span class="pre">Q</span></code>  value of
@@ -662,7 +659,7 @@ for <code class="docutils literal notranslate"><span class="pre">p['log(a)']</sp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.dchi2">
-<span class="sig-name descname"><span class="pre">dchi2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.dchi2" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dchi2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.dchi2" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">chi**2(p)</span> <span class="pre">-</span> <span class="pre">fit.chi2</span></code> for fit parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <dl class="simple">
 <dt><strong>Paramters:</strong></dt><dd><dl class="simple">
@@ -679,7 +676,7 @@ value for the best fit.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.pdf">
-<span class="sig-name descname"><span class="pre">pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.pdf" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.pdf" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">exp(-(chi**2(p)</span> <span class="pre">-</span> <span class="pre">fit.chi2)/2)</span></code> for fit parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">fit.pdf(p)</span></code> is proportional to the probability density
 function (PDF) used in the fit: <code class="docutils literal notranslate"><span class="pre">fit.pdf(p)/exp(fit.pdf.lognorm)</span></code>
@@ -813,7 +810,7 @@ value for the best fit.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.simulated_fit_iter">
-<span class="sig-name descname"><span class="pre">simulated_fit_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pexact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_priornoise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simulated_fit_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pexact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_priornoise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_fit_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulation copies of a fit.</p>
 <p>Fit reliability is tested using simulated data which
 replaces the mean values in <code class="docutils literal notranslate"><span class="pre">self.y</span></code> with random numbers
@@ -874,7 +871,7 @@ for different simulated data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.simulated_data_iter">
-<span class="sig-name descname"><span class="pre">simulated_data_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pexact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_priornoise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">simulated_data_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pexact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_priornoise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.simulated_data_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Iterator that returns simulated data based upon a fit’s data.</p>
 <p>Simulated data is generated from a fit’s data <code class="docutils literal notranslate"><span class="pre">fit.y</span></code> by
 replacing the mean values in that data with random numbers
@@ -907,7 +904,7 @@ as fast as):</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n</strong> (<em>int</em><em> or </em><em>None</em>) – Maximum number of iterations (equals
 infinity if <code class="docutils literal notranslate"><span class="pre">None</span></code>).</p></li>
-<li><p><strong>pexact</strong> (<em>None</em><em> or </em><em>dict/array of numbers</em>) – Fit-parameter values for
+<li><p><strong>pexact</strong> (<em>None</em><em> or </em><em>dict/array</em><em> of </em><em>numbers</em>) – Fit-parameter values for
 the underlying distribution used to generate simulated data;
 replaced by <code class="docutils literal notranslate"><span class="pre">self.pmean</span></code> if is <code class="docutils literal notranslate"><span class="pre">None</span></code> (default).</p></li>
 <li><p><strong>add_priornoise</strong> (<em>bool</em>) – Vary prior means if <code class="docutils literal notranslate"><span class="pre">True</span></code>; otherwise
@@ -923,7 +920,7 @@ versions of self.y and self.prior: <code class="docutils literal notranslate"><s
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.bootstrapped_fit_iter">
-<span class="sig-name descname"><span class="pre">bootstrapped_fit_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datalist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">bootstrapped_fit_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datalist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter" title="Link to this definition">¶</a></dt>
 <dd><p>Iterator that returns bootstrap copies of a fit.</p>
 <p>A bootstrap analysis involves three steps: 1) make a large number
 of “bootstrap copies” of the original input data and prior that differ
@@ -938,7 +935,7 @@ from that distribution.</p>
 <p>Bootstrap copies of the data for step 2 are provided in
 <code class="docutils literal notranslate"><span class="pre">datalist</span></code>. If <code class="docutils literal notranslate"><span class="pre">datalist</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, they are generated
 instead from the means and covariance matrix of the fit data
-(assuming gaussian statistics). The maximum number of bootstrap
+(assuming Gaussian statistics). The maximum number of bootstrap
 copies considered is specified by <code class="docutils literal notranslate"><span class="pre">n</span></code> (<code class="docutils literal notranslate"><span class="pre">None</span></code> implies no
 limit).</p>
 <p>Variations in the best-fit parameters (or functions of them)
@@ -982,7 +979,7 @@ containing results from the fit to the next data set in
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.check_roundoff">
-<span class="sig-name descname"><span class="pre">check_roundoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.check_roundoff" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">check_roundoff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.check_roundoff" title="Link to this definition">¶</a></dt>
 <dd><p>Check for roundoff errors in fit.p.</p>
 <p>Compares standard deviations from fit.p and fit.palt to see if they
 agree to within relative tolerance <code class="docutils literal notranslate"><span class="pre">rtol</span></code> and absolute tolerance
@@ -992,7 +989,7 @@ case an SVD cut might be advisable).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.qqplot_residuals">
-<span class="sig-name descname"><span class="pre">qqplot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.qqplot_residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">qqplot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.qqplot_residuals" title="Link to this definition">¶</a></dt>
 <dd><p>QQ plot normalized fit residuals.</p>
 <p>The sum of the squares of the residuals equals <code class="docutils literal notranslate"><span class="pre">self.chi2</span></code>.
 Individual residuals should be distributed in a Gaussian
@@ -1029,7 +1026,7 @@ uses <code class="docutils literal notranslate"><span class="pre">matplotlib.pyp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.plot_residuals">
-<span class="sig-name descname"><span class="pre">plot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.plot_residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.plot_residuals" title="Link to this definition">¶</a></dt>
 <dd><p>Plot normalized fit residuals.</p>
 <p>The sum of the squares of the residuals equals <code class="docutils literal notranslate"><span class="pre">self.chi2</span></code>.
 Individual residuals should be distributed about one, in
@@ -1047,7 +1044,7 @@ uses <code class="docutils literal notranslate"><span class="pre">matplotlib.pyp
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.nonlinear_fit.set">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">defaults</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clear</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">defaults</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.nonlinear_fit.set" title="Link to this definition">¶</a></dt>
 <dd><p>Set default parameters for <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <p>Use to set default values for parameters: <code class="docutils literal notranslate"><span class="pre">eps</span></code>, <code class="docutils literal notranslate"><span class="pre">svdcut</span></code>,
 <code class="docutils literal notranslate"><span class="pre">debug</span></code>, <code class="docutils literal notranslate"><span class="pre">tol</span></code>, <code class="docutils literal notranslate"><span class="pre">maxit</span></code>, and <code class="docutils literal notranslate"><span class="pre">fitter</span></code>. Can also set
@@ -1088,10 +1085,10 @@ is the dictionary containint the old defaults.</p>
 
 </section>
 <section id="vegas-fit-objects">
-<h2>vegas_fit Objects<a class="headerlink" href="#vegas-fit-objects" title="Permalink to this heading">¶</a></h2>
+<h2>vegas_fit Objects<a class="headerlink" href="#vegas-fit-objects" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">vegas_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svdcut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">vegasargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">vegas_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fcn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">svdcut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">vegasargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit" title="Link to this definition">¶</a></dt>
 <dd><p>Least-squares fit using Bayesian integrals.</p>
 <p><a class="reference internal" href="#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> fits a (nonlinear) function
 <code class="docutils literal notranslate"><span class="pre">f(x,p)</span></code> (or <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>) to data <code class="docutils literal notranslate"><span class="pre">y</span></code> using Bayesian
@@ -1104,20 +1101,20 @@ integrals over fit parameters <code class="docutils literal notranslate"><span c
 <p>The fitter calculates the means and (co)variances of
 the fit parameters (<code class="docutils literal notranslate"><span class="pre">vfit.p</span></code>) assuming that the parameters
 are described by a probability density function (PDF)
-proportional to <img class="math" src="_images/math/875ffbd62cdba50ed96a167c0799409c49b8c0c2.svg" alt="\exp(-\chi^2(p))"/> where</p>
+proportional to <img class="math" src="_images/math/69cc603ec6d915a139096db67caecc0808961d22.svg" alt="\exp(-\chi^2(p))"/> where</p>
 <div class="math">
-<p><img src="_images/math/01b917987edf93a51fe1b16a27836f5524eb2dc0.svg" alt="\chi^2(p) = \Delta y \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
+<p><img src="_images/math/61c73c6514cbb3d8f9b93ee1034e06fb9356f9fd.svg" alt="\chi^2(p) = \Delta y \cdot\mathrm{cov}^{-1}_y \cdot \Delta y
 \: + \:
 \Delta p \cdot\mathrm{cov}^{-1}_\mathrm{prior}\cdot\Delta p"/></p>
-</div><p>and <img class="math" src="_images/math/0f5c227cbc34ace77bcd5b3ae38a04d935979994.svg" alt="\Delta y_i \equiv \overline y_i - f(x_i,p)"/>
-and <img class="math" src="_images/math/f5c5c1fc98cab35665cd5802c7dbb30a1cff0e14.svg" alt="\Delta p_i\equiv \overline p_i - p_i"/>. This involves a
+</div><p>and <img class="math" src="_images/math/88a08bcacdb9a53852b04a5fdf6b79ab2367986c.svg" alt="\Delta y_i \equiv \overline y_i - f(x_i,p)"/>
+and <img class="math" src="_images/math/30b9c2e1b9533fb2697ee4944b9101236f5aa45e.svg" alt="\Delta p_i\equiv \overline p_i - p_i"/>. This involves a
 multi-dimensional integration over the parameter space using
 <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> module
 (which must be installed separately). <code class="xref py py-mod docutils literal notranslate"><span class="pre">vegas</span></code> uses
 adaptive Monte Carlo integration to obtain estimates for the
 integrals; see its documentation for more information.</p>
 <p>When the PDF is sufficiently peaked around its maximum,
-<img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> is (usually) well approximated by a quadratic
+<img class="math" src="_images/math/268aebf7e98eefd86b1672e74bcb8b5484820043.svg" alt="\chi^2(p)"/> is (usually) well approximated by a quadratic
 expansion around its minimum, and results obtained from
 <a class="reference internal" href="#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> will agree with those obtained from
 <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> — the latter is the Gaussian
@@ -1291,8 +1288,8 @@ turned off for the second.)</p></li>
 attributes:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.chi2">
-<span class="sig-name descname"><span class="pre">chi2</span></span><a class="headerlink" href="#lsqfit.vegas_fit.chi2" title="Permalink to this definition">¶</a></dt>
-<dd><p><img class="math" src="_images/math/ef2b8df3d992dfe1e72a5aa4aa6550c6cbd9b180.svg" alt="\chi^2(p)"/> evaluated at <code class="docutils literal notranslate"><span class="pre">vfit.p</span></code>.
+<span class="sig-name descname"><span class="pre">chi2</span></span><a class="headerlink" href="#lsqfit.vegas_fit.chi2" title="Link to this definition">¶</a></dt>
+<dd><p><img class="math" src="_images/math/268aebf7e98eefd86b1672e74bcb8b5484820043.svg" alt="\chi^2(p)"/> evaluated at <code class="docutils literal notranslate"><span class="pre">vfit.p</span></code>.
 <code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> is usually of order one in good fits.
 Values much less than one suggest that actual fluctuations in
 the input data and/or priors might be smaller than suggested
@@ -1301,7 +1298,7 @@ by the standard deviations (or covariances) used in the fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.dof">
-<span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#lsqfit.vegas_fit.dof" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#lsqfit.vegas_fit.dof" title="Link to this definition">¶</a></dt>
 <dd><p>Number of degrees of freedom in the fit, which equals
 the number of pieces of data being fit when priors are specified
 for the fit parameters. Without priors, it is the number of pieces
@@ -1310,14 +1307,14 @@ of data minus the number of fit parameters.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.integrator">
-<span class="sig-name descname"><span class="pre">integrator</span></span><a class="headerlink" href="#lsqfit.vegas_fit.integrator" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">integrator</span></span><a class="headerlink" href="#lsqfit.vegas_fit.integrator" title="Link to this definition">¶</a></dt>
 <dd><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code> used to do the
 integrals.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.logBF">
-<span class="sig-name descname"><span class="pre">logBF</span></span><a class="headerlink" href="#lsqfit.vegas_fit.logBF" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">logBF</span></span><a class="headerlink" href="#lsqfit.vegas_fit.logBF" title="Link to this definition">¶</a></dt>
 <dd><p>The logarithm of the probability (density)
 of obtaining the fit data by randomly sampling the parameter model
 (priors plus fit function) used in the fit — that is, it is
@@ -1333,7 +1330,7 @@ are not very significant.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.p">
-<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#lsqfit.vegas_fit.p" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">p</span></span><a class="headerlink" href="#lsqfit.vegas_fit.p" title="Link to this definition">¶</a></dt>
 <dd><p>Best-fit parameters from fit in the same format as the
 prior (array or dictionary containing <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s). The
 means and uncertainties (standard deviations/covariances)
@@ -1350,27 +1347,27 @@ about the integrals. See the documentation for
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.pmean">
-<span class="sig-name descname"><span class="pre">pmean</span></span><a class="headerlink" href="#lsqfit.vegas_fit.pmean" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pmean</span></span><a class="headerlink" href="#lsqfit.vegas_fit.pmean" title="Link to this definition">¶</a></dt>
 <dd><p>An array or dictionary containing the means of the
 best-fit parameters from fit.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.psdev">
-<span class="sig-name descname"><span class="pre">psdev</span></span><a class="headerlink" href="#lsqfit.vegas_fit.psdev" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">psdev</span></span><a class="headerlink" href="#lsqfit.vegas_fit.psdev" title="Link to this definition">¶</a></dt>
 <dd><p>Standard deviations of the best-fit
 parameters from fit.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.palt">
-<span class="sig-name descname"><span class="pre">palt</span></span><a class="headerlink" href="#lsqfit.vegas_fit.palt" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">palt</span></span><a class="headerlink" href="#lsqfit.vegas_fit.palt" title="Link to this definition">¶</a></dt>
 <dd><p>Same as <code class="docutils literal notranslate"><span class="pre">vfit.p</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.prior">
-<span class="sig-name descname"><span class="pre">prior</span></span><a class="headerlink" href="#lsqfit.vegas_fit.prior" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">prior</span></span><a class="headerlink" href="#lsqfit.vegas_fit.prior" title="Link to this definition">¶</a></dt>
 <dd><p>Prior used in the fit. This may differ from the
 input prior if an SVD cut is set (it is the prior
 after the SVD cut). It is either a  dictionary
@@ -1381,7 +1378,7 @@ Equals <code class="docutils literal notranslate"><span class="pre">None</span><
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.Q">
-<span class="sig-name descname"><span class="pre">Q</span></span><a class="headerlink" href="#lsqfit.vegas_fit.Q" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Q</span></span><a class="headerlink" href="#lsqfit.vegas_fit.Q" title="Link to this definition">¶</a></dt>
 <dd><p>The probability that the <code class="docutils literal notranslate"><span class="pre">chi**2</span></code> from the fit
 could have been larger, by chance, assuming the best-fit model
 is correct. Good fits have <code class="docutils literal notranslate"><span class="pre">Q</span></code> values larger than 0.1 or so.
@@ -1394,7 +1391,7 @@ by the standard deviations (or covariances) used in the fit
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.residuals">
-<span class="sig-name descname"><span class="pre">residuals</span></span><a class="headerlink" href="#lsqfit.vegas_fit.residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">residuals</span></span><a class="headerlink" href="#lsqfit.vegas_fit.residuals" title="Link to this definition">¶</a></dt>
 <dd><p>An array containing the fit residuals normalized by the
 corresponding standard deviations. The residuals are projected
 onto the eigenvectors of the correlation matrix and so should
@@ -1406,7 +1403,7 @@ They are related to the the <code class="docutils literal notranslate"><span cla
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.training">
-<span class="sig-name descname"><span class="pre">training</span></span><a class="headerlink" href="#lsqfit.vegas_fit.training" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">training</span></span><a class="headerlink" href="#lsqfit.vegas_fit.training" title="Link to this definition">¶</a></dt>
 <dd><p>Results returned by the <code class="xref py py-class docutils literal notranslate"><span class="pre">vegas.PDFIntegrator</span></code>
 after evaluating the integrals used to train the integrator
 to the PDF. These results are not included in the final
@@ -1415,27 +1412,27 @@ averages.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.correction">
-<span class="sig-name descname"><span class="pre">correction</span></span><a class="headerlink" href="#lsqfit.vegas_fit.correction" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">correction</span></span><a class="headerlink" href="#lsqfit.vegas_fit.correction" title="Link to this definition">¶</a></dt>
 <dd><p>Sum of all corrections, if any, added
 to the fit data and prior when <code class="docutils literal notranslate"><span class="pre">eps&gt;0</span></code> or <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.svdn">
-<span class="sig-name descname"><span class="pre">svdn</span></span><a class="headerlink" href="#lsqfit.vegas_fit.svdn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">svdn</span></span><a class="headerlink" href="#lsqfit.vegas_fit.svdn" title="Link to this definition">¶</a></dt>
 <dd><p>Number of eigenmodes of the correlation matrix
 modified (and/or deleted) when <code class="docutils literal notranslate"><span class="pre">svdcut&gt;0</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.time">
-<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#lsqfit.vegas_fit.time" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#lsqfit.vegas_fit.time" title="Link to this definition">¶</a></dt>
 <dd><p>CPU time (in secs) taken by fit.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.vegas_fit.x" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.vegas_fit.x" title="Link to this definition">¶</a></dt>
 <dd><p>The first field in the input <code class="docutils literal notranslate"><span class="pre">data</span></code>. This is sometimes the
 independent variable (as in ‘y vs x’ plot), but may be anything.
 It is set equal to <code class="docutils literal notranslate"><span class="pre">False</span></code> if the <code class="docutils literal notranslate"><span class="pre">x</span></code> field is omitted from
@@ -1445,7 +1442,7 @@ the input <code class="docutils literal notranslate"><span class="pre">data</spa
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.y">
-<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#lsqfit.vegas_fit.y" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#lsqfit.vegas_fit.y" title="Link to this definition">¶</a></dt>
 <dd><p>Fit data used in the fit, with <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code> for each data point.
 This may differ rom the input data if an SVD cut is used
 (it is <code class="docutils literal notranslate"><span class="pre">y</span></code> after the SVD cut). It is either a dictionary
@@ -1455,7 +1452,7 @@ depending upon the input.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.nblocks">
-<span class="sig-name descname"><span class="pre">nblocks</span></span><a class="headerlink" href="#lsqfit.vegas_fit.nblocks" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nblocks</span></span><a class="headerlink" href="#lsqfit.vegas_fit.nblocks" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">nblocks[s]</span></code> equals the number of block-diagonal
 sub-matrices of the <code class="docutils literal notranslate"><span class="pre">y</span></code>–<code class="docutils literal notranslate"><span class="pre">prior</span></code> covariance matrix that are
 size <code class="docutils literal notranslate"><span class="pre">s</span></code>-by-<code class="docutils literal notranslate"><span class="pre">s</span></code>. This is sometimes useful for debugging.</p>
@@ -1465,7 +1462,7 @@ size <code class="docutils literal notranslate"><span class="pre">s</span></code
 about the fit, evaluating  <code class="docutils literal notranslate"><span class="pre">chi**2</span></code>:</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.stats">
-<span class="sig-name descname"><span class="pre">stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.stats" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">stats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">histograms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.stats" title="Link to this definition">¶</a></dt>
 <dd><p>Means and standard deviations (and covariances) of function <code class="docutils literal notranslate"><span class="pre">f(p)</span></code>.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">f</span></code> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code> or omitted, the means and
 standard deviations (and covariances) of the fit parameters
@@ -1476,7 +1473,7 @@ further options.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbatch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rbatch'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.sample" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbatch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rbatch'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.sample" title="Link to this definition">¶</a></dt>
 <dd><p>Generate random samples from PDF used in fit.</p>
 <p>See documentation for <code class="xref py py-meth docutils literal notranslate"><span class="pre">vegas.PDFIntegrator.sample()</span></code> for more
 information.</p>
@@ -1527,7 +1524,7 @@ shape plus an extra sample index which is either on the right
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.format">
-<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.format" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maxline</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pstyle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.format" title="Link to this definition">¶</a></dt>
 <dd><p>Format the output from a <a class="reference internal" href="#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a>.</p>
 <p>See the documentation for <a class="reference internal" href="#lsqfit.nonlinear_fit.format" title="lsqfit.nonlinear_fit.format"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.format()</span></code></a>
 for more information.</p>
@@ -1535,19 +1532,19 @@ for more information.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.pdf">
-<span class="sig-name descname"><span class="pre">pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.pdf" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.pdf" title="Link to this definition">¶</a></dt>
 <dd><p>Probability density function for fit parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <p>When the <a class="reference internal" href="#lsqfit.vegas_fit" title="lsqfit.vegas_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.vegas_fit</span></code></a> object is derived from a <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>
 object (<code class="docutils literal notranslate"><span class="pre">vfit</span> <span class="pre">=</span> <span class="pre">vegas_fit(fit=fit)</span></code>), the PDF is
-<img class="math" src="_images/math/cdd218a124be8c9399c261d5d79cf02faa6c5508.svg" alt="\exp(-(\chi^2(p) - \chi^2_\mathrm{min})/2)"/>. Otherwise
-it is just <img class="math" src="_images/math/33c992e5f159e1d795a9db49905cbecfc1d7fe00.svg" alt="\exp(-\chi^2(p)/2)"/>. In either case it
+<img class="math" src="_images/math/2c3e4da3177b26e221453a0aa2dcb1e1425d50ea.svg" alt="\exp(-(\chi^2(p) - \chi^2_\mathrm{min})/2)"/>. Otherwise
+it is just <img class="math" src="_images/math/09fe19ab2bea5d5d6e8b95acf0de19cdb7250f2e.svg" alt="\exp(-\chi^2(p)/2)"/>. In either case it
 is <em>not</em> normalized. Divide by <code class="docutils literal notranslate"><span class="pre">vfit.pdfnorm</span></code> to normalize
 it.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.qqplot_residuals">
-<span class="sig-name descname"><span class="pre">qqplot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.qqplot_residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">qqplot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.qqplot_residuals" title="Link to this definition">¶</a></dt>
 <dd><p>Create QQ plot of the fit residuals.</p>
 <p>See the documentation for <a class="reference internal" href="#lsqfit.nonlinear_fit.qqplot_residuals" title="lsqfit.nonlinear_fit.qqplot_residuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.qqplot_residuals()</span></code></a>
 for more information.</p>
@@ -1555,7 +1552,7 @@ for more information.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.vegas_fit.plot_residuals">
-<span class="sig-name descname"><span class="pre">plot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.plot_residuals" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">plot_residuals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.vegas_fit.plot_residuals" title="Link to this definition">¶</a></dt>
 <dd><p>Create QQ plot of the fit residuals.</p>
 <p>See the documentation for <a class="reference internal" href="#lsqfit.nonlinear_fit.plot_residuals" title="lsqfit.nonlinear_fit.plot_residuals"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit.plot_residuals()</span></code></a>
 for more information.</p>
@@ -1565,10 +1562,10 @@ for more information.</p>
 
 </section>
 <section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading">¶</a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="lsqfit.empbayes_fit">
-<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">lsqfit.nonlinear_fit</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">lsqfit.nonlinear_fit</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.empbayes_fit" title="Link to this definition">¶</a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
 <code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">fit.logGBF</span></code>.</p>
 <p>This function maximizes the logarithm of the Bayes Factor from
@@ -1676,7 +1673,7 @@ optimal value for parameter <code class="docutils literal notranslate"><span cla
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lsqfit.wavg">
-<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">wavg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datalist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">wavg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datalist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.wavg" title="Link to this definition">¶</a></dt>
 <dd><p>Weighted average of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s or arrays/dicts of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s.</p>
 <p>The weighted average of <code class="docutils literal notranslate"><span class="pre">N</span></code> <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">xavg</span> <span class="o">=</span> <span class="n">wavg</span><span class="p">([</span><span class="n">g1</span><span class="p">,</span> <span class="n">g2</span> <span class="o">...</span> <span class="n">gN</span><span class="p">])</span>
@@ -1756,7 +1753,7 @@ called the <em>p-value</em>.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lsqfit.lsqfit.gammaQ">
-<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">gammaQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.lsqfit.gammaQ" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">gammaQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.lsqfit.gammaQ" title="Link to this definition">¶</a></dt>
 <dd><p>Return the normalized incomplete gamma function <code class="docutils literal notranslate"><span class="pre">Q(a,x)</span> <span class="pre">=</span> <span class="pre">1-P(a,x)</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Q(a,</span> <span class="pre">x)</span> <span class="pre">=</span> <span class="pre">1/Gamma(a)</span> <span class="pre">*</span> <span class="pre">\int_x^\infty</span> <span class="pre">dt</span> <span class="pre">exp(-t)</span> <span class="pre">t</span> <span class="pre">**</span> <span class="pre">(a-1)</span> <span class="pre">=</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">P(a,</span> <span class="pre">x)</span></code></p>
 <p>Note that <code class="docutils literal notranslate"><span class="pre">gammaQ(ndof/2.,</span> <span class="pre">chi2/2.)</span></code> is the probabilty that one could
@@ -1766,7 +1763,7 @@ of freedom even if the model used to construct <code class="docutils literal not
 
 </section>
 <section id="lsqfit-multifitter-classes">
-<h2><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> Classes<a class="headerlink" href="#lsqfit-multifitter-classes" title="Permalink to this heading">¶</a></h2>
+<h2><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> Classes<a class="headerlink" href="#lsqfit-multifitter-classes" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> provides a framework for building component
 systems to fit multiple pieces of data using a set of custom-designed models,
 derived  from <a class="reference internal" href="#lsqfit.MultiFitterModel" title="lsqfit.MultiFitterModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitterModel</span></code></a>. Each model  encapsulates:
@@ -1991,7 +1988,7 @@ organizing the chain of fits; these are discussed in the
 <a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit" title="lsqfit.MultiFitter.chained_lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a> documentation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">MultiFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mopt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">MultiFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mopt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fitterargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter" title="Link to this definition">¶</a></dt>
 <dd><p>Nonlinear least-squares fitter for a collection of models.</p>
 <p>Fits collections of data that are modeled by collections of models.
 Fits can be simultaneous (<a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lsqfit.MultiFitter.lsqfit()</span></code></a>) or chained
@@ -2041,7 +2038,7 @@ separate arguments (e.g., <code class="docutils literal notranslate"><span class
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.lsqfit">
-<span class="sig-name descname"><span class="pre">lsqfit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chained</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">lsqfit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chained</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.lsqfit" title="Link to this definition">¶</a></dt>
 <dd><p>Compute least-squares fit of models to data.</p>
 <p><a class="reference internal" href="#lsqfit.MultiFitter.lsqfit" title="lsqfit.MultiFitter.lsqfit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a> fits all of the models together, in
 a single fit. It returns the <a class="reference internal" href="#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a> object from the fit.</p>
@@ -2090,7 +2087,7 @@ fitter.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.chained_lsqfit">
-<span class="sig-name descname"><span class="pre">chained_lsqfit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">chained_lsqfit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.chained_lsqfit" title="Link to this definition">¶</a></dt>
 <dd><p>Compute chained least-squares fit of models to data. Equivalent to:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">lsqfit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pdata</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">chained</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kargs</span><span class="p">)</span><span class="o">.</span>
 </pre></div>
@@ -2195,7 +2192,7 @@ the <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.empbayes_fit">
-<span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.empbayes_fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">empbayes_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitargs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">minargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.empbayes_fit" title="Link to this definition">¶</a></dt>
 <dd><p>Return fit and <code class="docutils literal notranslate"><span class="pre">z</span></code> corresponding to the fit
 <code class="docutils literal notranslate"><span class="pre">self.lsqfit(**fitargs(z))</span></code> that maximizes <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <p>This function maximizes the logarithm of the Bayes Factor from
@@ -2242,7 +2239,7 @@ optimal value for parameter <code class="docutils literal notranslate"><span cla
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.set">
-<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.set" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.set" title="Link to this definition">¶</a></dt>
 <dd><p>Reset default keyword parameters.</p>
 <p>Assigns new default values from dictionary <code class="docutils literal notranslate"><span class="pre">kargs</span></code> to the fitter’s
 keyword parameters. Keywords for the underlying <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> fitters
@@ -2257,7 +2254,7 @@ values.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.process_data">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_data" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_data" title="Link to this definition">¶</a></dt>
 <dd><p>Convert <code class="docutils literal notranslate"><span class="pre">data</span></code> to processed data using <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 <p>Data from dictionary <code class="docutils literal notranslate"><span class="pre">data</span></code> is processed by each model
 in list <code class="docutils literal notranslate"><span class="pre">models</span></code>, and the results collected into a new
@@ -2267,7 +2264,7 @@ and <code class="xref py py-meth docutils literal notranslate"><span class="pre"
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.process_dataset">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_dataset" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">models</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.process_dataset" title="Link to this definition">¶</a></dt>
 <dd><p>Convert <code class="docutils literal notranslate"><span class="pre">dataset</span></code> to processed data using <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> (or similar dictionary) object
 <code class="docutils literal notranslate"><span class="pre">dataset</span></code> is processed by each model in list <code class="docutils literal notranslate"><span class="pre">models</span></code>,
@@ -2281,7 +2278,7 @@ averaging the data.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.show_plots">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fitdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ratio'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">show_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fitdata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fitval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ratio'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.show_plots" title="Link to this definition">¶</a></dt>
 <dd><p>Show plots comparing <code class="docutils literal notranslate"><span class="pre">fitdata[k],fitval[k]</span></code> for each key <code class="docutils literal notranslate"><span class="pre">k</span></code> in <code class="docutils literal notranslate"><span class="pre">fitval</span></code>.</p>
 <p>Assumes <code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code> is installed (to make the plots). Plots
 are shown for one correlator at a time. Press key <code class="docutils literal notranslate"><span class="pre">n</span></code> to see the
@@ -2311,7 +2308,7 @@ desired: e.g., <code class="docutils literal notranslate"><span class="pre">fmt=
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitter.flatten_models">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.flatten_models" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">flatten_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">models</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitter.flatten_models" title="Link to this definition">¶</a></dt>
 <dd><p>Create 1d-array containing all disctinct models from <code class="docutils literal notranslate"><span class="pre">models</span></code>.</p>
 </dd></dl>
 
@@ -2324,14 +2321,14 @@ class. They need to be overwritten by the derived class (except
 for <code class="docutils literal notranslate"><span class="pre">builddataset</span></code> which is optional).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">MultiFitterModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">MultiFitterModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ncg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel" title="Link to this definition">¶</a></dt>
 <dd><p>Base class for MultiFitter models.</p>
 <p>Derived classes must define methods <code class="docutils literal notranslate"><span class="pre">fitfcn</span></code>, <code class="docutils literal notranslate"><span class="pre">buildprior</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">builddata</span></code>, all of which are described below. In addition they
 have attributes:</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.datatag">
-<span class="sig-name descname"><span class="pre">datatag</span></span><a class="headerlink" href="#lsqfit.MultiFitterModel.datatag" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">datatag</span></span><a class="headerlink" href="#lsqfit.MultiFitterModel.datatag" title="Link to this definition">¶</a></dt>
 <dd><p><a class="reference internal" href="#lsqfit.MultiFitter" title="lsqfit.MultiFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code></a> builds fit data for the correlator by
 extracting the data labelled by <code class="docutils literal notranslate"><span class="pre">datatag</span></code> (eg, a string) from an
 input data set (eg, a dictionary). This label is stored in the
@@ -2342,7 +2339,7 @@ numbers.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.ncg">
-<span class="sig-name descname"><span class="pre">ncg</span></span><a class="headerlink" href="#lsqfit.MultiFitterModel.ncg" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ncg</span></span><a class="headerlink" href="#lsqfit.MultiFitterModel.ncg" title="Link to this definition">¶</a></dt>
 <dd><p>When <code class="docutils literal notranslate"><span class="pre">ncg&gt;1</span></code>, fit data and functions are coarse-grained by
 breaking them up into bins of of <code class="docutils literal notranslate"><span class="pre">ncg</span></code> values and replacing
 each bin by its average. This can increase the fitting speed,
@@ -2360,7 +2357,7 @@ if the data elements within a bin are highly correlated.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.buildprior">
-<span class="sig-name descname"><span class="pre">buildprior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mopt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.buildprior" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">buildprior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prior</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mopt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.buildprior" title="Link to this definition">¶</a></dt>
 <dd><p>Extract fit prior from <code class="docutils literal notranslate"><span class="pre">prior</span></code>.</p>
 <p>Returns a dictionary containing the  part of dictionary
 <code class="docutils literal notranslate"><span class="pre">prior</span></code> that is relevant to this model’s fit. The code could
@@ -2404,7 +2401,7 @@ in <code class="docutils literal notranslate"><span class="pre">buildprior</span
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.builddata">
-<span class="sig-name descname"><span class="pre">builddata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddata" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">builddata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddata" title="Link to this definition">¶</a></dt>
 <dd><p>Extract fit data corresponding to this model from data set <code class="docutils literal notranslate"><span class="pre">data</span></code>.</p>
 <p>The fit data is returned in a 1-dimensional array;
 the fitfcn must return arrays of the same length.</p>
@@ -2419,7 +2416,7 @@ of the models.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.fitfcn">
-<span class="sig-name descname"><span class="pre">fitfcn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.fitfcn" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fitfcn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.fitfcn" title="Link to this definition">¶</a></dt>
 <dd><p>Compute fit function fit for parameters <code class="docutils literal notranslate"><span class="pre">p</span></code>.</p>
 <p>Results are returned in a 1-dimensional array the
 same length as (and corresponding to) the fit data
@@ -2435,7 +2432,7 @@ with or without the marginalized parameters.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lsqfit.MultiFitterModel.builddataset">
-<span class="sig-name descname"><span class="pre">builddataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddataset" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">builddataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.MultiFitterModel.builddataset" title="Link to this definition">¶</a></dt>
 <dd><p>Extract fit dataset from <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.dataset.Dataset</span></code> <code class="docutils literal notranslate"><span class="pre">dataset</span></code>.</p>
 <p>The code</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gvar</span> <span class="k">as</span> <span class="nn">gv</span>
@@ -2466,7 +2463,7 @@ the models.</p>
 
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar</span></code> modules were originally created to facilitate statistical analyses of data generated by lattice QCD simulations. Background information about the techniques used in these modules can be found in several articles (on lattice QCD applications):</p>
 <blockquote>
 <div><ul class="simple">
@@ -2478,7 +2475,7 @@ the models.</p>
 </div></blockquote>
 </section>
 <section id="requirements">
-<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">¶</a></h2>
+<h2>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> relies heavily on the <code class="xref py py-mod docutils literal notranslate"><span class="pre">gvar</span></code>, and <code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code> modules.
 Also the fitting and minimization routines are from
 the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> module.</p>
@@ -2497,10 +2494,103 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
     <ul>
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a><ul>
 <li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a></li>
-<li><a class="reference internal" href="#vegas-fit-objects">vegas_fit Objects</a></li>
-<li><a class="reference internal" href="#functions">Functions</a></li>
-<li><a class="reference internal" href="#lsqfit-multifitter-classes"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a></li>
+<li><a class="reference internal" href="#nonlinear-fit-objects">nonlinear_fit Objects</a><ul>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.chi2"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.chi2</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.cov"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.cov</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.dof"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.dof</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.error"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.error</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.fitter_results"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.fitter_results</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.logGBF"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.logGBF</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.p"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.p</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.pmean"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.pmean</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.psdev"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.psdev</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.palt"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.palt</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.p0"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.p0</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.prior"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.prior</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.Q"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.Q</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.residuals"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.residuals</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.stopping_criterion"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.stopping_criterion</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.correction"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.correction</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.svdn"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.svdn</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.time"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.time</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.tol"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.tol</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.x"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.x</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.y"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.y</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.nblocks"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.nblocks</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.format"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.format()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.dchi2"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.dchi2()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.pdf"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.pdf()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.simulated_fit_iter"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.simulated_fit_iter()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.simulated_data_iter"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.simulated_data_iter()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.bootstrapped_fit_iter"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.bootstrapped_fit_iter()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.check_roundoff"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.check_roundoff()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.qqplot_residuals"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.qqplot_residuals()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.plot_residuals"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.plot_residuals()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.nonlinear_fit.set"><code class="docutils literal notranslate"><span class="pre">nonlinear_fit.set()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#vegas-fit-objects">vegas_fit Objects</a><ul>
+<li><a class="reference internal" href="#lsqfit.vegas_fit"><code class="docutils literal notranslate"><span class="pre">vegas_fit</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.chi2"><code class="docutils literal notranslate"><span class="pre">vegas_fit.chi2</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.dof"><code class="docutils literal notranslate"><span class="pre">vegas_fit.dof</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.integrator"><code class="docutils literal notranslate"><span class="pre">vegas_fit.integrator</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.logBF"><code class="docutils literal notranslate"><span class="pre">vegas_fit.logBF</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.p"><code class="docutils literal notranslate"><span class="pre">vegas_fit.p</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.pmean"><code class="docutils literal notranslate"><span class="pre">vegas_fit.pmean</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.psdev"><code class="docutils literal notranslate"><span class="pre">vegas_fit.psdev</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.palt"><code class="docutils literal notranslate"><span class="pre">vegas_fit.palt</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.prior"><code class="docutils literal notranslate"><span class="pre">vegas_fit.prior</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.Q"><code class="docutils literal notranslate"><span class="pre">vegas_fit.Q</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.residuals"><code class="docutils literal notranslate"><span class="pre">vegas_fit.residuals</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.training"><code class="docutils literal notranslate"><span class="pre">vegas_fit.training</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.correction"><code class="docutils literal notranslate"><span class="pre">vegas_fit.correction</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.svdn"><code class="docutils literal notranslate"><span class="pre">vegas_fit.svdn</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.time"><code class="docutils literal notranslate"><span class="pre">vegas_fit.time</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.x"><code class="docutils literal notranslate"><span class="pre">vegas_fit.x</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.y"><code class="docutils literal notranslate"><span class="pre">vegas_fit.y</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.nblocks"><code class="docutils literal notranslate"><span class="pre">vegas_fit.nblocks</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.stats"><code class="docutils literal notranslate"><span class="pre">vegas_fit.stats()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.sample"><code class="docutils literal notranslate"><span class="pre">vegas_fit.sample()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.format"><code class="docutils literal notranslate"><span class="pre">vegas_fit.format()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.pdf"><code class="docutils literal notranslate"><span class="pre">vegas_fit.pdf()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.qqplot_residuals"><code class="docutils literal notranslate"><span class="pre">vegas_fit.qqplot_residuals()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.vegas_fit.plot_residuals"><code class="docutils literal notranslate"><span class="pre">vegas_fit.plot_residuals()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#lsqfit.empbayes_fit"><code class="docutils literal notranslate"><span class="pre">empbayes_fit()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.wavg"><code class="docutils literal notranslate"><span class="pre">wavg()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.lsqfit.gammaQ"><code class="docutils literal notranslate"><span class="pre">lsqfit.gammaQ()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lsqfit-multifitter-classes"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.MultiFitter</span></code> Classes</a><ul>
+<li><a class="reference internal" href="#lsqfit.MultiFitter"><code class="docutils literal notranslate"><span class="pre">MultiFitter</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.lsqfit"><code class="docutils literal notranslate"><span class="pre">MultiFitter.lsqfit()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.chained_lsqfit"><code class="docutils literal notranslate"><span class="pre">MultiFitter.chained_lsqfit()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.empbayes_fit"><code class="docutils literal notranslate"><span class="pre">MultiFitter.empbayes_fit()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.set"><code class="docutils literal notranslate"><span class="pre">MultiFitter.set()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.process_data"><code class="docutils literal notranslate"><span class="pre">MultiFitter.process_data()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.process_dataset"><code class="docutils literal notranslate"><span class="pre">MultiFitter.process_dataset()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.show_plots"><code class="docutils literal notranslate"><span class="pre">MultiFitter.show_plots()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitter.flatten_models"><code class="docutils literal notranslate"><span class="pre">MultiFitter.flatten_models()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.datatag"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.datatag</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.ncg"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.ncg</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.buildprior"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.buildprior()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.builddata"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.builddata()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.fitfcn"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.fitfcn()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.MultiFitterModel.builddataset"><code class="docutils literal notranslate"><span class="pre">MultiFitterModel.builddataset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#requirements">Requirements</a></li>
 </ul>
@@ -2525,7 +2615,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -2533,7 +2623,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
@@ -2554,13 +2644,13 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2009-2023, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    &#169; Copyright 2009-2023, G. P. Lepage.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     </div>
   </body>
 </html>

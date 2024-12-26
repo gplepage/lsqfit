@@ -1,19 +1,16 @@
-
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>scipy Routines &#8212; lsqfit 13.2.3 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/pyramid.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="_static/doctools.js"></script>
+    <title>scipy Routines &#8212; lsqfit 13.2.4 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4848ba22" />
+    <link rel="stylesheet" type="text/css" href="_static/pyramid.css?v=310c80ee" />
+    <script src="_static/documentation_options.js?v=f063417a"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="GSL Routines" href="gsl.html" />
@@ -37,7 +34,7 @@
         <li class="right" >
           <a href="gsl.html" title="GSL Routines"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a></li> 
       </ul>
     </div>  
@@ -48,16 +45,16 @@
           <div class="body" role="main">
             
   <section id="scipy-routines">
-<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines<a class="headerlink" href="#scipy-routines" title="Permalink to this heading">¶</a></h1>
+<h1><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines<a class="headerlink" href="#scipy-routines" title="Link to this heading">¶</a></h1>
 <section id="fitter">
-<h2>Fitter<a class="headerlink" href="#fitter" title="Permalink to this heading">¶</a></h2>
+<h2>Fitter<a class="headerlink" href="#fitter" title="Link to this heading">¶</a></h2>
 <p><a class="reference internal" href="lsqfit.html#module-lsqfit" title="lsqfit: Nonlinear least squares fitting."><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code></a> uses routines from the open-source <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Python module
 provided it is installed. These routines are used in place of GSL routines
 if the latter are not installed. There is one fitter available for use by
 <a class="reference internal" href="lsqfit.html#lsqfit.nonlinear_fit" title="lsqfit.nonlinear_fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code></a>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">scipy_least_squares</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1e-08,</span> <span class="pre">1e-08,</span> <span class="pre">1e-08)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_least_squares" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">scipy_least_squares</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1e-08,</span> <span class="pre">1e-08,</span> <span class="pre">1e-08)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">extra_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_least_squares" title="Link to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> fitter for nonlinear least-squares multidimensional fits.</p>
 <p><a class="reference internal" href="#lsqfit.scipy_least_squares" title="lsqfit.scipy_least_squares"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_least_squares</span></code></a> is a function-class whose constructor does a
 least-squares fit by minimizing <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> as a function of
@@ -66,7 +63,7 @@ vector <code class="docutils literal notranslate"><span class="pre">x</span></co
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization.</p></li>
+<li><p><strong>x0</strong> (<em>array</em><em> of </em><em>floats</em>) – Starting point for minimization.</p></li>
 <li><p><strong>n</strong> (<em>positive int</em>) – Length of vector returned by the fit function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code>.</p></li>
 <li><p><strong>f</strong> (<em>array-valued function</em>) – <code class="docutils literal notranslate"><span class="pre">sum_i</span> <span class="pre">f_i(x)**2</span></code> is minimized
 by varying parameters <code class="docutils literal notranslate"><span class="pre">x</span></code>. The parameters are a 1-d
@@ -117,7 +114,7 @@ options.</p>
 attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.x" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.x" title="Link to this definition">¶</a></dt>
 <dd><p>Location of the most recently computed (best) fit point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -128,7 +125,7 @@ attributes.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.cov">
-<span class="sig-name descname"><span class="pre">cov</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.cov" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">cov</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.cov" title="Link to this definition">¶</a></dt>
 <dd><p>Covariance matrix at the minimum point.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -139,7 +136,7 @@ attributes.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.description">
-<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.description" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.description" title="Link to this definition">¶</a></dt>
 <dd><p>Short description of internal fitter settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -150,7 +147,7 @@ attributes.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.f">
-<span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.f" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.f" title="Link to this definition">¶</a></dt>
 <dd><p>Fit function value <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum in
 the most recent fit.</p>
 <dl class="field-list simple">
@@ -162,7 +159,7 @@ the most recent fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.J">
-<span class="sig-name descname"><span class="pre">J</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.J" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">J</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.J" title="Link to this definition">¶</a></dt>
 <dd><p>Gradient <code class="docutils literal notranslate"><span class="pre">J_ij</span> <span class="pre">=</span> <span class="pre">df_i/dx[j]</span></code> for most recent fit.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -173,7 +170,7 @@ the most recent fit.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.nit">
-<span class="sig-name descname"><span class="pre">nit</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.nit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nit</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.nit" title="Link to this definition">¶</a></dt>
 <dd><p>Number of function evaluations used in last fit to find
 the minimum.</p>
 <dl class="field-list simple">
@@ -185,7 +182,7 @@ the minimum.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.stopping_criterion">
-<span class="sig-name descname"><span class="pre">stopping_criterion</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.stopping_criterion" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">stopping_criterion</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.stopping_criterion" title="Link to this definition">¶</a></dt>
 <dd><p>Criterion used to
 stop fit:</p>
 <blockquote>
@@ -205,7 +202,7 @@ stop fit:</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.error">
-<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.error" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</p>
 <dl class="field-list simple">
@@ -217,7 +214,7 @@ message otherwise.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_least_squares.results">
-<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.results" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#lsqfit.scipy_least_squares.results" title="Link to this definition">¶</a></dt>
 <dd><p>Results returned by <code class="docutils literal notranslate"><span class="pre">scipy.optimize.least_squares</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -230,12 +227,12 @@ message otherwise.</p>
 
 </section>
 <section id="minimizer">
-<h2>Minimizer<a class="headerlink" href="#minimizer" title="Permalink to this heading">¶</a></h2>
+<h2>Minimizer<a class="headerlink" href="#minimizer" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference internal" href="lsqfit.html#lsqfit.empbayes_fit" title="lsqfit.empbayes_fit"><code class="xref py py-func docutils literal notranslate"><span class="pre">lsqfit.empbayes_fit()</span></code></a> uses a minimizer from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code>
 module to minimize <code class="docutils literal notranslate"><span class="pre">logGBF</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lsqfit.scipy_multiminex">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">scipy_multiminex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nmsimplex2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_multiminex" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">scipy_multiminex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'nmsimplex2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analyzer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.scipy_multiminex" title="Link to this definition">¶</a></dt>
 <dd><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> minimizer for multidimensional functions.</p>
 <p><a class="reference internal" href="#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy_multiminex</span></code></a> is a function-class whose constructor minimizes a
 multidimensional function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>. This routine
@@ -246,7 +243,7 @@ function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x0</strong> (<em>array of floats</em>) – Starting point for minimization search.</p></li>
+<li><p><strong>x0</strong> (<em>array</em><em> of </em><em>floats</em>) – Starting point for minimization search.</p></li>
 <li><p><strong>f</strong> – Function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> to be minimized by varying vector <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
 <li><p><strong>tol</strong> (<em>float</em>) – Minimization stops when <code class="docutils literal notranslate"><span class="pre">x</span></code> has converged to with
 tolerance <code class="docutils literal notranslate"><span class="pre">tol</span></code>; default is <code class="docutils literal notranslate"><span class="pre">1e-4</span></code>.</p></li>
@@ -263,7 +260,7 @@ in <code class="xref py py-mod docutils literal notranslate"><span class="pre">s
 <p><a class="reference internal" href="#lsqfit.scipy_multiminex" title="lsqfit.scipy_multiminex"><code class="xref py py-class docutils literal notranslate"><span class="pre">lsqfit.scipy_multiminex</span></code></a> objects have the following attributes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_multiminex.x">
-<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.x" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.x" title="Link to this definition">¶</a></dt>
 <dd><p>Location of the minimum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -274,7 +271,7 @@ in <code class="xref py py-mod docutils literal notranslate"><span class="pre">s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_multiminex.f">
-<span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.f" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">f</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.f" title="Link to this definition">¶</a></dt>
 <dd><p>Value of function <code class="docutils literal notranslate"><span class="pre">f(x)</span></code> at the minimum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -285,7 +282,7 @@ in <code class="xref py py-mod docutils literal notranslate"><span class="pre">s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_multiminex.nit">
-<span class="sig-name descname"><span class="pre">nit</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.nit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nit</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.nit" title="Link to this definition">¶</a></dt>
 <dd><p>Number of iterations required to find the minimum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -296,7 +293,7 @@ in <code class="xref py py-mod docutils literal notranslate"><span class="pre">s
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="lsqfit.scipy_multiminex.error">
-<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.error" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">error</span></span><a class="headerlink" href="#lsqfit.scipy_multiminex.error" title="Link to this definition">¶</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">None</span></code> if fit successful; an error
 message otherwise.</p>
 <dl class="field-list simple">
@@ -322,8 +319,31 @@ message otherwise.</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a><ul>
-<li><a class="reference internal" href="#fitter">Fitter</a></li>
-<li><a class="reference internal" href="#minimizer">Minimizer</a></li>
+<li><a class="reference internal" href="#fitter">Fitter</a><ul>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.x"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.x</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.cov"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.cov</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.description"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.description</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.f"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.f</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.J"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.J</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.nit"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.nit</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.stopping_criterion"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.stopping_criterion</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.error"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.error</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_least_squares.results"><code class="docutils literal notranslate"><span class="pre">scipy_least_squares.results</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#minimizer">Minimizer</a><ul>
+<li><a class="reference internal" href="#lsqfit.scipy_multiminex"><code class="docutils literal notranslate"><span class="pre">scipy_multiminex</span></code></a><ul>
+<li><a class="reference internal" href="#lsqfit.scipy_multiminex.x"><code class="docutils literal notranslate"><span class="pre">scipy_multiminex.x</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_multiminex.f"><code class="docutils literal notranslate"><span class="pre">scipy_multiminex.f</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_multiminex.nit"><code class="docutils literal notranslate"><span class="pre">scipy_multiminex.nit</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.scipy_multiminex.error"><code class="docutils literal notranslate"><span class="pre">scipy_multiminex.error</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -341,7 +361,7 @@ message otherwise.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
+<search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
@@ -349,7 +369,7 @@ message otherwise.</p>
       <input type="submit" value="Go" />
     </form>
     </div>
-</div>
+</search>
 <script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
@@ -367,13 +387,13 @@ message otherwise.</p>
         <li class="right" >
           <a href="gsl.html" title="GSL Routines"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.3 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code> Routines</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2009-2023, G. P. Lepage.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    &#169; Copyright 2009-2023, G. P. Lepage.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
     </div>
   </body>
 </html>
