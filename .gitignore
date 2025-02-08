@@ -41,3 +41,6 @@ src/lsqfit/_gsl.c
 src/lsqfit/_utilities.c
 gsl
 save-dist
+save/
+*.ipynb
+.ipynb_checkpoints/
