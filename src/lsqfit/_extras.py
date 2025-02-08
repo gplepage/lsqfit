@@ -186,7 +186,7 @@ def empbayes_fit(z0, fitargs, p0=None, fitter=lsqfit.nonlinear_fit, **minargs):
 
 
 class GVarWAvg(gvar.GVar):
-    """ Result from weighted average :func:`lsqfit.wavg`.
+    r""" Result from weighted average :func:`lsqfit.wavg`.
 
     :class:`GVarWAvg` objects are |GVar|\s with extra
     attributes:
@@ -240,7 +240,7 @@ class GVarWAvg(gvar.GVar):
         self.svdcorrection = self.correction # legacy name
 
 class ArrayWAvg(numpy.ndarray):
-    """ Result from weighted average :func:`lsqfit.wavg`.
+    r""" Result from weighted average :func:`lsqfit.wavg`.
 
     :class:`ArrayWAvg` objects are :mod:`numpy` arrays (of |GVar|\s) with extra
     attributes:
@@ -302,7 +302,7 @@ class ArrayWAvg(numpy.ndarray):
     #     self.fit = obj.fit
 
 class BufferDictWAvg(gvar.BufferDict):
-    """ Result from weighted average :func:`lsqfit.wavg`.
+    r""" Result from weighted average :func:`lsqfit.wavg`.
 
     :class:`BufferDictWAvg` objects are :class:`gvar.BufferDict`\s (of |GVar|\s)
     with extra attributes:
@@ -356,7 +356,7 @@ class BufferDictWAvg(gvar.BufferDict):
         self.svdcorrection = self.correction  # legacy name
 
 def wavg(datalist, fast=False, prior=None, **fitterargs):
-    """ Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
+    r""" Weighted average of |GVar|\s or arrays/dicts of |GVar|\s.
 
     The weighted average of ``N`` |GVar|\s ::
 
@@ -565,7 +565,7 @@ class MultiFitterModel(object):
         raise NotImplementedError("fitfcn not defined")
 
     def builddataset(self, dataset):
-        """ Extract fit dataset from :class:`gvar.dataset.Dataset` ``dataset``.
+        r""" Extract fit dataset from :class:`gvar.dataset.Dataset` ``dataset``.
 
         The code  ::
 
@@ -593,7 +593,7 @@ class MultiFitterModel(object):
         raise NotImplementedError("builddataset not defined")
 
     def builddata(self, data):
-        """ Extract fit data corresponding to this model from data set ``data``.
+        r""" Extract fit data corresponding to this model from data set ``data``.
 
         The fit data is returned in a 1-dimensional array;
         the fitfcn must return arrays of the same length.
@@ -2456,7 +2456,7 @@ class vegas_fit(object):
         return self.integrator.sample(nbatch=nbatch, mode=mode)
 
     def chiv(self, p, jac=None):
-        """ :math:`\chi^2(p)` 
+        r""" :math:`\chi^2(p)` 
         
         Note ``chi2(p) == numpy.sum(chiv(p)**2, axis=1)``. 
         """
@@ -2486,7 +2486,7 @@ class vegas_fit(object):
         return chiv
 
     def pdf(self, p, jac=None):
-        """ Probability density function for fit parameters ``p``.
+        r""" Probability density function for fit parameters ``p``.
         
         When the |vegas_fit| object is derived from a |nonlinear_fit|
         object (``vfit = vegas_fit(fit=fit)``), the PDF is 
@@ -2505,3 +2505,86 @@ class vegas_fit(object):
         minchi2 = kargs['minchi2']
         return numpy.exp(- 0.5 * numpy.sum(vegas_fit._chiv(p, **kargs) ** 2, axis=1) + minchi2/2)
         
+def fake_fitargs(fcn, prior=None, p0=None, x=False, fsig=0.001, correlate=True, noise=True):
+    r""" Creates fake fit arguments corresponding to ``fcn(x,p)`` for testing fitters.
+
+    Creates simulated fit data ``(x,y)`` (or ``y`` if ``x is False``) where 
+    ``y`` is Gaussian with mean ``f(x, p0)`` (or ``fcn(p0)`` if ``x is False``),
+    where ``p0`` are the fit parameters and ``x`` the independent variables.
+    The ``y`` standard deviations are ``fsig * abs(fcn(x, p))``, where ``fsig=0.001`` 
+    by default. The data are correlated if ``correlate=True`` (default). 
+    When ``noise=True``, the mean values are replaced by random values 
+    drawn at random from the distribution with ``noise=False``. Finally
+    if ``p0`` is not specified, it is set to ``p0 = gvar.sample(prior)``.
+
+    The function returns a dictionary of fit argments for 
+    :class:``lsqfit.nonlinear_fit`` corresponding to 
+    arguments ``data``, ``fcn``, and ``prior`` and/or ``p0``.
+    Typical usage is::
+
+        fitargs = fake_fitargs(fcn, prior, x)
+        fit = lsqfit.nonlinear_fit(**fitargs)
+
+    With default settings, the output fit parameters ``fit.p`` should 
+    agree with input values ``p0`` to within errors. The fit should 
+    have a ``fit.chi2 / fit.dof`` close to 1. 
+
+    Args:
+        fcn (callable): Fit function is ``fcn(x,p)`` 
+            or ``fcn(p)`` if ``x is False``. The mean
+            for the simulated fit data ``y`` equals 
+            ``fcn(c,p0)`` before noise is added (if ``noise=True``).
+        prior: Dictionary or array of |GVar|\s representing 
+            the priors for the fit parameters.
+        p0: Dictionary or array of numbers representing fit parameters.
+        x: Independent fit variable or ``False`` if there is none. 
+            Default is ``False``.
+        fsig (float): The standard deviations of the simulated 
+            data ``y`` equal ``fsig * abs(f(x, p0))``. Default
+            is ``fsig = 0.001``.
+        correlate (bool): Uncertainties in different simulated 
+            data points are correlated if ``correlate=True``; 
+            they are uncorrelated otherwise.
+        noise (bool): If ``noise=True``, Gaussian noise is added 
+            to the means of the simulated fit data ``y`` (default).
+            Ignored otherwise.
+
+    Returns:
+        Fit arguments dictionary::
+
+            dict(data=(x,y), fcn=fcn, prior=prior, p0=p0)
+
+        The ``prior`` entry is dropped if no prior is specified,
+        and ``data=y`` if ``x=False`` is specified.  
+    """
+    if p0 is None:
+        if prior is None:
+            raise ValueError('at least one of p0 or prior must be specified')
+        else:
+            p0 = gvar.sample(prior)
+    else:
+        p0 = gvar.asbufferdict(p0) if hasattr(p0, 'keys') else numpy.asarray(p0)
+    ymean = fcn(p0) if x is False else fcn(x, p0) 
+    ymean = gvar.asbufferdict(ymean) if hasattr(ymean, 'keys') else numpy.asarray(ymean)
+    ysig = (fsig if fsig is not None else 0.001) * numpy.fabs(ymean.flat[:])
+    ysig[ysig<=0] = min(ysig[ysig>0])
+    if ymean.shape is None:
+        ysig = gvar.BufferDict(ymean, buf=ysig)
+    else:
+        ysig.shape = ymean.shape
+    y = gvar.gvar(0 * ymean, ysig)
+    if correlate == True:
+        ny = ymean.size
+        corr = gvar.RNG.uniform(0.1, 0.9, (ny, ny))
+        corr = corr @ corr.T 
+        d = (1 / numpy.diag(corr)) ** 0.5 
+        y.flat[:] = gvar.correlate(y.flat[:], d[:, None] * d[None, :] * corr) 
+    if noise:
+        y += ymean + gvar.sample(y)
+    else:
+        y += ymean
+    data = y if x is None else (x, y) 
+    if prior is None:
+        return dict(data=data, fcn=fcn, p0=p0) 
+    else:
+        return dict(data=data, fcn=fcn, p0=p0, prior=prior) 

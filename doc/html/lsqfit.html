@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.2.4 documentation</title>
+    <title>lsqfit - Nonlinear Least Squares Fitting &#8212; lsqfit 13.3 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=4848ba22" />
     <link rel="stylesheet" type="text/css" href="_static/pyramid.css?v=310c80ee" />
-    <script src="_static/documentation_options.js?v=f063417a"></script>
+    <script src="_static/documentation_options.js?v=23c900a6"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.3 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>  
@@ -1752,6 +1752,64 @@ called the <em>p-value</em>.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="lsqfit.fake_fitargs">
+<span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">fake_fitargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fcn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fsig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.fake_fitargs" title="Link to this definition">¶</a></dt>
+<dd><p>Creates fake fit arguments corresponding to <code class="docutils literal notranslate"><span class="pre">fcn(x,p)</span></code> for testing fitters.</p>
+<p>Creates simulated fit data <code class="docutils literal notranslate"><span class="pre">(x,y)</span></code> (or <code class="docutils literal notranslate"><span class="pre">y</span></code> if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">is</span> <span class="pre">False</span></code>) where
+<code class="docutils literal notranslate"><span class="pre">y</span></code> is Gaussian with mean <code class="docutils literal notranslate"><span class="pre">f(x,</span> <span class="pre">p0)</span></code> (or <code class="docutils literal notranslate"><span class="pre">fcn(p0)</span></code> if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">is</span> <span class="pre">False</span></code>),
+where <code class="docutils literal notranslate"><span class="pre">p0</span></code> are the fit parameters and <code class="docutils literal notranslate"><span class="pre">x</span></code> the independent variables.
+The <code class="docutils literal notranslate"><span class="pre">y</span></code> standard deviations are <code class="docutils literal notranslate"><span class="pre">fsig</span> <span class="pre">*</span> <span class="pre">abs(fcn(x,</span> <span class="pre">p))</span></code>, where <code class="docutils literal notranslate"><span class="pre">fsig=0.001</span></code>
+by default. The data are correlated if <code class="docutils literal notranslate"><span class="pre">correlate=True</span></code> (default).
+When <code class="docutils literal notranslate"><span class="pre">noise=True</span></code>, the mean values are replaced by random values
+drawn at random from the distribution with <code class="docutils literal notranslate"><span class="pre">noise=False</span></code>. Finally
+if <code class="docutils literal notranslate"><span class="pre">p0</span></code> is not specified, it is set to <code class="docutils literal notranslate"><span class="pre">p0</span> <span class="pre">=</span> <span class="pre">gvar.sample(prior)</span></code>.</p>
+<p>The function returns a dictionary of fit argments for
+:class:<code class="docutils literal notranslate"><span class="pre">lsqfit.nonlinear_fit</span></code> corresponding to
+arguments <code class="docutils literal notranslate"><span class="pre">data</span></code>, <code class="docutils literal notranslate"><span class="pre">fcn</span></code>, and <code class="docutils literal notranslate"><span class="pre">prior</span></code> and/or <code class="docutils literal notranslate"><span class="pre">p0</span></code>.
+Typical usage is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fitargs</span> <span class="o">=</span> <span class="n">fake_fitargs</span><span class="p">(</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">fit</span> <span class="o">=</span> <span class="n">lsqfit</span><span class="o">.</span><span class="n">nonlinear_fit</span><span class="p">(</span><span class="o">**</span><span class="n">fitargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With default settings, the output fit parameters <code class="docutils literal notranslate"><span class="pre">fit.p</span></code> should
+agree with input values <code class="docutils literal notranslate"><span class="pre">p0</span></code> to within errors. The fit should
+have a <code class="docutils literal notranslate"><span class="pre">fit.chi2</span> <span class="pre">/</span> <span class="pre">fit.dof</span></code> close to 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fcn</strong> (<em>callable</em>) – Fit function is <code class="docutils literal notranslate"><span class="pre">fcn(x,p)</span></code>
+or <code class="docutils literal notranslate"><span class="pre">fcn(p)</span></code> if <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">is</span> <span class="pre">False</span></code>. The mean
+for the simulated fit data <code class="docutils literal notranslate"><span class="pre">y</span></code> equals
+<code class="docutils literal notranslate"><span class="pre">fcn(c,p0)</span></code> before noise is added (if <code class="docutils literal notranslate"><span class="pre">noise=True</span></code>).</p></li>
+<li><p><strong>prior</strong> – Dictionary or array of <code class="xref py py-class docutils literal notranslate"><span class="pre">gvar.GVar</span></code>s representing
+the priors for the fit parameters.</p></li>
+<li><p><strong>p0</strong> – Dictionary or array of numbers representing fit parameters.</p></li>
+<li><p><strong>x</strong> – Independent fit variable or <code class="docutils literal notranslate"><span class="pre">False</span></code> if there is none.
+Default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>fsig</strong> (<em>float</em>) – The standard deviations of the simulated
+data <code class="docutils literal notranslate"><span class="pre">y</span></code> equal <code class="docutils literal notranslate"><span class="pre">fsig</span> <span class="pre">*</span> <span class="pre">abs(f(x,</span> <span class="pre">p0))</span></code>. Default
+is <code class="docutils literal notranslate"><span class="pre">fsig</span> <span class="pre">=</span> <span class="pre">0.001</span></code>.</p></li>
+<li><p><strong>correlate</strong> (<em>bool</em>) – Uncertainties in different simulated
+data points are correlated if <code class="docutils literal notranslate"><span class="pre">correlate=True</span></code>;
+they are uncorrelated otherwise.</p></li>
+<li><p><strong>noise</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">noise=True</span></code>, Gaussian noise is added
+to the means of the simulated fit data <code class="docutils literal notranslate"><span class="pre">y</span></code> (default).
+Ignored otherwise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Fit arguments dictionary:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">),</span> <span class="n">fcn</span><span class="o">=</span><span class="n">fcn</span><span class="p">,</span> <span class="n">prior</span><span class="o">=</span><span class="n">prior</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="n">p0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">prior</span></code> entry is dropped if no prior is specified,
+and <code class="docutils literal notranslate"><span class="pre">data=y</span></code> if <code class="docutils literal notranslate"><span class="pre">x=False</span></code> is specified.</p>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="lsqfit.lsqfit.gammaQ">
 <span class="sig-prename descclassname"><span class="pre">lsqfit.</span></span><span class="sig-name descname"><span class="pre">gammaQ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lsqfit.lsqfit.gammaQ" title="Link to this definition">¶</a></dt>
 <dd><p>Return the normalized incomplete gamma function <code class="docutils literal notranslate"><span class="pre">Q(a,x)</span> <span class="pre">=</span> <span class="pre">1-P(a,x)</span></code>.</p>
@@ -2565,6 +2623,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
 <li><a class="reference internal" href="#functions">Functions</a><ul>
 <li><a class="reference internal" href="#lsqfit.empbayes_fit"><code class="docutils literal notranslate"><span class="pre">empbayes_fit()</span></code></a></li>
 <li><a class="reference internal" href="#lsqfit.wavg"><code class="docutils literal notranslate"><span class="pre">wavg()</span></code></a></li>
+<li><a class="reference internal" href="#lsqfit.fake_fitargs"><code class="docutils literal notranslate"><span class="pre">fake_fitargs()</span></code></a></li>
 <li><a class="reference internal" href="#lsqfit.lsqfit.gammaQ"><code class="docutils literal notranslate"><span class="pre">lsqfit.gammaQ()</span></code></a></li>
 </ul>
 </li>
@@ -2644,7 +2703,7 @@ the Gnu Scientific Library (GSL) and/or the Python <code class="xref py py-mod d
         <li class="right" >
           <a href="case-outliers.html" title="Case Study: Outliers and Bayesian Integrals"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.2.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">lsqfit 13.3 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">lsqfit</span></code> - Nonlinear Least Squares Fitting</a></li> 
       </ul>
     </div>

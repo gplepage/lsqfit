@@ -1,3 +1,8 @@
+Version 13.3 2025-02-08
+========================
+Clean up Cython code. Adds lsqfit.fake_fitargs for testing. Bug fix in 
+nonlinear_fit.set() where resetting the fitter could cause crashes. 
+
 Version 13.2.4 2024-12-26
 =========================
 Fixes trivial problem with the pyproject.toml introduced in the last version.

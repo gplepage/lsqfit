@@ -5,7 +5,7 @@ requires = [
     "numpy>=2.0",
     "scipy>=1.13",
     "Cython>=3.0",
-    "gvar>=13.1.1"
+    "gvar>=13.1.5"
     ]
 build-backend = "setuptools.build_meta"
 

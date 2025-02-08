@@ -1,4 +1,4 @@
-""" Introduction
+r""" Introduction
 ----------------
 This package contains tools for nonlinear least-squares curve fitting of
 data. In general a fit has four inputs:
@@ -72,7 +72,7 @@ module for fits and, especially, error budgets.
 """
 
 # Created by G. Peter Lepage (Cornell University) on 2008-02-12.
-# Copyright (c) 2008-2023 G. Peter Lepage.
+# Copyright (c) 2008-2025 G.Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -131,7 +131,7 @@ if _no_scipy and _no_gsl:
     raise RuntimeError('neither GSL nor scipy is installed --- need at least one')
 
 class nonlinear_fit(object):
-    """ Nonlinear least-squares fit.
+    r""" Nonlinear least-squares fit.
 
     :class:`lsqfit.nonlinear_fit` fits a (nonlinear) function ``f(x, p)``
     to data ``y`` by varying parameters ``p``, and stores the results: for
@@ -746,18 +746,18 @@ class nonlinear_fit(object):
                 return _gvar.linalg.lstsq(M, y)
         def M_y(p):
             " chiv = y - M @ p defines y and M "
-            p[self.linear] *= 0.0
-            y = self._chiv(p)
+            p[self.linear] *= 0.
+            y = self._chiv(p, mixed=True)
             M = []
             for i in self.linear:
                 p[i] -= 1.0
-                M.append(self._chiv(p) - y)
+                M.append(self._chiv(p, mixed=True) - y)
                 p[i] += 1.0
             return numpy.transpose(M), y
         def fitfcn(p):
             M, y = M_y(p)
             p[self.linear] = lstsq(M, y)
-            return self._chiv(p)
+            return self._chiv(p, mixed=True)
         localgvar = _gvar.gvar_factory()
         if len(self.linear) < len(p0) and maxit > 0:
             fit = nonlinear_fit.FITTERS[self.fitter](
@@ -859,12 +859,22 @@ class nonlinear_fit(object):
             ``nonlinear_fit.set(old_defaults)`` where ``old_defaults``
             is the dictionary containint the old defaults.
         """
+        allowedkeys = [
+            'data', 'fcn', 'prior', 'p0', 'eps',
+            'svdcut', 'debug', 'tol', 'maxit', 'udata', '_yp_pdf',
+            'noise', 'linear', 'fitter' 
+            ] + list(defaults.keys())
         old_defaults = dict(nonlinear_fit.DEFAULTS)
         if clear:
             nonlinear_fit.DEFAULTS = {}
         for k in defaults:
-            if k == 'fitter' and defaults[k] not in nonlinear_fit.FITTERS:
-                raise ValueError('unknown fitter: ' + str(defaults[k]))
+            if k == 'fitter':
+                if defaults['fitter'] not in nonlinear_fit.FITTERS:
+                    raise ValueError('unknown fitter: ' + str(defaults[k]))
+                # remove old fitterkeys from DEFAULTS
+                delkeys = [dk for dk in nonlinear_fit.DEFAULTS if dk not in allowedkeys]
+                for dk in delkeys:
+                    del nonlinear_fit.DEFAULTS[dk]
             nonlinear_fit.DEFAULTS[k] = defaults[k]
         return old_defaults
 
@@ -885,7 +895,7 @@ class nonlinear_fit(object):
             warnings.warn("Possible roundoff errors in fit.p; try svd cut.")
 
     def _getp(self):
-        """ Build :class:`gvar.GVar`\s for best-fit parameters. """
+        r""" Build :class:`gvar.GVar`\s for best-fit parameters. """
         if self._p is not None:
             return self._p
         # buf = [y,prior]; D[a,i] = dp[a]/dbuf[i]
@@ -1381,7 +1391,7 @@ class nonlinear_fit(object):
     def simulated_fit_iter(
         self, n=None, pexact=None, add_priornoise=False, bootstrap=None, **kargs
         ):
-        """ Iterator that returns simulation copies of a fit.
+        r""" Iterator that returns simulation copies of a fit.
 
         Fit reliability is tested using simulated data which
         replaces the mean values in ``self.y`` with random numbers
@@ -1828,7 +1838,7 @@ def _reformat(p, buf):
     return ans
 
 def _unpack_data(data, prior, svdcut, eps, uncorrelated_data, noise, debug):
-    """ Unpack data and prior into ``(x, y, prior, yp_pdf)``.
+    r""" Unpack data and prior into ``(x, y, prior, yp_pdf)``.
 
     This routine unpacks ``data`` and ``prior`` into ``x, y, prior, yp_pdf``
     where ``x`` is the independent data, ``y`` is the fit data,
@@ -2059,7 +2069,7 @@ def _y_fcn_match(y, f):
     return True
 
 # add extras and utilities to lsqfit
-from ._extras import empbayes_fit, wavg
+from ._extras import empbayes_fit, wavg, fake_fitargs
 from ._extras import MultiFitterModel, MultiFitter, vegas_fit
 from ._utilities import _build_chiv_chivw
 

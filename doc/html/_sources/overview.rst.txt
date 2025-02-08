@@ -2094,7 +2094,7 @@ in |nonlinear_fit|. There are currently three fitters available:
     :class:`lsqfit.gsl_v1_multifit`. It was the fitter used in :mod:`lsqfit`
     versions earlier than version |~| 9.0. It supports a few
     different algorithms (parameter ``alg``) including
-    ``'lmsder'`` and ``'lmder'``.
+    ``'lmsder'`` and ``'lmder'``. (Deprecated.)
 
   ``fitter='scipy_least_squares'``
     The standard :mod:`scipy` least-squares
@@ -2108,17 +2108,21 @@ The default configurations for these fitters are chosen to emphasize
 robustness rather than speed, and therefore some of the non-default options
 can be much faster. Adding ::
 
-  fitter='gsl_multifit', alg='subspace2D', scaler='more', solver='cholesky'
+  fitter='gsl_multifit', alg='lmaccel'
+
+or ::
+
+  fitter='gsl_multifit', alg='subspace2D'
 
 to |nonlinear_fit|'s argument list, for example, can double or triple
-the fitter's speed for  large problems.
+the fitter's speed for  some problems.
 The more robust choices are important for challenging fits, but
 straightforward fits can be greatly accelerated by using different options.
 The ``scipy_least_squares`` fitter can also be much faster than the default: e.g., set ::
 
   fitter='scipy_least_squares', method='dogbox'
 
-It is worth experimenting when fits become costly
+It is worth experimenting when fits become costly.
 
 Method :meth:`lsqfit.nonlinear_fit.set`
 modifies the defaults used by |nonlinear_fit|.

@@ -18,7 +18,7 @@ def gammaQ(a, x):
     return gammaincc(a, x)
 
 class scipy_least_squares(object):
-    """ :mod:`scipy` fitter for nonlinear least-squares multidimensional fits.
+    r""" :mod:`scipy` fitter for nonlinear least-squares multidimensional fits.
 
     :class:`scipy_least_squares` is a function-class whose constructor does a
     least-squares fit by minimizing ``sum_i f_i(x)**2`` as a function of

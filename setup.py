@@ -7,14 +7,14 @@ import sys
 # install gsl interface if gsl installed 
 
 ext_args_nogsl = dict(
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()],  # not needed
     library_dirs=[],
     runtime_library_dirs=[],
     extra_link_args=[]
     )
 
 ext_args_gsl = dict(
-    include_dirs=[numpy.get_include()],
+    include_dirs=[numpy.get_include()],  # not needed
     library_dirs=[],
     libraries=['gsl', 'gslcblas'],
     runtime_library_dirs=[],

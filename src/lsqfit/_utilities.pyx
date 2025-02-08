@@ -1,5 +1,5 @@
 # cython: language_level=3str
-# Copyright (c) 2011-23 G. Peter Lepage.
+# Copyright (c) 2011-24 G. Peter Lepage.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -11,45 +11,28 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-cimport numpy
-numpy.import_array()
-cimport cython
 cimport gvar
 
 import gvar
 import numpy
-import functools
 
-from numpy cimport npy_intp as INTP_TYPE
-# index type for numpy (signed) -- same as numpy.intp_t and Py_ssize_t
 
-if numpy.version.version >= '2.0':
-    FLOAT_TYPE = numpy.float64
-else:
-    FLOAT_TYPE = numpy.float_
-    
+cdef gvar.GVar[::1] dot(double[:,:] w, x):
+    r""" Compute dot product of matrix ``w`` with vector ``x``.
 
-def dot(numpy.ndarray[numpy.float_t, ndim=2] w not None, x):
-    """ Compute dot product of matrix ``w`` with vector ``x``.
-
-    This is a substitute for ``numpy.dot`` that is highly optimized for the
+    This is a substitute for ``numpy.dot`` that is optimized for the
     case where ``w`` is a 2-dimensional array of ``float``\s, and ``x`` is
     a 1=dimensional array of ``gvar.GVar``\s. Other cases are handed off
     to ``numpy.dot``.
     """
     cdef gvar.GVar g
     cdef gvar.GVar gans, gx
-    cdef Py_ssize_t i, nx, nans
-    cdef numpy.ndarray[object, ndim=1] ans
-    if not isinstance(x[0], gvar.GVar):
-        return w.dot(x) # numpy.dot(w, x)
-    nx = len(x)
+    cdef Py_ssize_t i, nans
+    cdef gvar.GVar[::1] ans
     nans = w.shape[0]
-    assert nx==w.shape[1], str(nx) + '!=' + str(w.shape[1])
     ans = numpy.zeros(nans, object)
-    gvar.msum_gvar(w, x, out=ans)
-    # for i in range(nans):
-    #     ans[i] = gvar.wsum_gvar(w[i], x)
+    for i in range(nans):
+        ans[i] = gvar.wsum_gvar(w[i], x)
     return ans
 
 
@@ -79,30 +62,35 @@ cdef class chiv(object):
         self.fcn = fcn 
         self.noprior = noprior 
 
-    def __call__(self, p):        
-    # def chiv(p, fd, fcn, noprior):
+    def __call__(self, p, mixed=False): 
+        # mixed=True indicates that delta might contain 
+        # a mix of floats and GVars. This is used only 
+        # by the varpro algorithm.     
         cdef Py_ssize_t i1, i2
-        cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-        cdef numpy.ndarray[numpy.float_t, ndim=1] wgts
-        cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-        cdef numpy.ndarray ans, delta
+        cdef Py_ssize_t[:] iw
+        cdef double[:] wgts
+        cdef double[:,:] wgt
+        cdef bint all_gvar = True
         if self.noprior:
             delta = self.fcn(p) - self.mean
         else:
             delta = numpy.concatenate((self.fcn(p), p)) - self.mean
-        if delta.dtype == object:
+        if isinstance(delta[0], gvar.GVar) or mixed:
             ans = numpy.zeros(self.nw, object)
+            all_gvar = False if mixed else True
         else:
-            ans = numpy.zeros(self.nw, FLOAT_TYPE)
+            ans = numpy.zeros(self.nw, float)
+            # delta = numpy.asarray(delta, dtype=float)
+            all_gvar = False
         iw, wgts = self.inv_wgts[0]
         i1 = 0
         i2 = len(iw)
         if i2 > 0:
-            ans[i1:i2] = wgts * delta[iw]
+            ans[i1:i2] = numpy.multiply(wgts, delta[iw])
         for iw, wgt in self.inv_wgts[1:]:
             i1 = i2
             i2 += len(wgt)
-            ans[i1:i2] = dot(wgt, delta[iw])
+            ans[i1:i2] = dot(wgt, delta[iw]) if all_gvar else numpy.dot(wgt, delta[iw])
         return ans
 
 cdef class chivw(object):
@@ -119,27 +107,33 @@ cdef class chivw(object):
         self.fcn = fcn 
         self.noprior = noprior 
 
-    def __call__(self, p):        
-    # def chivw(p, fd, fcn, noprior):
-        cdef numpy.ndarray[INTP_TYPE, ndim=1] iw
-        cdef numpy.ndarray[numpy.float_t, ndim=1] wgts, wj
-        cdef numpy.ndarray[numpy.float_t, ndim=2] wgt
-        cdef numpy.ndarray[numpy.float_t, ndim=2] wgt2
-        cdef numpy.ndarray ans, delta
+    def __call__(self, p, mixed=False):        
+        # mixed=True indicates that delta might contain 
+        # a mix of floats and GVars. This is used only 
+        # by the varpro algorithm      
+        cdef Py_ssize_t[:] iw
+        cdef double[:] wgts
+        cdef double[:] wj
+        cdef double[:,:] wgt
+        cdef double[:,:] wght2
+        cdef bint all_gvar
         if self.noprior:
             delta = self.fcn(p) - self.mean
         else:
             delta = numpy.concatenate((self.fcn(p), p)) - self.mean
-        if delta.dtype == object:
+        if isinstance(delta[0], gvar.GVar) or mixed:
             ans = numpy.zeros(self.niw, object)
+            all_gvar = False if mixed else True
         else:
-            ans = numpy.zeros(self.niw, FLOAT_TYPE)
+            ans = numpy.zeros(self.niw, float)
+            # delta = numpy.asarray(delta, dtype=float)
+            all_gvar = False
         iw, wgts = self.inv_wgts[0]
         if len(iw) > 0:
-            ans[iw] = wgts ** 2 * delta[iw]
+            ans[iw] = numpy.multiply(numpy.power(wgts, 2), delta[iw])
         for iw, wgt in self.inv_wgts[1:]:
-            wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), FLOAT_TYPE)
+            wgt2 = numpy.zeros((wgt.shape[1], wgt.shape[1]), float)
             for wj in wgt:
                 wgt2 += numpy.outer(wj, wj)
-            ans[iw] = dot(wgt2, delta[iw])
+            ans[iw] = dot(wgt2, delta[iw]) if all_gvar else numpy.dot(wgt2, delta[iw]) 
         return ans

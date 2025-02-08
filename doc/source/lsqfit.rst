@@ -337,6 +337,8 @@ Functions
 
 .. autofunction:: lsqfit.wavg
 
+.. autofunction:: lsqfit.fake_fitargs
+
 .. function:: lsqfit.gammaQ(a, x)
 
       Return the normalized incomplete gamma function ``Q(a,x) = 1-P(a,x)``.

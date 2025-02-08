@@ -1187,6 +1187,49 @@ class test_lsqfit(unittest.TestCase,ArrayTests):
         self.assertAlmostEqual(fit1.pmean['p'], fit2.pmean['p'], places=3)
         self.assertAlmostEqual(fit1.psdev['p'] * 2, fit2.psdev['p'], places=3)
 
+    def test_fake_fitargs(self):
+        """ fake_fitargs """
+        def f(x, p):
+            return p[0] + p[1] * x + p[2] * x ** 2
+        prior = gv.gvar(3 * ['0(1)'])
+        x = np.linspace(0.1, 1, 4)
+        fitargs = fake_fitargs(fcn=f, prior=prior, x=x)
+        fit = nonlinear_fit(**fitargs)
+        chi2 = gv.chi2(fit.p, fitargs['p0'])
+        self.assertLess(chi2 / chi2.dof, 6.)
+        self.assertLess(fit.chi2 / fit.dof, 6.)
+        # no correlations, noise
+        fitargs = fake_fitargs(fcn=f, prior=prior, x=x, correlate=False, noise=False)
+        fit = nonlinear_fit(**fitargs)
+        chi2 = gv.chi2(fit.p, fitargs['p0'])
+        self.assertLess(chi2 / chi2.dof, 6.)
+        self.assertLess(fit.chi2 / fit.dof, 6.)
+        self.assertAlmostEqual(np.sum(gv.evalcorr(fit.y)), len(x))
+        # no x
+        def g1(p, x=x):
+            return f(x, p)
+        fitargs = fake_fitargs(fcn=g1, prior=prior)
+        fit = nonlinear_fit(**fitargs)
+        chi2 = gv.chi2(fit.p, fitargs['p0'])
+        self.assertLess(chi2 / chi2.dof, 6.)
+        self.assertLess(fit.chi2 / fit.dof, 6.)
+        # fcn returns a dict
+        def g2(p, x=x):
+            return dict(ans=f(x,p))
+        fitargs = fake_fitargs(fcn=g2, prior=prior)
+        fit = nonlinear_fit(**fitargs)
+        chi2 = gv.chi2(fit.p, fitargs['p0'])
+        self.assertLess(chi2 / chi2.dof, 6.)
+        self.assertLess(fit.chi2 / fit.dof, 6.)
+        # p is a dict
+        def g3(p, x=x):
+            return f(x, p['c'])
+        fitargs = fake_fitargs(fcn=g3, prior=dict(c=prior))
+        fit = nonlinear_fit(**fitargs)
+        chi2 = gv.chi2(fit.p, fitargs['p0'])
+        self.assertLess(chi2 / chi2.dof, 6.)
+        self.assertLess(fit.chi2 / fit.dof, 6.)
+    
 
     def test_unpack_p0(self):
         """ _unpack_p0 """
