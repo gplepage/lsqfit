@@ -1843,7 +1843,7 @@ class vegas_fit(object):
     The fitter calculates the means and (co)variances of 
     the fit parameters (``vfit.p``) assuming that the parameters 
     are described by a probability density function (PDF) 
-    proportional to :math:`\exp(-\chi^2(p))` where
+    proportional to :math:`\exp(-\chi^2(p)/2)` where
 
     .. math::
 
