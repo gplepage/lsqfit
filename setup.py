@@ -31,7 +31,7 @@ if sys.version_info >= (3, 7):
         if p.returncode != 0:
             raise FileNotFoundError('bad return code from gsl-config')
         cflags = p.stdout.decode('utf-8')[2:-1]
-        ext_args_nogsl['include_dirs'].append(cflags)
+        ext_args_gsl['include_dirs'].append(cflags)
         p = subprocess.run(['gsl-config', '--libs'], capture_output=True)
         if p.returncode != 0:
             raise FileNotFoundError('bad return code from gsl-config')
