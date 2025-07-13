@@ -21,12 +21,12 @@ SRCFILES := $(shell ls setup.py src/lsqfit/*.{py,pyx})
 CYTHONFILES := src/lsqfit/_gsl.c src/lsqfit/_utilities.c
 
 install-user : 
-	rm -rf src/lsqfit/*.c 
+	rm -rf src/lsqfit/*.c build
 	python make_version.py src/lsqfit/_version.py
 	$(PIP) install . --user --no-cache-dir
 
 install install-sys : 
-	rm -rf src/lsqfit/*.c 
+	rm -rf src/lsqfit/*.c build
 	python make_version.py src/lsqfit/_version.py
 	$(PIP) install . --no-cache-dir
 

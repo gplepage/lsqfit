@@ -1,3 +1,8 @@
+Version 13.3.1 2025-07-13
+==========================
+- Fixes bug in setup.py that affected installations that use the GSL library. 
+  Thanks to Olmo Francesconi for pointing out the problem.
+
 Version 13.3 2025-02-08
 ========================
 Clean up Cython code. Adds lsqfit.fake_fitargs for testing. Bug fix in 
